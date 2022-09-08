@@ -1,0 +1,38 @@
+[project]
+name = "protocol"
+authors = []
+description = ""
+telemetry = false
+requirements = []
+boot_contracts = ["pox", "costs-v2", "bns"]
+
+[project.cache_location]
+path = ".requirements"
+
+[contracts.base-dao]
+path = "contracts/base-dao.clar"
+
+[contracts.ccd001-direct-execute]
+path = "contracts/ccd001-direct-execute.clar"
+
+[contracts.ccd002-treasury-mia]
+path = "contracts/ccd002-treasury-mia.clar"
+
+[contracts.ccd002-treasury-nyc]
+path = "contracts/ccd002-treasury-nyc.clar"
+
+[contracts.ccd003-stacking-v1]
+path = "contracts/ccd003-stacking-v1.clar"
+
+[repl]
+costs_version = 2
+parser_version = 2
+
+[repl.analysis]
+passes = ["check_checker"]
+
+[repl.analysis.check_checker]
+strict = false
+trusted_sender = false
+trusted_caller = false
+callee_filter = false
