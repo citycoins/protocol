@@ -1,5 +1,6 @@
 ;; CityCoins base DAO contract
 ;; Based on ExecutorDAO by Marvin Janssen
+;; The one DAO to rule them all.
 
 ;; TRAITS
 
@@ -8,15 +9,15 @@
 
 ;; CONSTANTS
 
-(define-constant ERR-UNAUTHORIZED (err u1000))
-(define-constant ERR-ALREADY-EXECUTED (err u1001))
-(define-constant ERR-INVALID-EXTENSION (err u1002))
+(define-constant ERR_UNAUTHORIZED (err u1000))
+(define-constant ERR_ALREADY_EXECUTED (err u1001))
+(define-constant ERR_INVALID_EXTENSION (err u1002))
 
 ;; DATA MAPS AND VARS
 
 (define-data-var executive principal tx-sender)
-(define-map executed-proposals principal uint)
-(define-map extensions principal bool)
+(define-map ExecutedProposals principal uint)
+(define-map Extensions principal bool)
 
 ;; Authorization Check
 
@@ -24,28 +25,28 @@
 	(ok (asserts! (or
       (is-eq tx-sender (as-contract tx-sender))
       (is-extension contract-caller))
-    ERR-UNAUTHORIZED
+    ERR_UNAUTHORIZED
   ))
 )
 
 ;; Extensions
 
 (define-read-only (is-extension (extension principal))
-	(default-to false (map-get? extensions extension))
+	(default-to false (map-get? Extensions extension))
 )
 
 (define-public (set-extension (extension principal) (enabled bool))
 	(begin
 		(try! (is-self-or-extension))
 		(print {event: "extension", extension: extension, enabled: enabled})
-		(ok (map-set extensions extension enabled))
+		(ok (map-set Extensions extension enabled))
 	)
 )
 
 (define-private (set-extensions-iter (item {extension: principal, enabled: bool}))
 	(begin
 		(print {event: "extension", extension: (get extension item), enabled: (get enabled item)})
-		(map-set extensions (get extension item) (get enabled item))
+		(map-set Extensions (get extension item) (get enabled item))
 	)
 )
 
@@ -59,13 +60,13 @@
 ;; Proposals
 
 (define-read-only (executed-at (proposal <proposal-trait>))
-	(map-get? executed-proposals (contract-of proposal))
+	(map-get? ExecutedProposals (contract-of proposal))
 )
 
 (define-public (execute (proposal <proposal-trait>) (sender principal))
 	(begin
 		(try! (is-self-or-extension))
-		(asserts! (map-insert executed-proposals (contract-of proposal) block-height) ERR-ALREADY-EXECUTED)
+		(asserts! (map-insert ExecutedProposals (contract-of proposal) block-height) ERR_ALREADY_EXECUTED)
 		(print {event: "execute", proposal: proposal})
 		(as-contract (contract-call? proposal execute sender))
 	)
@@ -78,7 +79,7 @@
     (
       (sender tx-sender)
     )
-		(asserts! (is-eq sender (var-get executive)) ERR-UNAUTHORIZED)
+		(asserts! (is-eq sender (var-get executive)) ERR_UNAUTHORIZED)
 		(var-set executive (as-contract tx-sender))
 		(as-contract (execute proposal sender))
 	)
@@ -91,8 +92,8 @@
     (
       (sender tx-sender)
     )
-		(asserts! (is-extension contract-caller) ERR-INVALID-EXTENSION)
-		(asserts! (is-eq contract-caller (contract-of extension)) ERR-INVALID-EXTENSION)
+		(asserts! (is-extension contract-caller) ERR_INVALID_EXTENSION)
+		(asserts! (is-eq contract-caller (contract-of extension)) ERR_INVALID_EXTENSION)
 		(as-contract (contract-call? extension callback sender memo))
 	)
 )
