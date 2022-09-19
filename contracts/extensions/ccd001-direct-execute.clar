@@ -28,7 +28,7 @@
 ;; ~6 months from deployment
 (define-data-var executiveTeamSunsetHeight uint (+ block-height u25920))
 ;; signals required for an executive action.
-(define-data-var executiveSignalsRequired uint u3)
+(define-data-var executiveSignalsRequired uint u1)
 
 (define-map ExecutiveTeam principal bool)
 (define-map ExecutiveActionSignals {proposal: principal, team-member: principal} bool)
@@ -47,7 +47,7 @@
 
 ;; Internal DAO functions
 
-(define-public (set-executiveTeamSunsetHeight (height uint))
+(define-public (set-executive-team-sunset-height (height uint))
 	(begin
 		(try! (is-dao-or-extension))
 		(asserts! (> height block-height) ERR_SUNSET_HEIGHT_IN_PAST)

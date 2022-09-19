@@ -72,7 +72,7 @@
 (define-public (deposit-ft (ft <ft-trait>) (amount uint))
   (begin
     (asserts! (is-whitelisted (contract-of ft)) ERR_ASSET_NOT_WHITELISTED)
-    (unwrap! (contract-call? ft transfer amount tx-sender CONTRACT_ADDRESS (some 0x11)) ERR_FAILED_TO_TRANSFER_FT)
+    (unwrap! (contract-call? ft transfer amount tx-sender CONTRACT_ADDRESS none) ERR_FAILED_TO_TRANSFER_FT)
     (print {event: "deposit-ft", amount: amount, assetContract: (contract-of ft), caller: tx-sender})
     (ok true)
   )
@@ -100,7 +100,7 @@
   (begin
     (try! (is-dao-or-extension))
     (asserts! (is-whitelisted (contract-of ft)) ERR_ASSET_NOT_WHITELISTED)
-    (unwrap! (as-contract (contract-call? ft transfer amount CONTRACT_ADDRESS recipient (some 0x11))) ERR_FAILED_TO_TRANSFER_FT)
+    (unwrap! (as-contract (contract-call? ft transfer amount CONTRACT_ADDRESS recipient none)) ERR_FAILED_TO_TRANSFER_FT)
     (print {event: "transfer-ft", assetContract: (contract-of ft), caller: tx-sender, recipient: recipient})
     (ok true)
   )
