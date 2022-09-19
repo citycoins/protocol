@@ -7,11 +7,15 @@ const baseDao = new BaseDao();
 Clarinet.test({
   name: "base-dao: succeeds when initializing the DAO with bootstrap proposal",
   async fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
     const sender = accounts.get("deployer")!;
+
+    // act
     const { receipts } = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
     ]);
 
+    // assert
     assertEquals(receipts.length, 1);
     receipts[0].result.expectOk().expectBool(true);
 
@@ -39,13 +43,18 @@ Clarinet.test({
 Clarinet.test({
   name: "base-dao: fails when initializing the DAO with bootstrap proposal a second time",
   async fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
     const sender = accounts.get("deployer")!;
+
+    // act
     const { receipts } = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
       baseDao.construct(sender, PROPOSALS.CCIP_012),
     ]);
 
+    // assert
     assertEquals(receipts.length, 2);
+    receipts[0].result.expectOk().expectBool(true);
     receipts[1].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
   },
 });
