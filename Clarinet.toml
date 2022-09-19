@@ -13,17 +13,27 @@ path = ".requirements"
 
 [contracts.base-dao]
 path = "contracts/base-dao.clar"
+depends_on = ["proposal-trait", "extension-trait"]
 
 # Extensions
 
 [contracts.ccd001-direct-execute]
 path = "contracts/extensions/ccd001-direct-execute.clar"
+depends_on = ["base-dao"]
 
 [contracts.ccd002-treasury-mia]
 path = "contracts/extensions/ccd002-treasury-mia.clar"
+depends_on = ["base-dao", "sip009-nft-trait", "sip010-ft-trait"]
 
 [contracts.ccd002-treasury-nyc]
 path = "contracts/extensions/ccd002-treasury-nyc.clar"
+depends_on = ["base-dao", "sip009-nft-trait", "sip010-ft-trait"]
+
+# Proposals
+
+[contracts.ccip012-bootstrap]
+path = "contracts/proposals/ccip012-bootstrap.clar"
+depends_on = ["base-dao", "ccd001-direct-execute"]
 
 # DAO Traits
 
