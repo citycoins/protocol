@@ -38,8 +38,13 @@ export class BaseDao {
 
   // Proposals
 
-  executedAt(proposal: string) {
-    return false;
+  executedAt(sender: Account, proposal: string) {
+    return Tx.contractCall(
+      this.name,
+      "executed-at",
+      [types.principal(proposal)],
+      sender.address
+    );
   }
 
   execute(proposal: string, sender: string) {
