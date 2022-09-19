@@ -28,12 +28,31 @@ export class BaseDao {
     );
   }
 
-  setExtension(extension: Extension) {
-    return false;
+  setExtension(sender: Account, ext: Extension) {
+    return Tx.contractCall(
+      this.name,
+      "set-extension",
+      [types.principal(ext.extension), types.bool(ext.enabled)],
+      sender.address
+    );
   }
 
-  setExtensions(extensionList: Extension[]) {
-    return false;
+  setExtensions(sender: Account, exts: Extension[]) {
+    const extensionList: any[] = [];
+    for (const ext of exts) {
+      extensionList.push(
+        types.tuple({
+          extension: types.principal(ext.extension),
+          enabled: types.bool(ext.enabled),
+        })
+      );
+    }
+    return Tx.contractCall(
+      this.name,
+      "set-extensions",
+      [types.list(extensionList)],
+      sender.address
+    );
   }
 
   // Proposals
@@ -47,8 +66,13 @@ export class BaseDao {
     );
   }
 
-  execute(proposal: string, sender: string) {
-    return false;
+  execute(sender: Account, proposal: string, proposer: string) {
+    return Tx.contractCall(
+      this.name,
+      "execute",
+      [types.principal(proposal), types.principal(proposer)],
+      sender.address
+    );
   }
 
   // Bootstrap
@@ -64,7 +88,12 @@ export class BaseDao {
 
   // Extension requests
 
-  requestExtensionCallback(extension: string, memo: string) {
-    return false;
+  requestExtensionCallback(sender: Account, extension: string, memo: string) {
+    return Tx.contractCall(
+      this.name,
+      "request-extension-callback",
+      [types.principal(extension), types.buff(memo)],
+      sender.address
+    );
   }
 }

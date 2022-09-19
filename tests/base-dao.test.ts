@@ -5,7 +5,7 @@ import { BASE_DAO, EXTENSIONS, PROPOSALS } from "../utils/common.ts";
 const baseDao = new BaseDao();
 
 Clarinet.test({
-  name: "base-dao: succeeds when initializing the DAO with bootstrap proposal",
+  name: "base-dao: construct() succeeds when initializing the DAO with bootstrap proposal",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -39,26 +39,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "base-dao: fails when initializing the DAO with bootstrap proposal a second time",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-
-    // act
-    const { receipts } = chain.mineBlock([
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
-    ]);
-
-    // assert
-    assertEquals(receipts.length, 2);
-    receipts[0].result.expectOk().expectBool(true);
-    receipts[1].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
-  },
-});
-
-Clarinet.test({
-  name: "base-dao: succeeds and returns active extensions",
+  name: "base-dao: is-extension() succeeds and returns active extensions",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -81,7 +62,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "base-dao: succeeds and returns false with unrecognized extension",
+  name: "base-dao: is-extension() succeeds and returns false with unrecognized extension",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -103,7 +84,49 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "base-dao: succeeds and returns the block height the proposal was executed",
+  name: "base-dao: set-extension() fails if caller is not DAO or extension",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("wallet_1")!;
+
+    // act
+    const { receipts } = chain.mineBlock([
+      baseDao.setExtension(sender, {
+        extension: EXTENSIONS.CCD001_DIRECT_EXECUTE,
+        enabled: true,
+      }),
+    ]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
+  },
+});
+
+Clarinet.test({
+  name: "base-dao: set-extensions() fails if caller is not DAO or extension",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("wallet_1")!;
+    const extensions = [
+      { extension: EXTENSIONS.CCD001_DIRECT_EXECUTE, enabled: true },
+      { extension: EXTENSIONS.CCD002_TREASURY_MIA, enabled: true },
+      { extension: EXTENSIONS.CCD002_TREASURY_NYC, enabled: true },
+    ];
+
+    // act
+    const { receipts } = chain.mineBlock([
+      baseDao.setExtensions(sender, extensions),
+    ]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
+  },
+});
+
+Clarinet.test({
+  name: "base-dao: executed-at() succeeds and returns the block height the proposal was executed",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -125,7 +148,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "base-dao: succeeds and returns none with unrecognized proposal",
+  name: "base-dao: executed-at() succeeds and returns none with unrecognized proposal",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -141,5 +164,81 @@ Clarinet.test({
     for (const receipt of receipts) {
       receipt.result.expectNone();
     }
+  },
+});
+
+Clarinet.test({
+  name: "base-dao: execute() fails if caller is not DAO or extension",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+
+    // act
+    const { receipts } = chain.mineBlock([
+      baseDao.execute(sender, PROPOSALS.CCIP_012, sender.address),
+    ]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
+  },
+});
+
+Clarinet.test({
+  name: "base-dao: construct() fails when initializing the DAO with bootstrap proposal a second time",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+
+    // act
+    const { receipts } = chain.mineBlock([
+      baseDao.construct(sender, PROPOSALS.CCIP_012),
+      baseDao.construct(sender, PROPOSALS.CCIP_012),
+    ]);
+
+    // assert
+    assertEquals(receipts.length, 2);
+    receipts[0].result.expectOk().expectBool(true);
+    receipts[1].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
+  },
+});
+
+Clarinet.test({
+  name: "base-dao: construct() fails when called by an account that is not the deployer",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("wallet_1")!;
+
+    // act
+    const { receipts } = chain.mineBlock([
+      baseDao.construct(sender, PROPOSALS.CCIP_012),
+    ]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
+  },
+});
+
+Clarinet.test({
+  name: "base-dao: request-extension-callback() fails if caller is not an extension",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+
+    // act
+    const { receipts } = chain.mineBlock([
+      baseDao.requestExtensionCallback(
+        sender,
+        EXTENSIONS.CCD001_DIRECT_EXECUTE,
+        "test"
+      ),
+    ]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result
+      .expectErr()
+      .expectUint(BaseDao.ErrCode.ERR_INVALID_EXTENSION);
   },
 });
