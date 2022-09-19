@@ -22,7 +22,7 @@
 ;; Authorization Check
 
 (define-private (is-self-or-extension)
-	(ok (asserts! (or
+  (ok (asserts! (or
       (is-eq tx-sender (as-contract tx-sender))
       (is-extension contract-caller))
     ERR_UNAUTHORIZED
@@ -32,68 +32,68 @@
 ;; Extensions
 
 (define-read-only (is-extension (extension principal))
-	(default-to false (map-get? Extensions extension))
+  (default-to false (map-get? Extensions extension))
 )
 
 (define-public (set-extension (extension principal) (enabled bool))
-	(begin
-		(try! (is-self-or-extension))
-		(print {event: "extension", extension: extension, enabled: enabled})
-		(ok (map-set Extensions extension enabled))
-	)
+  (begin
+    (try! (is-self-or-extension))
+    (print {event: "extension", extension: extension, enabled: enabled})
+    (ok (map-set Extensions extension enabled))
+  )
 )
 
 (define-private (set-extensions-iter (item {extension: principal, enabled: bool}))
-	(begin
-		(print {event: "extension", extension: (get extension item), enabled: (get enabled item)})
-		(map-set Extensions (get extension item) (get enabled item))
-	)
+  (begin
+    (print {event: "extension", extension: (get extension item), enabled: (get enabled item)})
+    (map-set Extensions (get extension item) (get enabled item))
+  )
 )
 
 (define-public (set-extensions (extension-list (list 200 {extension: principal, enabled: bool})))
-	(begin
-		(try! (is-self-or-extension))
-		(ok (map set-extensions-iter extension-list))
-	)
+  (begin
+    (try! (is-self-or-extension))
+    (ok (map set-extensions-iter extension-list))
+  )
 )
 
 ;; Proposals
 
 (define-read-only (executed-at (proposal <proposal-trait>))
-	(map-get? ExecutedProposals (contract-of proposal))
+  (map-get? ExecutedProposals (contract-of proposal))
 )
 
 (define-public (execute (proposal <proposal-trait>) (sender principal))
-	(begin
-		(try! (is-self-or-extension))
-		(asserts! (map-insert ExecutedProposals (contract-of proposal) block-height) ERR_ALREADY_EXECUTED)
-		(print {event: "execute", proposal: proposal})
-		(as-contract (contract-call? proposal execute sender))
-	)
+  (begin
+    (try! (is-self-or-extension))
+    (asserts! (map-insert ExecutedProposals (contract-of proposal) block-height) ERR_ALREADY_EXECUTED)
+    (print {event: "execute", proposal: proposal})
+    (as-contract (contract-call? proposal execute sender))
+  )
 )
 
 ;; Bootstrap
 
 (define-public (construct (proposal <proposal-trait>))
-	(let
+  (let
     (
       (sender tx-sender)
     )
-		(asserts! (is-eq sender (var-get executive)) ERR_UNAUTHORIZED)
-		(var-set executive (as-contract tx-sender))
-		(as-contract (execute proposal sender))
-	)
+    (asserts! (is-eq sender (var-get executive)) ERR_UNAUTHORIZED)
+    (var-set executive (as-contract tx-sender))
+    (as-contract (execute proposal sender))
+  )
 )
 
 ;; Extension requests
 
 (define-public (request-extension-callback (extension <extension-trait>) (memo (buff 34)))
-	(let
+  (let
     (
       (sender tx-sender)
     )
-		(asserts! (is-extension contract-caller) ERR_INVALID_EXTENSION)
-		(asserts! (is-eq contract-caller (contract-of extension)) ERR_INVALID_EXTENSION)
-		(as-contract (contract-call? extension callback sender memo))
-	)
+    (asserts! (is-extension contract-caller) ERR_INVALID_EXTENSION)
+    (asserts! (is-eq contract-caller (contract-of extension)) ERR_INVALID_EXTENSION)
+    (as-contract (contract-call? extension callback sender memo))
+  )
 )

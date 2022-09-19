@@ -28,7 +28,7 @@
 ;; Authorization Check
 
 (define-public (is-dao-or-extension)
-	(ok (asserts!
+  (ok (asserts!
     (or
       (is-eq tx-sender .base-dao)
       (contract-call? .base-dao is-extension contract-caller))
