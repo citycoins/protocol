@@ -35,3 +35,17 @@ Clarinet.test({
     }
   },
 });
+
+Clarinet.test({
+  name: "base-dao: fails when initializing the DAO with bootstrap proposal a second time",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    const sender = accounts.get("deployer")!;
+    const { receipts } = chain.mineBlock([
+      baseDao.construct(sender, PROPOSALS.CCIP_012),
+      baseDao.construct(sender, PROPOSALS.CCIP_012),
+    ]);
+
+    assertEquals(receipts.length, 2);
+    receipts[1].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
+  },
+});
