@@ -23,7 +23,10 @@
 
 ;; DATA MAPS AND VARS
 
-(define-map WhitelistedAssets principal bool)
+(define-map WhitelistedAssets
+  principal ;; token contract
+  bool      ;; enabled
+)
 
 ;; Authorization Check
 
@@ -60,6 +63,10 @@
 )
 
 ;; Public functions
+
+;; Q: why try! vs unwrap!
+
+;; TODO: print tx-sender and contract-caller? (sender, caller)
 
 (define-public (deposit (amount uint))
   (begin
@@ -118,6 +125,8 @@
 
 ;; Read only functions
 
+;; Q: why chain/expose these two functions?
+
 (define-read-only (is-whitelisted (assetContract principal))
   (default-to false (get-whitelisted-asset assetContract))
 )
@@ -133,6 +142,8 @@
 (define-public (get-balance-of (assetContract <ft-trait>))
   (contract-call? assetContract get-balance CONTRACT_ADDRESS)
 )
+
+;; Q: add get-owner pass-through from SIP-009?
 
 ;; --- Extension callback
 

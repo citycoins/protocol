@@ -23,7 +23,10 @@
 
 ;; DATA MAPS AND VARS
 
-(define-map WhitelistedAssets principal bool)
+(define-map WhitelistedAssets
+  principal ;; token contract
+  bool      ;; enabled
+)
 
 ;; Authorization Check
 
@@ -61,6 +64,10 @@
 
 ;; Public functions
 
+;; Q: why try! vs unwrap!
+
+;; TODO: print tx-sender and contract-caller? (sender, caller)
+
 (define-public (deposit (amount uint))
   (begin
     (unwrap! (stx-transfer? amount tx-sender CONTRACT_ADDRESS) ERR_FAILED_TO_TRANSFER_STX)
@@ -72,7 +79,7 @@
 (define-public (deposit-ft (ft <ft-trait>) (amount uint))
   (begin
     (asserts! (is-whitelisted (contract-of ft)) ERR_ASSET_NOT_WHITELISTED)
-    (unwrap! (contract-call? ft transfer amount tx-sender CONTRACT_ADDRESS (some 0x11)) ERR_FAILED_TO_TRANSFER_FT)
+    (unwrap! (contract-call? ft transfer amount tx-sender CONTRACT_ADDRESS none) ERR_FAILED_TO_TRANSFER_FT)
     (print {event: "deposit-ft", amount: amount, assetContract: (contract-of ft), caller: tx-sender})
     (ok true)
   )
@@ -100,7 +107,7 @@
   (begin
     (try! (is-dao-or-extension))
     (asserts! (is-whitelisted (contract-of ft)) ERR_ASSET_NOT_WHITELISTED)
-    (unwrap! (as-contract (contract-call? ft transfer amount CONTRACT_ADDRESS recipient (some 0x11))) ERR_FAILED_TO_TRANSFER_FT)
+    (unwrap! (as-contract (contract-call? ft transfer amount CONTRACT_ADDRESS recipient none)) ERR_FAILED_TO_TRANSFER_FT)
     (print {event: "transfer-ft", assetContract: (contract-of ft), caller: tx-sender, recipient: recipient})
     (ok true)
   )
@@ -118,6 +125,8 @@
 
 ;; Read only functions
 
+;; Q: why chain/expose these two functions?
+
 (define-read-only (is-whitelisted (assetContract principal))
   (default-to false (get-whitelisted-asset assetContract))
 )
@@ -133,6 +142,8 @@
 (define-public (get-balance-of (assetContract <ft-trait>))
   (contract-call? assetContract get-balance CONTRACT_ADDRESS)
 )
+
+;; Q: add get-owner pass-through from SIP-009?
 
 ;; --- Extension callback
 

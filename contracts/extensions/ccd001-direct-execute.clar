@@ -18,21 +18,36 @@
 ;; CONSTANTS
 
 (define-constant ERR_UNAUTHORIZED (err u3000))
-(define-constant ERR_NOT_EXECUTIVE_TEAM_MEMBER (err u3001))
+(define-constant ERR_NOT_APPROVER (err u3001))
 (define-constant ERR_ALREADY_EXECUTED (err u3002))
-(define-constant ERR_SUNSET_HEIGHT_REACHED (err u3003))
-(define-constant ERR_SUNSET_HEIGHT_IN_PAST (err u3004))
+(define-constant ERR_SUNSET_REACHED (err u3003))
+(define-constant ERR_SUNSET_IN_PAST (err u3004))
 
 ;; DATA MAPS AND VARS
 
-;; ~6 months from deployment
-(define-data-var executiveTeamSunsetHeight uint (+ block-height u25920))
-;; signals required for an executive action.
-(define-data-var executiveSignalsRequired uint u1)
+;; ~6 months from initial deployment
+;; can be changed by future proposal
+(define-data-var sunsetBlockHeight uint (+ block-height u25920))
 
-(define-map ExecutiveTeam principal bool)
-(define-map ExecutiveActionSignals {proposal: principal, team-member: principal} bool)
-(define-map ExecutiveActionSignalCount principal uint)
+;; signals required for an action
+(define-data-var signalsRequired uint u1)
+
+;; approver information
+(define-map Approvers
+  principal ;; address
+  bool      ;; status
+)
+(define-map ApproverSignals
+  {
+    proposal: principal,
+    approver: principal
+  }
+  bool ;; yes/no
+)
+(define-map SignalCount
+  principal ;; proposal
+  uint      ;; signals
+)
 
 ;; Authorization Check
 
@@ -47,59 +62,59 @@
 
 ;; Internal DAO functions
 
-(define-public (set-executive-team-sunset-height (height uint))
+(define-public (set-sunset-block-height (height uint))
   (begin
     (try! (is-dao-or-extension))
-    (asserts! (> height block-height) ERR_SUNSET_HEIGHT_IN_PAST)
-    (ok (var-set executiveTeamSunsetHeight height))
+    (asserts! (> height block-height) ERR_SUNSET_IN_PAST)
+    (ok (var-set sunsetBlockHeight height))
   )
 )
 
-(define-public (set-executive-team-member (who principal) (member bool))
+(define-public (set-approver (who principal) (status bool))
   (begin
     (try! (is-dao-or-extension))
-    (ok (map-set ExecutiveTeam who member))
+    (ok (map-set Approvers who status))
   )
 )
 
-(define-public (set-signals-required (new-requirement uint))
+(define-public (set-signals-required (newRequirement uint))
   (begin
     (try! (is-dao-or-extension))
-    (ok (var-set executiveSignalsRequired new-requirement))
+    (ok (var-set signalsRequired newRequirement))
   )
 )
 
 ;; Public Functions
 
-(define-read-only (is-executive-team-member (who principal))
-  (default-to false (map-get? ExecutiveTeam who))
+(define-read-only (is-approver (who principal))
+  (default-to false (map-get? Approvers who))
 )
 
 (define-read-only (has-signalled (proposal principal) (who principal))
-  (default-to false (map-get? ExecutiveActionSignals {proposal: proposal, team-member: who}))
+  (default-to false (map-get? ApproverSignals {proposal: proposal, approver: who}))
 )
 
 (define-read-only (get-signals-required)
-  (var-get executiveSignalsRequired)
+  (var-get signalsRequired)
 )
 
 (define-read-only (get-signals (proposal principal))
-  (default-to u0 (map-get? ExecutiveActionSignalCount proposal))
+  (default-to u0 (map-get? SignalCount proposal))
 )
 
-(define-public (executive-action (proposal <proposal-trait>))
+(define-public (direct-execute (proposal <proposal-trait>))
   (let
     (
-      (proposal-principal (contract-of proposal))
-      (signals (+ (get-signals proposal-principal) (if (has-signalled proposal-principal tx-sender) u0 u1)))
+      (proposalPrincipal (contract-of proposal))
+      (signals (+ (get-signals proposalPrincipal) (if (has-signalled proposalPrincipal tx-sender) u0 u1)))
     )
-    (asserts! (is-executive-team-member tx-sender) ERR_NOT_EXECUTIVE_TEAM_MEMBER)
-    (asserts! (< block-height (var-get executiveTeamSunsetHeight)) ERR_SUNSET_HEIGHT_REACHED)
-    (and (>= signals (var-get executiveSignalsRequired))
+    (asserts! (is-approver tx-sender) ERR_NOT_APPROVER)
+    (asserts! (< block-height (var-get sunsetBlockHeight)) ERR_SUNSET_REACHED)
+    (and (>= signals (var-get signalsRequired))
       (try! (contract-call? .base-dao execute proposal tx-sender))
     )
-    (map-set ExecutiveActionSignals {proposal: proposal-principal, team-member: tx-sender} true)
-    (map-set ExecutiveActionSignalCount proposal-principal signals)
+    (map-set ApproverSignals {proposal: proposalPrincipal, approver: tx-sender} true)
+    (map-set SignalCount proposalPrincipal signals)
     (ok signals)
   )
 )

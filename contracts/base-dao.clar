@@ -50,10 +50,10 @@
   )
 )
 
-(define-public (set-extensions (extension-list (list 200 {extension: principal, enabled: bool})))
+(define-public (set-extensions (extensionList (list 200 {extension: principal, enabled: bool})))
   (begin
     (try! (is-self-or-extension))
-    (ok (map set-extensions-iter extension-list))
+    (ok (map set-extensions-iter extensionList))
   )
 )
 
