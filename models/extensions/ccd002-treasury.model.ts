@@ -84,7 +84,7 @@ class CCD002Treasury {
     );
   }
 
-  depositNft(sender: Account, assetContract: string, id: uint) {
+  depositNft(sender: Account, assetContract: string, id: number) {
     return Tx.contractCall(
       this.name,
       "deposit-nft",
@@ -113,7 +113,7 @@ class CCD002Treasury {
     );
   }
 
-  withdrawNft(sender: Account, assetContract: string, id: uint) {
+  withdrawNft(sender: Account, assetContract: string, id: number) {
     return Tx.contractCall(
       this.name,
       "withdraw-nft",

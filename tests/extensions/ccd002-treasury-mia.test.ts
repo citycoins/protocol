@@ -1,5 +1,4 @@
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import { BASE_DAO, EXTENSIONS, PROPOSALS } from "../../utils/common.ts";
 import { CCD002TreasuryMia } from "../../models/extensions/ccd002-treasury.model.ts";
 
 const ccd002TreasuryMia = new CCD002TreasuryMia();
@@ -24,3 +23,8 @@ Clarinet.test({
       .expectUint(CCD002TreasuryMia.ErrCode.ERR_UNAUTHORIZED);
   },
 });
+
+// Internal DAO functions
+
+// ccd002-treasury-mia: set-whitelist() fails when called directly
+// ccd002-treasury-mia: set-whitelists() fails when called directly

@@ -7,6 +7,28 @@ const baseDao = new BaseDao();
 // Extensions
 
 Clarinet.test({
+  name: "base-dao: is-extension() succeeds and returns false with unrecognized extension",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    chain.mineEmptyBlockUntil(100);
+
+    // act
+    const { receipts } = chain.mineBlock([
+      baseDao.isExtension(sender, EXTENSIONS.CCD001_DIRECT_EXECUTE),
+      baseDao.isExtension(sender, EXTENSIONS.CCD002_TREASURY_MIA),
+      baseDao.isExtension(sender, EXTENSIONS.CCD002_TREASURY_NYC),
+    ]);
+
+    // assert
+    assertEquals(receipts.length, 3);
+    for (const receipt of receipts) {
+      receipt.result.expectBool(false);
+    }
+  },
+});
+
+Clarinet.test({
   name: "base-dao: is-extension() succeeds and returns active extensions",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
@@ -25,28 +47,6 @@ Clarinet.test({
     assertEquals(receipts.length, 3);
     for (const receipt of receipts) {
       receipt.result.expectBool(true);
-    }
-  },
-});
-
-Clarinet.test({
-  name: "base-dao: is-extension() succeeds and returns false with unrecognized extension",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    chain.mineEmptyBlockUntil(100);
-
-    // act
-    const { receipts } = chain.mineBlock([
-      baseDao.isExtension(sender, EXTENSIONS.CCD001_DIRECT_EXECUTE),
-      baseDao.isExtension(sender, EXTENSIONS.CCD002_TREASURY_MIA),
-      baseDao.isExtension(sender, EXTENSIONS.CCD002_TREASURY_NYC),
-    ]);
-
-    // assert
-    assertEquals(receipts.length, 3);
-    for (const receipt of receipts) {
-      receipt.result.expectBool(false);
     }
   },
 });

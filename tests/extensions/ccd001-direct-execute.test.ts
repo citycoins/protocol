@@ -1,9 +1,7 @@
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import { BASE_DAO, EXTENSIONS, PROPOSALS } from "../../utils/common.ts";
-import { BaseDao } from "../../models/base-dao.model.ts";
+import { EXTENSIONS, PROPOSALS } from "../../utils/common.ts";
 import { CCD001DirectExecute } from "../../models/extensions/ccd001-direct-execute.model.ts";
 
-const baseDao = new BaseDao();
 const ccd001DirectExecute = new CCD001DirectExecute();
 
 // Authorization check
@@ -188,7 +186,7 @@ Clarinet.test({
 
     // act
     const { receipts } = chain.mineBlock([
-      ccd001DirectExecute.extensionCallback(sender, "test"),
+      ccd001DirectExecute.callback(sender, "test"),
     ]);
 
     // assert
