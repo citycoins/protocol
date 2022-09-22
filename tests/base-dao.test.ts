@@ -4,39 +4,24 @@ import { BASE_DAO, EXTENSIONS, PROPOSALS } from "../utils/common.ts";
 
 const baseDao = new BaseDao();
 
+// Authorization check
+
 Clarinet.test({
-  name: "base-dao: construct() succeeds when initializing the DAO with bootstrap proposal",
+  name: "base-dao: is-dao-or-extenion() fails when called directly",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
-    ]);
+    const { receipts } = chain.mineBlock([baseDao.isDaoOrExtension(sender)]);
 
     // assert
     assertEquals(receipts.length, 1);
-    receipts[0].result.expectOk().expectBool(true);
-
-    const expectedPrintEvents = [
-      '{event: "execute", proposal: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccip012-bootstrap}',
-      '{enabled: true, event: "extension", extension: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd001-direct-execute}',
-      '{enabled: true, event: "extension", extension: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd002-treasury-mia}',
-      '{enabled: true, event: "extension", extension: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd002-treasury-nyc}',
-      '"CityCoins DAO has risen! Our mission is to empower people to take ownership in their city by transforming citizens into stakeholders with the ability to fund, build, and vote on meaningful upgrades to their communities."',
-    ];
-    const brokenReceiptEvent = receipts[0].events[4].contract_event.value;
-    const brokenPrintEvent = expectedPrintEvents[4];
-    for (const event of expectedPrintEvents) {
-      if (event === brokenPrintEvent) {
-        assertEquals(brokenReceiptEvent, event);
-        continue;
-      }
-      receipts[0].events.expectPrintEvent(BASE_DAO, event);
-    }
+    receipts[0].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
   },
 });
+
+// Extensions
 
 Clarinet.test({
   name: "base-dao: is-extension() succeeds and returns active extensions",
@@ -125,6 +110,8 @@ Clarinet.test({
   },
 });
 
+// Proposals
+
 Clarinet.test({
   name: "base-dao: executed-at() succeeds and returns the block height the proposal was executed",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -184,6 +171,8 @@ Clarinet.test({
   },
 });
 
+// Bootstrap
+
 Clarinet.test({
   name: "base-dao: construct() fails when initializing the DAO with bootstrap proposal a second time",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -219,6 +208,42 @@ Clarinet.test({
     receipts[0].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
   },
 });
+
+Clarinet.test({
+  name: "base-dao: construct() succeeds when initializing the DAO with bootstrap proposal",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+
+    // act
+    const { receipts } = chain.mineBlock([
+      baseDao.construct(sender, PROPOSALS.CCIP_012),
+    ]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result.expectOk().expectBool(true);
+
+    const expectedPrintEvents = [
+      '{event: "execute", proposal: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccip012-bootstrap}',
+      '{enabled: true, event: "extension", extension: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd001-direct-execute}',
+      '{enabled: true, event: "extension", extension: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd002-treasury-mia}',
+      '{enabled: true, event: "extension", extension: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd002-treasury-nyc}',
+      '"CityCoins DAO has risen! Our mission is to empower people to take ownership in their city by transforming citizens into stakeholders with the ability to fund, build, and vote on meaningful upgrades to their communities."',
+    ];
+    const brokenReceiptEvent = receipts[0].events[4].contract_event.value;
+    const brokenPrintEvent = expectedPrintEvents[4];
+    for (const event of expectedPrintEvents) {
+      if (event === brokenPrintEvent) {
+        assertEquals(brokenReceiptEvent, event);
+        continue;
+      }
+      receipts[0].events.expectPrintEvent(BASE_DAO, event);
+    }
+  },
+});
+
+// Extension requests
 
 Clarinet.test({
   name: "base-dao: request-extension-callback() fails if caller is not an extension",
