@@ -72,7 +72,7 @@
 
 ;; Deposit functions
 
-(define-public (deposit (amount uint))
+(define-public (deposit-stx (amount uint))
   (begin
     (try! (stx-transfer? amount tx-sender TREASURY))
     (print {
@@ -120,7 +120,7 @@
 
 ;; Withdraw functions
 
-(define-public (withdraw (amount uint) (recipient principal))
+(define-public (withdraw-stx (amount uint) (recipient principal))
   (begin
     (try! (is-dao-or-extension))
     (try! (as-contract (stx-transfer? amount TREASURY recipient)))
@@ -178,7 +178,7 @@
   (map-get? WhitelistedAssets assetContract)
 )
 
-(define-read-only (get-balance)
+(define-read-only (get-balance-stx)
   (stx-get-balance TREASURY)
 )
 
