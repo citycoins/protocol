@@ -8,6 +8,11 @@ enum ErrCode {
   ERR_FAILED_TO_TRANSFER_NFT,
 }
 
+interface Whitelist {
+  token: string;
+  enabled: boolean;
+}
+
 // General treasury model
 
 class CCD002Treasury {
@@ -15,6 +20,7 @@ class CCD002Treasury {
 
   // name redefined by extending class
   // exports defined per contract
+  // below this class definition
   name = "ccd002-treasury";
   static readonly ErrCode = ErrCode;
 
@@ -31,78 +37,118 @@ class CCD002Treasury {
 
   // Internal DAO functions
 
-  setSunsetBlockHeight(sender: Account, sunsetBlockHeight: number) {
+  setWhitelist(sender: Account, asset: Whitelist) {
     return Tx.contractCall(
       this.name,
-      "set-sunset-block-height",
-      [types.uint(sunsetBlockHeight)],
+      "set-whitelist",
+      [types.principal(asset.token), types.bool(asset.enabled)],
       sender.address
     );
   }
 
-  setApprover(sender: Account, approver: string, status: boolean) {
+  setWhitelists(sender: Account, assets: Whitelist[], enabled: boolean) {
+    const assetList: any[] = [];
+    for (const asset of assets) {
+      assetList.push(
+        types.tuple({
+          token: types.principal(asset.token),
+          enabled: types.bool(asset.enabled),
+        })
+      );
+    }
     return Tx.contractCall(
       this.name,
-      "set-approver",
-      [types.principal(approver), types.bool(status)],
+      "set-whitelists",
+      [types.list(assetList)],
       sender.address
     );
   }
 
-  setSignalsRequired(sender: Account, newRequirement: number) {
+  // Deposit functions
+
+  deposit(sender: Account, amount: number) {
     return Tx.contractCall(
       this.name,
-      "set-signals-required",
-      [types.uint(newRequirement)],
+      "deposit-stx",
+      [types.uint(amount)],
       sender.address
     );
   }
 
-  // Public Functions
-
-  isApprover(sender: Account) {
-    return Tx.contractCall(this.name, "is-approver", [], sender.address);
-  }
-
-  hasSignalled(sender: Account, proposal: string, who: string) {
+  depositFt(sender: Account, assetContract: string, amount: number) {
     return Tx.contractCall(
       this.name,
-      "has-signalled",
-      [types.principal(proposal), types.principal(who)],
+      "deposit-ft",
+      [types.principal(assetContract), types.uint(amount)],
       sender.address
     );
   }
 
-  getSignalsRequired(sender: Account) {
+  depositNft(sender: Account, assetContract: string, id: uint) {
     return Tx.contractCall(
       this.name,
-      "get-signals-required",
-      [],
+      "deposit-nft",
+      [types.principal(assetContract), types.uint(id)],
       sender.address
     );
   }
 
-  getSignals(sender: Account, proposal: string) {
+  // Withdraw functions
+
+  withdraw(sender: Account, amount: number) {
     return Tx.contractCall(
       this.name,
-      "get-signals",
-      [types.principal(proposal)],
+      "withdraw-stx",
+      [types.uint(amount)],
       sender.address
     );
   }
 
-  directExecute(sender: Account, proposal: string) {
+  withdrawFt(sender: Account, assetContract: string, amount: number) {
     return Tx.contractCall(
       this.name,
-      "direct-execute",
-      [types.principal(proposal)],
+      "withdraw-ft",
+      [types.principal(assetContract), types.uint(amount)],
       sender.address
     );
+  }
+
+  withdrawNft(sender: Account, assetContract: string, id: uint) {
+    return Tx.contractCall(
+      this.name,
+      "withdraw-nft",
+      [types.principal(assetContract), types.uint(id)],
+      sender.address
+    );
+  }
+
+  // Read only functions
+
+  isWhitelisted(sender: Account, assetContract: string) {
+    return Tx.contractCall(
+      this.name,
+      "is-whitelisted",
+      [types.principal(assetContract)],
+      sender.address
+    );
+  }
+
+  getWhitelistedAsset(sender: Account, assetContract: string) {
+    return Tx.contractCall(
+      this.name,
+      "get-whitelisted-asset",
+      [types.principal(assetContract)],
+      sender.address
+    );
+  }
+
+  getBalanceStx(sender: Account) {
+    return Tx.contractCall(this.name, "get-balance-stx", [], sender.address);
   }
 
   // Extension callback
 
-  extensionCallback(sender: Account, memo: string) {
+  callback(sender: Account, memo: string) {
     return Tx.contractCall(
       this.name,
       "callback",

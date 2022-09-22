@@ -103,7 +103,7 @@ export class CCD001DirectExecute {
 
   // Extension callback
 
-  extensionCallback(sender: Account, memo: string) {
+  callback(sender: Account, memo: string) {
     return Tx.contractCall(
       this.name,
       "callback",
