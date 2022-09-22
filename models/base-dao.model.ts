@@ -93,7 +93,7 @@ export class BaseDao {
       this.name,
       "request-extension-callback",
       [types.principal(extension), types.buff(memo)],
-      sender.address
+      extension
     );
   }
 }
