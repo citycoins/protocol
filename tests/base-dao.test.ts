@@ -4,23 +4,6 @@ import { BASE_DAO, EXTENSIONS, PROPOSALS } from "../utils/common.ts";
 
 const baseDao = new BaseDao();
 
-// Authorization check
-
-Clarinet.test({
-  name: "base-dao: is-dao-or-extenion() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-
-    // act
-    const { receipts } = chain.mineBlock([baseDao.isDaoOrExtension(sender)]);
-
-    // assert
-    assertEquals(receipts.length, 1);
-    receipts[0].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
-  },
-});
-
 // Extensions
 
 Clarinet.test({
