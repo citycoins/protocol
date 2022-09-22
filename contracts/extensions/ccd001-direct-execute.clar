@@ -1,4 +1,5 @@
 ;; Title: CCD001 Direct Execute
+;; Version: 1.0.0
 ;; Synopsis:
 ;; This extension allows a small number of very trusted principals to immediately
 ;; execute a proposal once a super majority is reached.
