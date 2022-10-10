@@ -26,8 +26,8 @@ Clarinet.test({
 
 // Internal DAO functions
 
-// ccd002-treasury-nyc: set-whitelist() fails when called directly
-// ccd002-treasury-nyc: set-whitelists() fails when called directly
+// ccd002-treasury-nyc: set-allowed() fails when called directly
+// ccd002-treasury-nyc: set-allowed-list() fails when called directly
 
 // Deposit functions
 
@@ -40,18 +40,18 @@ Clarinet.test({
 // ccd002-treasury-nyc: withdraw-stx() fails when called directly
 // ccd002-treasury-nyc: withdraw-stx() succeeds and transfers STX to recipient
 // ccd002-treasury-nyc: withdraw-ft() fails when called directly
-// ccd002-treasury-nyc: withdraw-ft() fails if asset is not whitelisted
+// ccd002-treasury-nyc: withdraw-ft() fails if asset is not allowed
 // ccd002-treasury-nyc: withdraw-ft() succeeds and transfers FT to recipient
 // ccd002-treasury-nyc: withdraw-nft() fails when called directly
-// ccd002-treasury-nyc: withdraw-nft() fails if asset is not whitelisted
+// ccd002-treasury-nyc: withdraw-nft() fails if asset is not allowed
 // ccd002-treasury-nyc: withdraw-nft() succeeds and transfers NFT to recipient
 
 // Read only functions
 
-// ccd002-treasury-nyc: is-whitelisted() succeeds and returns false if asset is not in map
-// ccd002-treasury-nyc: is-whitelisted() succeeds and returns true if asset is found in map
-// ccd002-treasury-nyc: get-whitelisted-asset() succeeds and returns none if asset is not in map
-// ccd002-treasury-nyc: get-whitelisted-asset() succeeds and returns tuple if asset is found in map
+// ccd002-treasury-nyc: is-allowed() succeeds and returns false if asset is not in map
+// ccd002-treasury-nyc: is-allowed() succeeds and returns true if asset is found in map
+// ccd002-treasury-nyc: get-allowed-asset() succeeds and returns none if asset is not in map
+// ccd002-treasury-nyc: get-allowed-asset() succeeds and returns tuple if asset is found in map
 // ccd002-treasury-nyc: get-balance-stx() succeeds and returns STX balance of the vault
 
 // Extension callback

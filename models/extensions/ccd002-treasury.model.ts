@@ -2,13 +2,13 @@ import { Account, Tx, types } from "../../utils/deps.ts";
 
 enum ErrCode {
   ERR_UNAUTHORIZED = 3100,
-  ERR_ASSET_NOT_WHITELISTED,
+  ERR_ASSET_NOT_ALLOWED,
   ERR_FAILED_TO_TRANSFER_STX,
   ERR_FAILED_TO_TRANSFER_FT,
   ERR_FAILED_TO_TRANSFER_NFT,
 }
 
-interface Whitelist {
+interface AllowedList {
   token: string;
   enabled: boolean;
 }
@@ -37,16 +37,16 @@ class CCD002Treasury {
 
   // Internal DAO functions
 
-  setWhitelist(sender: Account, asset: Whitelist) {
+  setAllowed(sender: Account, asset: AllowedList) {
     return Tx.contractCall(
       this.name,
-      "set-whitelist",
+      "set-allowed",
       [types.principal(asset.token), types.bool(asset.enabled)],
       sender.address
     );
   }
 
-  setWhitelists(sender: Account, assets: Whitelist[], enabled: boolean) {
+  setAllowedList(sender: Account, assets: AllowedList[], enabled: boolean) {
     const assetList: any[] = [];
     for (const asset of assets) {
       assetList.push(
@@ -58,7 +58,7 @@ class CCD002Treasury {
     }
     return Tx.contractCall(
       this.name,
-      "set-whitelists",
+      "set-allowed-list",
       [types.list(assetList)],
       sender.address
     );
@@ -124,19 +124,19 @@ class CCD002Treasury {
 
   // Read only functions
 
-  isWhitelisted(sender: Account, assetContract: string) {
+  isAllowed(sender: Account, assetContract: string) {
     return Tx.contractCall(
       this.name,
-      "is-whitelisted",
+      "is-allowed",
       [types.principal(assetContract)],
       sender.address
     );
   }
 
-  getWhitelistedAsset(sender: Account, assetContract: string) {
+  getAllowedAsset(sender: Account, assetContract: string) {
     return Tx.contractCall(
       this.name,
-      "get-whitelisted-asset",
+      "get-allowed-asset",
       [types.principal(assetContract)],
       sender.address
     );
