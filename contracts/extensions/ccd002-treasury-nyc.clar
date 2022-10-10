@@ -4,7 +4,7 @@
 ;; A treasury contract that can manage STX, SIP-009 NFTs, and SIP-010 FTs.
 ;; Description:
 ;; An extension contract that holds assets on behalf of the DAO. SIP-009
-;; and SIP-010 assets must be whitelisted before they are supported.
+;; and SIP-010 assets must be allowed before they are supported.
 ;; Deposits can be made by anyone either by transferring to the contract
 ;; or using a deposit function below. Withdrawals are restricted to the DAO
 ;; through either extensions or proposals.
@@ -17,12 +17,12 @@
 ;; CONSTANTS
 
 (define-constant ERR_UNAUTHORIZED (err u3100))
-(define-constant ERR_ASSET_NOT_WHITELISTED (err u3101))
+(define-constant ERR_ASSET_NOT_ALLOWED (err u3101))
 (define-constant TREASURY (as-contract tx-sender))
 
 ;; DATA MAPS AND VARS
 
-(define-map WhitelistedAssets
+(define-map AllowedAssets
   principal ;; token contract
   bool      ;; enabled
 )
@@ -40,33 +40,33 @@
 
 ;; Internal DAO functions
 
-(define-public (set-whitelist (token principal) (enabled bool))
+(define-public (set-allowed (token principal) (enabled bool))
   (begin
     (try! (is-dao-or-extension))
     (print {
-      event: "whitelist",
+      event: "allow-asset",
       token: token,
       enabled: enabled
     })
-    (ok (map-set WhitelistedAssets token enabled))
+    (ok (map-set AllowedAssets token enabled))
   )
 )
 
-(define-private (set-whitelist-iter (item {token: principal, enabled: bool}))
+(define-private (set-allowed-iter (item {token: principal, enabled: bool}))
   (begin
     (print {
-      event: "whitelist",
+      event: "allow-asset",
       token: (get token item),
       enabled: (get enabled item)
     })
-    (map-set WhitelistedAssets (get token item) (get enabled item))
+    (map-set AllowedAssets (get token item) (get enabled item))
   )
 )
 
-(define-public (set-whitelists (whitelist (list 100 {token: principal, enabled: bool})))
+(define-public (set-allowed-list (allowList (list 100 {token: principal, enabled: bool})))
   (begin
     (try! (is-dao-or-extension))
-    (ok (map set-whitelist-iter whitelist))
+    (ok (map set-allowed-iter allowList))
   )
 )
 
@@ -76,7 +76,7 @@
   (begin
     (try! (stx-transfer? amount tx-sender TREASURY))
     (print {
-      event: "deposit",
+      event: "deposit-stx",
       amount: amount,
       caller: contract-caller,
       sender: tx-sender,
@@ -88,7 +88,7 @@
 
 (define-public (deposit-ft (ft <ft-trait>) (amount uint))
   (begin
-    (asserts! (is-whitelisted (contract-of ft)) ERR_ASSET_NOT_WHITELISTED)
+    (asserts! (is-allowed (contract-of ft)) ERR_ASSET_NOT_ALLOWED)
     (try! (contract-call? ft transfer amount tx-sender TREASURY none))
     (print {
       event: "deposit-ft",
@@ -104,7 +104,7 @@
 
 (define-public (deposit-nft (nft <nft-trait>) (id uint))
   (begin
-    (asserts! (is-whitelisted (contract-of nft)) ERR_ASSET_NOT_WHITELISTED)
+    (asserts! (is-allowed (contract-of nft)) ERR_ASSET_NOT_ALLOWED)
     (try! (contract-call? nft transfer id tx-sender TREASURY))
     (print {
       event: "deposit-nft",
@@ -125,7 +125,7 @@
     (try! (is-dao-or-extension))
     (try! (as-contract (stx-transfer? amount TREASURY recipient)))
     (print {
-      event: "withdraw",
+      event: "withdraw-stx",
       amount: amount,
       caller: contract-caller,
       sender: tx-sender,
@@ -138,7 +138,7 @@
 (define-public (withdraw-ft (ft <ft-trait>) (amount uint) (recipient principal))
   (begin
     (try! (is-dao-or-extension))
-    (asserts! (is-whitelisted (contract-of ft)) ERR_ASSET_NOT_WHITELISTED)
+    (asserts! (is-allowed (contract-of ft)) ERR_ASSET_NOT_ALLOWED)
     (try! (as-contract (contract-call? ft transfer amount TREASURY recipient none)))
     (print {
       event: "withdraw-ft",
@@ -154,7 +154,7 @@
 (define-public (withdraw-nft (nft <nft-trait>) (id uint) (recipient principal))
   (begin
     (try! (is-dao-or-extension))
-    (asserts! (is-whitelisted (contract-of nft)) ERR_ASSET_NOT_WHITELISTED)
+    (asserts! (is-allowed (contract-of nft)) ERR_ASSET_NOT_ALLOWED)
     (try! (as-contract (contract-call? nft transfer id TREASURY recipient)))
     (print {
       event: "withdraw-nft",
@@ -170,12 +170,12 @@
 
 ;; Read only functions
 
-(define-read-only (is-whitelisted (assetContract principal))
-  (default-to false (get-whitelisted-asset assetContract))
+(define-read-only (is-allowed (assetContract principal))
+  (default-to false (get-allowed-asset assetContract))
 )
 
-(define-read-only (get-whitelisted-asset (assetContract principal))
-  (map-get? WhitelistedAssets assetContract)
+(define-read-only (get-allowed-asset (assetContract principal))
+  (map-get? AllowedAssets assetContract)
 )
 
 (define-read-only (get-balance-stx)
