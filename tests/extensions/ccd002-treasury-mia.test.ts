@@ -1,14 +1,13 @@
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
 import { CCD002TreasuryMia } from "../../models/extensions/ccd002-treasury.model.ts";
 
-const ccd002TreasuryMia = new CCD002TreasuryMia();
-
 // Authorization check
 
 Clarinet.test({
   name: "ccd002-treasury-mia: is-dao-or-extenion() fails when called directly",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
+    const ccd002TreasuryMia = new CCD002TreasuryMia();
     const sender = accounts.get("deployer")!;
 
     // act
