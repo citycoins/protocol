@@ -109,8 +109,8 @@ Clarinet.test({
 });
 
 // ccd001-direct-execute: is-approver() returns true if approver is in map
-
 // ccd001-direct-execute: has-signalled() returns false if approver is not in map
+
 Clarinet.test({
   name: "ccd001-direct-execute: has-signalled() returns false if approver is not in map",
   async fn(chain: Chain, accounts: Map<string, Account>) {

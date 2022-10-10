@@ -11,3 +11,8 @@ export const EXTENSIONS = {
 export const PROPOSALS = {
   CCIP_012: address.concat(".ccip012-bootstrap"),
 };
+
+export const EXTERNAL = {
+  FT_MIA: address.concat(".miamicoin-token-v2"),
+  FT_NYC: address.concat(".newyorkcitycoin-token-v2"),
+};

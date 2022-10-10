@@ -46,7 +46,7 @@ class CCD002Treasury {
     );
   }
 
-  setAllowedList(sender: Account, assets: AllowedList[], enabled: boolean) {
+  setAllowedList(sender: Account, assets: AllowedList[]) {
     const assetList: any[] = [];
     for (const asset of assets) {
       assetList.push(
@@ -66,7 +66,7 @@ class CCD002Treasury {
 
   // Deposit functions
 
-  deposit(sender: Account, amount: number) {
+  depositStx(sender: Account, amount: number) {
     return Tx.contractCall(
       this.name,
       "deposit-stx",
@@ -95,29 +95,47 @@ class CCD002Treasury {
 
   // Withdraw functions
 
-  withdraw(sender: Account, amount: number) {
+  withdrawStx(sender: Account, amount: number, recipient: string) {
     return Tx.contractCall(
       this.name,
       "withdraw-stx",
-      [types.uint(amount)],
+      [types.uint(amount), types.principal(recipient)],
       sender.address
     );
   }
 
-  withdrawFt(sender: Account, assetContract: string, amount: number) {
+  withdrawFt(
+    sender: Account,
+    assetContract: string,
+    amount: number,
+    recipient: string
+  ) {
     return Tx.contractCall(
       this.name,
       "withdraw-ft",
-      [types.principal(assetContract), types.uint(amount)],
+      [
+        types.principal(assetContract),
+        types.uint(amount),
+        types.principal(recipient),
+      ],
       sender.address
     );
   }
 
-  withdrawNft(sender: Account, assetContract: string, id: number) {
+  withdrawNft(
+    sender: Account,
+    assetContract: string,
+    id: number,
+    recipient: string
+  ) {
     return Tx.contractCall(
       this.name,
       "withdraw-nft",
-      [types.principal(assetContract), types.uint(id)],
+      [
+        types.principal(assetContract),
+        types.uint(id),
+        types.principal(recipient),
+      ],
       sender.address
     );
   }
@@ -152,7 +170,7 @@ class CCD002Treasury {
     return Tx.contractCall(
       this.name,
       "callback",
-      [types.buff(memo)],
+      [types.principal(sender.address), types.buff(memo)],
       sender.address
     );
   }
