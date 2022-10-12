@@ -28,7 +28,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "base-dao: is-extension() succeeds and returns active extensions",
+  name: "base-dao: is-extension() succeeds and returns true for active extensions",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const baseDao = new BaseDao();
