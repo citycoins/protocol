@@ -1,4 +1,4 @@
-;; Title: CCD002 Treasury - MIA
+;; Title: CCD002 Treasury
 ;; Version: 1.0.0
 ;; Synopsis:
 ;; A treasury contract that can manage STX, SIP-009 NFTs, and SIP-010 FTs.

@@ -15,7 +15,7 @@ interface AllowedList {
 
 // General treasury model
 
-class CCD002Treasury {
+export class CCD002Treasury {
   // Basic Info
 
   // name redefined by extending class
@@ -174,16 +174,4 @@ class CCD002Treasury {
       sender.address
     );
   }
-}
-
-// City specific model overrides
-
-export class CCD002TreasuryMia extends CCD002Treasury {
-  // Basic Info
-  name = "ccd002-treasury-mia";
-}
-
-export class CCD002TreasuryNyc extends CCD002Treasury {
-  // Basic Info
-  name = "ccd002-treasury-nyc";
 }
