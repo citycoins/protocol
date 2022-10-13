@@ -3,16 +3,16 @@ export type {
   Block,
   ReadOnlyFn,
   TxReceipt,
-} from "https://deno.land/x/clarinet@v0.34.0/index.ts";
+} from "https://deno.land/x/clarinet@v1.0.3/index.ts";
 
 export {
   Clarinet,
   Chain,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.34.0/index.ts";
+} from "https://deno.land/x/clarinet@v1.0.3/index.ts";
 
-export { assertEquals } from "https://deno.land/std@0.113.0/testing/asserts.ts";
+export { assertEquals } from "https://deno.land/std@0.158.0/testing/asserts.ts";
 
 export {
   describe,

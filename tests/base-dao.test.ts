@@ -1,12 +1,12 @@
 import { Account, assertEquals, Clarinet, Chain } from "../utils/deps.ts";
 import { BaseDao } from "../models/base-dao.model.ts";
-import { BASE_DAO, EXTENSIONS, PROPOSALS } from "../utils/common.ts";
+import { ADDRESS, BASE_DAO, EXTENSIONS, PROPOSALS } from "../utils/common.ts";
 
 const baseDao = new BaseDao();
 
 Clarinet.test({
   name: "base-dao: construct() succeeds when initializing the DAO with bootstrap proposal",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
 
@@ -20,27 +20,28 @@ Clarinet.test({
     receipts[0].result.expectOk().expectBool(true);
 
     const expectedPrintEvents = [
-      '{event: "execute", proposal: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccip012-bootstrap}',
-      '{enabled: true, event: "extension", extension: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd001-direct-execute}',
-      '{enabled: true, event: "extension", extension: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd002-treasury-mia}',
-      '{enabled: true, event: "extension", extension: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd002-treasury-nyc}',
-      '"CityCoins DAO has risen! Our mission is to empower people to take ownership in their city by transforming citizens into stakeholders with the ability to fund, build, and vote on meaningful upgrades to their communities."',
+      `{event: "execute", proposal: ${ADDRESS}.ccip012-bootstrap}`,
+      `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd001-direct-execute}`,
+      `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd002-treasury-mia}`,
+      `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd002-treasury-nyc}`,
     ];
-    const brokenReceiptEvent = receipts[0].events[4].contract_event.value;
-    const brokenPrintEvent = expectedPrintEvents[4];
+
     for (const event of expectedPrintEvents) {
-      if (event === brokenPrintEvent) {
-        assertEquals(brokenReceiptEvent, event);
-        continue;
-      }
       receipts[0].events.expectPrintEvent(BASE_DAO, event);
     }
+
+    receipts[0].events
+      .slice(-1)
+      .expectPrintEvent(
+        PROPOSALS.CCIP_012,
+        '"CityCoins DAO has risen! Our mission is to empower people to take ownership in their city by transforming citizens into stakeholders with the ability to fund, build, and vote on meaningful upgrades to their communities."'
+      );
   },
 });
 
 Clarinet.test({
   name: "base-dao: is-extension() succeeds and returns active extensions",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     chain.mineEmptyBlockUntil(100);
@@ -63,7 +64,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "base-dao: is-extension() succeeds and returns false with unrecognized extension",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     chain.mineEmptyBlockUntil(100);
@@ -85,7 +86,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "base-dao: set-extension() fails if caller is not DAO or extension",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("wallet_1")!;
 
@@ -105,7 +106,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "base-dao: set-extensions() fails if caller is not DAO or extension",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("wallet_1")!;
     const extensions = [
@@ -127,7 +128,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "base-dao: executed-at() succeeds and returns the block height the proposal was executed",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const targetBlock = 100;
@@ -149,7 +150,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "base-dao: executed-at() succeeds and returns none with unrecognized proposal",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     chain.mineEmptyBlockUntil(100);
@@ -169,7 +170,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "base-dao: execute() fails if caller is not DAO or extension",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
 
@@ -186,7 +187,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "base-dao: construct() fails when initializing the DAO with bootstrap proposal a second time",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
 
@@ -205,7 +206,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "base-dao: construct() fails when called by an account that is not the deployer",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("wallet_1")!;
 
@@ -222,7 +223,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "base-dao: request-extension-callback() fails if caller is not an extension",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
 

@@ -1,5 +1,4 @@
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import { BASE_DAO, EXTENSIONS, PROPOSALS } from "../../utils/common.ts";
 import { CCD002TreasuryMia } from "../../models/extensions/ccd002-treasury.model.ts";
 
 const ccd002TreasuryMia = new CCD002TreasuryMia();
@@ -8,7 +7,7 @@ const ccd002TreasuryMia = new CCD002TreasuryMia();
 
 Clarinet.test({
   name: "ccd002-treasury-mia: is-dao-or-extenion() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
 

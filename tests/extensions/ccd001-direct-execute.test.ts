@@ -1,5 +1,4 @@
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import { BASE_DAO, EXTENSIONS, PROPOSALS } from "../../utils/common.ts";
 import { CCD001DirectExecute } from "../../models/extensions/ccd001-direct-execute.model.ts";
 
 const ccd001DirectExecute = new CCD001DirectExecute();
@@ -8,7 +7,7 @@ const ccd001DirectExecute = new CCD001DirectExecute();
 
 Clarinet.test({
   name: "ccd001-direct-execute: is-dao-or-extenion() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
 
@@ -29,7 +28,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "ccd001-direct-execute: set-sunset-block-height() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
 
@@ -48,7 +47,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "ccd001-direct-execute: set-approver() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const approver = accounts.get("wallet_1")!;
@@ -68,7 +67,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "ccd001-direct-execute: set-signals-required() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
 
