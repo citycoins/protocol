@@ -1,6 +1,7 @@
-;; CityCoins base DAO contract
-;; Based on ExecutorDAO by Marvin Janssen
-;; The one DAO to rule them all.
+;; Title: CityCoins base DAO contract
+;; Synopsis:
+;; An opinionated ExecutorDAO implementation inspired by
+;; the one DAO to rule them all.
 
 ;; TRAITS
 

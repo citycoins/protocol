@@ -21,12 +21,8 @@ depends_on = ["proposal-trait", "extension-trait"]
 path = "contracts/extensions/ccd001-direct-execute.clar"
 depends_on = ["base-dao"]
 
-[contracts.ccd002-treasury-mia]
-path = "contracts/extensions/ccd002-treasury-mia.clar"
-depends_on = ["base-dao", "sip009-nft-trait", "sip010-ft-trait"]
-
-[contracts.ccd002-treasury-nyc]
-path = "contracts/extensions/ccd002-treasury-nyc.clar"
+[contracts.ccd002-treasury]
+path = "contracts/extensions/ccd002-treasury.clar"
 depends_on = ["base-dao", "sip009-nft-trait", "sip010-ft-trait"]
 
 # Proposals

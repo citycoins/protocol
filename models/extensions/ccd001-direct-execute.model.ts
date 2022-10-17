@@ -56,8 +56,13 @@ export class CCD001DirectExecute {
 
   // Public Functions
 
-  isApprover(sender: Account) {
-    return Tx.contractCall(this.name, "is-approver", [], sender.address);
+  isApprover(sender: Account, who: string) {
+    return Tx.contractCall(
+      this.name,
+      "is-approver",
+      [types.principal(who)],
+      sender.address
+    );
   }
 
   hasSignalled(sender: Account, proposal: string, who: string) {
@@ -98,11 +103,11 @@ export class CCD001DirectExecute {
 
   // Extension callback
 
-  extensionCallback(sender: Account, memo: string) {
+  callback(sender: Account, memo: string) {
     return Tx.contractCall(
       this.name,
       "callback",
-      [types.buff(memo)],
+      [types.principal(sender.address), types.buff(memo)],
       sender.address
     );
   }
