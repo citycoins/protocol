@@ -6,7 +6,7 @@ import { CCD001DirectExecute } from "../../models/extensions/ccd001-direct-execu
 
 Clarinet.test({
   name: "ccd001-direct-execute: is-dao-or-extenion() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd001DirectExecute = new CCD001DirectExecute();
     const sender = accounts.get("deployer")!;
@@ -28,7 +28,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "ccd001-direct-execute: set-sunset-block-height() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd001DirectExecute = new CCD001DirectExecute();
     const sender = accounts.get("deployer")!;
@@ -48,7 +48,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "ccd001-direct-execute: set-approver() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd001DirectExecute = new CCD001DirectExecute();
     const sender = accounts.get("deployer")!;
@@ -69,7 +69,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "ccd001-direct-execute: set-signals-required() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd001DirectExecute = new CCD001DirectExecute();
     const sender = accounts.get("deployer")!;
@@ -91,7 +91,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "ccd001-direct-execute: is-approver() returns false if approver is not in map",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd001DirectExecute = new CCD001DirectExecute();
     const sender = accounts.get("deployer")!;
@@ -113,7 +113,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "ccd001-direct-execute: has-signalled() returns false if approver is not in map",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd001DirectExecute = new CCD001DirectExecute();
     const sender = accounts.get("deployer")!;
@@ -139,7 +139,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "ccd001-direct-execute: get-signals-required() returns required signals variable",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd001DirectExecute = new CCD001DirectExecute();
     const sender = accounts.get("deployer")!;
@@ -160,7 +160,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "ccd001-direct-execute: direct-execute() fails if sender is not an approver",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd001DirectExecute = new CCD001DirectExecute();
     const sender = accounts.get("deployer")!;
@@ -186,7 +186,7 @@ Clarinet.test({
 
 Clarinet.test({
   name: "ccd001-direct-execute: callback() succeeds when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd001DirectExecute = new CCD001DirectExecute();
     const sender = accounts.get("deployer")!;
