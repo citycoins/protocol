@@ -1,12 +1,12 @@
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
 import { EXTENSIONS, EXTERNAL } from "../../utils/common.ts";
+import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
 
 // Authorization check
 
 Clarinet.test({
   name: "ccd002-treasury: is-dao-or-extenion() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd002Treasury = new CCD002Treasury();
     const sender = accounts.get("deployer")!;
@@ -29,7 +29,7 @@ Clarinet.test({
 // ccd002-treasury: set-allowed() fails when called directly
 Clarinet.test({
   name: "ccd002-treasury: set-allowed() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd002Treasury = new CCD002Treasury();
     const sender = accounts.get("deployer")!;
@@ -55,7 +55,7 @@ Clarinet.test({
 // ccd002-treasury: set-allowed-list() fails when called directly
 Clarinet.test({
   name: "ccd002-treasury: set-allowed-list() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd002Treasury = new CCD002Treasury();
     const sender = accounts.get("deployer")!;
@@ -90,7 +90,7 @@ Clarinet.test({
 // ccd002-treasury: deposit-stx() succeeds and transfers STX to the vault
 Clarinet.test({
   name: "ccd002-treasury: deposit-stx() succeeds and transfers STX to the vault",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd002Treasury = new CCD002Treasury();
     const sender = accounts.get("deployer")!;
@@ -125,7 +125,7 @@ Clarinet.test({
 // ccd002-treasury: withdraw-stx() fails when called directly
 Clarinet.test({
   name: "ccd002-treasury: withdraw-stx() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd002Treasury = new CCD002Treasury();
     const sender = accounts.get("deployer")!;
@@ -151,7 +151,7 @@ Clarinet.test({
 /* need MIA token contract first
 Clarinet.test({
   name: "ccd002-treasury: withdraw-ft() fails when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd002Treasury = new CCD002Treasury();
     const sender = accounts.get("deployer")!;
@@ -183,7 +183,7 @@ Clarinet.test({
 // ccd002-treasury: is-allowed() succeeds and returns false if asset is not in map
 Clarinet.test({
   name: "ccd002-treasury: is-allowed() succeeds and returns false if asset is not in map",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd002Treasury = new CCD002Treasury();
     const sender = accounts.get("deployer")!;
@@ -205,7 +205,7 @@ Clarinet.test({
 // ccd002-treasury: get-allowed-asset() succeeds and returns none if asset is not in map
 Clarinet.test({
   name: "ccd002-treasury: get-allowed-asset() succeeds and returns none if asset is not in map",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd002Treasury = new CCD002Treasury();
     const sender = accounts.get("deployer")!;
@@ -230,7 +230,7 @@ Clarinet.test({
 // ccd002-treasury: callback() succeeds when called directly
 Clarinet.test({
   name: "ccd002-treasury: callback() succeeds when called directly",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
+  fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const ccd002Treasury = new CCD002Treasury();
     const sender = accounts.get("deployer")!;
