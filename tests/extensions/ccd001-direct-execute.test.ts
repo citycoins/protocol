@@ -1,5 +1,5 @@
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import { EXTENSIONS, PROPOSALS } from "../../utils/common.ts";
+import { PROPOSALS } from "../../utils/common.ts";
 import { CCD001DirectExecute } from "../../models/extensions/ccd001-direct-execute.model.ts";
 
 // Authorization check

@@ -1,6 +1,6 @@
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
 import { EXTENSIONS, EXTERNAL } from "../../utils/common.ts";
+import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
 
 // Authorization check
 
