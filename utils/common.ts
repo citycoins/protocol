@@ -11,6 +11,7 @@ export const EXTENSIONS = {
 
 export const PROPOSALS = {
   CCIP_012: ADDRESS.concat(".ccip012-bootstrap"),
+  CCIP_TEST_001: ADDRESS.concat(".ccip-test-proposal-001")
 };
 
 export const EXTERNAL = {

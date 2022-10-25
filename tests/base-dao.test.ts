@@ -1,5 +1,6 @@
 import { Account, assertEquals, Clarinet, Chain } from "../utils/deps.ts";
 import { BaseDao } from "../models/base-dao.model.ts";
+import { CCD001DirectExecute } from "../models/extensions/ccd001-direct-execute.model.ts";
 import { ADDRESS, BASE_DAO, EXTENSIONS, PROPOSALS } from "../utils/common.ts";
 
 // Extensions
@@ -258,4 +259,35 @@ Clarinet.test({
       .expectErr()
       .expectUint(BaseDao.ErrCode.ERR_INVALID_EXTENSION);
   },
+});
+
+Clarinet.test({
+  name: "base-dao: execute() fails if proposal has already been executed via direct execute",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const baseDao = new BaseDao();
+    const directExecute = new CCD001DirectExecute();
+    const sender = accounts.get("deployer")!;
+    const execTeam1 = accounts.get("wallet_1")!;
+    const execTeam2 = accounts.get("wallet_2")!;
+    const execTeam3 = accounts.get("wallet_3")!;
+    const execTeam4 = accounts.get("wallet_4")!;
+
+    // act directExecute
+    const { receipts } = chain.mineBlock([
+      baseDao.construct(sender, PROPOSALS.CCIP_012),
+      directExecute.directExecute(execTeam1, PROPOSALS.CCIP_TEST_001),
+      directExecute.directExecute(execTeam2, PROPOSALS.CCIP_TEST_001),
+      directExecute.directExecute(execTeam3, PROPOSALS.CCIP_TEST_001),
+      directExecute.directExecute(execTeam4, PROPOSALS.CCIP_TEST_001)
+    ]);
+    
+    // assert
+    assertEquals(receipts.length, 5);
+    receipts[0].result.expectOk().expectBool(true);
+    receipts[1].result.expectOk().expectUint(1);
+    receipts[2].result.expectOk().expectUint(2);
+    receipts[3].result.expectOk().expectUint(3);
+    receipts[4].result.expectErr().expectUint(BaseDao.ErrCode.ERR_ALREADY_EXECUTED);
+  }
 });

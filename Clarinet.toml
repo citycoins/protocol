@@ -31,6 +31,12 @@ depends_on = ["base-dao", "sip009-nft-trait", "sip010-ft-trait"]
 path = "contracts/proposals/ccip012-bootstrap.clar"
 depends_on = ["base-dao", "ccd001-direct-execute"]
 
+## Test Specific Proposals
+
+[contracts.ccip-test-proposal-001]
+path = "tests/proposals/ccip-test-proposal-001.clar"
+depends_on = ["proposal-trait", "ccd001-direct-execute"]
+
 # DAO Traits
 
 [contracts.extension-trait]
