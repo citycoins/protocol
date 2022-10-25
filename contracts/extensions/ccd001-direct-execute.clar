@@ -20,8 +20,8 @@
 
 (define-constant ERR_UNAUTHORIZED (err u3000))
 (define-constant ERR_NOT_APPROVER (err u3001))
-(define-constant ERR_SUNSET_REACHED (err u3003))
-(define-constant ERR_SUNSET_IN_PAST (err u3004))
+(define-constant ERR_SUNSET_REACHED (err u3002))
+(define-constant ERR_SUNSET_IN_PAST (err u3003))
 
 ;; DATA MAPS AND VARS
 
