@@ -268,18 +268,18 @@ Clarinet.test({
     const baseDao = new BaseDao();
     const directExecute = new CCD001DirectExecute();
     const sender = accounts.get("deployer")!;
-    const execTeam1 = accounts.get("wallet_1")!;
-    const execTeam2 = accounts.get("wallet_2")!;
-    const execTeam3 = accounts.get("wallet_3")!;
-    const execTeam4 = accounts.get("wallet_4")!;
+    const approver1 = accounts.get("wallet_1")!;
+    const approver2 = accounts.get("wallet_2")!;
+    const approver3 = accounts.get("wallet_3")!;
+    const approver4 = accounts.get("wallet_4")!;
 
     // act directExecute
     const { receipts } = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      directExecute.directExecute(execTeam1, PROPOSALS.CCIP_TEST_001),
-      directExecute.directExecute(execTeam2, PROPOSALS.CCIP_TEST_001),
-      directExecute.directExecute(execTeam3, PROPOSALS.CCIP_TEST_001),
-      directExecute.directExecute(execTeam4, PROPOSALS.CCIP_TEST_001)
+      directExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_001),
+      directExecute.directExecute(approver2, PROPOSALS.CCIP_TEST_001),
+      directExecute.directExecute(approver3, PROPOSALS.CCIP_TEST_001),
+      directExecute.directExecute(approver4, PROPOSALS.CCIP_TEST_001)
     ]);
     
     // assert

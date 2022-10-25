@@ -1,5 +1,5 @@
 ;; Title: Test Proposal
-;; Author: City Coins
+;; Version: 1.0.0
 ;; Synopsis: Test proposal for clarinet layer
 ;; Description:
 ;; Test Base-Dao.ERR_CODE ERR_ALREADY_EXECUTED=1001
