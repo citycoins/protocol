@@ -279,6 +279,8 @@ Clarinet.test({
       directExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_001),
       directExecute.directExecute(approver2, PROPOSALS.CCIP_TEST_001),
       directExecute.directExecute(approver3, PROPOSALS.CCIP_TEST_001),
+      // This 4th signal triggers the extension to request second execution of the proposal
+      // which base-dao takes responsibility for preventing for all proposals.
       directExecute.directExecute(approver4, PROPOSALS.CCIP_TEST_001)
     ]);
     
