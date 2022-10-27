@@ -21,12 +21,13 @@ export class CCD002Treasury {
   // name redefined by extending class
   // exports defined per contract
   // below this class definition
-  name = "ccd002-treasury";
+  name: string;
   static readonly ErrCode = ErrCode;
   chain: Chain;
   deployer: Account;
 
-  constructor(chain: Chain, deployer: Account) {
+  constructor(chain: Chain, deployer: Account, name: string) {
+    this.name = name;
     this.chain = chain;
     this.deployer = deployer;
   }

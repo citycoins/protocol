@@ -4,6 +4,7 @@ import { PROPOSALS } from "../../utils/common.ts";
 import { BaseDao } from "../../models/base-dao.model.ts";
 import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
 import { CCD001DirectExecute } from "../../models/extensions/ccd001-direct-execute.model.ts";
+import { CCEXTGovernanceToken } from "../../models/external/ccext-governance-token.model.ts";
 
 const constructAndPassProposal = (chain: Chain, accounts: Map<string, Account>, proposal: string): any => {
   const sender = accounts.get("deployer")!;
@@ -21,6 +22,20 @@ const constructAndPassProposal = (chain: Chain, accounts: Map<string, Account>, 
   return receipts;
 }
 
+const passProposal = (chain: Chain, accounts: Map<string, Account>, proposal: string): any => {
+  const sender = accounts.get("deployer")!;
+  const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
+  const approver1 = accounts.get("wallet_1")!;
+  const approver2 = accounts.get("wallet_2")!;
+  const approver3 = accounts.get("wallet_3")!;
+  const { receipts } = chain.mineBlock([
+    ccd001DirectExecute.directExecute(approver1, proposal),
+    ccd001DirectExecute.directExecute(approver2, proposal),
+    ccd001DirectExecute.directExecute(approver3, proposal),
+  ]);
+  return receipts;
+}
+
 
 // Authorization check
 
@@ -29,7 +44,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
 
     // act
 
@@ -46,7 +61,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
 
     // act
     const { receipts } = chain.mineBlock([
@@ -69,7 +84,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
     const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_001);
 
     // act
@@ -89,7 +104,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
     const assetList = [
       {
         token: EXTERNAL.FT_MIA,
@@ -123,7 +138,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_MIA).result.expectNone();
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_NYC).result.expectNone();
 
@@ -151,7 +166,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_MIA).result.expectNone();
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_NYC).result.expectNone();
 
@@ -179,7 +194,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
     const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
     const approver1 = accounts.get("wallet_1")!;
     const approver2 = accounts.get("wallet_2")!;
@@ -214,10 +229,10 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
     const amount = 1000;
     const event =
-      '{amount: u1000, caller: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM, event: "deposit-stx", recipient: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd002-treasury, sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM}';
+      '{amount: u1000, caller: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM, event: "deposit-stx", recipient: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd002-treasury-mia, sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM}';
 
     // act
     const { receipts } = chain.mineBlock([
@@ -230,9 +245,9 @@ Clarinet.test({
     receipts[0].events.expectSTXTransferEvent(
       amount,
       sender.address,
-      EXTENSIONS.CCD002_TREASURY
+      EXTENSIONS.CCD002_TREASURY_MIA
     );
-    receipts[0].events.expectPrintEvent(EXTENSIONS.CCD002_TREASURY, event);
+    receipts[0].events.expectPrintEvent(EXTENSIONS.CCD002_TREASURY_MIA, event);
   },
 });
 
@@ -241,7 +256,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
     const amount = 1000;
 
     // act
@@ -266,7 +281,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
     const amount = 1000;
     constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_002);
     ccd002Treasury.isAllowed(EXTERNAL.FT_NYC).result.expectBool(false);
@@ -284,27 +299,38 @@ Clarinet.test({
   }
 });
 
-// ccd002-treasury: deposit-ft() succeeds and transfers FT to the vault
+/**
+ * Setup: 
+ * 1. construct dao and allow an FT
+ * 2. Mint some FT to user
+ * 3. User transfers token to treasury
+ */
 Clarinet.test({
-  name: "ccd002-treasury: deposit-ft() fails if asset is not allowed",
+  name: "ccd002-treasury: deposit-ft() succeeds and transfers FT to the vault",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const depositor = accounts.get("wallet_6")!;
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
+    const gt = new CCEXTGovernanceToken(chain, sender, 'ccext-governance-token-01');
     const amount = 1000;
     constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_002);
-    ccd002Treasury.isAllowed(EXTERNAL.FT_NYC).result.expectBool(false);
-
+    ccd002Treasury.isAllowed(EXTERNAL.FT_MIA).result.expectBool(true);
+    passProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_004);
+    gt.getBalance(depositor.address).result.expectOk().expectUint(2000);
+  
     // act
     const {receipts} = chain.mineBlock([
-      ccd002Treasury.depositFt(sender, EXTERNAL.FT_NYC, amount)
+      ccd002Treasury.depositFt(depositor, EXTERNAL.FT_MIA, amount)
     ]);
 
     // assert
     assertEquals(receipts.length, 1);
+    gt.getBalance(depositor.address).result.expectOk().expectUint(1000);
+    gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA).result.expectOk().expectUint(1000);
     receipts[0].result
-      .expectErr()
-      .expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+      .expectOk()
+      .expectBool(true);
   }
 });
 
@@ -339,7 +365,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
     const amount = 1000;
 
     // act
@@ -397,7 +423,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
     const asset = EXTERNAL.FT_MIA;
 
     // act
@@ -409,13 +435,12 @@ Clarinet.test({
 
 // ccd002-treasury: is-allowed() succeeds and returns true if asset is found in map
 
-// ccd002-treasury: get-allowed-asset() succeeds and returns none if asset is not in map
 Clarinet.test({
   name: "ccd002-treasury: get-allowed-asset() succeeds and returns none if asset is not in map",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
     const asset = EXTERNAL.FT_MIA;
 
     // act
@@ -436,7 +461,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
 
     // act
     const { receipts } = chain.mineBlock([

@@ -4,7 +4,6 @@ export const BASE_DAO = ADDRESS.concat(".base-dao");
 
 export const EXTENSIONS = {
   CCD001_DIRECT_EXECUTE: ADDRESS.concat(".ccd001-direct-execute"),
-  CCD002_TREASURY: ADDRESS.concat(".ccd002-treasury"),
   CCD002_TREASURY_MIA: ADDRESS.concat(".ccd002-treasury-mia"),
   CCD002_TREASURY_NYC: ADDRESS.concat(".ccd002-treasury-nyc"),
 };
@@ -16,7 +15,8 @@ export const PROPOSALS = {
   CCIP_TEST_DD_003: ADDRESS.concat(".ccip-test-direct-execute-003"),
   CCIP_TEST_TR_001: ADDRESS.concat(".ccip-test-treasury-001"),
   CCIP_TEST_TR_002: ADDRESS.concat(".ccip-test-treasury-002"),
-  CCIP_TEST_TR_003: ADDRESS.concat(".ccip-test-treasury-003")
+  CCIP_TEST_TR_003: ADDRESS.concat(".ccip-test-treasury-003"),
+  CCIP_TEST_TR_004: ADDRESS.concat(".ccip-test-treasury-004")
 };
 
 export const EXTERNAL = {
