@@ -2,7 +2,7 @@
 ;; Version: 1.0.0
 ;; Synopsis: Test proposal for clarinet layer
 ;; Description:
-;; ccd002-treasury: allow lists multiple asset contracts
+;; ccd002-treasury: toggles allowed state of asset contracts
 
 (impl-trait .proposal-trait.proposal-trait)
 

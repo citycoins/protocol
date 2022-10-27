@@ -5,6 +5,23 @@ import { BaseDao } from "../../models/base-dao.model.ts";
 import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
 import { CCD001DirectExecute } from "../../models/extensions/ccd001-direct-execute.model.ts";
 
+const constructAndPassProposal = (chain: Chain, accounts: Map<string, Account>, proposal: string): any => {
+  const sender = accounts.get("deployer")!;
+  const baseDao = new BaseDao(chain, sender);
+  const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
+  const approver1 = accounts.get("wallet_1")!;
+  const approver2 = accounts.get("wallet_2")!;
+  const approver3 = accounts.get("wallet_3")!;
+  const { receipts } = chain.mineBlock([
+    baseDao.construct(sender, PROPOSALS.CCIP_012),
+    ccd001DirectExecute.directExecute(approver1, proposal),
+    ccd001DirectExecute.directExecute(approver2, proposal),
+    ccd001DirectExecute.directExecute(approver3, proposal),
+  ]);
+  return receipts;
+}
+
+
 // Authorization check
 
 Clarinet.test({
@@ -53,19 +70,9 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender);
-    const baseDao = new BaseDao(chain, sender);
-    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-    const approver1 = accounts.get("wallet_1")!;
-    const approver2 = accounts.get("wallet_2")!;
-    const approver3 = accounts.get("wallet_3")!;
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_001);
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_TR_001),
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.CCIP_TEST_TR_001),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.CCIP_TEST_TR_001),
-    ]);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -117,21 +124,11 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender);
-    const baseDao = new BaseDao(chain, sender);
-    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-    const approver1 = accounts.get("wallet_1")!;
-    const approver2 = accounts.get("wallet_2")!;
-    const approver3 = accounts.get("wallet_3")!;
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_MIA).result.expectNone();
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_NYC).result.expectNone();
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_TR_002),
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.CCIP_TEST_TR_002),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.CCIP_TEST_TR_002),
-    ]);
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_002);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -155,21 +152,11 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender);
-    const baseDao = new BaseDao(chain, sender);
-    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-    const approver1 = accounts.get("wallet_1")!;
-    const approver2 = accounts.get("wallet_2")!;
-    const approver3 = accounts.get("wallet_3")!;
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_MIA).result.expectNone();
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_NYC).result.expectNone();
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_TR_002),
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.CCIP_TEST_TR_002),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.CCIP_TEST_TR_002),
-    ]);
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_002);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -193,19 +180,13 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender);
-    const baseDao = new BaseDao(chain, sender);
     const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
     const approver1 = accounts.get("wallet_1")!;
     const approver2 = accounts.get("wallet_2")!;
     const approver3 = accounts.get("wallet_3")!;
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_MIA).result.expectNone();
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_NYC).result.expectNone();
-    chain.mineBlock([
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_TR_002),
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.CCIP_TEST_TR_002),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.CCIP_TEST_TR_002),
-    ]);
+    constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_002);
     ccd002Treasury.isAllowed(EXTERNAL.FT_MIA).result.expectBool(true);
     ccd002Treasury.isAllowed(EXTERNAL.FT_NYC).result.expectBool(false);
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_MIA).result.expectSome().expectBool(true);
@@ -286,28 +267,42 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender);
-    const baseDao = new BaseDao(chain, sender);
-    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
     const amount = 1000;
-    const approver1 = accounts.get("wallet_1")!;
-    const approver2 = accounts.get("wallet_2")!;
-    const approver3 = accounts.get("wallet_3")!;
-    let block = chain.mineBlock([
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_TR_002),
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.CCIP_TEST_TR_002),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.CCIP_TEST_TR_002),
-    ]);
+    constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_002);
     ccd002Treasury.isAllowed(EXTERNAL.FT_NYC).result.expectBool(false);
 
     // act
-    block = chain.mineBlock([
+    const block = chain.mineBlock([
       ccd002Treasury.depositFt(sender, EXTERNAL.FT_NYC, amount)
     ]);
 
     // assert
     assertEquals(block.receipts.length, 1);
     block.receipts[0].result
+      .expectErr()
+      .expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+  }
+});
+
+// ccd002-treasury: deposit-ft() succeeds and transfers FT to the vault
+Clarinet.test({
+  name: "ccd002-treasury: deposit-ft() fails if asset is not allowed",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd002Treasury = new CCD002Treasury(chain, sender);
+    const amount = 1000;
+    constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_002);
+    ccd002Treasury.isAllowed(EXTERNAL.FT_NYC).result.expectBool(false);
+
+    // act
+    const {receipts} = chain.mineBlock([
+      ccd002Treasury.depositFt(sender, EXTERNAL.FT_NYC, amount)
+    ]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result
       .expectErr()
       .expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
   }
@@ -333,14 +328,6 @@ Clarinet.test({
 
 
 
-
-
-
-
-
-
-
-// ccd002-treasury: deposit-ft() succeeds and transfers FT to the vault
 // ccd002-treasury: deposit-nft() fails if asset is not allowed
 // ccd002-treasury: deposit-nft() succeeds and transfers NFT to the vault
 
