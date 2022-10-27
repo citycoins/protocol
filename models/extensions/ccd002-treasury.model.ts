@@ -1,4 +1,4 @@
-import { Account, Tx, types } from "../../utils/deps.ts";
+import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 enum ErrCode {
   ERR_UNAUTHORIZED = 3100,
@@ -23,16 +23,18 @@ export class CCD002Treasury {
   // below this class definition
   name = "ccd002-treasury";
   static readonly ErrCode = ErrCode;
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
 
   // Authorization
 
-  isDaoOrExtension(sender: Account) {
-    return Tx.contractCall(
-      this.name,
-      "is-dao-or-extension",
-      [],
-      sender.address
-    );
+  isDaoOrExtension(): ReadOnlyFn {
+    return this.callReadOnlyFn("is-dao-or-extension");
   }
 
   // Internal DAO functions
@@ -142,26 +144,16 @@ export class CCD002Treasury {
 
   // Read only functions
 
-  isAllowed(sender: Account, assetContract: string) {
-    return Tx.contractCall(
-      this.name,
-      "is-allowed",
-      [types.principal(assetContract)],
-      sender.address
-    );
+  isAllowed(assetContract: string): ReadOnlyFn {
+    return this.callReadOnlyFn("is-allowed", [types.principal(assetContract)]);
   }
 
-  getAllowedAsset(sender: Account, assetContract: string) {
-    return Tx.contractCall(
-      this.name,
-      "get-allowed-asset",
-      [types.principal(assetContract)],
-      sender.address
-    );
+  getAllowedAsset(assetContract: string): ReadOnlyFn {
+    return this.callReadOnlyFn("get-allowed-asset", [types.principal(assetContract)]);
   }
 
-  getBalanceStx(sender: Account) {
-    return Tx.contractCall(this.name, "get-balance-stx", [], sender.address);
+  getBalanceStx(): ReadOnlyFn {
+    return this.callReadOnlyFn("get-balance-stx");
   }
 
   // Extension callback
@@ -173,5 +165,16 @@ export class CCD002Treasury {
       [types.principal(sender.address), types.buff(memo)],
       sender.address
     );
+  }
+
+  private callReadOnlyFn(
+    method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
+    const result = this.chain.callReadOnlyFn(
+      this.name,
+      method,
+      args,
+      sender?.address
+    );
+    return result;
   }
 }

@@ -53,14 +53,16 @@
 )
 
 (define-private (set-allowed-iter (item {token: principal, enabled: bool}))
-  (begin
-    (print {
-      event: "allow-asset",
-      token: (get token item),
-      enabled: (get enabled item)
-    })
-    (map-set AllowedAssets (get token item) (get enabled item))
-  )
+  (set-allowed (get token item) (get enabled item))
+  ;;(begin (try! (set-allowed (get token item) (get enabled item))))
+  ;;(begin
+  ;;  (print {
+  ;;    event: "allow-asset",
+  ;;    token: (get token item),
+  ;;    enabled: (get enabled item)
+  ;;  })
+  ;;  (map-set AllowedAssets (get token item) (get enabled item))
+  ;;)
 )
 
 (define-public (set-allowed-list (allowList (list 100 {token: principal, enabled: bool})))

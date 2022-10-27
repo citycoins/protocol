@@ -2,13 +2,14 @@
 ;; Version: 1.0.0
 ;; Synopsis: Test proposal for clarinet layer
 ;; Description:
-;; Test Base-Dao.ERR_CODE ERR_ALREADY_EXECUTED=1001
+;; ccd001-direct-execute: set-sunset-block-height() success
 
 (impl-trait .proposal-trait.proposal-trait)
 
 (define-public (execute (sender principal))
 	(begin
-    	(try! (contract-call? .ccd001-direct-execute set-signals-required u3))
+		;; tests success of setting sunset height
+    	(try! (contract-call? .ccd001-direct-execute set-sunset-block-height u10))
 		(ok true)
 	)
 )

@@ -11,10 +11,15 @@ export const EXTENSIONS = {
 
 export const PROPOSALS = {
   CCIP_012: ADDRESS.concat(".ccip012-bootstrap"),
-  CCIP_TEST_001: ADDRESS.concat(".ccip-test-proposal-001")
+  CCIP_TEST_DD_001: ADDRESS.concat(".ccip-test-direct-execute-001"),
+  CCIP_TEST_DD_002: ADDRESS.concat(".ccip-test-direct-execute-002"),
+  CCIP_TEST_DD_003: ADDRESS.concat(".ccip-test-direct-execute-003"),
+  CCIP_TEST_TR_001: ADDRESS.concat(".ccip-test-treasury-001"),
+  CCIP_TEST_TR_002: ADDRESS.concat(".ccip-test-treasury-002"),
+  CCIP_TEST_TR_003: ADDRESS.concat(".ccip-test-treasury-003")
 };
 
 export const EXTERNAL = {
-  FT_MIA: ADDRESS.concat(".miamicoin-token-v2"),
-  FT_NYC: ADDRESS.concat(".newyorkcitycoin-token-v2"),
+  FT_MIA: ADDRESS.concat(".ccext-governance-token-01"),
+  FT_NYC: ADDRESS.concat(".ccext-governance-token-02")
 };

@@ -33,9 +33,39 @@ depends_on = ["base-dao", "ccd001-direct-execute"]
 
 ## Test Specific Proposals
 
-[contracts.ccip-test-proposal-001]
-path = "contracts/proposals/ccip-test-proposal-001.clar"
+[contracts.ccip-test-direct-execute-001]
+path = "contracts/proposals/ccip-test-direct-execute-001.clar"
 depends_on = ["proposal-trait", "ccd001-direct-execute"]
+
+[contracts.ccip-test-direct-execute-002]
+path = "contracts/proposals/ccip-test-direct-execute-002.clar"
+depends_on = ["proposal-trait", "ccd001-direct-execute"]
+
+[contracts.ccip-test-direct-execute-003]
+path = "contracts/proposals/ccip-test-direct-execute-003.clar"
+depends_on = ["proposal-trait", "ccd001-direct-execute"]
+
+[contracts.ccip-test-treasury-001]
+path = "contracts/proposals/ccip-test-treasury-001.clar"
+depends_on = ["proposal-trait", "ccd002-treasury"]
+
+[contracts.ccip-test-treasury-002]
+path = "contracts/proposals/ccip-test-treasury-002.clar"
+depends_on = ["proposal-trait", "ccd002-treasury"]
+
+[contracts.ccip-test-treasury-003]
+path = "contracts/proposals/ccip-test-treasury-003.clar"
+depends_on = ["proposal-trait", "ccd002-treasury"]
+
+## Test Specific Externals
+
+[contracts.ccext-governance-token-01]
+path = "contracts/external/ccext-governance-token.clar"
+depends_on = ["sip010-ft-trait"]
+
+[contracts.ccext-governance-token-02]
+path = "contracts/external/ccext-governance-token.clar"
+depends_on = ["sip010-ft-trait"]
 
 # DAO Traits
 
