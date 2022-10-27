@@ -4,13 +4,13 @@
 ;; Description:
 ;; A dummy SIP-010 asset for use in tests.
 
-(impl-trait .sip010-ft-trait.sip010-ft-trait)
+(impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 
 (define-constant ERR_UNAUTHORIZED (err u3000))
 (define-constant ERR_NOT_TOKEN_OWNER (err u4))
 
 (define-data-var token-name (string-ascii 32) "Governance Token")
-(define-data-var token-symbol (string-ascii 10) "GT01")
+(define-data-var token-symbol (string-ascii 10) "GT00")
 (define-data-var token-uri (optional (string-utf8 256)) none)
 (define-data-var token-decimals uint u6)
 
