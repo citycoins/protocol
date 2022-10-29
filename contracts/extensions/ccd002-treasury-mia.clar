@@ -11,7 +11,7 @@
 
 ;; TRAITS
 
-(use-trait nft-trait .sip009-nft-trait.sip009-nft-trait)
+(use-trait nft-trait 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait)
 (use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 
 ;; CONSTANTS
@@ -53,16 +53,14 @@
 )
 
 (define-private (set-allowed-iter (item {token: principal, enabled: bool}))
-  (set-allowed (get token item) (get enabled item))
-  ;;(begin (try! (set-allowed (get token item) (get enabled item))))
-  ;;(begin
-  ;;  (print {
-  ;;    event: "allow-asset",
-  ;;    token: (get token item),
-  ;;    enabled: (get enabled item)
-  ;;  })
-  ;;  (map-set AllowedAssets (get token item) (get enabled item))
-  ;;)
+  (begin
+    (print {
+      event: "allow-asset",
+      token: (get token item),
+      enabled: (get enabled item)
+    })
+    (map-set AllowedAssets (get token item) (get enabled item))
+  )
 )
 
 (define-public (set-allowed-list (allowList (list 100 {token: principal, enabled: bool})))

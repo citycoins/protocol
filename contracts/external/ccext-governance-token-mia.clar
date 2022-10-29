@@ -1,4 +1,4 @@
-;; Title: Governance Token 
+;; Title: Governance Test Token 
 ;; Version: 0.0.0
 ;; Synopsis: Simple SIP-010 asset for clarinet testing.
 ;; Description:
@@ -9,8 +9,8 @@
 (define-constant ERR_UNAUTHORIZED (err u3000))
 (define-constant ERR_NOT_TOKEN_OWNER (err u4))
 
-(define-data-var token-name (string-ascii 32) "Governance Token")
-(define-data-var token-symbol (string-ascii 10) "GT00")
+(define-data-var token-name (string-ascii 32) "City Coins Governance Token")
+(define-data-var token-symbol (string-ascii 10) "MIA")
 (define-data-var token-uri (optional (string-utf8 256)) none)
 (define-data-var token-decimals uint u6)
 

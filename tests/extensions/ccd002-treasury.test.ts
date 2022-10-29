@@ -85,7 +85,7 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_001);
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_001);
 
     // act
 
@@ -143,7 +143,7 @@ Clarinet.test({
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_NYC).result.expectNone();
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_002);
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_002);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -171,7 +171,7 @@ Clarinet.test({
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_NYC).result.expectNone();
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_002);
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_002);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -201,7 +201,7 @@ Clarinet.test({
     const approver3 = accounts.get("wallet_3")!;
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_MIA).result.expectNone();
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_NYC).result.expectNone();
-    constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_002);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_002);
     ccd002Treasury.isAllowed(EXTERNAL.FT_MIA).result.expectBool(true);
     ccd002Treasury.isAllowed(EXTERNAL.FT_NYC).result.expectBool(false);
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_MIA).result.expectSome().expectBool(true);
@@ -209,9 +209,9 @@ Clarinet.test({
 
     // act
     chain.mineBlock([
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_TR_003),
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.CCIP_TEST_TR_003),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.CCIP_TEST_TR_003),
+      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD002_TREASURY_003),
+      ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD002_TREASURY_003),
+      ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD002_TREASURY_003),
     ]);
 
     // assert
@@ -283,7 +283,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
     const amount = 1000;
-    constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_002);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_002);
     ccd002Treasury.isAllowed(EXTERNAL.FT_NYC).result.expectBool(false);
 
     // act
@@ -301,8 +301,8 @@ Clarinet.test({
 
 /**
  * Setup: 
- * 1. construct dao and allow an FT
- * 2. Mint some FT to user
+ * 1. construct dao and allow list a sip 10 token contract
+ * 2. Dao mints token to user
  * 3. User transfers token to treasury
  */
 Clarinet.test({
@@ -312,12 +312,14 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const depositor = accounts.get("wallet_6")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
-    const gt = new CCEXTGovernanceToken(chain, sender, 'ccext-governance-token-01');
+    const gt = new CCEXTGovernanceToken(chain, sender, 'ccext-governance-token-mia');
     const amount = 1000;
-    constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_002);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_002);
     ccd002Treasury.isAllowed(EXTERNAL.FT_MIA).result.expectBool(true);
-    passProposal(chain, accounts, PROPOSALS.CCIP_TEST_TR_004);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_004);
     gt.getBalance(depositor.address).result.expectOk().expectUint(2000);
+    const event =
+      '{amount: u1000, assetContract: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccext-governance-token-mia, caller: ST3AM1A56AK2C1XAFJ4115ZSV26EB49BVQ10MGCS0, event: "deposit-ft", recipient: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd002-treasury-mia, sender: ST3AM1A56AK2C1XAFJ4115ZSV26EB49BVQ10MGCS0}';
   
     // act
     const {receipts} = chain.mineBlock([
@@ -331,6 +333,36 @@ Clarinet.test({
     receipts[0].result
       .expectOk()
       .expectBool(true);
+    receipts[0].events.expectFungibleTokenTransferEvent(
+      1000,
+      depositor.address,
+      EXTENSIONS.CCD002_TREASURY_MIA,
+      EXTERNAL.FT_MIA + '::edg-token',
+    );
+    receipts[0].events.expectPrintEvent(EXTENSIONS.CCD002_TREASURY_MIA, event);
+  }
+});
+
+ Clarinet.test({
+  name: "ccd002-treasury: deposit-nft() fails if asset is not allowed",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd002Treasury = new CCD002Treasury(chain, sender, 'ccd002-treasury-mia');
+    const amount = 1000;
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_002);
+    ccd002Treasury.isAllowed(EXTERNAL.FT_NYC).result.expectBool(false);
+
+    // act
+    const block = chain.mineBlock([
+      ccd002Treasury.depositFt(sender, EXTERNAL.FT_NYC, amount)
+    ]);
+
+    // assert
+    assertEquals(block.receipts.length, 1);
+    block.receipts[0].result
+      .expectErr()
+      .expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
   }
 });
 
@@ -354,7 +386,16 @@ Clarinet.test({
 
 
 
-// ccd002-treasury: deposit-nft() fails if asset is not allowed
+
+
+
+
+
+
+
+
+
+
 // ccd002-treasury: deposit-nft() succeeds and transfers NFT to the vault
 
 // Withdraw functions

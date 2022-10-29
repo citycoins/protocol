@@ -280,12 +280,12 @@ Clarinet.test({
     // act directExecute
     const { receipts } = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_DD_001),
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.CCIP_TEST_DD_001),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.CCIP_TEST_DD_001),
+      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
       // This 4th signal triggers the extension to request second execution of the proposal.
       // Base-dao takes responsibility for preventing this for all proposals.
-      ccd001DirectExecute.directExecute(approver4, PROPOSALS.CCIP_TEST_DD_001)
+      ccd001DirectExecute.directExecute(approver4, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)
     ]);
     
     // assert

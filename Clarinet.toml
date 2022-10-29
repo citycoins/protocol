@@ -8,6 +8,9 @@ boot_contracts = ["pox", "costs-v2", "bns"]
 [[project.requirements]]
 contract_id = "SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard"
 
+[[project.requirements]]
+contract_id = "SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait"
+
 [project.cache_location]
 path = ".requirements"
 [contracts.base-dao]
@@ -17,16 +20,22 @@ path = "contracts/base-dao.clar"
 path = "contracts/extensions/ccd001-direct-execute.clar"
 
 [contracts.ccd002-treasury-mia]
-path = "contracts/extensions/ccd002-treasury.clar"
+path = "contracts/extensions/ccd002-treasury-mia.clar"
 
 [contracts.ccd002-treasury-nyc]
-path = "contracts/extensions/ccd002-treasury.clar"
+path = "contracts/extensions/ccd002-treasury-nyc.clar"
 
-[contracts.ccext-governance-token-01]
-path = "contracts/external/ccext-governance-token.clar"
+[contracts.ccext-governance-token-mia]
+path = "contracts/external/ccext-governance-token-mia.clar"
 
-[contracts.ccext-governance-token-02]
-path = "contracts/external/ccext-governance-token.clar"
+[contracts.ccext-governance-token-nyc]
+path = "contracts/external/ccext-governance-token-nyc.clar"
+
+[contracts.ccext-nft-mia]
+path = "contracts/external/ccext-nft-mia.clar"
+
+[contracts.ccext-nft-nyc]
+path = "contracts/external/ccext-nft-nyc.clar"
 
 [contracts.ccip-test-direct-execute-001]
 path = "contracts/proposals/ccip-test-direct-execute-001.clar"

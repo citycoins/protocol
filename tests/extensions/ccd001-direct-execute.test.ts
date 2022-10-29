@@ -60,9 +60,9 @@ Clarinet.test({
     // act
     const block = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_DD_002),
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.CCIP_TEST_DD_002),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.CCIP_TEST_DD_002),
+      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_002),
+      ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_002),
+      ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_002),
     ]);
 
     // assert
@@ -92,9 +92,9 @@ Clarinet.test({
     // act
     const block = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_DD_003),
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.CCIP_TEST_DD_003),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.CCIP_TEST_DD_003),
+      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_003),
+      ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_003),
+      ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_003),
     ]);
 
     // assert
@@ -174,7 +174,7 @@ Clarinet.test({
     const approver1 = accounts.get("wallet_1")!;
 
     // act
-    ccd001DirectExecute.getSignals(PROPOSALS.CCIP_TEST_DD_001).result.expectUint(0);
+    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(0);
 
     chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
@@ -270,7 +270,7 @@ Clarinet.test({
     // act
     chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_DD_001),
+      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
     ]);
 
     // assert
@@ -305,25 +305,25 @@ Clarinet.test({
     const approver3 = accounts.get("wallet_3")!;
 
     // assert
-    ccd001DirectExecute.getSignals(PROPOSALS.CCIP_TEST_DD_001).result.expectUint(0);
+    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(0);
 
     // act
     chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_DD_001),
+      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
     ]);
 
     // assert
-    ccd001DirectExecute.getSignals(PROPOSALS.CCIP_TEST_DD_001).result.expectUint(1);
+    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(1);
 
     // act
     chain.mineBlock([
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.CCIP_TEST_DD_001),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.CCIP_TEST_DD_001)
+      ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)
     ]);
 
     // assert
-    ccd001DirectExecute.getSignals(PROPOSALS.CCIP_TEST_DD_001).result.expectUint(3);
+    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(3);
   }
 });
 
@@ -382,22 +382,22 @@ Clarinet.test({
     const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
     const baseDao = new BaseDao(chain, sender);
     const approver1 = accounts.get("wallet_1")!;
-    ccd001DirectExecute.getSignals(PROPOSALS.CCIP_TEST_DD_001).result.expectUint(0);
+    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(0);
 
     // act
     const { receipts } = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_DD_001),
+      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
     ]);
 
     // assert
-    ccd001DirectExecute.getSignals(PROPOSALS.CCIP_TEST_DD_001).result.expectUint(1);
+    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(1);
     receipts[1].result.expectOk().expectUint(1);
   }
 });
 
 /**
- * The proposal, CCIP_TEST_DD_001, on successful execution, changes the number of signals required from 3 to 2.
+ * The proposal, TEST_CCD001_DIRECT_EXECUTE_001, on successful execution, changes the number of signals required from 3 to 2.
  * Test direct-execute and set-signals-required.
  */
 Clarinet.test({
@@ -407,7 +407,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
     const baseDao = new BaseDao(chain, sender);
-    ccd001DirectExecute.getSignals(PROPOSALS.CCIP_TEST_DD_001).result.expectUint(0);
+    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(0);
     const approver1 = accounts.get("wallet_1")!;
     const approver2 = accounts.get("wallet_2")!;
     const approver3 = accounts.get("wallet_3")!;
@@ -415,9 +415,9 @@ Clarinet.test({
     // act
     const { receipts } = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_DD_001),
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.CCIP_TEST_DD_001),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.CCIP_TEST_DD_001),
+      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
     ]);
 
     // assert
