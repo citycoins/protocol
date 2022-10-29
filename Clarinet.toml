@@ -20,10 +20,10 @@ path = "contracts/base-dao.clar"
 path = "contracts/extensions/ccd001-direct-execute.clar"
 
 [contracts.ccd002-treasury-mia]
-path = "contracts/extensions/ccd002-treasury-mia.clar"
+path = "contracts/extensions/ccd002-treasury.clar"
 
 [contracts.ccd002-treasury-nyc]
-path = "contracts/extensions/ccd002-treasury-nyc.clar"
+path = "contracts/extensions/ccd002-treasury.clar"
 
 [contracts.ccext-governance-token-mia]
 path = "contracts/external/ccext-governance-token-mia.clar"
