@@ -2,7 +2,7 @@
 ;; Version: 1.0.0
 ;; Synopsis: Test proposal for clarinet layer
 ;; Description:
-;; ccd002-treasury: allow lists multiple asset contracts
+;; ccd002-treasury: allows nft contract
 
 (impl-trait .proposal-trait.proposal-trait)
 
@@ -12,10 +12,10 @@
 		(try! (contract-call? .ccd002-treasury-mia set-allowed-list
 			(list
 				{token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccext-governance-token-mia, enabled: true}
-				{token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccext-governance-token-nyc, enabled: false}
-				{token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccext-nft-nyc, enabled: false}
 			)
 		))
+		(try! (contract-call? .ccext-governance-token-mia edg-mint u2000 .ccd002-treasury-mia))
+    	(try! (contract-call? .ccd002-treasury-mia withdraw-ft .ccext-governance-token-mia u500 'ST3AM1A56AK2C1XAFJ4115ZSV26EB49BVQ10MGCS0))
 		(ok true)
 	)
 )

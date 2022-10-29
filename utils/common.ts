@@ -16,7 +16,12 @@ export const PROPOSALS = {
   TEST_CCD002_TREASURY_001: ADDRESS.concat(".ccip-test-treasury-001"),
   TEST_CCD002_TREASURY_002: ADDRESS.concat(".ccip-test-treasury-002"),
   TEST_CCD002_TREASURY_003: ADDRESS.concat(".ccip-test-treasury-003"),
-  TEST_CCD002_TREASURY_004: ADDRESS.concat(".ccip-test-treasury-004")
+  TEST_CCD002_TREASURY_004: ADDRESS.concat(".ccip-test-treasury-004"),
+  TEST_CCD002_TREASURY_005: ADDRESS.concat(".ccip-test-treasury-005"),
+  TEST_CCD002_TREASURY_006: ADDRESS.concat(".ccip-test-treasury-006"),
+  TEST_CCD002_TREASURY_007: ADDRESS.concat(".ccip-test-treasury-007"),
+  TEST_CCD002_TREASURY_008: ADDRESS.concat(".ccip-test-treasury-008"),
+  TEST_CCD002_TREASURY_009: ADDRESS.concat(".ccip-test-treasury-009")
 };
 
 export const EXTERNAL = {

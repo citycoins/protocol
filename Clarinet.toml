@@ -58,6 +58,21 @@ path = "contracts/proposals/ccip-test-treasury-003.clar"
 [contracts.ccip-test-treasury-004]
 path = "contracts/proposals/ccip-test-treasury-004.clar"
 
+[contracts.ccip-test-treasury-005]
+path = "contracts/proposals/ccip-test-treasury-005.clar"
+
+[contracts.ccip-test-treasury-006]
+path = "contracts/proposals/ccip-test-treasury-006.clar"
+
+[contracts.ccip-test-treasury-007]
+path = "contracts/proposals/ccip-test-treasury-007.clar"
+
+[contracts.ccip-test-treasury-008]
+path = "contracts/proposals/ccip-test-treasury-008.clar"
+
+[contracts.ccip-test-treasury-009]
+path = "contracts/proposals/ccip-test-treasury-009.clar"
+
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
 
@@ -66,9 +81,6 @@ path = "contracts/traits/extension-trait.clar"
 
 [contracts.proposal-trait]
 path = "contracts/traits/proposal-trait.clar"
-
-[contracts.sip009-nft-trait]
-path = "contracts/traits/sip009-nft-trait.clar"
 
 [repl]
 costs_version = 2
