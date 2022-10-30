@@ -2,7 +2,8 @@
 ;; Version: 1.0.0
 ;; Synopsis: Test proposal for clarinet layer
 ;; Description:
-;; Test Base-Dao.ERR_CODE ERR_ALREADY_EXECUTED=1001
+;; Used in several unit tests e.g. see
+;; ccd001-direct-execute: get-signals() returns true if approver is in map
 
 (impl-trait .proposal-trait.proposal-trait)
 

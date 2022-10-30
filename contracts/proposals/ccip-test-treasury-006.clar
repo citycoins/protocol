@@ -2,7 +2,7 @@
 ;; Version: 1.0.0
 ;; Synopsis: Test proposal for clarinet layer
 ;; Description:
-;; ccd002-treasury: allows nft contract
+;; ccd002-treasury: withdraw-stx() succeeds and transfers STX to recipient
 
 (impl-trait .proposal-trait.proposal-trait)
 

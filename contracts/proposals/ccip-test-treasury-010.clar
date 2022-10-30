@@ -2,14 +2,14 @@
 ;; Version: 1.0.0
 ;; Synopsis: Test proposal for clarinet layer
 ;; Description:
-;; ccd001-direct-execute: set-sunset-block-height() succeeds
+;; ccd002-treasury: withdraw-ft() fails if withdrawal exceed balance
 
 (impl-trait .proposal-trait.proposal-trait)
 
 (define-public (execute (sender principal))
 	(begin
 		;; tests success of setting sunset height
-    	(try! (contract-call? .ccd001-direct-execute set-sunset-block-height u10))
+    	(try! (contract-call? .ccd002-treasury-mia withdraw-ft .ccext-governance-token-mia u2000 'ST3AM1A56AK2C1XAFJ4115ZSV26EB49BVQ10MGCS0))
 		(ok true)
 	)
 )

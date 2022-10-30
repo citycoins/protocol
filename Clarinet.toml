@@ -73,6 +73,9 @@ path = "contracts/proposals/ccip-test-treasury-008.clar"
 [contracts.ccip-test-treasury-009]
 path = "contracts/proposals/ccip-test-treasury-009.clar"
 
+[contracts.ccip-test-treasury-010]
+path = "contracts/proposals/ccip-test-treasury-010.clar"
+
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
 

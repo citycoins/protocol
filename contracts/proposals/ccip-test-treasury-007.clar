@@ -2,7 +2,7 @@
 ;; Version: 1.0.0
 ;; Synopsis: Test proposal for clarinet layer
 ;; Description:
-;; ccd002-treasury: allows nft contract
+;; ccd002-treasury: withdraw-ft() fails if asset is not allowed
 
 (impl-trait .proposal-trait.proposal-trait)
 

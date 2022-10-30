@@ -2,7 +2,7 @@
 ;; Version: 1.0.0
 ;; Synopsis: Test proposal for clarinet layer
 ;; Description:
-;; ccd002-treasury: mints assets to addresses to test withdraw/deposit
+;; ccd002-treasury: deposit-ft() succeeds and transfers FT to the vault
 
 (impl-trait .proposal-trait.proposal-trait)
 
