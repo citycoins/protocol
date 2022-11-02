@@ -59,8 +59,8 @@
         (
           (newId (+ u1 (var-get usersNonce)))
         )
-        (map-set Users newId user)
-        (map-set UserIds user newId)
+        (map-insert Users newId user)
+        (map-insert UserIds user newId)
         (var-set usersNonce newId)
         (ok newId)
       )
