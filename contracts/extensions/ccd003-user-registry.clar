@@ -8,7 +8,7 @@
 
 ;; ERROR CODES
 
-(define-constant ERR_UNAUTHORIZED (err u1000))
+(define-constant ERR_UNAUTHORIZED (err u3200))
 
 ;; AUTHORIZATION CHECK
 
