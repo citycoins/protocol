@@ -10,6 +10,7 @@
 (define-constant ERR_INSUFFICIENT_COMMIT (err u3403))
 (define-constant ERR_NO_VRF_SEED_FOUND (err u3404))
 (define-constant ERR_ALREADY_CLAIMED (err u3405))
+(define-constant ERR_MINER_NOT_WINNER (err u3406))
 
 ;; AUTHORIZATION CHECK
 
@@ -110,7 +111,8 @@
   {
     commit: uint,
     low: uint,
-    high: uint
+    high: uint,
+    winner: bool
   }
 )
 
@@ -255,7 +257,8 @@
       {
         commit: amount,
         low: (if (> vrfLowVal u0) (+ vrfLowVal u1) u0),
-        high: (+ vrfLowVal amount)
+        high: (+ vrfLowVal amount),
+        winner: false
       }
     )
     ;; set new high value for VRF
@@ -272,19 +275,26 @@
 ;; MINING CLAIM ACTIONS
 
 ;; wrapper that calls the next function using the current block height
-(define-public (claim-mining-reward (claimHeight uint))
-  ;; TODO: add activation / shut down checks
-  (try! (claim-mining-reward-at-block tx-sender block-height claimHeight))
+(define-public (claim-mining-reward (cityName (string-ascii 32)) (claimHeight uint))
+  (let
+    (
+      (cityId (try! (get-city-id cityName)))
+      (cityActivated (try! (is-city-activated cityId)))
+    )
+    ;; TODO: review logic around contract shutdown
+    (claim-mining-reward-at-block cityId tx-sender block-height claimHeight)
+  )
 )
 
-(define-private (claim-mining-reward-at-block (user principal) (stacksHeight uint) (claimHeight uint))
+(define-private (claim-mining-reward-at-block (cityId uint) (user principal) (stacksHeight uint) (claimHeight uint))
   (let
     (
       (maturityHeight (+ (get-reward-delay) claimHeight))
       (isMature (asserts! (> stacksHeight maturityHeight) ERR_INVALID_PARAMS))
       (userId (try! (get-user-id user)))
-      (blockStats (unwrap! (get-mining-stats-at-block cityId claimHeight) ERR_INVALID_PARAMS))
-      (minerStats (unwrap! (get-miner-at-block cityId claimHeight userId) ERR_INVALID_PARAMS))
+      ;; TODO: review issue if neither below fail but return defaults
+      (blockStats (get-mining-stats-at-block cityId claimHeight))
+      (minerStats (get-miner-at-block cityId claimHeight userId))
       (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_NO_VRF_SEED_FOUND))
       (commitTotal (get-high-value cityId claimHeight))
       (winningValue (mod vrfSample commitTotal))
@@ -294,20 +304,20 @@
     (asserts! (and
       (>= winningValue (get low minerStats))
       (<= winningValue (get high minerStats)))
-      ERR_MINER_DID_NOT_WIN)
+      ERR_MINER_NOT_WINNER)
     ;; update mining stats at block
     (map-set MiningStatsAtBlock
-      claimHeight
+      { cityId: cityId, height: claimHeight }
       (merge blockStats { claimed: true })
     )
     ;; set miner details at block
     (map-set MinerAtBlock
-      claimHeight
+      { cityId: cityId, height: claimHeight, userId: userId }
       (merge minerStats { winner: true })
     )
     ;; set winner at block
     (map-set WinnerAtBlock
-      claimHeight
+      { cityId: cityId, height: claimHeight }
       userId
     )
     ;; TODO: print winner details here?
