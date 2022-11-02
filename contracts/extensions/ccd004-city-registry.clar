@@ -1,4 +1,11 @@
-;; City Registration
+;; Title: CCD004 City Registration
+;; Version: 1.0.0
+;; Synopsis:
+;; A central city registry for the CityCoins protocol.
+;; Description:
+;; An extension contract that associates a city name (string-ascii 32)
+;; with an ID (uint) for use in other CityCoins extensions. It also
+;; contains treasury and activation details available through the ID.
 
 ;; ERROR CODES
 
