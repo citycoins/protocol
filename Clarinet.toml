@@ -1,70 +1,67 @@
 [project]
-name = "protocol"
+name = 'citycoins-protocol'
+description = ''
 authors = []
-description = ""
 telemetry = false
-requirements = []
-boot_contracts = ["pox", "costs-v2", "bns"]
+cache_dir = '.cache'
 
-[project.cache_location]
-path = ".requirements"
-
-# Base DAO
+[[project.requirements]]
+contract_id = 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2'
 
 [contracts.base-dao]
-path = "contracts/base-dao.clar"
-depends_on = ["proposal-trait", "extension-trait"]
-
-# Extensions
+path = 'contracts/base-dao.clar'
+clarity_version = 1
 
 [contracts.ccd001-direct-execute]
-path = "contracts/extensions/ccd001-direct-execute.clar"
-depends_on = ["base-dao"]
+path = 'contracts/extensions/ccd001-direct-execute.clar'
+clarity_version = 1
 
 [contracts.ccd002-treasury]
-path = "contracts/extensions/ccd002-treasury.clar"
-depends_on = ["base-dao", "sip009-nft-trait", "sip010-ft-trait"]
+path = 'contracts/extensions/ccd002-treasury.clar'
+clarity_version = 1
 
-# Proposals
+[contracts.ccd003-user-registry]
+path = 'contracts/extensions/ccd003-user-registry.clar'
+clarity_version = 1
 
-[contracts.ccip012-bootstrap]
-path = "contracts/proposals/ccip012-bootstrap.clar"
-depends_on = ["base-dao", "ccd001-direct-execute"]
+[contracts.ccd004-city-registry]
+path = 'contracts/extensions/ccd004-city-registry.clar'
+clarity_version = 1
 
-## Test Specific Proposals
+[contracts.ccd005-city-mining]
+path = 'contracts/extensions/ccd005-city-mining.clar'
+clarity_version = 1
+
+[contracts.ccd006-city-stacking]
+path = 'contracts/extensions/ccd006-city-stacking.clar'
+clarity_version = 1
 
 [contracts.ccip-test-proposal-001]
-path = "contracts/proposals/ccip-test-proposal-001.clar"
-depends_on = ["proposal-trait", "ccd001-direct-execute"]
+path = 'contracts/proposals/ccip-test-proposal-001.clar'
+clarity_version = 1
 
-# DAO Traits
+[contracts.ccip012-bootstrap]
+path = 'contracts/proposals/ccip012-bootstrap.clar'
+clarity_version = 1
 
 [contracts.extension-trait]
-path = "contracts/traits/extension-trait.clar"
-depends_on = []
+path = 'contracts/traits/extension-trait.clar'
+clarity_version = 1
 
 [contracts.proposal-trait]
-path = "contracts/traits/proposal-trait.clar"
-depends_on = []
-
-# Stacks Traits
+path = 'contracts/traits/proposal-trait.clar'
+clarity_version = 1
 
 [contracts.sip009-nft-trait]
-path = "contracts/traits/sip009-nft-trait.clar"
-depends_on =  []
+path = 'contracts/traits/sip009-nft-trait.clar'
+clarity_version = 1
 
 [contracts.sip010-ft-trait]
-path = "contracts/traits/sip010-ft-trait.clar"
-depends_on =  []
-
-# REPL settings
-
-[repl]
-costs_version = 2
-parser_version = 2
+path = 'contracts/traits/sip010-ft-trait.clar'
+clarity_version = 1
 
 [repl.analysis]
-passes = ["check_checker"]
+passes = ['check_checker']
 
 [repl.analysis.check_checker]
 strict = false

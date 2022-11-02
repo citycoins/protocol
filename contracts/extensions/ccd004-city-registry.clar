@@ -9,7 +9,7 @@
 
 ;; ERROR CODES
 
-(define-constant ERR_UNAUTHORIZED (err u3200))
+(define-constant ERR_UNAUTHORIZED (err u3300))
 
 ;; AUTHORIZATION CHECK
 
@@ -77,6 +77,11 @@
     treasuryName: (string-ascii 32)
   }
   principal
+)
+
+;; returns (some principal) or none
+(define-read-only (get-city-treasury (cityId uint) (treasuryName (string-ascii 32)))
+  (map-get? CityTreasuries {cityId: cityId, treasuryName: treasuryName})
 )
 
 ;; CITY ACTIVATION
