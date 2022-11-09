@@ -1,6 +1,6 @@
 ;; Mining
 
-
+;; TODO: TRAITS
 
 ;; ERROR CODES
 
@@ -38,36 +38,6 @@
     (asserts! (> delay u0) ERR_INVALID_PARAMS)
     (ok (var-set rewardDelay delay))
   )
-)
-
-;; private getter for city ID from ccd004-city-registry
-;; returns (ok uint) or ERR_INVALID_PARAMS if not found
-(define-private (get-city-id (cityName (string-ascii 32)))
-  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_PARAMS))
-)
-
-;; private getter for city activation status from ccd004-city-registry
-;; returns (ok true) or ERR_INVALID_PARAMS if not found
-(define-private (is-city-activated (cityId uint))
-  (ok (asserts! (contract-call? .ccd004-city-registry is-city-activated cityId) ERR_INVALID_PARAMS))
-)
-
-;; private getter for city activation details from ccd004-city-registry
-;; returns (ok tuple) or ERR_INVALID_PARAMS if not found
-(define-private (get-city-activation-details (cityId uint))
-  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-activation-details cityId) ERR_INVALID_PARAMS))
-)
-
-;; private getter for city treasury details from ccd004-city-registry
-;; returns (ok principal) or ERR_INVALID_PARAMS if not found
-(define-private (get-city-treasury (cityId uint) (treasuryName (string-ascii 32)))
-  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-treasury cityId treasuryName) ERR_INVALID_PARAMS))
-)
-
-;; private getter for a user ID from ccd003-user-registry
-;; returns (ok uint) or ERR_INVALID_PARAMS if not found
-(define-private (get-user-id (user principal))
-  (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_PARAMS))
 )
 
 ;; At a given city and Stacks block height
@@ -189,7 +159,7 @@
     )
     
     (asserts! (> (len amounts) u0) ERR_INVALID_PARAMS)
-    ;; fold over mine-block
+    ;; TODO: fold over mine-block
     (ok true)
   )
 )
@@ -322,8 +292,42 @@
     )
     ;; TODO: print winner details here?
     ;; TODO: mint coinbase!
+    ;; TODO: get-coinbase-amount function
+    ;; (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 mint (get-coinbase-amount stacksHeight) recipient))
     (ok true)
   )
+)
+
+;; PRIVATE GETTERS
+
+;; city ID from ccd004-city-registry
+;; returns (ok uint) or ERR_INVALID_PARAMS if not found
+(define-private (get-city-id (cityName (string-ascii 32)))
+  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_PARAMS))
+)
+
+;; city activation status from ccd004-city-registry
+;; returns (ok true) or ERR_INVALID_PARAMS if not found
+(define-private (is-city-activated (cityId uint))
+  (ok (asserts! (contract-call? .ccd004-city-registry is-city-activated cityId) ERR_INVALID_PARAMS))
+)
+
+;; city activation details from ccd004-city-registry
+;; returns (ok tuple) or ERR_INVALID_PARAMS if not found
+(define-private (get-city-activation-details (cityId uint))
+  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-activation-details cityId) ERR_INVALID_PARAMS))
+)
+
+;; city treasury details from ccd004-city-registry
+;; returns (ok principal) or ERR_INVALID_PARAMS if not found
+(define-private (get-city-treasury (cityId uint) (treasuryName (string-ascii 32)))
+  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-treasury cityId treasuryName) ERR_INVALID_PARAMS))
+)
+
+;; a user ID from ccd003-user-registry
+;; returns (ok uint) or ERR_INVALID_PARAMS if not found
+(define-private (get-user-id (user principal))
+  (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_PARAMS))
 )
 
 ;; OTHER
