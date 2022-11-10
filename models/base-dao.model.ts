@@ -1,4 +1,4 @@
-import { Account, Tx, types } from "../utils/deps.ts";
+import { Chain, Account, Tx, types } from "../utils/deps.ts";
 
 enum ErrCode {
   ERR_UNAUTHORIZED = 1000,
@@ -16,6 +16,13 @@ export class BaseDao {
 
   name = "base-dao";
   static readonly ErrCode = ErrCode;
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
 
   // Extensions
 
