@@ -1,9 +1,8 @@
 [project]
-name = 'citycoins-protocol'
+name = "citycoins-protocol"
 authors = []
 description = ""
 telemetry = false
-path = ".requirements"
 boot_contracts = ["pox", "costs-v2", "bns"]
 
 [[project.requirements]]
@@ -13,11 +12,13 @@ contract_id = "SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standa
 contract_id = "SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait"
 
 [[project.requirements]]
-contract_id = 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2'
+contract_id = "SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2"
+
+[[project.requirements]]
+contract_id = "SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2"
 
 [project.cache_location]
 path = ".requirements"
-
 [contracts.base-dao]
 path = "contracts/base-dao.clar"
 
@@ -31,16 +32,16 @@ path = "contracts/extensions/ccd002-treasury.clar"
 path = "contracts/extensions/ccd002-treasury.clar"
 
 [contracts.ccd003-user-registry]
-path = 'contracts/extensions/ccd003-user-registry.clar'
+path = "contracts/extensions/ccd003-user-registry.clar"
 
 [contracts.ccd004-city-registry]
-path = 'contracts/extensions/ccd004-city-registry.clar'
+path = "contracts/extensions/ccd004-city-registry.clar"
 
 [contracts.ccd005-city-mining]
-path = 'contracts/extensions/ccd005-city-mining.clar'
+path = "contracts/extensions/ccd005-city-mining.clar"
 
 [contracts.ccd006-city-stacking]
-path = 'contracts/extensions/ccd006-city-stacking.clar'
+path = "contracts/extensions/ccd006-city-stacking.clar"
 
 [contracts.ccext-governance-token-mia]
 path = "contracts/external/ccext-governance-token-mia.clar"
@@ -93,6 +94,18 @@ path = "contracts/proposals/ccip-test-treasury-009.clar"
 [contracts.ccip-test-treasury-010]
 path = "contracts/proposals/ccip-test-treasury-010.clar"
 
+[contracts.ccip-test-user-registry-001]
+path = "contracts/proposals/ccip-test-user-registry-001.clar"
+
+[contracts.ccip-test-user-registry-002]
+path = "contracts/proposals/ccip-test-user-registry-002.clar"
+
+[contracts.ccip-test-user-registry-003]
+path = "contracts/proposals/ccip-test-user-registry-003.clar"
+
+[contracts.ccip-test-city-registry-001]
+path = "contracts/proposals/ccip-test-city-registry-001.clar"
+
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
 
@@ -107,7 +120,7 @@ costs_version = 2
 parser_version = 2
 
 [repl.analysis]
-passes = ['check_checker']
+passes = ["check_checker"]
 
 [repl.analysis.check_checker]
 strict = false

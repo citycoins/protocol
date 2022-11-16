@@ -1,43 +1,9 @@
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import { EXTENSIONS, EXTERNAL } from "../../utils/common.ts";
+import { constructAndPassProposal, passProposal, EXTENSIONS, EXTERNAL } from "../../utils/common.ts";
 import { PROPOSALS } from "../../utils/common.ts";
-import { BaseDao } from "../../models/base-dao.model.ts";
 import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
-import { CCD001DirectExecute } from "../../models/extensions/ccd001-direct-execute.model.ts";
 import { CCEXTGovernanceToken } from "../../models/external/ccext-governance-token.model.ts";
 import { CCEXTNft } from "../../models/external/ccext-nft.model.ts";
-
-const constructAndPassProposal = (chain: Chain, accounts: Map<string, Account>, proposal: string): any => {
-  const sender = accounts.get("deployer")!;
-  const baseDao = new BaseDao(chain, sender);
-  const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-  const approver1 = accounts.get("wallet_1")!;
-  const approver2 = accounts.get("wallet_2")!;
-  const approver3 = accounts.get("wallet_3")!;
-  const { receipts } = chain.mineBlock([
-    baseDao.construct(sender, PROPOSALS.CCIP_012),
-    ccd001DirectExecute.directExecute(approver1, proposal),
-    ccd001DirectExecute.directExecute(approver2, proposal),
-    ccd001DirectExecute.directExecute(approver3, proposal),
-  ]);
-  // console.log(receipts);
-  return receipts;
-}
-
-const passProposal = (chain: Chain, accounts: Map<string, Account>, proposal: string): any => {
-  const sender = accounts.get("deployer")!;
-  const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-  const approver1 = accounts.get("wallet_1")!;
-  const approver2 = accounts.get("wallet_2")!;
-  const approver3 = accounts.get("wallet_3")!;
-  const { receipts } = chain.mineBlock([
-    ccd001DirectExecute.directExecute(approver1, proposal),
-    ccd001DirectExecute.directExecute(approver2, proposal),
-    ccd001DirectExecute.directExecute(approver3, proposal),
-  ]);
-  return receipts;
-}
-
 
 // Authorization check
 

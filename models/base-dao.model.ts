@@ -1,4 +1,4 @@
-import { Chain, Account, Tx, types } from "../utils/deps.ts";
+import { Chain, Account, Tx, types, ReadOnlyFn } from "../utils/deps.ts";
 
 enum ErrCode {
   ERR_UNAUTHORIZED = 1000,
@@ -26,13 +26,8 @@ export class BaseDao {
 
   // Extensions
 
-  isExtension(sender: Account, extension: string) {
-    return Tx.contractCall(
-      this.name,
-      "is-extension",
-      [types.principal(extension)],
-      sender.address
-    );
+  isExtension(extension: string): ReadOnlyFn {
+    return this.callReadOnlyFn("is-extension", [types.principal(extension)]);
   }
 
   setExtension(sender: Account, ext: Extension) {
@@ -102,5 +97,16 @@ export class BaseDao {
       [types.principal(extension), types.buff(memo)],
       sender.address
     );
+  }
+
+  private callReadOnlyFn(
+    method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
+    const result = this.chain.callReadOnlyFn(
+      this.name,
+      method,
+      args,
+      sender?.address
+    );
+    return result;
   }
 }

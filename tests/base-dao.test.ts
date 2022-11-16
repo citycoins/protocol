@@ -14,17 +14,11 @@ Clarinet.test({
     chain.mineEmptyBlockUntil(100);
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.isExtension(sender, EXTENSIONS.CCD001_DIRECT_EXECUTE),
-      baseDao.isExtension(sender, EXTENSIONS.CCD002_TREASURY_MIA),
-      baseDao.isExtension(sender, EXTENSIONS.CCD002_TREASURY_NYC),
-    ]);
+    baseDao.isExtension(EXTENSIONS.CCD001_DIRECT_EXECUTE).result.expectBool(false);
+    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_MIA).result.expectBool(false);
+    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_NYC).result.expectBool(false);
 
     // assert
-    assertEquals(receipts.length, 3);
-    for (const receipt of receipts) {
-      receipt.result.expectBool(false);
-    }
   },
 });
 
@@ -38,18 +32,12 @@ Clarinet.test({
     chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.isExtension(sender, EXTENSIONS.CCD001_DIRECT_EXECUTE),
-      baseDao.isExtension(sender, EXTENSIONS.CCD002_TREASURY_MIA),
-      baseDao.isExtension(sender, EXTENSIONS.CCD002_TREASURY_NYC),
-    ]);
 
     // assert
-    assertEquals(receipts.length, 3);
-    for (const receipt of receipts) {
-      receipt.result.expectBool(true);
-    }
-  },
+    baseDao.isExtension(EXTENSIONS.CCD001_DIRECT_EXECUTE).result.expectBool(true);
+    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_MIA).result.expectBool(true);
+    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_NYC).result.expectBool(true);
+  }
 });
 
 Clarinet.test({
