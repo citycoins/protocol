@@ -9,22 +9,16 @@ Clarinet.test({
   name: "base-dao: is-extension() succeeds and returns false with unrecognized extension",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
-    const baseDao = new BaseDao();
     const sender = accounts.get("deployer")!;
+    const baseDao = new BaseDao(chain, sender);
     chain.mineEmptyBlockUntil(100);
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.isExtension(sender, EXTENSIONS.CCD001_DIRECT_EXECUTE),
-      baseDao.isExtension(sender, EXTENSIONS.CCD002_TREASURY_MIA),
-      baseDao.isExtension(sender, EXTENSIONS.CCD002_TREASURY_NYC),
-    ]);
+    baseDao.isExtension(EXTENSIONS.CCD001_DIRECT_EXECUTE).result.expectBool(false);
+    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_MIA).result.expectBool(false);
+    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_NYC).result.expectBool(false);
 
     // assert
-    assertEquals(receipts.length, 3);
-    for (const receipt of receipts) {
-      receipt.result.expectBool(false);
-    }
   },
 });
 
@@ -32,31 +26,26 @@ Clarinet.test({
   name: "base-dao: is-extension() succeeds and returns true for active extensions",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
-    const baseDao = new BaseDao();
     const sender = accounts.get("deployer")!;
+    const baseDao = new BaseDao(chain, sender);
     chain.mineEmptyBlockUntil(100);
     chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.isExtension(sender, EXTENSIONS.CCD001_DIRECT_EXECUTE),
-      baseDao.isExtension(sender, EXTENSIONS.CCD002_TREASURY_MIA),
-      baseDao.isExtension(sender, EXTENSIONS.CCD002_TREASURY_NYC),
-    ]);
 
     // assert
-    assertEquals(receipts.length, 3);
-    for (const receipt of receipts) {
-      receipt.result.expectBool(true);
-    }
-  },
+    baseDao.isExtension(EXTENSIONS.CCD001_DIRECT_EXECUTE).result.expectBool(true);
+    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_MIA).result.expectBool(true);
+    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_NYC).result.expectBool(true);
+  }
 });
 
 Clarinet.test({
   name: "base-dao: set-extension() fails if caller is not DAO or extension",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
-    const baseDao = new BaseDao();
+    const deployer = accounts.get("deployer")!;
+    const baseDao = new BaseDao(chain, deployer);
     const sender = accounts.get("wallet_1")!;
 
     // act
@@ -77,8 +66,10 @@ Clarinet.test({
   name: "base-dao: set-extensions() fails if caller is not DAO or extension",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
-    const baseDao = new BaseDao();
+    const deployer = accounts.get("deployer")!;
+    const baseDao = new BaseDao(chain, deployer);
     const sender = accounts.get("wallet_1")!;
+
     const extensions = [
       { extension: EXTENSIONS.CCD001_DIRECT_EXECUTE, enabled: true },
       { extension: EXTENSIONS.CCD002_TREASURY_MIA, enabled: true },
@@ -102,8 +93,8 @@ Clarinet.test({
   name: "base-dao: executed-at() succeeds and returns the block height the proposal was executed",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
-    const baseDao = new BaseDao();
     const sender = accounts.get("deployer")!;
+    const baseDao = new BaseDao(chain, sender);
     const targetBlock = 100;
     chain.mineEmptyBlockUntil(targetBlock);
     chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
@@ -116,7 +107,7 @@ Clarinet.test({
     // assert
     assertEquals(receipts.length, 1);
     for (const receipt of receipts) {
-      receipt.result.expectSome().expectUint(targetBlock);
+      receipt.result.expectSome().expectUint((targetBlock + 1));
     }
   },
 });
@@ -125,8 +116,8 @@ Clarinet.test({
   name: "base-dao: executed-at() succeeds and returns none with unrecognized proposal",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
-    const baseDao = new BaseDao();
     const sender = accounts.get("deployer")!;
+    const baseDao = new BaseDao(chain, sender);
     chain.mineEmptyBlockUntil(100);
 
     // act
@@ -146,8 +137,8 @@ Clarinet.test({
   name: "base-dao: execute() fails if caller is not DAO or extension",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
-    const baseDao = new BaseDao();
     const sender = accounts.get("deployer")!;
+    const baseDao = new BaseDao(chain, sender);
 
     // act
     const { receipts } = chain.mineBlock([
@@ -166,27 +157,28 @@ Clarinet.test({
   name: "base-dao: construct() fails when initializing the DAO with bootstrap proposal a second time",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
-    const baseDao = new BaseDao();
-    const sender = accounts.get("deployer")!;
+    const deployer = accounts.get("deployer")!;
+    const baseDao = new BaseDao(chain, deployer);
 
     // act
     const { receipts } = chain.mineBlock([
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
+      baseDao.construct(deployer, PROPOSALS.CCIP_012),
+      baseDao.construct(deployer, PROPOSALS.CCIP_012),
     ]);
 
     // assert
     assertEquals(receipts.length, 2);
     receipts[0].result.expectOk().expectBool(true);
     receipts[1].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
-  },
+  }
 });
 
 Clarinet.test({
   name: "base-dao: construct() fails when called by an account that is not the deployer",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
-    const baseDao = new BaseDao();
+    const deployer = accounts.get("deployer")!;
+    const baseDao = new BaseDao(chain, deployer);
     const sender = accounts.get("wallet_1")!;
 
     // act
@@ -197,15 +189,15 @@ Clarinet.test({
     // assert
     assertEquals(receipts.length, 1);
     receipts[0].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
-  },
+  }
 });
 
 Clarinet.test({
   name: "base-dao: construct() succeeds when initializing the DAO with bootstrap proposal",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
-    const baseDao = new BaseDao();
     const sender = accounts.get("deployer")!;
+    const baseDao = new BaseDao(chain, sender);
 
     // act
     const { receipts } = chain.mineBlock([
@@ -241,8 +233,8 @@ Clarinet.test({
   name: "base-dao: request-extension-callback() fails if caller is not an extension",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
-    const baseDao = new BaseDao();
     const sender = accounts.get("deployer")!;
+    const baseDao = new BaseDao(chain, sender);
 
     // act
     const { receipts } = chain.mineBlock([
@@ -258,16 +250,16 @@ Clarinet.test({
     receipts[0].result
       .expectErr()
       .expectUint(BaseDao.ErrCode.ERR_INVALID_EXTENSION);
-  },
+  }
 });
 
 Clarinet.test({
   name: "base-dao: execute() fails if proposal has already been executed via direct execute",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
-    const baseDao = new BaseDao();
-    const directExecute = new CCD001DirectExecute();
     const sender = accounts.get("deployer")!;
+    const baseDao = new BaseDao(chain, sender);
+    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
     const approver1 = accounts.get("wallet_1")!;
     const approver2 = accounts.get("wallet_2")!;
     const approver3 = accounts.get("wallet_3")!;
@@ -276,12 +268,12 @@ Clarinet.test({
     // act directExecute
     const { receipts } = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      directExecute.directExecute(approver1, PROPOSALS.CCIP_TEST_001),
-      directExecute.directExecute(approver2, PROPOSALS.CCIP_TEST_001),
-      directExecute.directExecute(approver3, PROPOSALS.CCIP_TEST_001),
-      // This 4th signal triggers the extension to request second execution of the proposal
-      // which base-dao takes responsibility for preventing for all proposals.
-      directExecute.directExecute(approver4, PROPOSALS.CCIP_TEST_001)
+      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      // This 4th signal triggers the extension to request second execution of the proposal.
+      // Base-dao takes responsibility for preventing this for all proposals.
+      ccd001DirectExecute.directExecute(approver4, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)
     ]);
     
     // assert

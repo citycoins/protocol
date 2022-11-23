@@ -1,67 +1,126 @@
 [project]
-name = 'citycoins-protocol'
-description = ''
+name = "citycoins-protocol"
 authors = []
+description = ""
 telemetry = false
-cache_dir = '.cache'
+boot_contracts = ["pox", "costs-v2", "bns"]
 
 [[project.requirements]]
-contract_id = 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2'
+contract_id = "SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard"
 
+[[project.requirements]]
+contract_id = "SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait"
+
+[[project.requirements]]
+contract_id = "SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2"
+
+[[project.requirements]]
+contract_id = "SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2"
+
+[project.cache_location]
+path = ".requirements"
 [contracts.base-dao]
-path = 'contracts/base-dao.clar'
-clarity_version = 1
+path = "contracts/base-dao.clar"
 
 [contracts.ccd001-direct-execute]
-path = 'contracts/extensions/ccd001-direct-execute.clar'
-clarity_version = 1
+path = "contracts/extensions/ccd001-direct-execute.clar"
 
-[contracts.ccd002-treasury]
-path = 'contracts/extensions/ccd002-treasury.clar'
-clarity_version = 1
+[contracts.ccd002-treasury-mia]
+path = "contracts/extensions/ccd002-treasury.clar"
+
+[contracts.ccd002-treasury-nyc]
+path = "contracts/extensions/ccd002-treasury.clar"
 
 [contracts.ccd003-user-registry]
-path = 'contracts/extensions/ccd003-user-registry.clar'
-clarity_version = 1
+path = "contracts/extensions/ccd003-user-registry.clar"
 
 [contracts.ccd004-city-registry]
-path = 'contracts/extensions/ccd004-city-registry.clar'
-clarity_version = 1
+path = "contracts/extensions/ccd004-city-registry.clar"
 
 [contracts.ccd005-city-mining]
-path = 'contracts/extensions/ccd005-city-mining.clar'
-clarity_version = 1
+path = "contracts/extensions/ccd005-city-mining.clar"
 
 [contracts.ccd006-city-stacking]
-path = 'contracts/extensions/ccd006-city-stacking.clar'
-clarity_version = 1
+path = "contracts/extensions/ccd006-city-stacking.clar"
 
-[contracts.ccip-test-proposal-001]
-path = 'contracts/proposals/ccip-test-proposal-001.clar'
-clarity_version = 1
+[contracts.ccext-governance-token-mia]
+path = "contracts/external/ccext-governance-token-mia.clar"
+
+[contracts.ccext-governance-token-nyc]
+path = "contracts/external/ccext-governance-token-nyc.clar"
+
+[contracts.ccext-nft-mia]
+path = "contracts/external/ccext-nft-mia.clar"
+
+[contracts.ccext-nft-nyc]
+path = "contracts/external/ccext-nft-nyc.clar"
+
+[contracts.ccip-test-direct-execute-001]
+path = "contracts/proposals/ccip-test-direct-execute-001.clar"
+
+[contracts.ccip-test-direct-execute-002]
+path = "contracts/proposals/ccip-test-direct-execute-002.clar"
+
+[contracts.ccip-test-direct-execute-003]
+path = "contracts/proposals/ccip-test-direct-execute-003.clar"
+
+[contracts.ccip-test-treasury-001]
+path = "contracts/proposals/ccip-test-treasury-001.clar"
+
+[contracts.ccip-test-treasury-002]
+path = "contracts/proposals/ccip-test-treasury-002.clar"
+
+[contracts.ccip-test-treasury-003]
+path = "contracts/proposals/ccip-test-treasury-003.clar"
+
+[contracts.ccip-test-treasury-004]
+path = "contracts/proposals/ccip-test-treasury-004.clar"
+
+[contracts.ccip-test-treasury-005]
+path = "contracts/proposals/ccip-test-treasury-005.clar"
+
+[contracts.ccip-test-treasury-006]
+path = "contracts/proposals/ccip-test-treasury-006.clar"
+
+[contracts.ccip-test-treasury-007]
+path = "contracts/proposals/ccip-test-treasury-007.clar"
+
+[contracts.ccip-test-treasury-008]
+path = "contracts/proposals/ccip-test-treasury-008.clar"
+
+[contracts.ccip-test-treasury-009]
+path = "contracts/proposals/ccip-test-treasury-009.clar"
+
+[contracts.ccip-test-treasury-010]
+path = "contracts/proposals/ccip-test-treasury-010.clar"
+
+[contracts.ccip-test-user-registry-001]
+path = "contracts/proposals/ccip-test-user-registry-001.clar"
+
+[contracts.ccip-test-user-registry-002]
+path = "contracts/proposals/ccip-test-user-registry-002.clar"
+
+[contracts.ccip-test-user-registry-003]
+path = "contracts/proposals/ccip-test-user-registry-003.clar"
+
+[contracts.ccip-test-city-registry-001]
+path = "contracts/proposals/ccip-test-city-registry-001.clar"
 
 [contracts.ccip012-bootstrap]
-path = 'contracts/proposals/ccip012-bootstrap.clar'
-clarity_version = 1
+path = "contracts/proposals/ccip012-bootstrap.clar"
 
 [contracts.extension-trait]
-path = 'contracts/traits/extension-trait.clar'
-clarity_version = 1
+path = "contracts/traits/extension-trait.clar"
 
 [contracts.proposal-trait]
-path = 'contracts/traits/proposal-trait.clar'
-clarity_version = 1
+path = "contracts/traits/proposal-trait.clar"
 
-[contracts.sip009-nft-trait]
-path = 'contracts/traits/sip009-nft-trait.clar'
-clarity_version = 1
-
-[contracts.sip010-ft-trait]
-path = 'contracts/traits/sip010-ft-trait.clar'
-clarity_version = 1
+[repl]
+costs_version = 2
+parser_version = 2
 
 [repl.analysis]
-passes = ['check_checker']
+passes = ["check_checker"]
 
 [repl.analysis.check_checker]
 strict = false
