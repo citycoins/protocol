@@ -163,7 +163,7 @@
       (cityId (try! (get-city-id cityName)))
       (cityActivated (try! (is-city-activated cityId)))
       (cityDetails (try! (get-city-activation-details cityId)))
-      (cityTreasury (try! (get-city-treasury cityId "mining")))
+      (cityTreasury (try! (get-city-treasury-by-name cityId "mining")))
     )
     
     (asserts! (> (len amounts) u0) ERR_INVALID_PARAMS)
@@ -328,8 +328,13 @@
 
 ;; city treasury details from ccd004-city-registry
 ;; returns (ok principal) or ERR_INVALID_PARAMS if not found
-(define-private (get-city-treasury (cityId uint) (treasuryName (string-ascii 32)))
-  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-treasury cityId treasuryName) ERR_INVALID_PARAMS))
+(define-private (get-city-treasury-by-name (cityId uint) (treasuryName (string-ascii 32)))
+  (let
+    (
+      (treasuryId (unwrap! (contract-call? .ccd004-city-registry get-city-treasury-id cityId treasuryName) ERR_INVALID_PARAMS))
+    )
+    (ok (unwrap! (contract-call? .ccd004-city-registry get-city-treasury-address cityId treasuryId) ERR_INVALID_PARAMS))
+  )
 )
 
 ;; a user ID from ccd003-user-registry

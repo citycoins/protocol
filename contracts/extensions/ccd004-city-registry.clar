@@ -77,16 +77,31 @@
   uint ;; nonce
 )
 
-;; store treasury data based on city ID and nonce
-(define-map CityTreasuryData
+;; store treasury by city ID and nonce
+(define-map CityTreasuryNames
   {
     cityId: uint,
-    nonce: uint
+    treasuryId: uint
   }
+  (string-ascii 32)
+)
+
+;; store treasury by city ID and name
+(define-map CityTreasuryIds
   {
-    address: principal,
-    name: (string-ascii 32)
+    cityId: uint,
+    treasuryName: (string-ascii 32)
   }
+  uint
+)
+
+;; store treasury address by city ID and nonce
+(define-map CityTreasuryAddress
+  {
+    cityId: uint,
+    treasuryId: uint
+  }
+  principal
 )
 
 ;; returns current nonce or default of u0
@@ -94,9 +109,19 @@
   (default-to u0 (map-get? CityTreasuryNonce cityId))
 )
 
-;; returns (some {address: principal, name: (string-ascii 32)}) or none
-(define-read-only (get-city-treasury (cityId uint) (nonce uint))
-  (map-get? CityTreasuryData {cityId: cityId, nonce: nonce})
+;; returns (some uint) or none
+(define-read-only (get-city-treasury-id (cityId uint) (treasuryName (string-ascii 32)))
+  (map-get? CityTreasuryIds { cityId: cityId, treasuryName: treasuryName })
+)
+
+;; returns (some (string-ascii 32)) or none
+(define-read-only (get-city-treasury-name (cityId uint) (treasuryId uint))
+  (map-get? CityTreasuryNames { cityId: cityId, treasuryId: treasuryId })
+)
+
+;; returns (some principal) or none
+(define-read-only (get-city-treasury-address (cityId uint) (treasuryId uint))
+  (map-get? CityTreasuryAddress { cityId: cityId, treasuryId: treasuryId })
 )
 
 ;; adds a new treasury definition for a city
@@ -109,7 +134,9 @@
       )
       (try! (is-dao-or-extension))
       (map-set CityTreasuryNonce cityId nonce)
-      (map-insert CityTreasuryData {cityId: cityId, nonce: nonce} {address: address, name: name})
+      (map-insert CityTreasuryIds { cityId: cityId, treasuryName: name } nonce)
+      (map-insert CityTreasuryNames { cityId: cityId, treasuryId: nonce } name)
+      (map-insert CityTreasuryAddress { cityId: cityId, treasuryId: nonce } address)
       (ok nonce)
     )
   )
@@ -118,13 +145,25 @@
 ;; CITY ACTIVATION
 
 (define-map CityActivation
-  uint
-  bool
+  uint ;; city ID
+  bool ;; status
 )
 
 ;; returns true if city is activated
 (define-read-only (is-city-activated (cityId uint))
   (default-to false (map-get? CityActivation cityId))
+)
+
+(define-public (set-city-activation (cityId uint) (status bool))
+  (let
+    (
+      (currentStatus (is-city-activated cityId))
+    )
+    (try! (is-dao-or-extension))
+    (asserts! (not (is-eq currentStatus status)) ERR_UNAUTHORIZED)
+    (map-set CityActivation cityId status)
+    (ok true)
+  )
 )
 
 (define-map CityActivationDetails
@@ -140,6 +179,20 @@
 ;; returns (some) or none
 (define-read-only (get-city-activation-details (cityId uint))
   (map-get? CityActivationDetails cityId)
+)
+
+;; guarded: can only be called by the DAO or other extensions
+(define-public (set-city-activation-details (cityId uint) (atBlock uint) (delay uint) (target uint) (threshold uint))
+  (begin
+    (try! (is-dao-or-extension))
+    (map-set CityActivationDetails cityId {
+      atBlock: atBlock,
+      delay: delay,
+      target: target,
+      threshold: threshold
+    })
+    (ok true)
+  )
 )
 
 ;; original settings:
