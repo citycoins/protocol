@@ -71,17 +71,48 @@
 
 ;; CITY TREASURIES
 
-(define-map CityTreasuries
-  {
-    cityId: uint,
-    treasuryName: (string-ascii 32)
-  }
-  principal
+;; store nonce for incrementing treasuries per city
+(define-map CityTreasuryNonce
+  uint ;; city ID
+  uint ;; nonce
 )
 
-;; returns (some principal) or none
-(define-read-only (get-city-treasury (cityId uint) (treasuryName (string-ascii 32)))
-  (map-get? CityTreasuries {cityId: cityId, treasuryName: treasuryName})
+;; store treasury data based on city ID and nonce
+(define-map CityTreasuryData
+  {
+    cityId: uint,
+    nonce: uint
+  }
+  {
+    address: principal,
+    name: (string-ascii 32)
+  }
+)
+
+;; returns current nonce or default of u0
+(define-read-only (get-city-treasury-nonce (cityId uint))
+  (default-to u0 (map-get? CityTreasuryNonce cityId))
+)
+
+;; returns (some {address: principal, name: (string-ascii 32)}) or none
+(define-read-only (get-city-treasury (cityId uint) (nonce uint))
+  (map-get? CityTreasuryData {cityId: cityId, nonce: nonce})
+)
+
+;; adds a new treasury definition for a city
+;; guarded: can only be called by the DAO or other extensions
+(define-public (add-city-treasury (cityId uint) (address principal) (name (string-ascii 32)))
+  (begin
+    (let
+      (
+        (nonce (+ u1 (get-city-treasury-nonce cityId)))
+      )
+      (try! (is-dao-or-extension))
+      (map-set CityTreasuryNonce cityId nonce)
+      (map-insert CityTreasuryData {cityId: cityId, nonce: nonce} {address: address, name: name})
+      (ok nonce)
+    )
+  )
 )
 
 ;; CITY ACTIVATION
