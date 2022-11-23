@@ -1,4 +1,11 @@
-;; Mining
+;; Title: CCD005 City Mining
+;; Version: 1.0.0
+;; Synopsis:
+;; A central city mining contract for the CityCoins protocol.
+;; Description:
+;; An extension that provides a mining interface per city, in which
+;; each mining participant spends STX per block for a weighted chance
+;; to mint new CityCoins per the issuance schedule.
 
 ;; TODO: TRAITS
 
@@ -32,6 +39,7 @@
   (var-get rewardDelay)
 )
 
+;; guarded: can only be called by the DAO or other extensions
 (define-public (set-reward-delay (delay uint))
   (begin 
     (try! (is-dao-or-extension))

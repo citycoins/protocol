@@ -5,7 +5,7 @@
 ;; Description:
 ;; An extension contract that associates a city name (string-ascii 32)
 ;; with an ID (uint) for use in other CityCoins extensions. It also
-;; contains treasury and activation details available through the ID.
+;; contains treasury and activation details available using the ID.
 
 ;; ERROR CODES
 
