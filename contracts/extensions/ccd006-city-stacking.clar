@@ -8,7 +8,9 @@
 ;; in return for a proportion of the stacking rewards accrued by the
 ;; related city wallet.
 
-;; TODO: TRAITS
+;; TRAITS
+
+(impl-trait .extension-trait.extension-trait)
 
 ;; ERROR CODES
 
@@ -177,3 +179,9 @@
 ;; TODO: evaluate printing in all contracts
 ;; TODO: evaluate errors in all contracts (simplify?)
 ;; THINK THROUGH THE LENS OF DOCUMENTATION AS WELL
+
+;; Extension callback
+
+(define-public (callback (sender principal) (memo (buff 34)))
+  (ok true)
+)

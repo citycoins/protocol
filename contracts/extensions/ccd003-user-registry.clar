@@ -6,6 +6,10 @@
 ;; An extension contract that associates an address (principal) with an
 ;; ID (uint) for use in other CityCoins extensions.
 
+;; TRAITS
+
+(impl-trait .extension-trait.extension-trait)
+
 ;; ERROR CODES
 
 (define-constant ERR_UNAUTHORIZED (err u3200))
@@ -66,4 +70,10 @@
       )
     )
   )
+)
+
+;; Extension callback
+
+(define-public (callback (sender principal) (memo (buff 34)))
+  (ok true)
 )

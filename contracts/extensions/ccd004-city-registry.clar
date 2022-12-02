@@ -7,6 +7,10 @@
 ;; with an ID (uint) for use in other CityCoins extensions. It also
 ;; contains treasury and activation details available using the ID.
 
+;; TRAITS
+
+(impl-trait .extension-trait.extension-trait)
+
 ;; ERROR CODES
 
 (define-constant ERR_UNAUTHORIZED (err u3300))
@@ -201,3 +205,9 @@
 ;; activation: status (bool)
 ;; activation: target (activation block + delay)
 ;; activation: threshold (20)
+
+;; Extension callback
+
+(define-public (callback (sender principal) (memo (buff 34)))
+  (ok true)
+)

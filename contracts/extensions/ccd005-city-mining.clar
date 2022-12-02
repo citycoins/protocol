@@ -7,7 +7,9 @@
 ;; each mining participant spends STX per block for a weighted chance
 ;; to mint new CityCoins per the issuance schedule.
 
-;; TODO: TRAITS
+;; TRAITS
+
+(impl-trait .extension-trait.extension-trait)
 
 ;; ERROR CODES
 
@@ -172,7 +174,7 @@
   )
 )
 
-(define-public (mine-block
+(define-private (mine-block
   (amount uint)
   (return (response
     {
@@ -348,3 +350,9 @@
 ;; TODO: mining exchange rate for a city
 ;; TODO: mining claims per block
 ;; TODO: more detailed error messages
+
+;; Extension callback
+
+(define-public (callback (sender principal) (memo (buff 34)))
+  (ok true)
+)
