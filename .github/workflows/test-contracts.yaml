@@ -1,7 +1,7 @@
 # GitHub action to run Clarinet tests against the contracts
 # and fail if code is invalid or a test fails.
 
-name: Smart Contract Tests
+name: Test Contracts
 
 on:
   push:
@@ -25,11 +25,11 @@ jobs:
       - name: "Checkout code"
         uses: actions/checkout@v2
       - name: "Check contract syntax"
-        uses: docker://hirosystems/clarinet:1.0.6
+        uses: docker://hirosystems/clarinet:latest
         with:
           args: check
       - name: "Run all contract tests"
-        uses: docker://hirosystems/clarinet:1.0.6
+        uses: docker://hirosystems/clarinet:latest
         with:
           args: test --coverage
       - name: "Upload code coverage"
