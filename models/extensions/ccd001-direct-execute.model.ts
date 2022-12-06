@@ -61,7 +61,10 @@ export class CCD001DirectExecute {
     return this.callReadOnlyFn("is-approver", [types.principal(who)]);
   }
   hasSignalled(proposal: string, who: string): ReadOnlyFn {
-    return this.callReadOnlyFn("has-signalled", [types.principal(proposal), types.principal(who)]);
+    return this.callReadOnlyFn("has-signalled", [
+      types.principal(proposal),
+      types.principal(who),
+    ]);
   }
   getSignalsRequired(): ReadOnlyFn {
     return this.callReadOnlyFn("get-signals-required");
@@ -91,7 +94,10 @@ export class CCD001DirectExecute {
   }
 
   private callReadOnlyFn(
-    method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
+    method: string,
+    args: Array<any> = [],
+    sender: Account = this.deployer
+  ): ReadOnlyFn {
     const result = this.chain.callReadOnlyFn(
       this.name,
       method,
@@ -100,5 +106,4 @@ export class CCD001DirectExecute {
     );
     return result;
   }
-
 }

@@ -151,7 +151,9 @@ export class CCD002Treasury {
   }
 
   getAllowedAsset(assetContract: string): ReadOnlyFn {
-    return this.callReadOnlyFn("get-allowed-asset", [types.principal(assetContract)]);
+    return this.callReadOnlyFn("get-allowed-asset", [
+      types.principal(assetContract),
+    ]);
   }
 
   getBalanceStx(): ReadOnlyFn {
@@ -170,7 +172,10 @@ export class CCD002Treasury {
   }
 
   private callReadOnlyFn(
-    method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
+    method: string,
+    args: Array<any> = [],
+    sender: Account = this.deployer
+  ): ReadOnlyFn {
     const result = this.chain.callReadOnlyFn(
       this.name,
       method,

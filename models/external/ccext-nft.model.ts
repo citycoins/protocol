@@ -1,9 +1,9 @@
 import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 export enum ErrCode {
-  err_owner_only=100,
-  err_token_id_failure=101,
-  err_not_token_owner=102
+  err_owner_only = 100,
+  err_token_id_failure = 101,
+  err_not_token_owner = 102,
 }
 
 export class CCEXTNft {
@@ -18,17 +18,30 @@ export class CCEXTNft {
     this.deployer = deployer;
   }
 
-  transfer(tokenId: number, sender: string, recipient: string, txSender: string): Tx {
+  transfer(
+    tokenId: number,
+    sender: string,
+    recipient: string,
+    txSender: string
+  ): Tx {
     return Tx.contractCall(
       this.name,
       "transfer",
-      [types.uint(tokenId), types.principal(sender), types.principal(recipient)], txSender);
+      [
+        types.uint(tokenId),
+        types.principal(sender),
+        types.principal(recipient),
+      ],
+      txSender
+    );
   }
   mint(recipient: string, txSender: string): Tx {
     return Tx.contractCall(
       this.name,
       "mint",
-      [types.principal(recipient)], txSender);
+      [types.principal(recipient)],
+      txSender
+    );
   }
   getOwner(tokenId: number): ReadOnlyFn {
     return this.callReadOnlyFn("get-owner", [types.uint(tokenId)]);

@@ -1,11 +1,10 @@
 import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 enum ErrCode {
-  ERR_UNAUTHORIZED = 3200
+  ERR_UNAUTHORIZED = 3200,
 }
 
 export class CCD003UserRegistry {
-
   name: string;
   static readonly ErrCode = ErrCode;
   chain: Chain;
@@ -56,7 +55,10 @@ export class CCD003UserRegistry {
   }
 
   private callReadOnlyFn(
-    method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
+    method: string,
+    args: Array<any> = [],
+    sender: Account = this.deployer
+  ): ReadOnlyFn {
     const result = this.chain.callReadOnlyFn(
       this.name,
       method,

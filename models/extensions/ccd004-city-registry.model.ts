@@ -1,11 +1,10 @@
 import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 enum ErrCode {
-  ERR_UNAUTHORIZED = 3300
+  ERR_UNAUTHORIZED = 3300,
 }
 
 export class CCD004CityRegistry {
-
   name: string;
   static readonly ErrCode = ErrCode;
   chain: Chain;
@@ -45,7 +44,10 @@ export class CCD004CityRegistry {
   }
 
   getCityTreasury(cityId: number, treasuryName: string): ReadOnlyFn {
-    return this.callReadOnlyFn("get-city-treasury", [types.uint(cityId), types.ascii(treasuryName)]);
+    return this.callReadOnlyFn("get-city-treasury", [
+      types.uint(cityId),
+      types.ascii(treasuryName),
+    ]);
   }
 
   isCityActivated(cityId: number): ReadOnlyFn {
@@ -53,7 +55,9 @@ export class CCD004CityRegistry {
   }
 
   getCityActivationDetails(cityId: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-city-activation-details", [types.uint(cityId)]);
+    return this.callReadOnlyFn("get-city-activation-details", [
+      types.uint(cityId),
+    ]);
   }
 
   // Extension callback
@@ -68,7 +72,10 @@ export class CCD004CityRegistry {
   }
 
   private callReadOnlyFn(
-    method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
+    method: string,
+    args: Array<any> = [],
+    sender: Account = this.deployer
+  ): ReadOnlyFn {
     const result = this.chain.callReadOnlyFn(
       this.name,
       method,

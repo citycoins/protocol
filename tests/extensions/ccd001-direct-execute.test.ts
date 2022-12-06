@@ -15,8 +15,11 @@ Clarinet.test({
     // act
 
     // assert
-    ccd001DirectExecute.isDaoOrExtension().result.expectErr().expectUint(CCD001DirectExecute.ErrCode.ERR_UNAUTHORIZED);
-  }
+    ccd001DirectExecute
+      .isDaoOrExtension()
+      .result.expectErr()
+      .expectUint(CCD001DirectExecute.ErrCode.ERR_UNAUTHORIZED);
+  },
 });
 
 // Internal DAO functions
@@ -42,11 +45,11 @@ Clarinet.test({
 });
 
 /**
- * Tests error code ERR_SUNSET_IN_PAST by calling set-sunset-block-height from a 
+ * Tests error code ERR_SUNSET_IN_PAST by calling set-sunset-block-height from a
  * proposal. This avoids the is-dao-or-extension check because base-dao switches tx-sender to
- * itself when proposal is executed. 
+ * itself when proposal is executed.
  */
- Clarinet.test({
+Clarinet.test({
   name: "ccd001-direct-execute: set-sunset-block-height() fails when in past",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
@@ -60,9 +63,18 @@ Clarinet.test({
     // act
     const block = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_002),
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_002),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_002),
+      ccd001DirectExecute.directExecute(
+        approver1,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_002
+      ),
+      ccd001DirectExecute.directExecute(
+        approver2,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_002
+      ),
+      ccd001DirectExecute.directExecute(
+        approver3,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_002
+      ),
     ]);
 
     // assert
@@ -74,11 +86,11 @@ Clarinet.test({
 });
 
 /**
- * Tests error code ERR_SUNSET_IN_PAST by calling set-sunset-block-height from a 
+ * Tests error code ERR_SUNSET_IN_PAST by calling set-sunset-block-height from a
  * proposal. This avoids the is-dao-or-extension check because base-dao switches tx-sender to
- * itself when proposal is executed. 
+ * itself when proposal is executed.
  */
- Clarinet.test({
+Clarinet.test({
   name: "ccd001-direct-execute: set-sunset-block-height() succeeds",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
@@ -92,17 +104,24 @@ Clarinet.test({
     // act
     const block = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_003),
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_003),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_003),
+      ccd001DirectExecute.directExecute(
+        approver1,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_003
+      ),
+      ccd001DirectExecute.directExecute(
+        approver2,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_003
+      ),
+      ccd001DirectExecute.directExecute(
+        approver3,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_003
+      ),
     ]);
 
     // assert
     assertEquals(block.receipts.length, 4);
     ccd001DirectExecute.isApprover(approver1.address).result.expectBool(true);
-    block.receipts[3].result
-      .expectOk()
-      .expectUint(3);
+    block.receipts[3].result.expectOk().expectUint(3);
   },
 });
 
@@ -161,7 +180,7 @@ Clarinet.test({
 
     // assert
     ccd001DirectExecute.isApprover(approver.address).result.expectBool(false);
-  }
+  },
 });
 
 Clarinet.test({
@@ -174,15 +193,15 @@ Clarinet.test({
     const approver1 = accounts.get("wallet_1")!;
 
     // act
-    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(0);
+    ccd001DirectExecute
+      .getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)
+      .result.expectUint(0);
 
-    chain.mineBlock([
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
-    ]);
+    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
 
     // assert
     ccd001DirectExecute.isApprover(approver1.address).result.expectBool(true);
-  }
+  },
 });
 
 Clarinet.test({
@@ -195,13 +214,11 @@ Clarinet.test({
     const approver5 = accounts.get("wallet_6")!;
 
     // act
-    chain.mineBlock([
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
-    ]);
+    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
 
     // assert
     ccd001DirectExecute.isApprover(approver5.address).result.expectBool(false);
-  }
+  },
 });
 
 Clarinet.test({
@@ -215,8 +232,10 @@ Clarinet.test({
     // act
 
     // assert
-    ccd001DirectExecute.hasSignalled(PROPOSALS.CCIP_012, approver.address).result.expectBool(false);
-  }
+    ccd001DirectExecute
+      .hasSignalled(PROPOSALS.CCIP_012, approver.address)
+      .result.expectBool(false);
+  },
 });
 
 Clarinet.test({
@@ -229,13 +248,13 @@ Clarinet.test({
     const approver1 = accounts.get("wallet_1")!;
 
     // act
-    chain.mineBlock([
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
-    ]);
+    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
 
     // assert
-    ccd001DirectExecute.hasSignalled(PROPOSALS.CCIP_012, approver1.address).result.expectBool(false);
-  }
+    ccd001DirectExecute
+      .hasSignalled(PROPOSALS.CCIP_012, approver1.address)
+      .result.expectBool(false);
+  },
 });
 
 Clarinet.test({
@@ -254,8 +273,10 @@ Clarinet.test({
     ]);
 
     // assert
-    ccd001DirectExecute.hasSignalled(PROPOSALS.CCIP_012, approver1.address).result.expectBool(true);
-  }
+    ccd001DirectExecute
+      .hasSignalled(PROPOSALS.CCIP_012, approver1.address)
+      .result.expectBool(true);
+  },
 });
 
 Clarinet.test({
@@ -270,12 +291,17 @@ Clarinet.test({
     // act
     chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      ccd001DirectExecute.directExecute(
+        approver1,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
+      ),
     ]);
 
     // assert
-    ccd001DirectExecute.hasSignalled(PROPOSALS.CCIP_012, approver1.address).result.expectBool(false);
-  }
+    ccd001DirectExecute
+      .hasSignalled(PROPOSALS.CCIP_012, approver1.address)
+      .result.expectBool(false);
+  },
 });
 
 Clarinet.test({
@@ -290,7 +316,7 @@ Clarinet.test({
 
     // assert
     ccd001DirectExecute.getSignalsRequired().result.expectUint(expectedSignals);
-  }
+  },
 });
 
 Clarinet.test({
@@ -305,26 +331,41 @@ Clarinet.test({
     const approver3 = accounts.get("wallet_3")!;
 
     // assert
-    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(0);
+    ccd001DirectExecute
+      .getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)
+      .result.expectUint(0);
 
     // act
     chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      ccd001DirectExecute.directExecute(
+        approver1,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
+      ),
     ]);
 
     // assert
-    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(1);
+    ccd001DirectExecute
+      .getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)
+      .result.expectUint(1);
 
     // act
     chain.mineBlock([
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)
+      ccd001DirectExecute.directExecute(
+        approver2,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
+      ),
+      ccd001DirectExecute.directExecute(
+        approver3,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
+      ),
     ]);
 
     // assert
-    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(3);
-  }
+    ccd001DirectExecute
+      .getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)
+      .result.expectUint(3);
+  },
 });
 
 Clarinet.test({
@@ -344,7 +385,7 @@ Clarinet.test({
     receipts[0].result
       .expectErr()
       .expectUint(CCD001DirectExecute.ErrCode.ERR_NOT_APPROVER);
-  }
+  },
 });
 
 Clarinet.test({
@@ -371,7 +412,7 @@ Clarinet.test({
     block.receipts[0].result
       .expectErr()
       .expectUint(CCD001DirectExecute.ErrCode.ERR_SUNSET_REACHED);
-  }
+  },
 });
 
 Clarinet.test({
@@ -382,18 +423,25 @@ Clarinet.test({
     const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
     const baseDao = new BaseDao(chain, sender);
     const approver1 = accounts.get("wallet_1")!;
-    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(0);
+    ccd001DirectExecute
+      .getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)
+      .result.expectUint(0);
 
     // act
     const { receipts } = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      ccd001DirectExecute.directExecute(
+        approver1,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
+      ),
     ]);
 
     // assert
-    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(1);
+    ccd001DirectExecute
+      .getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)
+      .result.expectUint(1);
     receipts[1].result.expectOk().expectUint(1);
-  }
+  },
 });
 
 /**
@@ -407,7 +455,9 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
     const baseDao = new BaseDao(chain, sender);
-    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(0);
+    ccd001DirectExecute
+      .getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)
+      .result.expectUint(0);
     const approver1 = accounts.get("wallet_1")!;
     const approver2 = accounts.get("wallet_2")!;
     const approver3 = accounts.get("wallet_3")!;
@@ -415,15 +465,24 @@ Clarinet.test({
     // act
     const { receipts } = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      ccd001DirectExecute.directExecute(
+        approver1,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
+      ),
+      ccd001DirectExecute.directExecute(
+        approver2,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
+      ),
+      ccd001DirectExecute.directExecute(
+        approver3,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
+      ),
     ]);
 
     // assert
     ccd001DirectExecute.getSignalsRequired().result.expectUint(2);
     receipts[3].result.expectOk().expectUint(3);
-  }
+  },
 });
 
 // Extension callback
@@ -443,5 +502,5 @@ Clarinet.test({
     // assert
     assertEquals(receipts.length, 1);
     receipts[0].result.expectOk().expectBool(true);
-  }
+  },
 });

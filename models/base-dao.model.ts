@@ -100,7 +100,10 @@ export class BaseDao {
   }
 
   private callReadOnlyFn(
-    method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
+    method: string,
+    args: Array<any> = [],
+    sender: Account = this.deployer
+  ): ReadOnlyFn {
     const result = this.chain.callReadOnlyFn(
       this.name,
       method,

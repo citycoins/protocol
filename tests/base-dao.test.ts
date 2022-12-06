@@ -14,9 +14,15 @@ Clarinet.test({
     chain.mineEmptyBlockUntil(100);
 
     // act
-    baseDao.isExtension(EXTENSIONS.CCD001_DIRECT_EXECUTE).result.expectBool(false);
-    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_MIA).result.expectBool(false);
-    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_NYC).result.expectBool(false);
+    baseDao
+      .isExtension(EXTENSIONS.CCD001_DIRECT_EXECUTE)
+      .result.expectBool(false);
+    baseDao
+      .isExtension(EXTENSIONS.CCD002_TREASURY_MIA)
+      .result.expectBool(false);
+    baseDao
+      .isExtension(EXTENSIONS.CCD002_TREASURY_NYC)
+      .result.expectBool(false);
 
     // assert
   },
@@ -34,10 +40,12 @@ Clarinet.test({
     // act
 
     // assert
-    baseDao.isExtension(EXTENSIONS.CCD001_DIRECT_EXECUTE).result.expectBool(true);
+    baseDao
+      .isExtension(EXTENSIONS.CCD001_DIRECT_EXECUTE)
+      .result.expectBool(true);
     baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_MIA).result.expectBool(true);
     baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_NYC).result.expectBool(true);
-  }
+  },
 });
 
 Clarinet.test({
@@ -107,7 +115,7 @@ Clarinet.test({
     // assert
     assertEquals(receipts.length, 1);
     for (const receipt of receipts) {
-      receipt.result.expectSome().expectUint((targetBlock + 1));
+      receipt.result.expectSome().expectUint(targetBlock + 1);
     }
   },
 });
@@ -170,7 +178,7 @@ Clarinet.test({
     assertEquals(receipts.length, 2);
     receipts[0].result.expectOk().expectBool(true);
     receipts[1].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
-  }
+  },
 });
 
 Clarinet.test({
@@ -189,7 +197,7 @@ Clarinet.test({
     // assert
     assertEquals(receipts.length, 1);
     receipts[0].result.expectErr().expectUint(BaseDao.ErrCode.ERR_UNAUTHORIZED);
-  }
+  },
 });
 
 Clarinet.test({
@@ -250,7 +258,7 @@ Clarinet.test({
     receipts[0].result
       .expectErr()
       .expectUint(BaseDao.ErrCode.ERR_INVALID_EXTENSION);
-  }
+  },
 });
 
 Clarinet.test({
@@ -268,20 +276,34 @@ Clarinet.test({
     // act directExecute
     const { receipts } = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
-      ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
-      ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      ccd001DirectExecute.directExecute(
+        approver1,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
+      ),
+      ccd001DirectExecute.directExecute(
+        approver2,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
+      ),
+      ccd001DirectExecute.directExecute(
+        approver3,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
+      ),
       // This 4th signal triggers the extension to request second execution of the proposal.
       // Base-dao takes responsibility for preventing this for all proposals.
-      ccd001DirectExecute.directExecute(approver4, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)
+      ccd001DirectExecute.directExecute(
+        approver4,
+        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
+      ),
     ]);
-    
+
     // assert
     assertEquals(receipts.length, 5);
     receipts[0].result.expectOk().expectBool(true);
     receipts[1].result.expectOk().expectUint(1);
     receipts[2].result.expectOk().expectUint(2);
     receipts[3].result.expectOk().expectUint(3);
-    receipts[4].result.expectErr().expectUint(BaseDao.ErrCode.ERR_ALREADY_EXECUTED);
-  }
+    receipts[4].result
+      .expectErr()
+      .expectUint(BaseDao.ErrCode.ERR_ALREADY_EXECUTED);
+  },
 });
