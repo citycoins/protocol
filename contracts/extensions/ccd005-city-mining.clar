@@ -9,6 +9,7 @@
 
 ;; TRAITS
 
+;; TODO: protocol traits?
 (impl-trait .extension-trait.extension-trait)
 
 ;; ERROR CODES
@@ -16,10 +17,11 @@
 (define-constant ERR_UNAUTHORIZED (err u3400))
 (define-constant ERR_INVALID_PARAMS (err u3401))
 (define-constant ERR_ALREADY_MINED (err u3402))
-(define-constant ERR_INSUFFICIENT_COMMIT (err u3403))
-(define-constant ERR_NO_VRF_SEED_FOUND (err u3404))
-(define-constant ERR_ALREADY_CLAIMED (err u3405))
-(define-constant ERR_MINER_NOT_WINNER (err u3406))
+(define-constant ERR_INSUFFICIENT_BALANCE (err u3403))
+(define-constant ERR_INSUFFICIENT_COMMIT (err u3404))
+(define-constant ERR_NO_VRF_SEED_FOUND (err u3405))
+(define-constant ERR_ALREADY_CLAIMED (err u3406))
+(define-constant ERR_MINER_NOT_WINNER (err u3407))
 
 ;; AUTHORIZATION CHECK
 
@@ -139,24 +141,6 @@
   )
 )
 
-;; At a given city and Stacks block height
-;; - what is the ID of the miner who won the block?
-;; (only known after the miner claims the block)
-(define-map WinnerAtBlock
-  {
-    cityId: uint,
-    height: uint
-  }
-  uint
-)
-
-(define-read-only (get-block-winner (cityId uint) (height uint))
-  (map-get? WinnerAtBlock {
-    cityId: cityId,
-    height: height
-  })
-)
-
 ;; MINING ACTIONS
 
 (define-public (mine (cityName (string-ascii 32)) (amounts (list 200 uint)))
@@ -164,13 +148,39 @@
     (
       (cityId (try! (get-city-id cityName)))
       (cityActivated (try! (is-city-activated cityId)))
+      ;; TODO are we just checking city activation details exist?
       (cityDetails (try! (get-city-activation-details cityId)))
       (cityTreasury (try! (get-city-treasury-by-name cityId "mining")))
+      (userId (try! (contract-call? .ccd003-user-registry get-or-create-user-id tx-sender)))
     )
-    
     (asserts! (> (len amounts) u0) ERR_INVALID_PARAMS)
-    ;; TODO: fold over mine-block
-    (ok true)
+    (match (fold mine-block amounts (ok {
+      cityId: cityId,
+      userId: userId,
+      height: block-height,
+      totalAmount: u0,
+    }))
+      okReturn
+      (let
+        (
+          (totalAmount (get totalAmount okReturn))
+        )
+        (asserts! (>= (stx-get-balance tx-sender) totalAmount) ERR_INSUFFICIENT_BALANCE)
+        (try! (stx-transfer? totalAmount tx-sender cityTreasury))
+        (print {
+          action: "mining",
+          cityName: cityName,
+          cityId: cityId,
+          cityTreasury: cityTreasury,
+          firstBlock: block-height,
+          lastBlock: (- (+ block-height (len amounts)) u1),
+          totalBlocks: (len amounts),
+          totalAmount: totalAmount
+        })
+        (ok true)
+      )
+      errReturn (err errReturn)
+    )
   )
 )
 
@@ -181,7 +191,7 @@
       cityId: uint,
       userId: uint,
       height: uint,
-      amountPrev: uint
+      totalAmount: uint
     }
     uint
   )))
@@ -192,7 +202,7 @@
         (cityId (get cityId okReturn))
         (userId (get userId okReturn))
         (height (get height okReturn))
-        (amountPrev (get amountPrev okReturn))
+        (totalAmount (get totalAmount okReturn))
       )
       (asserts! (not (has-mined-at-block cityId height userId)) ERR_ALREADY_MINED)
       (asserts! (> amount u0) ERR_INSUFFICIENT_COMMIT)
@@ -200,7 +210,7 @@
       (ok (merge okReturn
         {
           height: (+ height u1),
-          amount: (+ amountPrev amount)
+          totalAmount: (+ totalAmount amount)
         }
       ))
     )
@@ -253,6 +263,24 @@
 )
 
 ;; MINING CLAIM ACTIONS
+
+;; At a given city and Stacks block height
+;; - what is the ID of the miner who won the block?
+;; (only known after the miner claims the block)
+(define-map WinnerAtBlock
+  {
+    cityId: uint,
+    height: uint
+  }
+  uint
+)
+
+(define-read-only (get-block-winner (cityId uint) (height uint))
+  (map-get? WinnerAtBlock {
+    cityId: cityId,
+    height: height
+  })
+)
 
 ;; wrapper that calls the next function using the current block height
 (define-public (claim-mining-reward (cityName (string-ascii 32)) (claimHeight uint))
