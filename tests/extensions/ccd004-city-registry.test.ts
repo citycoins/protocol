@@ -15,7 +15,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd003CityRegistry = new CCD004CityRegistry(
+    const ccd004CityRegistry = new CCD004CityRegistry(
       chain,
       sender,
       "ccd004-city-registry"
@@ -24,7 +24,7 @@ Clarinet.test({
     // act
 
     // assert
-    ccd003CityRegistry
+    ccd004CityRegistry
       .isDaoOrExtension()
       .result.expectErr()
       .expectUint(CCD004CityRegistry.ErrCode.ERR_UNAUTHORIZED);
@@ -36,7 +36,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd003CityRegistry = new CCD004CityRegistry(
+    const ccd004CityRegistry = new CCD004CityRegistry(
       chain,
       sender,
       "ccd004-city-registry"
@@ -44,8 +44,10 @@ Clarinet.test({
 
     // act
     const { receipts } = chain.mineBlock([
-      ccd003CityRegistry.getOrCreateCityId(sender, sender.address),
+      ccd004CityRegistry.getOrCreateCityId(sender, sender.address),
     ]);
+
+    console.log(JSON.stringify(receipts, null, 2));
 
     // assert
     assertEquals(receipts.length, 1);
@@ -60,7 +62,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd003CityRegistry = new CCD004CityRegistry(
+    const ccd004CityRegistry = new CCD004CityRegistry(
       chain,
       sender,
       "ccd004-city-registry"
@@ -69,7 +71,7 @@ Clarinet.test({
     // act
 
     // assert
-    ccd003CityRegistry.getUserId(sender.address).result.expectNone();
+    ccd004CityRegistry.getUserId(sender.address).result.expectNone();
   },
 });
 
@@ -78,7 +80,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd003CityRegistry = new CCD004CityRegistry(
+    const ccd004CityRegistry = new CCD004CityRegistry(
       chain,
       sender,
       "ccd004-city-registry"
@@ -87,7 +89,7 @@ Clarinet.test({
     // act
 
     // assert
-    ccd003CityRegistry.getUser(1).result.expectNone();
+    ccd004CityRegistry.getUser(1).result.expectNone();
   },
 });
 
@@ -99,7 +101,7 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const approver1 = accounts.get("wallet_1")!;
-    const ccd003CityRegistry = new CCD004CityRegistry(
+    const ccd004CityRegistry = new CCD004CityRegistry(
       chain,
       sender,
       "ccd004-city-registry"
@@ -126,11 +128,11 @@ Clarinet.test({
     // assert
     assertEquals(receipts.length, 3);
     receipts[2].result.expectOk().expectUint(3); // numb signals - not the result of execution!
-    ccd003CityRegistry
+    ccd004CityRegistry
       .getUser(1)
       .result.expectSome()
       .expectPrincipal(approver1.address);
-    ccd003CityRegistry
+    ccd004CityRegistry
       .getUserId(approver1.address)
       .result.expectSome()
       .expectUint(1);
@@ -143,7 +145,7 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const approver1 = accounts.get("wallet_1")!;
-    const ccd003CityRegistry = new CCD004CityRegistry(
+    const ccd004CityRegistry = new CCD004CityRegistry(
       chain,
       sender,
       "ccd004-city-registry"
@@ -159,15 +161,15 @@ Clarinet.test({
     // assert
     assertEquals(receipts.length, 4);
     receipts[3].result.expectOk().expectUint(3); // numb signals - not the result of execution!
-    ccd003CityRegistry
+    ccd004CityRegistry
       .getUser(1)
       .result.expectSome()
       .expectPrincipal(approver1.address);
-    ccd003CityRegistry
+    ccd004CityRegistry
       .getUserId(approver1.address)
       .result.expectSome()
       .expectUint(1);
-    ccd003CityRegistry.getUser(2).result.expectNone();
+    ccd004CityRegistry.getUser(2).result.expectNone();
   },
 });
 
@@ -179,7 +181,7 @@ Clarinet.test({
     const approver1 = accounts.get("wallet_1")!;
     const approver2 = accounts.get("wallet_2")!;
     const approver3 = accounts.get("wallet_3")!;
-    const ccd003CityRegistry = new CCD004CityRegistry(
+    const ccd004CityRegistry = new CCD004CityRegistry(
       chain,
       sender,
       "ccd004-city-registry"
@@ -195,27 +197,27 @@ Clarinet.test({
     // assert
     assertEquals(receipts.length, 4);
     receipts[3].result.expectOk().expectUint(3); // numb signals - not the result of execution!
-    ccd003CityRegistry
+    ccd004CityRegistry
       .getUser(1)
       .result.expectSome()
       .expectPrincipal(approver1.address);
-    ccd003CityRegistry
+    ccd004CityRegistry
       .getUserId(approver1.address)
       .result.expectSome()
       .expectUint(1);
-    ccd003CityRegistry
+    ccd004CityRegistry
       .getUser(2)
       .result.expectSome()
       .expectPrincipal(approver2.address);
-    ccd003CityRegistry
+    ccd004CityRegistry
       .getUserId(approver2.address)
       .result.expectSome()
       .expectUint(2);
-    ccd003CityRegistry
+    ccd004CityRegistry
       .getUser(3)
       .result.expectSome()
       .expectPrincipal(approver3.address);
-    ccd003CityRegistry
+    ccd004CityRegistry
       .getUserId(approver3.address)
       .result.expectSome()
       .expectUint(3);
