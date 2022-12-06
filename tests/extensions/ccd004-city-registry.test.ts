@@ -31,6 +31,8 @@ Clarinet.test({
   },
 });
 
+/*
+
 Clarinet.test({
   name: "ccd004-city-registry: get-or-create-city-id() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
@@ -223,3 +225,5 @@ Clarinet.test({
       .expectUint(3);
   },
 });
+
+*/
