@@ -300,15 +300,22 @@
       (maturityHeight (+ (get-reward-delay) claimHeight))
       (isMature (asserts! (> stacksHeight maturityHeight) ERR_INVALID_PARAMS))
       (userId (try! (get-user-id user)))
-      ;; TODO: review issue if neither below fail but return defaults
       (blockStats (get-mining-stats-at-block cityId claimHeight))
       (minerStats (get-miner-at-block cityId claimHeight userId))
       (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_NO_VRF_SEED_FOUND))
       (commitTotal (get-high-value cityId claimHeight))
       (winningValue (mod vrfSample commitTotal))
     )
-    ;; check claim is valid
+    ;; check that user mined in this block
+    (asserts! (has-mined-at-block cityId claimHeight userId) ERR_INVALID_PARAMS)
+    ;; check that stats and miner data are populated
+    (asserts! (and
+      (> (get miners blockStats) u0)
+      (> (get commit minerStats) u0))
+      ERR_INVALID_PARAMS)
+    ;; check that block has not already been claimed
     (asserts! (not (get claimed blockStats)) ERR_ALREADY_CLAIMED)
+    ;; check that user is the winner
     (asserts! (and
       (>= winningValue (get low minerStats))
       (<= winningValue (get high minerStats)))
@@ -328,10 +335,10 @@
       { cityId: cityId, height: claimHeight }
       userId
     )
-    ;; TODO: print winner details here?
-    ;; TODO: mint coinbase!
     ;; TODO: get-coinbase-amount function
+    ;; TODO: mint coinbase!
     ;; (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 mint (get-coinbase-amount stacksHeight) recipient))
+    ;; TODO: print winner details here?
     (ok true)
   )
 )

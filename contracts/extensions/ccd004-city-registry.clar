@@ -173,7 +173,7 @@
 (define-map CityActivationDetails
   uint
   {
-    atBlock: uint,
+    activated: uint,
     delay: uint,
     target: uint,
     threshold: uint
@@ -186,11 +186,11 @@
 )
 
 ;; guarded: can only be called by the DAO or other extensions
-(define-public (set-city-activation-details (cityId uint) (atBlock uint) (delay uint) (target uint) (threshold uint))
+(define-public (set-city-activation-details (cityId uint) (activated uint) (delay uint) (target uint) (threshold uint))
   (begin
     (try! (is-dao-or-extension))
     (map-set CityActivationDetails cityId {
-      atBlock: atBlock,
+      activated: activated,
       delay: delay,
       target: target,
       threshold: threshold
@@ -200,11 +200,191 @@
 )
 
 ;; original settings:
-;; activation: block height (MIA: 24497 / NYC: 37449)
-;; activation: delay (150 blocks)
-;; activation: status (bool)
-;; activation: target (activation block + delay)
-;; activation: threshold (20)
+;;   activation: block height (MIA: 24497 / NYC: 37449)
+;;   activation: delay (150 blocks)
+;;   activation: status (bool)
+;;   activation: target (activation block + delay)
+;;   activation: threshold (20)
+
+;; CITY TOKEN CONTRACTS
+
+;; what about DECIMAL values?
+;; (define-constant DECIMALS u6)
+;; (define-constant MICRO_CITYCOINS (pow u10 DECIMALS))
+
+(define-map CityTokenContractNonce
+  uint ;; city ID
+  uint ;; nonce
+)
+
+;; MIA/NYC
+;; 2
+
+;; store token contract by city ID and nonce
+(define-map CityTokenContracts
+  {
+    cityId: uint,
+    tokenId: uint
+  }
+  principal ;; tokenAddress
+)
+
+;; MIA/0: miamicoin-token-v1
+;; MIA/1: miamicoin-token-v2
+;; NYC/0: newyorkcitycoin-token-v1
+;; NYC/1: newyorkcitycoin-token-v2
+
+;; store token contract by city ID and address
+(define-map CityTokenContractIds
+  {
+    cityId: uint,
+    tokenAddress: principal
+  }
+  uint ;; tokenId
+)
+
+;; MIA/miamicoin-token-v1: 0
+;; MIA/miamicoin-token-v2: 1
+;; NYC/newyorkcitycoin-token-v1: 0
+;; NYC/newyorkcitycoin-token-v2: 1
+
+;; store active treasury address by city ID
+;; TODO maybe just return the principal here?
+(define-map ActiveCityTokenContract
+  uint ;; city ID
+  {
+    tokenId: uint,
+    tokenAddress: principal
+  }
+)
+
+;; MIA: 1/miamicoin-token-v2
+;; NYC: 1/newyorkcitycoin-token-v2
+
+;; returns current nonce or default of u0
+(define-read-only (get-city-token-contract-nonce (cityId uint))
+  (default-to u0 (map-get? CityTokenContractNonce cityId))
+)
+
+;; returns (some uint) or none
+(define-read-only (get-city-token-contract-id (cityId uint) (tokenAddress principal))
+  (map-get? CityTokenContractIds { cityId: cityId, tokenAddress: tokenAddress })
+)
+
+;; returns (some principal) or none
+(define-read-only (get-city-token-contract-address (cityId uint) (tokenId uint))
+  (map-get? CityTokenContracts { cityId: cityId, tokenId: tokenId })
+)
+
+;; returns (some principal) or none
+(define-read-only (get-active-city-token-contract (cityId uint))
+  (map-get? ActiveCityTokenContract cityId)
+)
+
+;; adds a new token contract definition for a city
+;; guarded: can only be called by the DAO or other extensions
+(define-public (add-city-token-contract (cityId uint) (address principal))
+  (let
+    (
+      (nonce (+ u1 (get-city-token-contract-nonce cityId)))
+    )
+    (try! (is-dao-or-extension))
+    (map-set CityTokenContractNonce cityId nonce)
+    (map-insert CityTokenContractIds { cityId: cityId, tokenAddress: address } nonce)
+    (map-insert CityTokenContracts { cityId: cityId, tokenId: nonce } address)
+    (ok nonce)
+  )
+)
+
+;; sets the active token contract for a city
+;; guarded: can only be called by the DAO or other extensions
+(define-public (set-active-city-token-contract (cityId uint) (tokenId uint))
+  (begin
+    (try! (is-dao-or-extension))
+    (map-set ActiveCityTokenContract cityId {
+      tokenId: tokenId,
+      tokenAddress: (unwrap! (get-city-token-contract-address cityId tokenId) ERR_UNAUTHORIZED)
+    })
+    (ok true)
+  )
+)
+
+;; store coinbase thresholds by city ID
+(define-map CityCoinbaseThresholds
+  uint ;; city ID
+  {
+    coinbaseThreshold1: uint,
+    coinbaseThreshold2: uint,
+    coinbaseThreshold3: uint,
+    coinbaseThreshold4: uint,
+    coinbaseThreshold5: uint,
+  }
+)
+
+;; returns (some thresholds) or none
+(define-read-only (get-city-coinbase-thresholds (cityId uint))
+  (map-get? CityCoinbaseThresholds cityId)
+)
+
+;; sets coinbase thresholds
+;; guarded: can only be called by the DAO or other extensions
+(define-public (set-city-coinbase-thresholds (cityId uint) (thresholds {
+  coinbaseThreshold1: uint,
+  coinbaseThreshold2: uint,
+  coinbaseThreshold3: uint,
+  coinbaseThreshold4: uint,
+  coinbaseThreshold5: uint
+}))
+  (begin
+    (try! (is-dao-or-extension))
+    ;; TODO: sanity checks on threshold data
+    (map-set CityCoinbaseThresholds cityId thresholds)
+    (ok true)
+  )
+)
+
+;; store coinbase amounts by city ID
+(define-map CityCoinbaseAmounts
+  uint ;; city ID
+  {
+    coinbaseAmountBonus: uint,
+    coinbaseAmount1: uint,
+    coinbaseAmount2: uint,
+    coinbaseAmount3: uint,
+    coinbaseAmount4: uint,
+    coinbaseAmount5: uint,
+    coinbaseAmountDefault: uint
+  }
+)
+
+;; returns (some amounts) or none
+(define-read-only (get-city-coinbase-amounts (cityId uint))
+  (map-get? CityCoinbaseAmounts cityId)
+)
+
+;; sets coinbase amounts
+;; guarded: can only be called by the DAO or other extensions
+(define-public (set-city-coinbase-amounts (cityId uint) (amounts {
+  coinbaseAmountBonus: uint,
+  coinbaseAmount1: uint,
+  coinbaseAmount2: uint,
+  coinbaseAmount3: uint,
+  coinbaseAmount4: uint,
+  coinbaseAmount5: uint,
+  coinbaseAmountDefault: uint
+}))
+  (begin
+    (try! (is-dao-or-extension))
+    ;; TODO: sanity checks on threshold data
+    (map-set CityCoinbaseAmounts cityId amounts)
+    (ok true)
+  ))
+
+;; get-coinbase-amount
+;;   used by mining
+;;   can pass city id and block height
+;;   return value is a uint
+;;   should this be done in mining contract? have to get data from here either way
 
 ;; Extension callback
 
