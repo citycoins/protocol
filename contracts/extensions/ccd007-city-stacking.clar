@@ -1,4 +1,4 @@
-;; Title: CCD006 City Stacking
+;; Title: CCD007 City Stacking
 ;; Version: 1.0.0
 ;; Synopsis:
 ;; A central city stacking contract for the CityCoins protocol.

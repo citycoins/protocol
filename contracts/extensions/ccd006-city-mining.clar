@@ -1,4 +1,4 @@
-;; Title: CCD005 City Mining
+;; Title: CCD006 City Mining
 ;; Version: 1.0.0
 ;; Synopsis:
 ;; A central city mining contract for the CityCoins protocol.
