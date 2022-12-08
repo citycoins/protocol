@@ -351,26 +351,26 @@
   (ok (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_PARAMS))
 )
 
-;; city activation status from ccd004-city-registry
+;; city activation status from .ccd005-city-data
 ;; returns (ok true) or ERR_INVALID_PARAMS if not found
 (define-private (is-city-activated (cityId uint))
-  (ok (asserts! (contract-call? .ccd004-city-registry is-city-activated cityId) ERR_INVALID_PARAMS))
+  (ok (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_INVALID_PARAMS))
 )
 
-;; city activation details from ccd004-city-registry
+;; city activation details from ccd005-city-data
 ;; returns (ok tuple) or ERR_INVALID_PARAMS if not found
 (define-private (get-city-activation-details (cityId uint))
-  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-activation-details cityId) ERR_INVALID_PARAMS))
+  (ok (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_INVALID_PARAMS))
 )
 
-;; city treasury details from ccd004-city-registry
+;; city treasury details from ccd005-city-data
 ;; returns (ok principal) or ERR_INVALID_PARAMS if not found
 (define-private (get-city-treasury-by-name (cityId uint) (treasuryName (string-ascii 32)))
   (let
     (
-      (treasuryId (unwrap! (contract-call? .ccd004-city-registry get-city-treasury-id cityId treasuryName) ERR_INVALID_PARAMS))
+      (treasuryId (unwrap! (contract-call? .ccd005-city-data get-city-treasury-id cityId treasuryName) ERR_INVALID_PARAMS))
     )
-    (ok (unwrap! (contract-call? .ccd004-city-registry get-city-treasury-address cityId treasuryId) ERR_INVALID_PARAMS))
+    (ok (unwrap! (contract-call? .ccd005-city-data get-city-treasury-address cityId treasuryId) ERR_INVALID_PARAMS))
   )
 )
 

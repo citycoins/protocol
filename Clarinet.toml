@@ -19,6 +19,7 @@ contract_id = "SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
 
 [project.cache_location]
 path = ".requirements"
+
 [contracts.base-dao]
 path = "contracts/base-dao.clar"
 
@@ -37,11 +38,14 @@ path = "contracts/extensions/ccd003-user-registry.clar"
 [contracts.ccd004-city-registry]
 path = "contracts/extensions/ccd004-city-registry.clar"
 
-[contracts.ccd005-city-mining]
-path = "contracts/extensions/ccd005-city-mining.clar"
+[contracts.ccd005-city-data]
+path = "contracts/extensions/ccd005-city-data.clar"
 
-[contracts.ccd006-city-stacking]
-path = "contracts/extensions/ccd006-city-stacking.clar"
+[contracts.ccd006-city-mining]
+path = "contracts/extensions/ccd006-city-mining.clar"
+
+[contracts.ccd007-city-stacking]
+path = "contracts/extensions/ccd007-city-stacking.clar"
 
 [contracts.ccext-governance-token-mia]
 path = "contracts/external/ccext-governance-token-mia.clar"
