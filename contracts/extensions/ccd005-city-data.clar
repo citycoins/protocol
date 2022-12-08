@@ -121,7 +121,13 @@
     )
     ;; check if already active
     (asserts! (not status) ERR_INVALID_PARAMS)
-    ;; TODO: more here
+    ;; set activation signals
+    ;; if signals = threshold
+    ;;   set activation status to true
+    ;;   set activation details
+    ;;   set coinbase thresholds
+    ;;   set coinbase amounts
+    ;;   activate mining?
     (ok true)
   )
 )
