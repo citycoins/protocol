@@ -87,6 +87,45 @@
 ;;   activation: target (activation block + delay)
 ;;   activation: threshold (20)
 
+;; CITY ACTIVATION
+
+(define-map CityActivationSignals
+  uint ;; city ID
+  uint ;; vote count
+)
+
+(define-read-only (get-city-activation-signals (cityId uint))
+  (default-to u0 (map-get? CityActivationSignals cityId))
+)
+
+(define-map CityActivationVoters
+  {
+    cityId: uint,
+    signaler: principal
+  }
+  bool
+)
+
+(define-read-only (get-city-activation-voter (cityId uint) (voter principal))
+  (default-to false (map-get? CityActivationVoters { cityId: cityId, signaler: voter }))
+)
+
+;; CITY ACTIVATION ACTIONS
+
+(define-public (activate-city (cityId uint) (memo (optional (string-ascii 100))))
+  (let
+    (
+      (status (is-city-activated cityId))
+      (details (unwrap! (get-city-activation-details cityId) ERR_INVALID_PARAMS))
+      (signals (+ (get-city-activation-signals cityId) u1))
+    )
+    ;; check if already active
+    (asserts! (not status) ERR_INVALID_PARAMS)
+    ;; TODO: more here
+    (ok true)
+  )
+)
+
 ;; CITY TREASURIES
 
 ;; store nonce for incrementing treasuries per city
