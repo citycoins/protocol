@@ -121,13 +121,45 @@
     )
     ;; check if already active
     (asserts! (not status) ERR_INVALID_PARAMS)
+    ;; check if already voted
+    (asserts! (not (get-city-activation-voter cityId tx-sender)) ERR_INVALID_PARAMS)
     ;; set activation signals
+    (map-set CityActivationSignals cityId signals)
     ;; if signals = threshold
-    ;;   set activation status to true
-    ;;   set activation details
-    ;;   set coinbase thresholds
-    ;;   set coinbase amounts
-    ;;   activate mining?
+    (and (is-eq signals (get threshold details))
+      (let
+        (
+          (target (+ block-height (get delay details)))
+        )
+        ;; set city activation status
+        (map-set CityActivationStatus cityId true)
+        ;; set city activation details
+        (map-set CityActivationDetails cityId 
+          (merge details {
+            activated: block-height,
+            target: target
+          }))
+          ;; TOKEN_BONUS_PERIOD u10000
+          ;; TOKEN_EPOCH_LENGTH u25000
+          ;; TODO: set coinbase thresholds
+          ;;   stacksHeight + bonus + length
+          ;;   same * u3
+          ;;   same * u7
+          ;;   same * u15
+          ;;   same * u31
+          ;; MICRO_CITYCOINS u1000000 (v2 only, v1 is u1)
+          ;; TODO: set coinbase amounts
+          ;;   MICRO_CITYCOINS * u250000
+          ;;   MICRO_CITYCOINS * u100000
+          ;;   MICRO_CITYCOINS * u50000
+          ;;   MICRO_CITYCOINS * u25000
+          ;;   MICRO_CITYCOINS * u12500
+          ;;   MICRO_CITYCOINS * u6250
+          ;;   MICRO_CITYCOINS * u3125
+          ;; TODO: double check with ccip-008
+      )
+    )
+
     (ok true)
   )
 )
@@ -195,6 +227,7 @@
       (
         (nonce (+ u1 (get-city-treasury-nonce cityId)))
       )
+      ;; TODO: check that cityId exists
       (try! (is-dao-or-extension))
       (map-set CityTreasuryNonce cityId nonce)
       (map-insert CityTreasuryIds { cityId: cityId, treasuryName: name } nonce)

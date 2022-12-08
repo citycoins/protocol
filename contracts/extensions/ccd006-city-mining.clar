@@ -345,6 +345,12 @@
 
 ;; PRIVATE GETTERS
 
+;; user ID from ccd003-user-registry
+;; returns (ok uint) or ERR_INVALID_PARAMS if not found
+(define-private (get-user-id (user principal))
+  (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_PARAMS))
+)
+
 ;; city ID from ccd004-city-registry
 ;; returns (ok uint) or ERR_INVALID_PARAMS if not found
 (define-private (get-city-id (cityName (string-ascii 32)))
@@ -374,17 +380,14 @@
   )
 )
 
-;; a user ID from ccd003-user-registry
-;; returns (ok uint) or ERR_INVALID_PARAMS if not found
-(define-private (get-user-id (user principal))
-  (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_PARAMS))
-)
+;; 
+
+
 
 ;; OTHER
 
 ;; TODO: mining exchange rate for a city
-;; TODO: mining claims per block
-;; TODO: more detailed error messages
+;; already exposed get-mining-stats-at-block?
 
 ;; Extension callback
 
