@@ -336,10 +336,45 @@
       userId
     )
     ;; TODO: get-coinbase-amount function
-    ;; TODO: mint coinbase!
-    ;; (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 mint (get-coinbase-amount stacksHeight) recipient))
+    ;;   make sure claim is past activation height
+    ;;   make sure claim is before shutdown height
+    ;;   return amount based on thresholds
+    ;; TODO: mint coinbase! maybe separate function given logic below
+    ;;   check that city = mia and active is mia-token-v2
+    ;;     hardcoded call to mia-token-v2
+    ;;     (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 mint amount recipient))
+    ;;   check that city = nyc and active token is nyc-token-v2
+    ;;     hardcoded call to nyc-token-v2
+    ;;   generalized version - would this work before 2.1?
     ;; TODO: print winner details here?
     (ok true)
+  )
+)
+
+(define-read-only (is-block-winner (cityId uint) (user principal) (claimHeight uint))
+  (let
+    (
+      (userId (default-to u0 (contract-call? .ccd003-user-registry get-user-id user)))
+      (blockStats (get-mining-stats-at-block cityId claimHeight))
+      (minerStats (get-miner-at-block cityId claimHeight userId))
+      (maturityHeight (+ (get-reward-delay) claimHeight))
+      (vrfSample (unwrap-panic (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-rnd maturityHeight)))
+      (commitTotal (get-high-value cityId claimHeight))
+      (winningValue (mod vrfSample commitTotal))
+    )
+    ;; check that user ID was found and if user is winner
+    (if (and (> userId u0) (>= winningValue (get low minerStats)) (<= winningValue (get high minerStats)))
+      ;; true
+      (some {
+        winner: true,
+        claimed: (get claimed blockStats),
+      })
+      ;; false
+      (some {
+        winner: false,
+        claimed: (get claimed blockStats),
+      })
+    )
   )
 )
 
