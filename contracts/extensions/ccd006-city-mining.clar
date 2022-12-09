@@ -351,6 +351,7 @@
   )
 )
 
+;; TODO: review control flows here
 (define-read-only (is-block-winner (cityId uint) (user principal) (claimHeight uint))
   (let
     (
@@ -362,6 +363,7 @@
       (commitTotal (get-high-value cityId claimHeight))
       (winningValue (mod vrfSample commitTotal))
     )
+    ;; TODO: any other checks to perform here?
     ;; check that user ID was found and if user is winner
     (if (and (> userId u0) (>= winningValue (get low minerStats)) (<= winningValue (get high minerStats)))
       ;; true

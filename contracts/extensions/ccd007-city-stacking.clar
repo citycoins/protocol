@@ -98,11 +98,28 @@
   )
 )
 
-;; TODO: get-reward-cycle needs an activation block
+(define-read-only (get-reward-cycle (cityId uint) (blockHeight uint))
+  (let
+    (
+      (activationDetails (unwrap! (get-city-activation-details cityId) none))
+      (activationBlock (get activated activationDetails))
+    )
+    (if (>= blockHeight activationBlock)
+      (some (/ (- blockHeight activationBlock) (get-reward-cycle-length)))
+      none)
+  )
+)
 
-;; TODO: get-first-block-in-reward-cycle needs an activation block
+(define-read-only (get-first-block-in-reward-cycle (cityId uint) (cycle uint))
+  (let
+    (
+      (activationDetails (unwrap! (get-city-activation-details cityId) none))
+      (activationBlock (get activated activationDetails))
+    )
+    (some (+ activationBlock (* cycle (get-reward-cycle-length))))
+  )
+)
 
-;; TODO: verify this would still be accurate
 (define-read-only (is-stacking-active (cityId uint) (cycle uint))
   (is-some
     (map-get? StackingStatsAtCycle {
@@ -135,6 +152,12 @@
 
 ;; PRIVATE GETTERS
 
+;; a user ID from ccd003-user-registry
+;; returns (ok uint) or ERR_INVALID_PARAMS if not found
+(define-private (get-user-id (user principal))
+  (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_PARAMS))
+)
+
 ;; city ID from ccd004-city-registry
 ;; returns (ok uint) or ERR_INVALID_PARAMS if not found
 (define-private (get-city-id (cityName (string-ascii 32)))
@@ -163,22 +186,6 @@
     (ok (unwrap! (contract-call? .ccd005-city-data get-city-treasury-address cityId treasuryId) ERR_INVALID_PARAMS))
   )
 )
-
-;; a user ID from ccd003-user-registry
-;; returns (ok uint) or ERR_INVALID_PARAMS if not found
-(define-private (get-user-id (user principal))
-  (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_PARAMS))
-)
-
-;; OTHER
-
-;; stacking stats per cycle, per city
-;; stacking stats per user, per cycle, per city
-;; stacking total value locked per city
-
-;; TODO: evaluate printing in all contracts
-;; TODO: evaluate errors in all contracts (simplify?)
-;; THINK THROUGH THE LENS OF DOCUMENTATION AS WELL
 
 ;; Extension callback
 
