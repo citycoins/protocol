@@ -17,9 +17,9 @@
 		;; tests success of setting sunset height
 		(try! (contract-call? .ccd002-treasury-mia set-allowed-list
 			(list
-				{token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccext-governance-token-mia, enabled: true}
-				{token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccext-governance-token-nyc, enabled: false}
-				{token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccext-nft-nyc, enabled: false}
+				{token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.test-ccext-governance-token-mia, enabled: true}
+				{token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.test-ccext-governance-token-nyc, enabled: false}
+				{token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.test-ccext-nft-nyc, enabled: false}
 			)
 		))
 		(ok true)

@@ -47,68 +47,68 @@ path = "contracts/extensions/ccd006-city-mining.clar"
 [contracts.ccd007-city-stacking]
 path = "contracts/extensions/ccd007-city-stacking.clar"
 
-[contracts.ccext-governance-token-mia]
-path = "contracts/external/ccext-governance-token-mia.clar"
+[contracts.test-ccext-governance-token-mia]
+path = "tests/contracts/external/test-ccext-governance-token-mia.clar"
 
-[contracts.ccext-governance-token-nyc]
-path = "contracts/external/ccext-governance-token-nyc.clar"
+[contracts.test-ccext-governance-token-nyc]
+path = "tests/contracts/external/test-ccext-governance-token-nyc.clar"
 
-[contracts.ccext-nft-mia]
-path = "contracts/external/ccext-nft-mia.clar"
+[contracts.test-ccext-nft-mia]
+path = "tests/contracts/external/test-ccext-nft-mia.clar"
 
-[contracts.ccext-nft-nyc]
-path = "contracts/external/ccext-nft-nyc.clar"
+[contracts.test-ccext-nft-nyc]
+path = "tests/contracts/external/test-ccext-nft-nyc.clar"
 
-[contracts.ccip-test-direct-execute-001]
-path = "contracts/proposals/ccip-test-direct-execute-001.clar"
+[contracts.test-ccd001-direct-execute-001]
+path = "tests/contracts/proposals/test-ccd001-direct-execute-001.clar"
 
-[contracts.ccip-test-direct-execute-002]
-path = "contracts/proposals/ccip-test-direct-execute-002.clar"
+[contracts.test-ccd001-direct-execute-002]
+path = "tests/contracts/proposals/test-ccd001-direct-execute-002.clar"
 
-[contracts.ccip-test-direct-execute-003]
-path = "contracts/proposals/ccip-test-direct-execute-003.clar"
+[contracts.test-ccd001-direct-execute-003]
+path = "tests/contracts/proposals/test-ccd001-direct-execute-003.clar"
 
-[contracts.ccip-test-treasury-001]
-path = "contracts/proposals/ccip-test-treasury-001.clar"
+[contracts.test-ccd002-treasury-001]
+path = "tests/contracts/proposals/test-ccd002-treasury-001.clar"
 
-[contracts.ccip-test-treasury-002]
-path = "contracts/proposals/ccip-test-treasury-002.clar"
+[contracts.test-ccd002-treasury-002]
+path = "tests/contracts/proposals/test-ccd002-treasury-002.clar"
 
-[contracts.ccip-test-treasury-003]
-path = "contracts/proposals/ccip-test-treasury-003.clar"
+[contracts.test-ccd002-treasury-003]
+path = "tests/contracts/proposals/test-ccd002-treasury-003.clar"
 
-[contracts.ccip-test-treasury-004]
-path = "contracts/proposals/ccip-test-treasury-004.clar"
+[contracts.test-ccd002-treasury-004]
+path = "tests/contracts/proposals/test-ccd002-treasury-004.clar"
 
-[contracts.ccip-test-treasury-005]
-path = "contracts/proposals/ccip-test-treasury-005.clar"
+[contracts.test-ccd002-treasury-005]
+path = "tests/contracts/proposals/test-ccd002-treasury-005.clar"
 
-[contracts.ccip-test-treasury-006]
-path = "contracts/proposals/ccip-test-treasury-006.clar"
+[contracts.test-ccd002-treasury-006]
+path = "tests/contracts/proposals/test-ccd002-treasury-006.clar"
 
-[contracts.ccip-test-treasury-007]
-path = "contracts/proposals/ccip-test-treasury-007.clar"
+[contracts.test-ccd002-treasury-007]
+path = "tests/contracts/proposals/test-ccd002-treasury-007.clar"
 
-[contracts.ccip-test-treasury-008]
-path = "contracts/proposals/ccip-test-treasury-008.clar"
+[contracts.test-ccd002-treasury-008]
+path = "tests/contracts/proposals/test-ccd002-treasury-008.clar"
 
-[contracts.ccip-test-treasury-009]
-path = "contracts/proposals/ccip-test-treasury-009.clar"
+[contracts.test-ccd002-treasury-009]
+path = "tests/contracts/proposals/test-ccd002-treasury-009.clar"
 
-[contracts.ccip-test-treasury-010]
-path = "contracts/proposals/ccip-test-treasury-010.clar"
+[contracts.test-ccd002-treasury-010]
+path = "tests/contracts/proposals/test-ccd002-treasury-010.clar"
 
-[contracts.ccip-test-user-registry-001]
-path = "contracts/proposals/ccip-test-user-registry-001.clar"
+[contracts.test-ccd003-user-registry-001]
+path = "tests/contracts/proposals/test-ccd003-user-registry-001.clar"
 
-[contracts.ccip-test-user-registry-002]
-path = "contracts/proposals/ccip-test-user-registry-002.clar"
+[contracts.test-ccd003-user-registry-002]
+path = "tests/contracts/proposals/test-ccd003-user-registry-002.clar"
 
-[contracts.ccip-test-user-registry-003]
-path = "contracts/proposals/ccip-test-user-registry-003.clar"
+[contracts.test-ccd003-user-registry-003]
+path = "tests/contracts/proposals/test-ccd003-user-registry-003.clar"
 
-[contracts.ccip-test-city-registry-001]
-path = "contracts/proposals/ccip-test-city-registry-001.clar"
+[contracts.test-ccd004-city-registry-001]
+path = "tests/contracts/proposals/test-ccd004-city-registry-001.clar"
 
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"

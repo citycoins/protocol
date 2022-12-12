@@ -10,7 +10,7 @@
 (define-public (execute (sender principal))
 	(begin
 		;; tests success of setting sunset height
-    	(try! (contract-call? .ccd002-treasury-nyc withdraw-nft 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccext-nft-nyc u1 'ST3AM1A56AK2C1XAFJ4115ZSV26EB49BVQ10MGCS0))
+    	(try! (contract-call? .ccd002-treasury-nyc withdraw-nft 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.test-ccext-nft-nyc u1 'ST3AM1A56AK2C1XAFJ4115ZSV26EB49BVQ10MGCS0))
 		(ok true)
 	)
 )

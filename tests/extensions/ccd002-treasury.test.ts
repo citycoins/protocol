@@ -7,8 +7,8 @@ import {
 } from "../../utils/common.ts";
 import { PROPOSALS } from "../../utils/common.ts";
 import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
-import { CCEXTGovernanceToken } from "../../models/external/ccext-governance-token.model.ts";
-import { CCEXTNft } from "../../models/external/ccext-nft.model.ts";
+import { CCEXTGovernanceToken } from "../../models/external/test-ccext-governance-token.model.ts";
+import { CCEXTNft } from "../../models/external/test-ccext-nft.model.ts";
 
 // Authorization check
 
@@ -318,7 +318,7 @@ Clarinet.test({
     const gt = new CCEXTGovernanceToken(
       chain,
       sender,
-      "ccext-governance-token-mia"
+      "test-ccext-governance-token-mia"
     );
     const amount = 1000;
     constructAndPassProposal(
@@ -331,7 +331,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_004);
     gt.getBalance(depositor.address).result.expectOk().expectUint(2000);
     const event =
-      '{amount: u1000, assetContract: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccext-governance-token-mia, caller: ST3AM1A56AK2C1XAFJ4115ZSV26EB49BVQ10MGCS0, event: "deposit-ft", recipient: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd002-treasury-mia, sender: ST3AM1A56AK2C1XAFJ4115ZSV26EB49BVQ10MGCS0}';
+      '{amount: u1000, assetContract: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.test-ccext-governance-token-mia, caller: ST3AM1A56AK2C1XAFJ4115ZSV26EB49BVQ10MGCS0, event: "deposit-ft", recipient: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd002-treasury-mia, sender: ST3AM1A56AK2C1XAFJ4115ZSV26EB49BVQ10MGCS0}';
 
     // act
     const { receipts } = chain.mineBlock([
@@ -397,7 +397,7 @@ Clarinet.test({
       sender,
       "ccd002-treasury-nyc"
     );
-    const nft = new CCEXTNft(chain, sender, "ccext-nft-nyc");
+    const nft = new CCEXTNft(chain, sender, "test-ccext-nft-nyc");
     const tokenId = 1;
     // Enable NYC NFT asset contract
     constructAndPassProposal(
@@ -484,7 +484,7 @@ Clarinet.test({
     chain.mineBlock([ccd002Treasury.depositStx(sender, amount1)]);
     ccd002Treasury.getBalanceStx().result.expectUint(amount1);
     const event =
-      '{amount: u500, caller: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccip-test-treasury-006, event: "withdraw-stx", recipient: ' +
+      '{amount: u500, caller: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.test-ccd002-treasury-006, event: "withdraw-stx", recipient: ' +
       recipient.address +
       ", sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.base-dao}";
 
@@ -587,7 +587,7 @@ Clarinet.test({
     const gt = new CCEXTGovernanceToken(
       chain,
       sender,
-      "ccext-governance-token-mia"
+      "test-ccext-governance-token-mia"
     );
     gt.getBalance(recipient.address).result.expectOk().expectUint(0);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA)
@@ -640,7 +640,7 @@ Clarinet.test({
     const gt = new CCEXTGovernanceToken(
       chain,
       sender,
-      "ccext-governance-token-mia"
+      "test-ccext-governance-token-mia"
     );
     gt.getBalance(recipient.address).result.expectOk().expectUint(0);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA)
@@ -715,7 +715,7 @@ Clarinet.test({
     );
     ccd002Treasury.isAllowed(EXTERNAL.NFT_NYC).result.expectBool(false);
     const tokenId = 1;
-    const nft = new CCEXTNft(chain, sender, "ccext-nft-nyc");
+    const nft = new CCEXTNft(chain, sender, "test-ccext-nft-nyc");
     // mint an asset to the treasury
     chain.mineBlock([nft.mint(EXTENSIONS.CCD002_TREASURY_NYC, sender.address)]);
     // Check asset is owned by the nyc treasury
@@ -758,7 +758,7 @@ Clarinet.test({
       "ccd002-treasury-nyc"
     );
     const recipient = accounts.get("wallet_6")!;
-    const nft = new CCEXTNft(chain, sender, "ccext-nft-nyc");
+    const nft = new CCEXTNft(chain, sender, "test-ccext-nft-nyc");
     const tokenId = 1;
     // Proposal 5 allow lists NYC NFT asset contract
     constructAndPassProposal(
@@ -777,7 +777,7 @@ Clarinet.test({
     const event =
       "{assetContract: " +
       EXTERNAL.NFT_NYC +
-      ', caller: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccip-test-treasury-009, event: "withdraw-nft", recipient: ST3AM1A56AK2C1XAFJ4115ZSV26EB49BVQ10MGCS0, sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.base-dao, tokenId: u1}';
+      ', caller: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.test-ccd002-treasury-009, event: "withdraw-nft", recipient: ST3AM1A56AK2C1XAFJ4115ZSV26EB49BVQ10MGCS0, sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.base-dao, tokenId: u1}';
 
     // act
     // proposal 9 transfers the nft from the treasury to recipient
