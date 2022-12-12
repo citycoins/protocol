@@ -4,6 +4,15 @@
 
 CityCoins give communities the power to improve and program their cities.
 
+## Code Management
+
+The following will report and fix formatting issues;
+
+```bash
+npx prettier -c .
+npx prettier --write .
+```
+
 ## Purpose
 
 This repository contains the base contract for the DAO and any related extensions.
