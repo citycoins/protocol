@@ -10,24 +10,16 @@
 
 (impl-trait .extension-trait.extension-trait)
 
-;; ERROR CODES
+;; CONSTANTS
 
+;; error codes
 (define-constant ERR_UNAUTHORIZED (err u3300))
 
-;; AUTHORIZATION CHECK
-
-(define-public (is-dao-or-extension)
-  (ok (asserts!
-    (or
-      (is-eq tx-sender .base-dao)
-      (contract-call? .base-dao is-extension contract-caller))
-    ERR_UNAUTHORIZED
-  ))
-)
-
-;; CITY REGISTRATION
+;; DATA VARS
 
 (define-data-var citiesNonce uint u0)
+
+;; DATA MAPS
 
 ;; store city name by ID
 (define-map CityNames
@@ -41,18 +33,24 @@
   uint
 )
 
-;; returns (some uint) or none
-(define-read-only (get-city-id (cityName (string-ascii 32)))
-  (map-get? CityIds cityName)
+;; PUBLIC FUNCTIONS
+
+;; authorization check
+(define-public (is-dao-or-extension)
+  (ok (asserts!
+    (or
+      (is-eq tx-sender .base-dao)
+      (contract-call? .base-dao is-extension contract-caller))
+    ERR_UNAUTHORIZED
+  ))
 )
 
-;; returns (some (string-ascii 32)) or none
-(define-read-only (get-city-name (cityId uint))
-  (map-get? CityNames cityId)
+;; extension callback
+(define-public (callback (sender principal) (memo (buff 34)))
+  (ok true)
 )
 
-;; returns city ID if it has been created, or creates and returns new ID
-;; guarded: can only be called by the DAO or other extensions
+;; guarded: returns city ID or creates a new one
 (define-public (get-or-create-city-id (cityName (string-ascii 32)))
   (begin 
     (try! (is-dao-or-extension))
@@ -72,8 +70,15 @@
   )
 )
 
-;; Extension callback
 
-(define-public (callback (sender principal) (memo (buff 34)))
-  (ok true)
+;; READ ONLY FUNCTIONS
+
+;; returns (some uint) or none
+(define-read-only (get-city-id (cityName (string-ascii 32)))
+  (map-get? CityIds cityName)
+)
+
+;; returns (some (string-ascii 32)) or none
+(define-read-only (get-city-name (cityId uint))
+  (map-get? CityNames cityId)
 )

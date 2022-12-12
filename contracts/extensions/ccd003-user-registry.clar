@@ -10,24 +10,16 @@
 
 (impl-trait .extension-trait.extension-trait)
 
-;; ERROR CODES
+;; CONSTANTS
 
+;; error codes
 (define-constant ERR_UNAUTHORIZED (err u3200))
 
-;; AUTHORIZATION CHECK
-
-(define-public (is-dao-or-extension)
-  (ok (asserts!
-    (or
-      (is-eq tx-sender .base-dao)
-      (contract-call? .base-dao is-extension contract-caller))
-    ERR_UNAUTHORIZED
-  ))
-)
-
-;; USER REGISTRATION
+;; DATA VARS
 
 (define-data-var usersNonce uint u0)
+
+;; DATA MAPS
 
 ;; store user principal by user id
 (define-map Users
@@ -41,18 +33,24 @@
   uint
 )
 
-;; returns (some uint) or none
-(define-read-only (get-user-id (user principal))
-  (map-get? UserIds user)
+;; PUBLIC FUNCTIONS
+
+;; authorization check
+(define-public (is-dao-or-extension)
+  (ok (asserts!
+    (or
+      (is-eq tx-sender .base-dao)
+      (contract-call? .base-dao is-extension contract-caller))
+    ERR_UNAUTHORIZED
+  ))
 )
 
-;; returns (some principal) or none
-(define-read-only (get-user (userId uint))
-  (map-get? Users userId)
+;; extension callback
+(define-public (callback (sender principal) (memo (buff 34)))
+  (ok true)
 )
 
-;; returns user ID if it has been created, or creates and returns new ID
-;; guarded: can only be called by the DAO or other extensions
+;; guarded: returns user ID or creates a new one
 (define-public (get-or-create-user-id (user principal))
   (begin 
     (try! (is-dao-or-extension))
@@ -72,8 +70,14 @@
   )
 )
 
-;; Extension callback
+;; READ ONLY FUNCTIONS
 
-(define-public (callback (sender principal) (memo (buff 34)))
-  (ok true)
+;; returns (some uint) or none
+(define-read-only (get-user-id (user principal))
+  (map-get? UserIds user)
+)
+
+;; returns (some principal) or none
+(define-read-only (get-user (userId uint))
+  (map-get? Users userId)
 )

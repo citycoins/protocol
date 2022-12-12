@@ -21,15 +21,16 @@
 (define-constant ERR_ASSET_NOT_ALLOWED (err u3101))
 (define-constant TREASURY (as-contract tx-sender))
 
-;; DATA MAPS AND VARS
+;; DATA MAPS
 
 (define-map AllowedAssets
   principal ;; token contract
   bool      ;; enabled
 )
 
-;; Authorization Check
+;; PUBLIC FUNCTIONS
 
+;; authorization check
 (define-public (is-dao-or-extension)
   (ok (asserts!
     (or
@@ -39,7 +40,10 @@
   ))
 )
 
-;; Internal DAO functions
+;; extension callback
+(define-public (callback (sender principal) (memo (buff 34)))
+  (ok true)
+)
 
 (define-public (set-allowed (token principal) (enabled bool))
   (begin
@@ -53,25 +57,12 @@
   )
 )
 
-(define-private (set-allowed-iter (item {token: principal, enabled: bool}))
-  (begin
-    (print {
-      event: "allow-asset",
-      token: (get token item),
-      enabled: (get enabled item)
-    })
-    (map-set AllowedAssets (get token item) (get enabled item))
-  )
-)
-
 (define-public (set-allowed-list (allowList (list 100 {token: principal, enabled: bool})))
   (begin
     (try! (is-dao-or-extension))
     (ok (map set-allowed-iter allowList))
   )
 )
-
-;; Deposit functions
 
 (define-public (deposit-stx (amount uint))
   (begin
@@ -118,8 +109,6 @@
     (ok true)
   )
 )
-
-;; Withdraw functions
 
 (define-public (withdraw-stx (amount uint) (recipient principal))
   (begin
@@ -169,7 +158,7 @@
   )
 )
 
-;; Read only functions
+;; READ ONLY FUNCTIONS
 
 (define-read-only (is-allowed (assetContract principal))
   (default-to false (get-allowed-asset assetContract))
@@ -183,8 +172,15 @@
   (stx-get-balance TREASURY)
 )
 
-;; Extension callback
+;; PRIVATE FUNCTIONS
 
-(define-public (callback (sender principal) (memo (buff 34)))
-  (ok true)
+(define-private (set-allowed-iter (item {token: principal, enabled: bool}))
+  (begin
+    (print {
+      event: "allow-asset",
+      token: (get token item),
+      enabled: (get enabled item)
+    })
+    (map-set AllowedAssets (get token item) (get enabled item))
+  )
 )

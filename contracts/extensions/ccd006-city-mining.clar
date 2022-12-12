@@ -12,8 +12,9 @@
 ;; TODO: protocol traits?
 (impl-trait .extension-trait.extension-trait)
 
-;; ERROR CODES
+;; CONSTANTS
 
+;; error codes
 (define-constant ERR_UNAUTHORIZED (err u3400))
 (define-constant ERR_INVALID_PARAMS (err u3401))
 (define-constant ERR_ALREADY_MINED (err u3402))
@@ -23,36 +24,14 @@
 (define-constant ERR_ALREADY_CLAIMED (err u3406))
 (define-constant ERR_MINER_NOT_WINNER (err u3407))
 
-;; AUTHORIZATION CHECK
-
-(define-public (is-dao-or-extension)
-  (ok (asserts!
-    (or
-      (is-eq tx-sender .base-dao)
-      (contract-call? .base-dao is-extension contract-caller))
-    ERR_UNAUTHORIZED
-  ))
-)
-
-;; MINING CONFIGURATION
+;; DATA VARS
 
 ;; delay before mining rewards can be claimed
 (define-data-var rewardDelay uint u100)
 
-(define-read-only (get-reward-delay)
-  (var-get rewardDelay)
-)
+;; DATA MAPS
 
-;; guarded: can only be called by the DAO or other extensions
-(define-public (set-reward-delay (delay uint))
-  (begin 
-    (try! (is-dao-or-extension))
-    (asserts! (> delay u0) ERR_INVALID_PARAMS)
-    (ok (var-set rewardDelay delay))
-  )
-)
-
-;; At a given city and Stacks block height
+;; For a given city and Stacks block height
 ;; - how many miners were there
 ;; - what was the total amount submitted
 ;; - was the block reward claimed
@@ -68,20 +47,7 @@
   }
 )
 
-(define-read-only (get-mining-stats-at-block (cityId uint) (height uint))
-  (default-to {
-      miners: u0,
-      amount: u0,
-      claimed: false
-    }
-    (map-get? MiningStatsAtBlock {
-      cityId: cityId,
-      height: height
-    })
-  )
-)
-
-;; At a given Stacks block height and user ID:
+;; For a given Stacks block height and user ID:
 ;; - what is their ustx commitment
 ;; - what are the low/high values (used for VRF)
 (define-map MinerAtBlock
@@ -98,31 +64,7 @@
   }
 )
 
-;; returns true if a miner already mined at a given city and block height
-(define-read-only (has-mined-at-block (cityId uint) (height uint) (userId uint))
-  (is-some (map-get? MinerAtBlock {
-    cityId: cityId,
-    height: height,
-    userId: userId
-  }))
-)
-
-;; returns miner statistics if found
-(define-read-only (get-miner-at-block (cityId uint) (height uint) (userId uint))
-  (default-to {
-      commit: u0,
-      low: u0,
-      high: u0
-    }
-    (map-get? MinerAtBlock {
-      cityId: cityId,
-      height: height,
-      userId: userId
-    })
-  )
-)
-
-;; At a given city and Stacks block height
+;; For a given city and Stacks block height
 ;; - what is the high value from MinerAtBlock
 (define-map HighValueAtBlock
   {
@@ -132,16 +74,42 @@
   uint
 )
 
-(define-read-only (get-high-value (cityId uint) (height uint))
-  (default-to u0
-    (map-get? HighValueAtBlock {
-      cityId: cityId,
-      height: height
-    })
-  )
+;; For a given city and Stacks block height
+;; - what is the ID of the miner who won the block?
+;; (only known after the miner claims the block)
+(define-map WinnerAtBlock
+  {
+    cityId: uint,
+    height: uint
+  }
+  uint
 )
 
-;; MINING ACTIONS
+;; PUBLIC FUNCTIONS
+
+;; authorization check
+(define-public (is-dao-or-extension)
+  (ok (asserts!
+    (or
+      (is-eq tx-sender .base-dao)
+      (contract-call? .base-dao is-extension contract-caller))
+    ERR_UNAUTHORIZED
+  ))
+)
+
+;; extension callback
+(define-public (callback (sender principal) (memo (buff 34)))
+  (ok true)
+)
+
+;; guarded: set the delay before mining rewards can be claimed
+(define-public (set-reward-delay (delay uint))
+  (begin 
+    (try! (is-dao-or-extension))
+    (asserts! (> delay u0) ERR_INVALID_PARAMS)
+    (ok (var-set rewardDelay delay))
+  )
+)
 
 (define-public (mine (cityName (string-ascii 32)) (amounts (list 200 uint)))
   (let
@@ -183,6 +151,107 @@
     )
   )
 )
+
+(define-public (claim-mining-reward (cityName (string-ascii 32)) (claimHeight uint))
+  (let
+    (
+      (cityId (try! (get-city-id cityName)))
+      (cityActivated (try! (is-city-activated cityId)))
+    )
+    ;; TODO: review logic around contract shutdown
+    (claim-mining-reward-at-block cityId tx-sender block-height claimHeight)
+  )
+)
+
+;; READ ONLY FUNCTIONS
+
+(define-read-only (get-reward-delay)
+  (var-get rewardDelay)
+)
+
+(define-read-only (get-mining-stats-at-block (cityId uint) (height uint))
+  (default-to {
+      miners: u0,
+      amount: u0,
+      claimed: false
+    }
+    (map-get? MiningStatsAtBlock {
+      cityId: cityId,
+      height: height
+    })
+  )
+)
+
+;; returns true if a miner already mined at a given city and block height
+(define-read-only (has-mined-at-block (cityId uint) (height uint) (userId uint))
+  (is-some (map-get? MinerAtBlock {
+    cityId: cityId,
+    height: height,
+    userId: userId
+  }))
+)
+
+;; returns miner statistics if found
+(define-read-only (get-miner-at-block (cityId uint) (height uint) (userId uint))
+  (default-to {
+      commit: u0,
+      low: u0,
+      high: u0
+    }
+    (map-get? MinerAtBlock {
+      cityId: cityId,
+      height: height,
+      userId: userId
+    })
+  )
+)
+
+(define-read-only (get-high-value (cityId uint) (height uint))
+  (default-to u0
+    (map-get? HighValueAtBlock {
+      cityId: cityId,
+      height: height
+    })
+  )
+)
+
+(define-read-only (get-block-winner (cityId uint) (height uint))
+  (map-get? WinnerAtBlock {
+    cityId: cityId,
+    height: height
+  })
+)
+
+;; TODO: review control flows here
+(define-read-only (is-block-winner (cityId uint) (user principal) (claimHeight uint))
+  (let
+    (
+      (userId (default-to u0 (contract-call? .ccd003-user-registry get-user-id user)))
+      (blockStats (get-mining-stats-at-block cityId claimHeight))
+      (minerStats (get-miner-at-block cityId claimHeight userId))
+      (maturityHeight (+ (get-reward-delay) claimHeight))
+      (vrfSample (unwrap-panic (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-rnd maturityHeight)))
+      (commitTotal (get-high-value cityId claimHeight))
+      (winningValue (mod vrfSample commitTotal))
+    )
+    ;; TODO: any other checks to perform here?
+    ;; check that user ID was found and if user is winner
+    (if (and (> userId u0) (>= winningValue (get low minerStats)) (<= winningValue (get high minerStats)))
+      ;; true
+      (some {
+        winner: true,
+        claimed: (get claimed blockStats),
+      })
+      ;; false
+      (some {
+        winner: false,
+        claimed: (get claimed blockStats),
+      })
+    )
+  )
+)
+
+;; PRIVATE FUNCTIONS
 
 (define-private (mine-block
   (amount uint)
@@ -262,38 +331,6 @@
   )
 )
 
-;; MINING CLAIM ACTIONS
-
-;; At a given city and Stacks block height
-;; - what is the ID of the miner who won the block?
-;; (only known after the miner claims the block)
-(define-map WinnerAtBlock
-  {
-    cityId: uint,
-    height: uint
-  }
-  uint
-)
-
-(define-read-only (get-block-winner (cityId uint) (height uint))
-  (map-get? WinnerAtBlock {
-    cityId: cityId,
-    height: height
-  })
-)
-
-;; wrapper that calls the next function using the current block height
-(define-public (claim-mining-reward (cityName (string-ascii 32)) (claimHeight uint))
-  (let
-    (
-      (cityId (try! (get-city-id cityName)))
-      (cityActivated (try! (is-city-activated cityId)))
-    )
-    ;; TODO: review logic around contract shutdown
-    (claim-mining-reward-at-block cityId tx-sender block-height claimHeight)
-  )
-)
-
 (define-private (claim-mining-reward-at-block (cityId uint) (user principal) (stacksHeight uint) (claimHeight uint))
   (let
     (
@@ -351,62 +388,31 @@
   )
 )
 
-;; TODO: review control flows here
-(define-read-only (is-block-winner (cityId uint) (user principal) (claimHeight uint))
-  (let
-    (
-      (userId (default-to u0 (contract-call? .ccd003-user-registry get-user-id user)))
-      (blockStats (get-mining-stats-at-block cityId claimHeight))
-      (minerStats (get-miner-at-block cityId claimHeight userId))
-      (maturityHeight (+ (get-reward-delay) claimHeight))
-      (vrfSample (unwrap-panic (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-rnd maturityHeight)))
-      (commitTotal (get-high-value cityId claimHeight))
-      (winningValue (mod vrfSample commitTotal))
-    )
-    ;; TODO: any other checks to perform here?
-    ;; check that user ID was found and if user is winner
-    (if (and (> userId u0) (>= winningValue (get low minerStats)) (<= winningValue (get high minerStats)))
-      ;; true
-      (some {
-        winner: true,
-        claimed: (get claimed blockStats),
-      })
-      ;; false
-      (some {
-        winner: false,
-        claimed: (get claimed blockStats),
-      })
-    )
-  )
-)
-
-;; PRIVATE GETTERS
-
-;; user ID from ccd003-user-registry
+;; get user ID from ccd003-user-registry
 ;; returns (ok uint) or ERR_INVALID_PARAMS if not found
 (define-private (get-user-id (user principal))
   (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_PARAMS))
 )
 
-;; city ID from ccd004-city-registry
+;; get city ID from ccd004-city-registry
 ;; returns (ok uint) or ERR_INVALID_PARAMS if not found
 (define-private (get-city-id (cityName (string-ascii 32)))
   (ok (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_PARAMS))
 )
 
-;; city activation status from .ccd005-city-data
+;; get city activation status from .ccd005-city-data
 ;; returns (ok true) or ERR_INVALID_PARAMS if not found
 (define-private (is-city-activated (cityId uint))
   (ok (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_INVALID_PARAMS))
 )
 
-;; city activation details from ccd005-city-data
+;; get city activation details from ccd005-city-data
 ;; returns (ok tuple) or ERR_INVALID_PARAMS if not found
 (define-private (get-city-activation-details (cityId uint))
   (ok (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_INVALID_PARAMS))
 )
 
-;; city treasury details from ccd005-city-data
+;; get city treasury details from ccd005-city-data
 ;; returns (ok principal) or ERR_INVALID_PARAMS if not found
 (define-private (get-city-treasury-by-name (cityId uint) (treasuryName (string-ascii 32)))
   (let
@@ -415,19 +421,4 @@
     )
     (ok (unwrap! (contract-call? .ccd005-city-data get-city-treasury-address cityId treasuryId) ERR_INVALID_PARAMS))
   )
-)
-
-;; 
-
-
-
-;; OTHER
-
-;; TODO: mining exchange rate for a city
-;; already exposed get-mining-stats-at-block?
-
-;; Extension callback
-
-(define-public (callback (sender principal) (memo (buff 34)))
-  (ok true)
 )
