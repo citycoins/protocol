@@ -11,6 +11,7 @@ export const EXTENSIONS = {
   CCD002_TREASURY_MIA: ADDRESS.concat(".ccd002-treasury-mia"),
   CCD002_TREASURY_NYC: ADDRESS.concat(".ccd002-treasury-nyc"),
   CCD003_USER_REGISTRY: ADDRESS.concat(".ccd003-user-registry"),
+  CCD004_CITY_REGISTRY: ADDRESS.concat(".ccd004-city-registry"),
 };
 
 export const PROPOSALS = {

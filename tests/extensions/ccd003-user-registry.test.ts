@@ -11,7 +11,7 @@ import { EXTENSIONS } from "../../utils/common.ts";
 // Authorization checks
 
 Clarinet.test({
-  name: "ccd003-user-registry: is-dao-or-extenion() fails when called directly",
+  name: "ccd003-user-registry: is-dao-or-extension() can only be called by the base dao or valid extension",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -94,7 +94,7 @@ Clarinet.test({
 // Internal DAO functions
 
 Clarinet.test({
-  name: "ccd003-user-registry: get-or-create-user-id() can be called if the user registry extension is disabled",
+  name: "ccd003-user-registry: get-or-create-user-id() can be called by the base dao or valid extension",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -104,19 +104,13 @@ Clarinet.test({
       sender,
       "ccd003-user-registry"
     );
-    const baseDao = new BaseDao(chain, sender);
 
     // act
-    // disables user registry extension
     let receipts = constructAndPassProposal(
       chain,
       accounts,
       PROPOSALS.TEST_CCD003_USER_REGISTRY_002
     );
-    baseDao
-      .isExtension(EXTENSIONS.CCD003_USER_REGISTRY)
-      .result.expectBool(false);
-    // try to create an id - should fail but passes
     receipts = passProposal(
       chain,
       accounts,

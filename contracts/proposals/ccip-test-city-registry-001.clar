@@ -2,13 +2,15 @@
 ;; Version: 1.0.0
 ;; Synopsis: Test proposal for clarinet layer
 ;; Description:
-;; ccd003-user-registry: get-or-create-user-id() creates an entry for id=1
+;; ccd004-city-registry: get-or-create-city-id() increments the user id nonce
+;; ccd004-city-registry: get-or-create-city-id() increments the user id nonce
 
 (impl-trait .proposal-trait.proposal-trait)
 
 (define-public (execute (sender principal))
 	(begin
-    	(try! (contract-call? .ccd003-user-registry get-or-create-user-id 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5))
+    	(try! (contract-call? .ccd004-city-registry get-or-create-city-id "mia"))
+    	(try! (contract-call? .ccd004-city-registry get-or-create-city-id "nyc"))
 		(ok true)
 	)
 )

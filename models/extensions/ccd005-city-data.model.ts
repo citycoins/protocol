@@ -24,23 +24,23 @@ export class CCD004CityRegistry {
 
   // Internal DAO functions
 
-  getOrCreateCityId(sender: Account, cityName: string) {
-    return Tx.contractCall(
-      this.name,
-      "get-or-create-city-id",
-      [types.ascii(cityName)],
-      sender.address
-    );
-  }
-
   // Read only functions
 
-  getCityId(cityName: string): ReadOnlyFn {
-    return this.callReadOnlyFn("get-city-id", [types.ascii(cityName)]);
+  getCityTreasury(cityId: number, treasuryName: string): ReadOnlyFn {
+    return this.callReadOnlyFn("get-city-treasury", [
+      types.uint(cityId),
+      types.ascii(treasuryName),
+    ]);
   }
 
-  getCityName(cityId: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-city-name", [types.uint(cityId)]);
+  isCityActivated(cityId: number): ReadOnlyFn {
+    return this.callReadOnlyFn("is-city-activated", [types.uint(cityId)]);
+  }
+
+  getCityActivationDetails(cityId: number): ReadOnlyFn {
+    return this.callReadOnlyFn("get-city-activation-details", [
+      types.uint(cityId),
+    ]);
   }
 
   // Extension callback
