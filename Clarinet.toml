@@ -125,6 +125,21 @@ path = "tests/contracts/proposals/test-ccd005-city-data-004.clar"
 [contracts.test-ccd005-city-data-005]
 path = "tests/contracts/proposals/test-ccd005-city-data-005.clar"
 
+[contracts.test-ccd005-city-data-006]
+path = "tests/contracts/proposals/test-ccd005-city-data-006.clar"
+
+[contracts.test-ccd005-city-data-007]
+path = "tests/contracts/proposals/test-ccd005-city-data-007.clar"
+
+[contracts.test-ccd005-city-data-008]
+path = "tests/contracts/proposals/test-ccd005-city-data-008.clar"
+
+[contracts.test-ccd005-city-data-009]
+path = "tests/contracts/proposals/test-ccd005-city-data-009.clar"
+
+[contracts.test-ccd005-city-data-010]
+path = "tests/contracts/proposals/test-ccd005-city-data-010.clar"
+
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
 
