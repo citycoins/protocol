@@ -232,6 +232,8 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
+    const wallet_1 = accounts.get("wallet_1")!;
+
     const ccd005CityData = new CCD005CityData(
       chain,
       sender,
@@ -244,46 +246,37 @@ Clarinet.test({
       accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
-    ccd005CityData.getCityActivationSignals(2).result.expectUint(0);
-    ccd005CityData.isCityActivated(2).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
-    let expectedStats = {
-      activated: types.uint(2),
-      delay: types.uint(2),
-      target: types.uint(2),
-      threshold: types.uint(2),
-    };
-    assertEquals(
-      ccd005CityData
-        .getCityActivationDetails(2)
-        .result.expectSome()
-        .expectTuple(),
-      expectedStats
-    );
 
-    let block = chain.mineBlock([
-      ccd005CityData.activateCity(sender, 2, "memo 1"),
-    ]);
-    ccd005CityData.getCityActivationSignals(2).result.expectUint(1);
+    // there should be no signals yet
+    ccd005CityData.getCityActivationSignals(2).result.expectUint(0);
+    // city should not be activated
     ccd005CityData.isCityActivated(2).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
+    // send first signal
+    chain.mineBlock([ccd005CityData.activateCity(sender, 2, "memo 1")]);
+    // signals should increase by one
+    ccd005CityData.getCityActivationSignals(2).result.expectUint(1);
+    // city should not be activated
+    ccd005CityData.isCityActivated(2).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
+    // sender should have voted already
     ccd005CityData
       .getCityActivationVoter(2, sender.address)
       .result.expectBool(true);
-    ccd005CityData.isCityActivated(2).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
-    block = chain.mineBlock([ccd005CityData.activateCity(sender, 2, "memo 2")]);
+    // send second signal
+    let block = chain.mineBlock([
+      ccd005CityData.activateCity(wallet_1, 2, "memo 2"),
+    ]);
 
     // assert
-    ccd005CityData.getCityActivationSignals(2).result.expectUint(2);
-    ccd005CityData.isCityActivated(2).result.expectBool(true); //.expectOk().expectSome().expectBool(false);
-    console.log("block", block);
-    block.receipts[1].result.expectOk();
-    // ccd005CityData.isCityActivated(2).result.expectBool(true) //.expectOk().expectSome().expectBool(false);
-    //.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
 
-    expectedStats = {
-      activated: types.uint(2),
-      delay: types.uint(2),
-      target: types.uint(2),
-      threshold: types.uint(2),
+    // verify city details are set
+    const delay = 2; // matches test-ccd005-city-data-001
+    const threshold = 2; // matches test-ccd005-city-data-001
+    const lastBlock = block.height - 1;
+    const expectedStats = {
+      activated: types.uint(lastBlock),
+      delay: types.uint(delay),
+      target: types.uint(lastBlock + delay),
+      threshold: types.uint(threshold),
     };
     assertEquals(
       ccd005CityData
@@ -292,5 +285,14 @@ Clarinet.test({
         .expectTuple(),
       expectedStats
     );
+
+    // signals should increase by one
+    ccd005CityData.getCityActivationSignals(2).result.expectUint(2);
+    // city should be activated
+    ccd005CityData.isCityActivated(2).result.expectBool(true); //.expectOk().expectSome().expectBool(false);
+    // console.log("block", block);
+    // block.receipts[1].result.expectOk();
+    // ccd005CityData.isCityActivated(2).result.expectBool(true) //.expectOk().expectSome().expectBool(false);
+    //.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
   },
 });

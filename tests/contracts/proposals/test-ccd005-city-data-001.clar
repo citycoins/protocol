@@ -9,7 +9,7 @@
 
 (define-public (execute (sender principal))
 	(begin
-    	(try! (contract-call? .ccd005-city-data set-city-activation-details u1 u1 u1 u1 u1))
+      (try! (contract-call? .ccd005-city-data set-city-activation-details u1 u1 u1 u1 u1))
     	(try! (contract-call? .ccd005-city-data set-city-activation-details u2 u2 u2 u2 u2))
 		(ok true)
 	)

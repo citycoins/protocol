@@ -222,6 +222,8 @@
     (asserts! (not (get-city-activation-voter cityId tx-sender)) ERR_ALREADY_VOTED)
     ;; set activation signals
     (map-set CityActivationSignals cityId signals)
+    ;; record vote
+    (map-insert CityActivationVoters { cityId: cityId, signaler: tx-sender } true)
     ;; if signals = threshold
     (and (is-eq signals (get threshold details))
       (let
