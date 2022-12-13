@@ -13,7 +13,7 @@
 ;; CONSTANTS
 
 ;; error codes
-(define-constant ERR_UNAUTHORIZED (err u3300))
+(define-constant ERR_UNAUTHORIZED (err u4000))
 
 ;; DATA VARS
 

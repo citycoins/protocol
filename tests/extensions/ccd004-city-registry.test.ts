@@ -4,6 +4,7 @@ import {
   passProposal,
   PROPOSALS,
 } from "../../utils/common.ts";
+import { BaseDao } from "../../models/base-dao.model.ts";
 import { CCD004CityRegistry } from "../../models/extensions/ccd004-city-registry.model.ts";
 
 // Authorization checks
@@ -110,7 +111,9 @@ Clarinet.test({
 
     // assert
     assertEquals(receipts.length, 3);
-    receipts[2].result.expectErr().expectUint(1001);
+    receipts[2].result
+      .expectErr()
+      .expectUint(BaseDao.ErrCode.ERR_ALREADY_EXECUTED);
   },
 });
 

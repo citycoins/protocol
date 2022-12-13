@@ -19,10 +19,10 @@
 ;; CONSTANTS
 
 ;; error codes
-(define-constant ERR_UNAUTHORIZED (err u3000))
-(define-constant ERR_NOT_APPROVER (err u3001))
-(define-constant ERR_SUNSET_REACHED (err u3002))
-(define-constant ERR_SUNSET_IN_PAST (err u3003))
+(define-constant ERR_UNAUTHORIZED (err u1000))
+(define-constant ERR_NOT_APPROVER (err u1001))
+(define-constant ERR_SUNSET_REACHED (err u1002))
+(define-constant ERR_SUNSET_IN_PAST (err u1003))
 
 ;; DATA VARS
 

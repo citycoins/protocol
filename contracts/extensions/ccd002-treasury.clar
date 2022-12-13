@@ -17,8 +17,8 @@
 
 ;; CONSTANTS
 
-(define-constant ERR_UNAUTHORIZED (err u3100))
-(define-constant ERR_ASSET_NOT_ALLOWED (err u3101))
+(define-constant ERR_UNAUTHORIZED (err u2000))
+(define-constant ERR_ASSET_NOT_ALLOWED (err u2001))
 (define-constant TREASURY (as-contract tx-sender))
 
 ;; DATA MAPS

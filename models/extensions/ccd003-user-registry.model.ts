@@ -1,7 +1,7 @@
 import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 enum ErrCode {
-  ERR_UNAUTHORIZED = 3200,
+  ERR_UNAUTHORIZED = 3000,
 }
 
 export class CCD003UserRegistry {
