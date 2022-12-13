@@ -110,6 +110,21 @@ path = "tests/contracts/proposals/test-ccd003-user-registry-003.clar"
 [contracts.test-ccd004-city-registry-001]
 path = "tests/contracts/proposals/test-ccd004-city-registry-001.clar"
 
+[contracts.test-ccd005-city-data-001]
+path = "tests/contracts/proposals/test-ccd005-city-data-001.clar"
+
+[contracts.test-ccd005-city-data-002]
+path = "tests/contracts/proposals/test-ccd005-city-data-002.clar"
+
+[contracts.test-ccd005-city-data-003]
+path = "tests/contracts/proposals/test-ccd005-city-data-003.clar"
+
+[contracts.test-ccd005-city-data-004]
+path = "tests/contracts/proposals/test-ccd005-city-data-004.clar"
+
+[contracts.test-ccd005-city-data-005]
+path = "tests/contracts/proposals/test-ccd005-city-data-005.clar"
+
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
 

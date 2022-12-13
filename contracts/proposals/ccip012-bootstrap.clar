@@ -8,7 +8,6 @@
         {extension: .ccd001-direct-execute, enabled: true}
         {extension: .ccd002-treasury-mia, enabled: true}
         {extension: .ccd002-treasury-nyc, enabled: true}
-        ;; {extension: .ccd003-user-registry, enabled: true}
       )
     ))
 
