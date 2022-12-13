@@ -15,8 +15,15 @@
 ;; CONSTANTS
 
 ;; error codes
-(define-constant ERR_UNAUTHORIZED (err u3600))
-(define-constant ERR_INVALID_PARAMS (err u3601))
+(define-constant ERR_UNAUTHORIZED (err u7000))
+(define-constant ERR_INVALID_CYCLE_LENGTH (err u7001))
+(define-constant ERR_INVALID_STACKING_PARAMS (err u7002))
+(define-constant ERR_STACKING_NOT_AVAILABLE (err u7003))
+(define-constant ERR_USER_ID_NOT_FOUND (err u7004))
+(define-constant ERR_CITY_ID_NOT_FOUND (err u7005))
+(define-constant ERR_CITY_NOT_ACTIVATED (err u7006))
+(define-constant ERR_CITY_DETAILS_NOT_FOUND (err u7007))
+(define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7008))
 
 ;; stacking configuration
 (define-constant MAX_REWARD_CYCLES u32)
@@ -79,7 +86,7 @@
 (define-public (set-reward-cycle-length (length uint))
   (begin
     (try! (is-dao-or-extension))
-    (asserts! (> length u0) ERR_INVALID_PARAMS)
+    (asserts! (> length u0) ERR_INVALID_CYCLE_LENGTH)
     (ok (var-set rewardCycleLength length))
   )
 )
@@ -95,7 +102,7 @@
       (> amount u0)
       (> lockPeriod u0)
       (<= lockPeriod MAX_REWARD_CYCLES)
-    ) ERR_INVALID_PARAMS)
+    ) ERR_INVALID_STACKING_PARAMS)
     (try! (stack-at-cycle cityId userId amount lockPeriod))
     (ok true)
   )
@@ -170,43 +177,43 @@
 (define-private (stack-at-cycle (cityId uint) (userId uint) (amount uint) (lockPeriod uint))
   (let
     (
-      (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_INVALID_PARAMS))
+      (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
     )  
     (ok true)
   )
 )
 
-;; a user ID from ccd003-user-registry
-;; returns (ok uint) or ERR_INVALID_PARAMS if not found
+;; get user ID from ccd003-user-registry
+;; returns (ok uint) or ERR_USER_ID_NOT_FOUND if not found
 (define-private (get-user-id (user principal))
-  (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_PARAMS))
+  (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))
 )
 
-;; city ID from ccd004-city-registry
-;; returns (ok uint) or ERR_INVALID_PARAMS if not found
+;; get city ID from ccd004-city-registry
+;; returns (ok uint) or ERR_CITY_ID_NOT_FOUND if not found
 (define-private (get-city-id (cityName (string-ascii 32)))
-  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_PARAMS))
+  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
 )
 
-;; city activation status from ccd005-city-data
-;; returns (ok true) or ERR_INVALID_PARAMS if not found
+;; get city activation status from .ccd005-city-data
+;; returns (ok true) or ERR_CITY_NOT_ACTIVATED if not found
 (define-private (is-city-activated (cityId uint))
-  (ok (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_INVALID_PARAMS))
+  (ok (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED))
 )
 
-;; city activation details from ccd005-city-data
-;; returns (ok tuple) or ERR_INVALID_PARAMS if not found
+;; get city activation details from ccd005-city-data
+;; returns (ok tuple) or ERR_CITY_DETAILS_NOT_FOUND if not found
 (define-private (get-city-activation-details (cityId uint))
-  (ok (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_INVALID_PARAMS))
+  (ok (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_CITY_DETAILS_NOT_FOUND))
 )
 
 ;; city treasury details from ccd005-city-data
-;; returns (ok principal) or ERR_INVALID_PARAMS if not found
+;; returns (ok principal) or ERR_CITY_TREASURY_NOT_FOUND if not found
 (define-private (get-city-treasury-by-name (cityId uint) (treasuryName (string-ascii 32)))
   (let
     (
-      (treasuryId (unwrap! (contract-call? .ccd005-city-data get-city-treasury-id cityId treasuryName) ERR_INVALID_PARAMS))
+      (treasuryId (unwrap! (contract-call? .ccd005-city-data get-city-treasury-id cityId treasuryName) ERR_CITY_TREASURY_NOT_FOUND))
     )
-    (ok (unwrap! (contract-call? .ccd005-city-data get-city-treasury-address cityId treasuryId) ERR_INVALID_PARAMS))
+    (ok (unwrap! (contract-call? .ccd005-city-data get-city-treasury-address cityId treasuryId) ERR_CITY_TREASURY_NOT_FOUND))
   )
 )

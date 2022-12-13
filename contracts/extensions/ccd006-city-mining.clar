@@ -15,14 +15,23 @@
 ;; CONSTANTS
 
 ;; error codes
-(define-constant ERR_UNAUTHORIZED (err u3400))
-(define-constant ERR_INVALID_PARAMS (err u3401))
-(define-constant ERR_ALREADY_MINED (err u3402))
-(define-constant ERR_INSUFFICIENT_BALANCE (err u3403))
-(define-constant ERR_INSUFFICIENT_COMMIT (err u3404))
-(define-constant ERR_NO_VRF_SEED_FOUND (err u3405))
-(define-constant ERR_ALREADY_CLAIMED (err u3406))
-(define-constant ERR_MINER_NOT_WINNER (err u3407))
+(define-constant ERR_UNAUTHORIZED (err u6000))
+(define-constant ERR_INVALID_DELAY (err u6001))
+(define-constant ERR_INVALID_COMMIT_AMOUNTS (err u6002))
+(define-constant ERR_INSUFFICIENT_BALANCE (err u6003))
+(define-constant ERR_ALREADY_MINED (err u6004))
+(define-constant ERR_INSUFFICIENT_COMMIT (err u6005))
+(define-constant ERR_REWARD_NOT_MATURE (err u6006))
+(define-constant ERR_VRF_SEED_NOT_FOUND (err u6007))
+(define-constant ERR_DID_NOT_MINE (err u6008))
+(define-constant ERR_MINER_DATA_NOT_FOUND (err u6009))
+(define-constant ERR_ALREADY_CLAIMED (err u6010))
+(define-constant ERR_MINER_NOT_WINNER (err u6011))
+(define-constant ERR_USER_ID_NOT_FOUND (err u6012))
+(define-constant ERR_CITY_ID_NOT_FOUND (err u6013))
+(define-constant ERR_CITY_NOT_ACTIVATED (err u6014))
+(define-constant ERR_CITY_DETAILS_NOT_FOUND (err u6015))
+(define-constant ERR_CITY_TREASURY_NOT_FOUND (err u6016))
 
 ;; DATA VARS
 
@@ -106,7 +115,7 @@
 (define-public (set-reward-delay (delay uint))
   (begin 
     (try! (is-dao-or-extension))
-    (asserts! (> delay u0) ERR_INVALID_PARAMS)
+    (asserts! (> delay u0) ERR_INVALID_DELAY)
     (ok (var-set rewardDelay delay))
   )
 )
@@ -121,7 +130,7 @@
       (cityTreasury (try! (get-city-treasury-by-name cityId "mining")))
       (userId (try! (contract-call? .ccd003-user-registry get-or-create-user-id tx-sender)))
     )
-    (asserts! (> (len amounts) u0) ERR_INVALID_PARAMS)
+    (asserts! (> (len amounts) u0) ERR_INVALID_COMMIT_AMOUNTS)
     (match (fold mine-block amounts (ok {
       cityId: cityId,
       userId: userId,
@@ -335,21 +344,21 @@
   (let
     (
       (maturityHeight (+ (get-reward-delay) claimHeight))
-      (isMature (asserts! (> stacksHeight maturityHeight) ERR_INVALID_PARAMS))
+      (isMature (asserts! (> stacksHeight maturityHeight) ERR_REWARD_NOT_MATURE))
       (userId (try! (get-user-id user)))
       (blockStats (get-mining-stats-at-block cityId claimHeight))
       (minerStats (get-miner-at-block cityId claimHeight userId))
-      (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_NO_VRF_SEED_FOUND))
+      (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_VRF_SEED_NOT_FOUND))
       (commitTotal (get-high-value cityId claimHeight))
       (winningValue (mod vrfSample commitTotal))
     )
     ;; check that user mined in this block
-    (asserts! (has-mined-at-block cityId claimHeight userId) ERR_INVALID_PARAMS)
+    (asserts! (has-mined-at-block cityId claimHeight userId) ERR_DID_NOT_MINE)
     ;; check that stats and miner data are populated
     (asserts! (and
       (> (get miners blockStats) u0)
       (> (get commit minerStats) u0))
-      ERR_INVALID_PARAMS)
+      ERR_MINER_DATA_NOT_FOUND)
     ;; check that block has not already been claimed
     (asserts! (not (get claimed blockStats)) ERR_ALREADY_CLAIMED)
     ;; check that user is the winner
@@ -389,36 +398,36 @@
 )
 
 ;; get user ID from ccd003-user-registry
-;; returns (ok uint) or ERR_INVALID_PARAMS if not found
+;; returns (ok uint) or ERR_USER_ID_NOT_FOUND if not found
 (define-private (get-user-id (user principal))
-  (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_PARAMS))
+  (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))
 )
 
 ;; get city ID from ccd004-city-registry
-;; returns (ok uint) or ERR_INVALID_PARAMS if not found
+;; returns (ok uint) or ERR_CITY_ID_NOT_FOUND if not found
 (define-private (get-city-id (cityName (string-ascii 32)))
-  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_PARAMS))
+  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
 )
 
 ;; get city activation status from .ccd005-city-data
-;; returns (ok true) or ERR_INVALID_PARAMS if not found
+;; returns (ok true) or ERR_CITY_NOT_ACTIVATED if not found
 (define-private (is-city-activated (cityId uint))
-  (ok (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_INVALID_PARAMS))
+  (ok (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED))
 )
 
 ;; get city activation details from ccd005-city-data
-;; returns (ok tuple) or ERR_INVALID_PARAMS if not found
+;; returns (ok tuple) or ERR_CITY_DETAILS_NOT_FOUND if not found
 (define-private (get-city-activation-details (cityId uint))
-  (ok (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_INVALID_PARAMS))
+  (ok (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_CITY_DETAILS_NOT_FOUND))
 )
 
 ;; get city treasury details from ccd005-city-data
-;; returns (ok principal) or ERR_INVALID_PARAMS if not found
+;; returns (ok principal) or ERR_CITY_TREASURY_NOT_FOUND if not found
 (define-private (get-city-treasury-by-name (cityId uint) (treasuryName (string-ascii 32)))
   (let
     (
-      (treasuryId (unwrap! (contract-call? .ccd005-city-data get-city-treasury-id cityId treasuryName) ERR_INVALID_PARAMS))
+      (treasuryId (unwrap! (contract-call? .ccd005-city-data get-city-treasury-id cityId treasuryName) ERR_CITY_TREASURY_NOT_FOUND))
     )
-    (ok (unwrap! (contract-call? .ccd005-city-data get-city-treasury-address cityId treasuryId) ERR_INVALID_PARAMS))
+    (ok (unwrap! (contract-call? .ccd005-city-data get-city-treasury-address cityId treasuryId) ERR_CITY_TREASURY_NOT_FOUND))
   )
 )

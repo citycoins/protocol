@@ -15,7 +15,11 @@
 
 ;; error codes
 (define-constant ERR_UNAUTHORIZED (err u5000))
-(define-constant ERR_INVALID_PARAMS (err u5001))
+(define-constant ERR_ACTIVATION_DETAILS_NOT_FOUND (err u5001))
+(define-constant ERR_CONTRACT_ALREADY_ACTIVE (err u5002))
+(define-constant ERR_ALREADY_VOTED (err u5003))
+(define-constant ERR_INVALID_THRESHOLDS (err u5004))
+(define-constant ERR_INVALID_AMOUNTS (err u5005))
 
 ;; DATA MAPS
 
@@ -209,13 +213,13 @@
   (let
     (
       (status (is-city-activated cityId))
-      (details (unwrap! (get-city-activation-details cityId) ERR_INVALID_PARAMS))
+      (details (unwrap! (get-city-activation-details cityId) ERR_ACTIVATION_DETAILS_NOT_FOUND))
       (signals (+ (get-city-activation-signals cityId) u1))
     )
     ;; check if already active
-    (asserts! (not status) ERR_INVALID_PARAMS)
+    (asserts! (not status) ERR_CONTRACT_ALREADY_ACTIVE)
     ;; check if already voted
-    (asserts! (not (get-city-activation-voter cityId tx-sender)) ERR_INVALID_PARAMS)
+    (asserts! (not (get-city-activation-voter cityId tx-sender)) ERR_ALREADY_VOTED)
     ;; set activation signals
     (map-set CityActivationSignals cityId signals)
     ;; if signals = threshold
@@ -305,7 +309,7 @@
   (begin
     (try! (is-dao-or-extension))
     ;; check that all thresholds increase in value
-    (asserts! (and (> threshold1 u0) (> threshold2 threshold1) (> threshold3 threshold2) (> threshold4 threshold3) (> threshold5 threshold4)) ERR_INVALID_PARAMS)
+    (asserts! (and (> threshold1 u0) (> threshold2 threshold1) (> threshold3 threshold2) (> threshold4 threshold3) (> threshold5 threshold4)) ERR_INVALID_THRESHOLDS)
     (map-set CityCoinbaseThresholds cityId {
       coinbaseThreshold1: threshold1,
       coinbaseThreshold2: threshold2,
@@ -322,7 +326,7 @@
   (begin
     (try! (is-dao-or-extension))
     ;; check that all amounts are greater than zero
-    (asserts! (and (> amountBonus u0) (> amount1 u0) (> amount2 u0) (> amount3 u0) (> amount4 u0) (> amount5 u0) (> amountDefault u0)) ERR_INVALID_PARAMS)
+    (asserts! (and (> amountBonus u0) (> amount1 u0) (> amount2 u0) (> amount3 u0) (> amount4 u0) (> amount5 u0) (> amountDefault u0)) ERR_INVALID_AMOUNTS)
     (map-set CityCoinbaseAmounts cityId {
       coinbaseAmountBonus: amountBonus,
       coinbaseAmount1: amount1,
