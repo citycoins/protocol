@@ -286,6 +286,8 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
+    const wallet_1 = accounts.get("wallet_1")!;
+
     const ccd005CityData = new CCD005CityData(
       chain,
       sender,
@@ -298,7 +300,10 @@ Clarinet.test({
       accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
+
+    // there should be no signals yet
     ccd005CityData.getCityActivationSignals(2).result.expectUint(0);
+    // city should not be activated
     ccd005CityData.isCityActivated(2).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
     testExpectedCityDetails(ccd005CityData, 2, 2, 2, 2, 2);
 
@@ -307,14 +312,13 @@ Clarinet.test({
     ]);
 
     ccd005CityData.getCityActivationSignals(2).result.expectUint(1);
+    // city should not be activated
     ccd005CityData.isCityActivated(2).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
+    // sender should have voted already
     ccd005CityData
       .getCityActivationVoter(2, sender.address)
       .result.expectBool(true);
-    ccd005CityData.isCityActivated(2).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
-    block = chain.mineBlock([ccd005CityData.activateCity(sender, 2, "memo 2")]);
-
-    // assert
+    // send second signal
     ccd005CityData.getCityActivationSignals(2).result.expectUint(2);
     ccd005CityData.isCityActivated(2).result.expectBool(true); //.expectOk().expectSome().expectBool(false);
     console.log("block", block);

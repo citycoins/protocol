@@ -1,7 +1,7 @@
 import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 enum ErrCode {
-  ERR_UNAUTHORIZED = 3000,
+  ERR_UNAUTHORIZED = 1000,
   ERR_NOT_APPROVER,
   ERR_SUNSET_REACHED,
   ERR_SUNSET_IN_PAST,

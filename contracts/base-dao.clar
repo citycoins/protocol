@@ -11,9 +11,9 @@
 ;; CONSTANTS
 
 ;; error codes
-(define-constant ERR_UNAUTHORIZED (err u1000))
-(define-constant ERR_ALREADY_EXECUTED (err u1001))
-(define-constant ERR_INVALID_EXTENSION (err u1002))
+(define-constant ERR_UNAUTHORIZED (err u900))
+(define-constant ERR_ALREADY_EXECUTED (err u901))
+(define-constant ERR_INVALID_EXTENSION (err u902))
 
 ;; DATA VARS
 
