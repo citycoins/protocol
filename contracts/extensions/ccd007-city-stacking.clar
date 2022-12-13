@@ -89,14 +89,14 @@
     (
       (cityId (try! (get-city-id cityName)))
       (cityActivated (try! (is-city-activated cityId)))
+      (userId (try! (contract-call? .ccd003-user-registry get-or-create-user-id tx-sender)))
     )
     (asserts! (and 
       (> amount u0)
       (> lockPeriod u0)
       (<= lockPeriod MAX_REWARD_CYCLES)
     ) ERR_INVALID_PARAMS)
-    ;; TODO: transfer tokens to contract
-    ;; TODO: set-tokens-stacked
+    (try! (stack-at-cycle cityId userId amount lockPeriod))
     (ok true)
   )
 )
@@ -166,6 +166,15 @@
 ;; TODO: get-stacking-reward
 
 ;; PRIVATE FUNCTIONS
+
+(define-private (stack-at-cycle (cityId uint) (userId uint) (amount uint) (lockPeriod uint))
+  (let
+    (
+      (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_INVALID_PARAMS))
+    )  
+    (ok true)
+  )
+)
 
 ;; a user ID from ccd003-user-registry
 ;; returns (ok uint) or ERR_INVALID_PARAMS if not found
