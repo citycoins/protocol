@@ -140,6 +140,15 @@ path = "tests/contracts/proposals/test-ccd005-city-data-009.clar"
 [contracts.test-ccd005-city-data-010]
 path = "tests/contracts/proposals/test-ccd005-city-data-010.clar"
 
+[contracts.test-ccd005-city-data-011]
+path = "tests/contracts/proposals/test-ccd005-city-data-011.clar"
+
+[contracts.test-ccd005-city-data-012]
+path = "tests/contracts/proposals/test-ccd005-city-data-012.clar"
+
+[contracts.test-ccd005-city-data-013]
+path = "tests/contracts/proposals/test-ccd005-city-data-013.clar"
+
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
 

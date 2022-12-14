@@ -1,7 +1,12 @@
 import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
-enum ErrCode {
+export enum ErrCode {
   ERR_UNAUTHORIZED = 5000,
+  ERR_ACTIVATION_DETAILS_NOT_FOUND = 5001,
+  ERR_CONTRACT_ALREADY_ACTIVE = 5002,
+  ERR_ALREADY_VOTED = 5003,
+  ERR_INVALID_THRESHOLDS = 5004,
+  ERR_INVALID_AMOUNTS = 5005,
 }
 
 export class CCD005CityData {

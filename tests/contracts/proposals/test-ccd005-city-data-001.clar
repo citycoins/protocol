@@ -4,6 +4,7 @@
 ;; Description:
 ;; ccd005-city-data: set-city-activation-status() throws error if status is unchanged
 ;; ccd005-city-data: set-city-activation-status() changes city status
+;; ccd005-city-data: get-city-treasury-*() data is none if city is known and treasury undefined
 
 (impl-trait .proposal-trait.proposal-trait)
 
