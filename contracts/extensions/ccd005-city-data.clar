@@ -17,10 +17,12 @@
 (define-constant ERR_UNAUTHORIZED (err u5000))
 (define-constant ERR_ACTIVATION_DETAILS_NOT_FOUND (err u5001))
 (define-constant ERR_CONTRACT_ALREADY_ACTIVE (err u5002))
-(define-constant ERR_ALREADY_VOTED (err u5003))
-(define-constant ERR_INVALID_THRESHOLDS (err u5004))
-(define-constant ERR_INVALID_AMOUNTS (err u5005))
-(define-constant ERR_INVALID_BONUS_PERIOD (err u5006))
+(define-constant ERR_CONTRACT_INACTIVE (err u5003))
+(define-constant ERR_TREASURY_ALREADY_EXISTS (err u5004))
+(define-constant ERR_ALREADY_VOTED (err u5005))
+(define-constant ERR_INVALID_THRESHOLDS (err u5006))
+(define-constant ERR_INVALID_AMOUNTS (err u5007))
+(define-constant ERR_INVALID_BONUS_PERIOD (err u5008))
 
 ;; DATA MAPS
 
@@ -275,9 +277,11 @@
     (let
       (
         (nonce (+ u1 (get-city-treasury-nonce cityId)))
+        (cityActivated (asserts! (is-city-activated cityId) ERR_CONTRACT_INACTIVE))
       )
-      ;; TODO: check that cityId exists
       (try! (is-dao-or-extension))
+      (asserts! (is-none (map-get? CityTreasuryIds { cityId: cityId, treasuryName: name })) ERR_TREASURY_ALREADY_EXISTS)
+      (asserts! (is-none (map-get? CityTreasuryNames { cityId: cityId, treasuryId: nonce })) ERR_TREASURY_ALREADY_EXISTS)
       (map-set CityTreasuryNonce cityId nonce)
       (map-insert CityTreasuryIds { cityId: cityId, treasuryName: name } nonce)
       (map-insert CityTreasuryNames { cityId: cityId, treasuryId: nonce } name)
