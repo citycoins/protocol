@@ -96,8 +96,11 @@
     (
       (cityId (try! (get-city-id cityName)))
       (cityActivated (try! (is-city-activated cityId)))
-      (userId (try! (contract-call? .ccd003-user-registry get-or-create-user-id tx-sender)))
+      (userId (try! (as-contract
+        (contract-call? .ccd003-user-registry get-or-create-user-id tx-sender)
+      )))
     )
+    (asserts! cityActivated ERR_CITY_NOT_ACTIVATED)
     (asserts! (and 
       (> amount u0)
       (> lockPeriod u0)
@@ -178,14 +181,14 @@
   (let
     (
       (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
-    )  
+    )
+
     (ok true)
   )
 )
 
 ;; get user ID from ccd003-user-registry
 ;; returns (ok uint) or ERR_USER_ID_NOT_FOUND if not found
-
 (define-private (get-user-id (user principal))
   ;; #[filter(user)]
   (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))

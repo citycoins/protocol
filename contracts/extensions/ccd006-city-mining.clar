@@ -132,7 +132,9 @@
       (cityActivated (try! (is-city-activated cityId)))
       (cityDetails (try! (get-city-activation-details cityId)))
       (cityTreasury (try! (get-city-treasury-by-name cityId "mining")))
-      (userId (try! (contract-call? .ccd003-user-registry get-or-create-user-id tx-sender)))
+      (userId (try! (as-contract
+        (contract-call? .ccd003-user-registry get-or-create-user-id tx-sender)
+      )))
     )
     (asserts! (> (len amounts) u0) ERR_INVALID_COMMIT_AMOUNTS)
     (match (fold mine-block amounts (ok {
@@ -171,7 +173,6 @@
       (cityId (try! (get-city-id cityName)))
       (cityActivated (try! (is-city-activated cityId)))
     )
-    ;; TODO: review logic around contract shutdown
     (claim-mining-reward-at-block cityName cityId tx-sender block-height claimHeight)
   )
 )
