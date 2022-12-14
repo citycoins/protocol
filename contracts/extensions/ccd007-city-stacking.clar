@@ -184,7 +184,8 @@
       (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
       (targetCycle (+ u1 currentCycle))
       (commitment {
-        stackerId: userId,
+        cityId: cityId,
+        userId: userId,
         amount: amount,
         first: targetCycle,
         last: (+ targetCycle lockPeriod)
@@ -217,8 +218,10 @@
       lastCycle: (- (+ targetCycle lockPeriod) u1)
     })
     ;; fold over closure
-
-    (ok true)
+    (match (fold stack-tokens-closure REWARD_CYCLE_INDEXES (ok commitment))
+      okReturn (ok true)
+      errReturn (err errReturn)
+    )
   )
 )
 
@@ -265,7 +268,6 @@
       (rewardCycleStats (get-stacking-stats-at-cycle cityId targetCycle))
       (stackerAtCycle (get-stacker-at-cycle cityId targetCycle userId))
     )
-
     (map-set StackingStatsAtCycle
       { cityId: cityId, cycle: targetCycle }
       (merge rewardCycleStats {
