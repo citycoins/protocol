@@ -412,7 +412,7 @@
       { cityId: cityId, height: claimHeight }
       userId
     )
-    (try! (mint-coinbase cityName user claimHeight))
+    (try! (mint-coinbase cityName cityId user claimHeight))
     ;; TODO: any way to get amount here?
     (print {
       action: "mining-claim",
@@ -424,7 +424,7 @@
   )
 )
 
-(define-private (mint-coinbase (cityName (string-ascii 32)) (recipient principal) (blockHeight uint))
+(define-private (mint-coinbase (cityName (string-ascii 32)) (cityId uint) (recipient principal) (blockHeight uint))
   (let
     (
       (amount (get-coinbase-amount cityId blockHeight))
