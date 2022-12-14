@@ -19,13 +19,16 @@
 (define-constant ERR_INVALID_CYCLE_LENGTH (err u7001))
 (define-constant ERR_INVALID_STACKING_PARAMS (err u7002))
 (define-constant ERR_STACKING_NOT_AVAILABLE (err u7003))
-(define-constant ERR_USER_ID_NOT_FOUND (err u7004))
-(define-constant ERR_CITY_ID_NOT_FOUND (err u7005))
-(define-constant ERR_CITY_NOT_ACTIVATED (err u7006))
-(define-constant ERR_CITY_DETAILS_NOT_FOUND (err u7007))
-(define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7008))
+(define-constant ERR_REWARD_CYCLE_NOT_COMPLETE (err u7004))
+(define-constant ERR_NOTHING_TO_CLAIM (err u7005))
+(define-constant ERR_USER_ID_NOT_FOUND (err u7006))
+(define-constant ERR_CITY_ID_NOT_FOUND (err u7007))
+(define-constant ERR_CITY_NOT_ACTIVATED (err u7008))
+(define-constant ERR_CITY_DETAILS_NOT_FOUND (err u7009))
+(define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7010))
 
 ;; stacking configuration
+(define-constant SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
 (define-constant MAX_REWARD_CYCLES u32)
 (define-constant REWARD_CYCLE_INDEXES (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29 u30 u31))
 
@@ -107,6 +110,76 @@
       (<= lockPeriod MAX_REWARD_CYCLES)
     ) ERR_INVALID_STACKING_PARAMS)
     (try! (stack-at-cycle cityName cityId tx-sender userId amount lockPeriod block-height))
+    (ok true)
+  )
+)
+
+(define-public (claim-stacking-reward (cityName (string-ascii 32)) (targetCycle uint))
+  (let
+    (
+      (cityId (try! (get-city-id cityName)))
+      (userId (try! (get-user-id tx-sender)))
+      (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
+      (stackerAtCycle (get-stacker-at-cycle cityId targetCycle userId))
+      (reward (unwrap! (get-stacking-reward cityId userId targetCycle) ERR_NOTHING_TO_CLAIM))
+      (claimable (get claimable stackerAtCycle))
+    )
+    (asserts! (> currentCycle targetCycle) ERR_REWARD_CYCLE_NOT_COMPLETE)
+    (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
+    ;; disable ability to claim again
+    (map-set StackerAtCycle {
+      cityId: cityId,
+      cycle: targetCycle,
+      userId: userId
+    } {
+      stacked: u0,
+      claimable: u0
+    })
+    ;; send back CityCoins if user was eligible
+    ;; temporarily hardcoded to cities until Stacks 2.1
+    ;; next version can use traits as stored principals
+    (and (is-eq cityName "mia")
+      ;; TODO: update to .ccd002-treasury-mia-stacking
+      ;; TODO: check against city treasury for now?
+      ;; TODO: check return value here if fails
+      ;; (shouldn't, but curious if asserts is needed)
+      (begin
+        (and
+          (> reward u0)
+          (is-ok (as-contract
+            (contract-call? .ccd002-treasury-mia withdraw-stx reward tx-sender)
+          ))
+        )
+        (and
+          (> claimable u0)
+          (is-ok (as-contract
+            (contract-call? .ccd002-treasury-mia withdraw-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 claimable tx-sender)
+          ))
+        )
+        true
+      )
+    )
+    (and (is-eq cityName "nyc")
+      ;; TODO: update to .ccd002-treasury-nyc-stacking
+      ;; TODO: check against city treasury for now?
+      ;; TODO: check return value here if fails
+      ;; (shouldn't, but curious if asserts is needed)
+      (begin
+        (and
+          (> reward u0)
+          (is-ok (as-contract
+            (contract-call? .ccd002-treasury-nyc withdraw-stx reward tx-sender)
+          ))
+        )
+        (and
+          (> claimable u0)
+          (is-ok (as-contract
+            (contract-call? .ccd002-treasury-nyc withdraw-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 claimable tx-sender)
+          ))
+        )
+        true
+      )
+    )
     (ok true)
   )
 )
@@ -222,11 +295,17 @@
     (and
       (is-eq cityName "mia")
       ;; TODO: update to .ccd002-treasury-mia-stacking
+      ;; TODO: check against city treasury for now?
+      ;; TODO: check return value here if fails
+      ;; (shouldn't, but curious if asserts is needed)
       (is-ok (contract-call? .ccd002-treasury-mia deposit-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 amount))
     )
     (and
       (is-eq cityName "nyc")
       ;; TODO: update to .ccd002-treasury-nyc-stacking
+      ;; TODO: check against city treasury for now?
+      ;; TODO: check return value here if fails
+      ;; (shouldn't, but curious if asserts is needed)
       (is-ok (contract-call? .ccd002-treasury-nyc deposit-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 amount))
     )
     ;; print details
@@ -347,4 +426,13 @@
     ;; #[filter(cityId, treasuryName)]
     (ok (unwrap! (contract-call? .ccd005-city-data get-city-treasury-address cityId treasuryId) ERR_CITY_TREASURY_NOT_FOUND))
   )
+)
+
+;; CREDIT: math functions taken from Alex math-fixed-point-16.clar
+(define-private (scale-up (a uint))
+  (* a SCALE_FACTOR)
+)
+
+(define-private (scale-down (a uint))
+  (/ a SCALE_FACTOR)
 )
