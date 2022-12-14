@@ -150,6 +150,7 @@
           (totalAmount (get totalAmount okReturn))
         )
         (asserts! (>= (stx-get-balance tx-sender) totalAmount) ERR_INSUFFICIENT_BALANCE)
+        ;; TODO: this should use CCD002 deposit function
         (try! (stx-transfer? totalAmount tx-sender cityTreasury))
         (print {
           action: "mining",
@@ -421,7 +422,6 @@
       cityName: cityName,
       cityId: cityId,
       claimHeight: claimHeight
-      ;; TODO: any way to get amount here?
     })
     (ok true)
   )

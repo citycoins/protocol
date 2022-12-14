@@ -264,7 +264,7 @@
           ;;   MICRO_CITYCOINS * u12500
           ;;   MICRO_CITYCOINS * u6250
           ;;   MICRO_CITYCOINS * u3125
-          ;; TODO: double check with ccip-008
+          ;; TODO: double check with ccip-008 and ccip-012
       )
     )
     (ok true)
