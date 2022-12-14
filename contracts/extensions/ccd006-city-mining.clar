@@ -27,11 +27,16 @@
 (define-constant ERR_MINER_DATA_NOT_FOUND (err u6009))
 (define-constant ERR_ALREADY_CLAIMED (err u6010))
 (define-constant ERR_MINER_NOT_WINNER (err u6011))
-(define-constant ERR_USER_ID_NOT_FOUND (err u6012))
-(define-constant ERR_CITY_ID_NOT_FOUND (err u6013))
-(define-constant ERR_CITY_NOT_ACTIVATED (err u6014))
-(define-constant ERR_CITY_DETAILS_NOT_FOUND (err u6015))
-(define-constant ERR_CITY_TREASURY_NOT_FOUND (err u6016))
+(define-constant ERR_NOTHING_TO_MINT (err u6012))
+(define-constant ERR_USER_ID_NOT_FOUND (err u6013))
+(define-constant ERR_CITY_ID_NOT_FOUND (err u6014))
+(define-constant ERR_CITY_NAME_NOT_FOUND (err u6015))
+(define-constant ERR_CITY_NOT_ACTIVATED (err u6016))
+(define-constant ERR_CITY_DETAILS_NOT_FOUND (err u6017))
+(define-constant ERR_CITY_TREASURY_NOT_FOUND (err u6018))
+(define-constant ERR_CITY_COINBASE_THRESHOLDS_NOT_FOUND (err u6019))
+(define-constant ERR_CITY_COINBASE_AMOUNTS_NOT_FOUND (err u6020))
+(define-constant ERR_CITY_COINBASE_BONUS_PERIOD_NOT_FOUND (err u6021))
 
 ;; DATA VARS
 
@@ -125,7 +130,6 @@
     (
       (cityId (try! (get-city-id cityName)))
       (cityActivated (try! (is-city-activated cityId)))
-      ;; TODO are we just checking city activation details exist?
       (cityDetails (try! (get-city-activation-details cityId)))
       (cityTreasury (try! (get-city-treasury-by-name cityId "mining")))
       (userId (try! (contract-call? .ccd003-user-registry get-or-create-user-id tx-sender)))
@@ -168,7 +172,7 @@
       (cityActivated (try! (is-city-activated cityId)))
     )
     ;; TODO: review logic around contract shutdown
-    (claim-mining-reward-at-block cityId tx-sender block-height claimHeight)
+    (claim-mining-reward-at-block cityName cityId tx-sender block-height claimHeight)
   )
 )
 
@@ -231,7 +235,6 @@
   })
 )
 
-;; TODO: review control flows here
 (define-read-only (is-block-winner (cityId uint) (user principal) (claimHeight uint))
   (let
     (
@@ -243,7 +246,6 @@
       (commitTotal (get-high-value cityId claimHeight))
       (winningValue (mod vrfSample commitTotal))
     )
-    ;; TODO: any other checks to perform here?
     ;; check that user ID was found and if user is winner
     (if (and (> userId u0) (>= winningValue (get low minerStats)) (<= winningValue (get high minerStats)))
       ;; true
@@ -257,6 +259,35 @@
         claimed: (get claimed blockStats),
       })
     )
+  )
+)
+
+(define-read-only (get-coinbase-amount (cityId uint) (blockHeight uint))
+  (let
+    (
+      (thresholds (unwrap! (get-city-coinbase-thresholds cityId) u0))
+      (amounts (unwrap! (get-city-coinbase-amounts cityId) u0))
+      (cityActivated (unwrap! (is-city-activated cityId) u0))
+      (cityDetails (unwrap! (get-city-activation-details cityId) u0))
+      (cityBonusPeriod (unwrap! (get-city-coinbase-bonus-period cityId) u0))
+    )
+    ;; if contract is not active, return 0
+    (asserts! (is-eq cityActivated true) u0)
+    ;; if contract is active, return amount based on thresholds
+    (asserts! (> blockHeight (get activated cityDetails))
+      (if (<= (- blockHeight (get activated cityDetails)) cityBonusPeriod)
+        ;; bonus reward for initial miners
+        (get coinbaseAmountBonus amounts)
+        ;; standard reward until 1st halving
+        (get coinbaseAmount1 amounts)
+      )
+    )
+    (asserts! (> blockHeight (get coinbaseThreshold2 thresholds)) (get coinbaseAmount2 amounts))
+    (asserts! (> blockHeight (get coinbaseThreshold3 thresholds)) (get coinbaseAmount3 amounts))
+    (asserts! (> blockHeight (get coinbaseThreshold4 thresholds)) (get coinbaseAmount4 amounts))
+    (asserts! (> blockHeight (get coinbaseThreshold5 thresholds)) (get coinbaseAmount5 amounts))
+    ;; default value after final halving
+    (get coinbaseAmountDefault amounts)
   )
 )
 
@@ -340,7 +371,7 @@
   )
 )
 
-(define-private (claim-mining-reward-at-block (cityId uint) (user principal) (stacksHeight uint) (claimHeight uint))
+(define-private (claim-mining-reward-at-block (cityName (string-ascii 32)) (cityId uint) (user principal) (stacksHeight uint) (claimHeight uint))
   (let
     (
       (maturityHeight (+ (get-reward-delay) claimHeight))
@@ -381,18 +412,39 @@
       { cityId: cityId, height: claimHeight }
       userId
     )
-    ;; TODO: get-coinbase-amount function
-    ;;   make sure claim is past activation height
-    ;;   make sure claim is before shutdown height
-    ;;   return amount based on thresholds
-    ;; TODO: mint coinbase! maybe separate function given logic below
-    ;;   check that city = mia and active is mia-token-v2
-    ;;     hardcoded call to mia-token-v2
-    ;;     (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 mint amount recipient))
-    ;;   check that city = nyc and active token is nyc-token-v2
-    ;;     hardcoded call to nyc-token-v2
-    ;;   generalized version - would this work before 2.1?
-    ;; TODO: print winner details here?
+    (try! (mint-coinbase cityName user claimHeight))
+    ;; TODO: any way to get amount here?
+    (print {
+      action: "mining-claim",
+      cityName: cityName,
+      cityId: cityId,
+      claimHeight: claimHeight
+    })
+    (ok true)
+  )
+)
+
+(define-private (mint-coinbase (cityName (string-ascii 32)) (recipient principal) (blockHeight uint))
+  (let
+    (
+      (amount (get-coinbase-amount cityId blockHeight))
+    )
+    ;; check that amount is greater than 0
+    (asserts! (> amount u0) ERR_NOTHING_TO_MINT)
+    ;; temporarily hardcoded to cities until Stacks 2.1
+    ;; next version can use traits as stored principals
+    (and
+      (is-eq cityName "mia")
+      (is-ok (as-contract
+        (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 mint amount recipient)
+      ))
+    )
+    (and
+      (is-eq cityName "nyc")
+      (is-ok (as-contract
+        (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 mint amount recipient)
+      ))
+    )
     (ok true)
   )
 )
@@ -407,6 +459,12 @@
 ;; returns (ok uint) or ERR_CITY_ID_NOT_FOUND if not found
 (define-private (get-city-id (cityName (string-ascii 32)))
   (ok (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
+)
+
+;; get city name from ccd004-city-registry
+;; returns (ok (string-ascii 32)) or ERR_CITY_NAME_NOT_FOUND if not found
+(define-private (get-city-name (cityId uint))
+  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_CITY_NAME_NOT_FOUND))
 )
 
 ;; get city activation status from .ccd005-city-data
@@ -430,4 +488,22 @@
     )
     (ok (unwrap! (contract-call? .ccd005-city-data get-city-treasury-address cityId treasuryId) ERR_CITY_TREASURY_NOT_FOUND))
   )
+)
+
+;; get city coinbase thresholds from ccd005-city-data
+;; returns (ok tuple) or ERR_CITY_COINBASE_THRESHOLDS_NOT_FOUND if not found
+(define-private (get-city-coinbase-thresholds (cityId uint))
+  (ok (unwrap! (contract-call? .ccd005-city-data get-city-coinbase-thresholds cityId) ERR_CITY_COINBASE_THRESHOLDS_NOT_FOUND))
+)
+
+;; get city coinbase amounts from ccd005-city-data
+;; returns (ok tuple) or ERR_CITY_COINBASE_AMOUNTS_NOT_FOUND if not found
+(define-private (get-city-coinbase-amounts (cityId uint))
+  (ok (unwrap! (contract-call? .ccd005-city-data get-city-coinbase-amounts cityId) ERR_CITY_COINBASE_AMOUNTS_NOT_FOUND))
+)
+
+;; get city coinbase bonus period from ccd005-city-data
+;; returns (ok uint) or ERR_CITY_COINBASE_BONUS_PERIOD_NOT_FOUND if not found
+(define-private (get-city-coinbase-bonus-period (cityId uint))
+  (ok (unwrap! (contract-call? .ccd005-city-data get-city-coinbase-bonus-period cityId) ERR_CITY_COINBASE_BONUS_PERIOD_NOT_FOUND))
 )

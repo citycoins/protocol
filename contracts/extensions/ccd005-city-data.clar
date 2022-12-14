@@ -20,6 +20,7 @@
 (define-constant ERR_ALREADY_VOTED (err u5003))
 (define-constant ERR_INVALID_THRESHOLDS (err u5004))
 (define-constant ERR_INVALID_AMOUNTS (err u5005))
+(define-constant ERR_INVALID_BONUS_PERIOD (err u5006))
 
 ;; DATA MAPS
 
@@ -162,6 +163,12 @@
     coinbaseAmount5: uint,
     coinbaseAmountDefault: uint
   }
+)
+
+;; store coinbase bonus period length by city ID
+(define-map CityCoinbaseBonusPeriod
+  uint ;; city ID
+  uint ;; length
 )
 
 ;; PUBLIC FUNCTIONS
@@ -342,6 +349,19 @@
   )
 )
 
+;; guarded: sets coinbase bonus period length for a given city
+(define-public (set-city-coinbase-bonus-period (cityId uint) (bonusPeriod uint))
+  (begin
+    (try! (is-dao-or-extension))
+    ;; check that bonus period is greater than zero
+    (asserts! (> bonusPeriod u0) ERR_INVALID_BONUS_PERIOD)
+    (map-set CityCoinbaseBonusPeriod cityId bonusPeriod)
+    (ok true)
+  )
+)
+
+;; TODO: how to handle epoch length?
+
 ;; READ ONLY FUNCTIONS
 
 ;; returns true if city is activated
@@ -419,8 +439,7 @@
   (map-get? CityCoinbaseAmounts cityId)
 )
 
-;; TODO: get-coinbase-amount
-;;   used by mining
-;;   can pass city id and block height
-;;   return value is a uint
-;;   should this be done in mining contract? have to get data from here either way
+;; returns (some uint) or none
+(define-read-only (get-city-coinbase-bonus-period (cityId uint))
+  (map-get? CityCoinbaseBonusPeriod cityId)
+)
