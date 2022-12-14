@@ -183,7 +183,7 @@
       (cityTreasury (try! (get-city-treasury-by-name cityId "stacking")))
       (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
       (targetCycle (+ u1 currentCycle))
-      (commitment {
+      (stackingInfo {
         cityId: cityId,
         userId: userId,
         amount: amount,
@@ -218,7 +218,7 @@
       lastCycle: (- (+ targetCycle lockPeriod) u1)
     })
     ;; fold over closure
-    (match (fold stack-tokens-closure REWARD_CYCLE_INDEXES (ok commitment))
+    (match (fold stack-tokens-closure REWARD_CYCLE_INDEXES (ok stackingInfo))
       okReturn (ok true)
       errReturn (err errReturn)
     )
