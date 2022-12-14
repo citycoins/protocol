@@ -136,6 +136,7 @@
         (contract-call? .ccd003-user-registry get-or-create-user-id tx-sender)
       )))
     )
+    (asserts! cityActivated ERR_CITY_NOT_ACTIVATED)
     (asserts! (> (len amounts) u0) ERR_INVALID_COMMIT_AMOUNTS)
     (match (fold mine-block amounts (ok {
       cityId: cityId,
@@ -152,6 +153,7 @@
         (try! (stx-transfer? totalAmount tx-sender cityTreasury))
         (print {
           action: "mining",
+          userId: userId,
           cityName: cityName,
           cityId: cityId,
           cityTreasury: cityTreasury,
@@ -294,8 +296,7 @@
 
 ;; PRIVATE FUNCTIONS
 
-(define-private (mine-block
-  (amount uint)
+(define-private (mine-block (amount uint)
   (return (response
     {
       cityId: uint,
@@ -414,12 +415,13 @@
       userId
     )
     (try! (mint-coinbase cityName cityId user claimHeight))
-    ;; TODO: any way to get amount here?
     (print {
       action: "mining-claim",
+      userId: userId,
       cityName: cityName,
       cityId: cityId,
       claimHeight: claimHeight
+      ;; TODO: any way to get amount here?
     })
     (ok true)
   )
