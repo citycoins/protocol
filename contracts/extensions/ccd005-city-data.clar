@@ -281,7 +281,6 @@
       )
       (try! (is-dao-or-extension))
       (asserts! (is-none (map-get? CityTreasuryIds { cityId: cityId, treasuryName: name })) ERR_TREASURY_ALREADY_EXISTS)
-      (asserts! (is-none (map-get? CityTreasuryNames { cityId: cityId, treasuryId: nonce })) ERR_TREASURY_ALREADY_EXISTS)
       (map-set CityTreasuryNonce cityId nonce)
       (map-insert CityTreasuryIds { cityId: cityId, treasuryName: name } nonce)
       (map-insert CityTreasuryNames { cityId: cityId, treasuryId: nonce } name)
