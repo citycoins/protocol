@@ -185,25 +185,30 @@
 
 ;; get user ID from ccd003-user-registry
 ;; returns (ok uint) or ERR_USER_ID_NOT_FOUND if not found
+
 (define-private (get-user-id (user principal))
+  ;; #[filter(user)]
   (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))
 )
 
 ;; get city ID from ccd004-city-registry
 ;; returns (ok uint) or ERR_CITY_ID_NOT_FOUND if not found
 (define-private (get-city-id (cityName (string-ascii 32)))
+  ;; #[filter(cityName)]
   (ok (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
 )
 
 ;; get city activation status from .ccd005-city-data
 ;; returns (ok true) or ERR_CITY_NOT_ACTIVATED if not found
 (define-private (is-city-activated (cityId uint))
+  ;; #[filter(cityId)]
   (ok (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED))
 )
 
 ;; get city activation details from ccd005-city-data
 ;; returns (ok tuple) or ERR_CITY_DETAILS_NOT_FOUND if not found
 (define-private (get-city-activation-details (cityId uint))
+    ;; #[filter(cityId)]
   (ok (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_CITY_DETAILS_NOT_FOUND))
 )
 
@@ -214,6 +219,7 @@
     (
       (treasuryId (unwrap! (contract-call? .ccd005-city-data get-city-treasury-id cityId treasuryName) ERR_CITY_TREASURY_NOT_FOUND))
     )
+    ;; #[filter(cityId, treasuryName)]
     (ok (unwrap! (contract-call? .ccd005-city-data get-city-treasury-address cityId treasuryId) ERR_CITY_TREASURY_NOT_FOUND))
   )
 )

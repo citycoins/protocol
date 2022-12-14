@@ -452,18 +452,21 @@
 ;; get user ID from ccd003-user-registry
 ;; returns (ok uint) or ERR_USER_ID_NOT_FOUND if not found
 (define-private (get-user-id (user principal))
+  ;; #[filter(user)]
   (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))
 )
 
 ;; get city ID from ccd004-city-registry
 ;; returns (ok uint) or ERR_CITY_ID_NOT_FOUND if not found
 (define-private (get-city-id (cityName (string-ascii 32)))
+  ;; #[filter(cityName)]
   (ok (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
 )
 
 ;; get city name from ccd004-city-registry
 ;; returns (ok (string-ascii 32)) or ERR_CITY_NAME_NOT_FOUND if not found
 (define-private (get-city-name (cityId uint))
+  ;; #[filter(cityId)]
   (ok (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_CITY_NAME_NOT_FOUND))
 )
 
@@ -476,6 +479,7 @@
 ;; get city activation details from ccd005-city-data
 ;; returns (ok tuple) or ERR_CITY_DETAILS_NOT_FOUND if not found
 (define-private (get-city-activation-details (cityId uint))
+  ;; #[filter(cityId)]
   (ok (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_CITY_DETAILS_NOT_FOUND))
 )
 
@@ -486,6 +490,7 @@
     (
       (treasuryId (unwrap! (contract-call? .ccd005-city-data get-city-treasury-id cityId treasuryName) ERR_CITY_TREASURY_NOT_FOUND))
     )
+    ;; #[filter(cityId, treasuryName)]
     (ok (unwrap! (contract-call? .ccd005-city-data get-city-treasury-address cityId treasuryId) ERR_CITY_TREASURY_NOT_FOUND))
   )
 )
@@ -493,17 +498,20 @@
 ;; get city coinbase thresholds from ccd005-city-data
 ;; returns (ok tuple) or ERR_CITY_COINBASE_THRESHOLDS_NOT_FOUND if not found
 (define-private (get-city-coinbase-thresholds (cityId uint))
+  ;; #[filter(cityId)]
   (ok (unwrap! (contract-call? .ccd005-city-data get-city-coinbase-thresholds cityId) ERR_CITY_COINBASE_THRESHOLDS_NOT_FOUND))
 )
 
 ;; get city coinbase amounts from ccd005-city-data
 ;; returns (ok tuple) or ERR_CITY_COINBASE_AMOUNTS_NOT_FOUND if not found
 (define-private (get-city-coinbase-amounts (cityId uint))
+  ;; #[filter(cityId)]
   (ok (unwrap! (contract-call? .ccd005-city-data get-city-coinbase-amounts cityId) ERR_CITY_COINBASE_AMOUNTS_NOT_FOUND))
 )
 
 ;; get city coinbase bonus period from ccd005-city-data
 ;; returns (ok uint) or ERR_CITY_COINBASE_BONUS_PERIOD_NOT_FOUND if not found
 (define-private (get-city-coinbase-bonus-period (cityId uint))
+  ;; #[filter(cityId)]
   (ok (unwrap! (contract-call? .ccd005-city-data get-city-coinbase-bonus-period cityId) ERR_CITY_COINBASE_BONUS_PERIOD_NOT_FOUND))
 )
