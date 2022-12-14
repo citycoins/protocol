@@ -173,7 +173,32 @@
   )
 )
 
-;; TODO: get-stacking-reward
+(define-private (get-stacking-reward (cityId uint) (userId uint) (cycle uint))
+  (let
+    (
+      (rewardCycleStats (get-stacking-stats-at-cycle cityId cycle))
+      (stackerAtCycle (get-stacker-at-cycle cityId cycle userId))
+      (totalStacked (get total rewardCycleStats))
+      ;; TODO: get payment amount for cycle
+      (cyclePayout u0)
+      (userStacked (get stacked stackerAtCycle))
+
+    )
+    (match (get-reward-cycle cityId block-height)
+      currentCycle
+      (if (or (<= currentCycle cycle) (is-eq userStacked u0))
+        ;; this cycle hasn't finished
+        ;; or stacker is not stacking
+        none
+        ;; TODO: add fixed point math functions here?
+        ;; (cyclePayout * userStacked) / totalStacked
+        (some (/ (* cyclePayout userStacked) totalStacked))
+      )
+      ;; before first reward cycle
+      none
+    )
+  )
+)
 
 ;; PRIVATE FUNCTIONS
 
