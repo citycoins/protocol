@@ -18,15 +18,16 @@
 (define-constant ERR_UNAUTHORIZED (err u7000))
 (define-constant ERR_INVALID_CYCLE_LENGTH (err u7001))
 (define-constant ERR_INVALID_STACKING_PARAMS (err u7002))
-(define-constant ERR_STACKING_NOT_AVAILABLE (err u7003))
-(define-constant ERR_REWARD_CYCLE_NOT_COMPLETE (err u7004))
-(define-constant ERR_NOTHING_TO_CLAIM (err u7005))
-(define-constant ERR_TRANSFER_FAILED (err u7006))
-(define-constant ERR_USER_ID_NOT_FOUND (err u7006))
-(define-constant ERR_CITY_ID_NOT_FOUND (err u7007))
-(define-constant ERR_CITY_NOT_ACTIVATED (err u7008))
-(define-constant ERR_CITY_DETAILS_NOT_FOUND (err u7009))
-(define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7010))
+(define-constant ERR_INVALID_STACKING_PAYOUT (err u7003))
+(define-constant ERR_STACKING_NOT_AVAILABLE (err u7004))
+(define-constant ERR_REWARD_CYCLE_NOT_COMPLETE (err u7005))
+(define-constant ERR_NOTHING_TO_CLAIM (err u7006))
+(define-constant ERR_TRANSFER_FAILED (err u7007))
+(define-constant ERR_USER_ID_NOT_FOUND (err u7008))
+(define-constant ERR_CITY_ID_NOT_FOUND (err u7009))
+(define-constant ERR_CITY_NOT_ACTIVATED (err u7010))
+(define-constant ERR_CITY_DETAILS_NOT_FOUND (err u7011))
+(define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7012))
 
 ;; stacking configuration
 (define-constant SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
@@ -37,6 +38,9 @@
 
 ;; reward cycle length in Stacks blocks
 (define-data-var rewardCycleLength uint u2100)
+
+;; stacking pool operator
+(define-data-var poolOperator principal 'SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M)
 
 ;; DATA MAPS
 
@@ -116,13 +120,52 @@
   )
 )
 
-;;(define-public (send-stacking-reward (cityName (string-ascii 32) (targetCycle uint)))
-  ;; TODO: for pool operator use
-  ;; whitelist payout address
-  ;; dao can change payout address
-  ;; checks if payout address is contract-caller
-  ;; initiates deposit to treasury based on city
-;;)
+(define-public (set-pool-operator (operator principal))
+  (begin
+    (try! (is-dao-or-extension))
+    (ok (var-set poolOperator operator))
+  )
+)
+
+;; used by the pool operator to pay out rewards for the protocol
+(define-public (send-stacking-reward (cityName (string-ascii 32)) (targetCycle uint) (amount uint))
+  (let
+    (
+      (cityId (try! (get-city-id cityName)))
+      (cityTreasury (try! (get-city-treasury-by-name cityId "stacking")))
+      (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
+      (stackingStatsAtCycle (get-stacking-stats-at-cycle cityId targetCycle))
+    )
+    ;; TODO: use contract-caller here?
+    (asserts! (is-eq tx-sender (var-get poolOperator)) ERR_UNAUTHORIZED)
+    (asserts! (> amount u0) ERR_INVALID_STACKING_PAYOUT)
+    (asserts! (< currentCycle targetCycle) ERR_INVALID_STACKING_PAYOUT)
+    ;; transfer to stacking treasury
+    ;; temporarily hardcoded to cities until Stacks 2.1
+    ;; next version can use traits as stored principals
+    (and
+      (is-eq cityName "mia")
+      ;; TODO: update to .ccd002-treasury-mia-stacking
+      ;; TODO: check against city treasury for now?
+      (asserts! (is-ok (contract-call? .ccd002-treasury-mia deposit-stx amount)) ERR_TRANSFER_FAILED)
+    )
+    (and
+      (is-eq cityName "nyc")
+      ;; TODO: update to .ccd002-treasury-nyc-stacking
+      ;; TODO: check against city treasury for now?
+      (asserts! (is-ok (contract-call? .ccd002-treasury-nyc deposit-stx amount)) ERR_TRANSFER_FAILED)
+    )
+    ;; update stacking stats
+    ;; TODO: does this need to add the original value?
+    (map-set StackingStatsAtCycle
+      { cityId: cityId, cycle: targetCycle }
+      (merge stackingStatsAtCycle {
+        reward: (some amount),
+      })
+    )
+    (ok true)
+  )
+)
 
 (define-public (claim-stacking-reward (cityName (string-ascii 32)) (targetCycle uint))
   (let
