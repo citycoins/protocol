@@ -18,11 +18,12 @@
 (define-constant ERR_UNAUTHORIZED (err u7000))
 (define-constant ERR_INVALID_CYCLE_LENGTH (err u7001))
 (define-constant ERR_INVALID_STACKING_PARAMS (err u7002))
-(define-constant ERR_INVALID_STACKING_PAYOUT (err u7003))
-(define-constant ERR_STACKING_NOT_AVAILABLE (err u7004))
-(define-constant ERR_REWARD_CYCLE_NOT_COMPLETE (err u7005))
-(define-constant ERR_NOTHING_TO_CLAIM (err u7006))
-(define-constant ERR_TRANSFER_FAILED (err u7007))
+(define-constant ERR_STACKING_NOT_AVAILABLE (err u7003))
+(define-constant ERR_REWARD_CYCLE_NOT_COMPLETE (err u7004))
+(define-constant ERR_NOTHING_TO_CLAIM (err u7005))
+(define-constant ERR_TRANSFER_FAILED (err u7006))
+(define-constant ERR_INVALID_STACKING_PAYOUT (err u7007))
+(define-constant ERR_STACKING_PAYOUT_NOT_COMPLETE (err u7008))
 (define-constant ERR_USER_ID_NOT_FOUND (err u7008))
 (define-constant ERR_CITY_ID_NOT_FOUND (err u7009))
 (define-constant ERR_CITY_NOT_ACTIVATED (err u7010))
@@ -297,25 +298,27 @@
   )
 )
 
-(define-private (get-stacking-reward (cityId uint) (userId uint) (cycle uint))
+(define-read-only (get-stacking-reward (cityId uint) (userId uint) (cycle uint))
   (let
     (
       (rewardCycleStats (get-stacking-stats-at-cycle cityId cycle))
       (stackerAtCycle (get-stacker-at-cycle cityId cycle userId))
       (totalStacked (get total rewardCycleStats))
-      ;; TODO: get payment amount for cycle
-      (cyclePayout u0)
+      (cycleReward (get reward rewardCycleStats))
       (userStacked (get stacked stackerAtCycle))
     )
+    ;; (asserts! (is-some cycleReward) ERR_STACKING_PAYOUT_NOT_COMPLETE)
     (match (get-reward-cycle cityId block-height)
       currentCycle
       (if (or (<= currentCycle cycle) (is-eq userStacked u0))
         ;; this cycle hasn't finished
         ;; or stacker is not stacking
         none
-        ;; TODO: add fixed point math functions here?
-        ;; (cyclePayout * userStacked) / totalStacked
-        (some (/ (* cyclePayout userStacked) totalStacked))
+        (match cycleReward
+          ;; (payout * userStacked) / totalStacked
+          payout (some (/ (* payout userStacked) totalStacked))
+          none
+        )
       )
       ;; before first reward cycle
       none
@@ -476,13 +479,4 @@
     ;; #[filter(cityId, treasuryName)]
     (ok (unwrap! (contract-call? .ccd005-city-data get-city-treasury-address cityId treasuryId) ERR_CITY_TREASURY_NOT_FOUND))
   )
-)
-
-;; CREDIT: math functions taken from Alex math-fixed-point-16.clar
-(define-private (scale-up (a uint))
-  (* a SCALE_FACTOR)
-)
-
-(define-private (scale-down (a uint))
-  (/ a SCALE_FACTOR)
 )
