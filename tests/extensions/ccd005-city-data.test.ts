@@ -1033,7 +1033,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: add-city-treasury() cannot creates two treasuries for same city with the same name and address",
+  name: "ccd005-city-data: add-city-treasury() cannot creates two treasuries for same city with the same name",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -1058,6 +1058,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     // add treasury to mia city
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_011);
+    // passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_012);
 
     // assert
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
@@ -1075,10 +1076,12 @@ Clarinet.test({
       .expectPrincipal(sender.address + "." + miaTreasuryName);
 
     // add treasury to mia city
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_012);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_013);
 
     // assert
-    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(2);
+
+    // nonce would not be incremented if treasury was not created
+    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
     ccd005CityData
       .getCityTreasuryId(miaCityId, miaTreasuryName)
       .result.expectSome()
