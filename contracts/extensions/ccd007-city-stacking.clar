@@ -21,6 +21,7 @@
 (define-constant ERR_STACKING_NOT_AVAILABLE (err u7003))
 (define-constant ERR_REWARD_CYCLE_NOT_COMPLETE (err u7004))
 (define-constant ERR_NOTHING_TO_CLAIM (err u7005))
+(define-constant ERR_TRANSFER_FAILED (err u7006))
 (define-constant ERR_USER_ID_NOT_FOUND (err u7006))
 (define-constant ERR_CITY_ID_NOT_FOUND (err u7007))
 (define-constant ERR_CITY_NOT_ACTIVATED (err u7008))
@@ -155,15 +156,15 @@
       (begin
         (and
           (> reward u0)
-          (is-ok (as-contract
+          (asserts! (is-ok (as-contract
             (contract-call? .ccd002-treasury-mia withdraw-stx reward tx-sender)
-          ))
+          )) ERR_TRANSFER_FAILED)
         )
         (and
           (> claimable u0)
-          (is-ok (as-contract
+          (asserts! (is-ok (as-contract
             (contract-call? .ccd002-treasury-mia withdraw-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 claimable tx-sender)
-          ))
+          )) ERR_TRANSFER_FAILED)
         )
         true
       )
@@ -171,20 +172,18 @@
     (and (is-eq cityName "nyc")
       ;; TODO: update to .ccd002-treasury-nyc-stacking
       ;; TODO: check against city treasury for now?
-      ;; TODO: check return value here if fails
-      ;; (shouldn't, but curious if asserts is needed)
       (begin
         (and
           (> reward u0)
-          (is-ok (as-contract
+          (asserts! (is-ok (as-contract
             (contract-call? .ccd002-treasury-nyc withdraw-stx reward tx-sender)
-          ))
+          )) ERR_TRANSFER_FAILED)
         )
         (and
           (> claimable u0)
-          (is-ok (as-contract
+          (asserts! (is-ok (as-contract
             (contract-call? .ccd002-treasury-nyc withdraw-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 claimable tx-sender)
-          ))
+          )) ERR_TRANSFER_FAILED)
         )
         true
       )
@@ -304,17 +303,17 @@
       (is-eq cityName "mia")
       ;; TODO: update to .ccd002-treasury-mia-stacking
       ;; TODO: check against city treasury for now?
-      ;; TODO: check return value here if fails
-      ;; (shouldn't, but curious if asserts is needed)
-      (is-ok (contract-call? .ccd002-treasury-mia deposit-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 amount))
+      (asserts! (is-ok
+        (contract-call? .ccd002-treasury-mia deposit-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 amount))
+      ERR_TRANSFER_FAILED)
     )
     (and
       (is-eq cityName "nyc")
       ;; TODO: update to .ccd002-treasury-nyc-stacking
       ;; TODO: check against city treasury for now?
-      ;; TODO: check return value here if fails
-      ;; (shouldn't, but curious if asserts is needed)
-      (is-ok (contract-call? .ccd002-treasury-nyc deposit-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 amount))
+      (asserts! (is-ok
+        (contract-call? .ccd002-treasury-nyc deposit-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 amount))
+      ERR_TRANSFER_FAILED)
     )
     ;; print details
     (print {
