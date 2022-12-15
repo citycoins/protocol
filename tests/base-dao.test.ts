@@ -14,15 +14,9 @@ Clarinet.test({
     chain.mineEmptyBlockUntil(100);
 
     // act
-    baseDao
-      .isExtension(EXTENSIONS.CCD001_DIRECT_EXECUTE)
-      .result.expectBool(false);
-    baseDao
-      .isExtension(EXTENSIONS.CCD002_TREASURY_MIA)
-      .result.expectBool(false);
-    baseDao
-      .isExtension(EXTENSIONS.CCD002_TREASURY_NYC)
-      .result.expectBool(false);
+    baseDao.isExtension(EXTENSIONS.CCD001_DIRECT_EXECUTE).result.expectBool(false);
+    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_MIA).result.expectBool(false);
+    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_NYC).result.expectBool(false);
 
     // assert
   },
@@ -40,9 +34,7 @@ Clarinet.test({
     // act
 
     // assert
-    baseDao
-      .isExtension(EXTENSIONS.CCD001_DIRECT_EXECUTE)
-      .result.expectBool(true);
+    baseDao.isExtension(EXTENSIONS.CCD001_DIRECT_EXECUTE).result.expectBool(true);
     baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_MIA).result.expectBool(true);
     baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_NYC).result.expectBool(true);
   },
@@ -85,9 +77,7 @@ Clarinet.test({
     ];
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.setExtensions(sender, extensions),
-    ]);
+    const { receipts } = chain.mineBlock([baseDao.setExtensions(sender, extensions)]);
 
     // assert
     assertEquals(receipts.length, 1);
@@ -108,9 +98,7 @@ Clarinet.test({
     chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.executedAt(sender, PROPOSALS.CCIP_012),
-    ]);
+    const { receipts } = chain.mineBlock([baseDao.executedAt(sender, PROPOSALS.CCIP_012)]);
 
     // assert
     assertEquals(receipts.length, 1);
@@ -129,9 +117,7 @@ Clarinet.test({
     chain.mineEmptyBlockUntil(100);
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.executedAt(sender, PROPOSALS.CCIP_012),
-    ]);
+    const { receipts } = chain.mineBlock([baseDao.executedAt(sender, PROPOSALS.CCIP_012)]);
 
     // assert
     assertEquals(receipts.length, 1);
@@ -149,9 +135,7 @@ Clarinet.test({
     const baseDao = new BaseDao(chain, sender);
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.execute(sender, PROPOSALS.CCIP_012, sender.address),
-    ]);
+    const { receipts } = chain.mineBlock([baseDao.execute(sender, PROPOSALS.CCIP_012, sender.address)]);
 
     // assert
     assertEquals(receipts.length, 1);
@@ -169,10 +153,7 @@ Clarinet.test({
     const baseDao = new BaseDao(chain, deployer);
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.construct(deployer, PROPOSALS.CCIP_012),
-      baseDao.construct(deployer, PROPOSALS.CCIP_012),
-    ]);
+    const { receipts } = chain.mineBlock([baseDao.construct(deployer, PROPOSALS.CCIP_012), baseDao.construct(deployer, PROPOSALS.CCIP_012)]);
 
     // assert
     assertEquals(receipts.length, 2);
@@ -190,9 +171,7 @@ Clarinet.test({
     const sender = accounts.get("wallet_1")!;
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
-    ]);
+    const { receipts } = chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
 
     // assert
     assertEquals(receipts.length, 1);
@@ -208,30 +187,18 @@ Clarinet.test({
     const baseDao = new BaseDao(chain, sender);
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.construct(sender, PROPOSALS.CCIP_012),
-    ]);
+    const { receipts } = chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
 
     // assert
     assertEquals(receipts.length, 1);
     receipts[0].result.expectOk().expectBool(true);
 
-    const expectedPrintEvents = [
-      `{event: "execute", proposal: ${ADDRESS}.ccip012-bootstrap}`,
-      `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd001-direct-execute}`,
-      `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd002-treasury-mia}`,
-      `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd002-treasury-nyc}`,
-    ];
+    const expectedPrintEvents = [`{event: "execute", proposal: ${ADDRESS}.ccip012-bootstrap}`, `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd001-direct-execute}`, `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd002-treasury-mia}`, `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd002-treasury-nyc}`];
     for (const event of expectedPrintEvents) {
       receipts[0].events.expectPrintEvent(BASE_DAO, event);
     }
 
-    receipts[0].events
-      .slice(-1)
-      .expectPrintEvent(
-        PROPOSALS.CCIP_012,
-        '"CityCoins DAO has risen! Our mission is to empower people to take ownership in their city by transforming citizens into stakeholders with the ability to fund, build, and vote on meaningful upgrades to their communities."'
-      );
+    receipts[0].events.slice(-1).expectPrintEvent(PROPOSALS.CCIP_012, '"CityCoins DAO has risen! Our mission is to empower people to take ownership in their city by transforming citizens into stakeholders with the ability to fund, build, and vote on meaningful upgrades to their communities."');
   },
 });
 
@@ -245,19 +212,11 @@ Clarinet.test({
     const baseDao = new BaseDao(chain, sender);
 
     // act
-    const { receipts } = chain.mineBlock([
-      baseDao.requestExtensionCallback(
-        sender,
-        EXTENSIONS.CCD001_DIRECT_EXECUTE,
-        "test"
-      ),
-    ]);
+    const { receipts } = chain.mineBlock([baseDao.requestExtensionCallback(sender, EXTENSIONS.CCD001_DIRECT_EXECUTE, "test")]);
 
     // assert
     assertEquals(receipts.length, 1);
-    receipts[0].result
-      .expectErr()
-      .expectUint(BaseDao.ErrCode.ERR_INVALID_EXTENSION);
+    receipts[0].result.expectErr().expectUint(BaseDao.ErrCode.ERR_INVALID_EXTENSION);
   },
 });
 
@@ -276,24 +235,12 @@ Clarinet.test({
     // act directExecute
     const { receipts } = chain.mineBlock([
       baseDao.construct(sender, PROPOSALS.CCIP_012),
-      ccd001DirectExecute.directExecute(
-        approver1,
-        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
-      ),
-      ccd001DirectExecute.directExecute(
-        approver2,
-        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
-      ),
-      ccd001DirectExecute.directExecute(
-        approver3,
-        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
-      ),
+      ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
+      ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
       // This 4th signal triggers the extension to request second execution of the proposal.
       // Base-dao takes responsibility for preventing this for all proposals.
-      ccd001DirectExecute.directExecute(
-        approver4,
-        PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001
-      ),
+      ccd001DirectExecute.directExecute(approver4, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001),
     ]);
 
     // assert
@@ -302,8 +249,6 @@ Clarinet.test({
     receipts[1].result.expectOk().expectUint(1);
     receipts[2].result.expectOk().expectUint(2);
     receipts[3].result.expectOk().expectUint(3);
-    receipts[4].result
-      .expectErr()
-      .expectUint(BaseDao.ErrCode.ERR_ALREADY_EXECUTED);
+    receipts[4].result.expectErr().expectUint(BaseDao.ErrCode.ERR_ALREADY_EXECUTED);
   },
 });

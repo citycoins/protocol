@@ -29,30 +29,15 @@ export class CCD001DirectExecute {
   // Internal DAO functions
 
   setSunsetBlockHeight(sender: Account, sunsetBlockHeight: number) {
-    return Tx.contractCall(
-      this.name,
-      "set-sunset-block-height",
-      [types.uint(sunsetBlockHeight)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "set-sunset-block-height", [types.uint(sunsetBlockHeight)], sender.address);
   }
 
   setApprover(sender: Account, approver: string, status: boolean) {
-    return Tx.contractCall(
-      this.name,
-      "set-approver",
-      [types.principal(approver), types.bool(status)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "set-approver", [types.principal(approver), types.bool(status)], sender.address);
   }
 
   setSignalsRequired(sender: Account, newRequirement: number) {
-    return Tx.contractCall(
-      this.name,
-      "set-signals-required",
-      [types.uint(newRequirement)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "set-signals-required", [types.uint(newRequirement)], sender.address);
   }
 
   // Public Functions
@@ -61,10 +46,7 @@ export class CCD001DirectExecute {
     return this.callReadOnlyFn("is-approver", [types.principal(who)]);
   }
   hasSignalled(proposal: string, who: string): ReadOnlyFn {
-    return this.callReadOnlyFn("has-signalled", [
-      types.principal(proposal),
-      types.principal(who),
-    ]);
+    return this.callReadOnlyFn("has-signalled", [types.principal(proposal), types.principal(who)]);
   }
   getSignalsRequired(): ReadOnlyFn {
     return this.callReadOnlyFn("get-signals-required");
@@ -74,36 +56,17 @@ export class CCD001DirectExecute {
   }
 
   directExecute(sender: Account, proposal: string) {
-    return Tx.contractCall(
-      this.name,
-      "direct-execute",
-      [types.principal(proposal)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "direct-execute", [types.principal(proposal)], sender.address);
   }
 
   // Extension callback
 
   callback(sender: Account, memo: string) {
-    return Tx.contractCall(
-      this.name,
-      "callback",
-      [types.principal(sender.address), types.buff(memo)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "callback", [types.principal(sender.address), types.buff(memo)], sender.address);
   }
 
-  private callReadOnlyFn(
-    method: string,
-    args: Array<any> = [],
-    sender: Account = this.deployer
-  ): ReadOnlyFn {
-    const result = this.chain.callReadOnlyFn(
-      this.name,
-      method,
-      args,
-      sender?.address
-    );
+  private callReadOnlyFn(method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
+    const result = this.chain.callReadOnlyFn(this.name, method, args, sender?.address);
     return result;
   }
 }

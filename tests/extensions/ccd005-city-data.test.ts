@@ -16,15 +16,8 @@
  *    - set-active-city-token-contract
  */
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import {
-  constructAndPassProposal,
-  passProposal,
-  PROPOSALS,
-} from "../../utils/common.ts";
-import {
-  CCD005CityData,
-  ErrCode,
-} from "../../models/extensions/ccd005-city-data.model.ts";
+import { constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
+import { CCD005CityData, ErrCode } from "../../models/extensions/ccd005-city-data.model.ts";
 import { types } from "../../utils/deps.ts";
 
 // =============================
@@ -45,40 +38,17 @@ const nycTreasuryName = "nyc-treasury";
 const nycStackingTreasury = 1;
 const nycMiningTreasury = 2;
 
-const testExpectedCityDetails = (
-  ccd005CityData: any,
-  cityId: number,
-  activated: number,
-  delay: number,
-  target: number,
-  threshold: number
-) => {
+const testExpectedCityDetails = (ccd005CityData: any, cityId: number, activated: number, delay: number, target: number, threshold: number) => {
   const expectedStats = {
     activated: types.uint(activated),
     delay: types.uint(delay),
     target: types.uint(target),
     threshold: types.uint(threshold),
   };
-  assertEquals(
-    ccd005CityData
-      .getCityActivationDetails(cityId)
-      .result.expectSome()
-      .expectTuple(),
-    expectedStats
-  );
+  assertEquals(ccd005CityData.getCityActivationDetails(cityId).result.expectSome().expectTuple(), expectedStats);
 };
 
-const testExpectedCoinbaseAmount = (
-  ccd005CityData: any,
-  cityId: number,
-  coinbaseAmountBonus: number,
-  coinbaseAmount1: number,
-  coinbaseAmount2: number,
-  coinbaseAmount3: number,
-  coinbaseAmount4: number,
-  coinbaseAmount5: number,
-  coinbaseAmountDefault: number
-) => {
+const testExpectedCoinbaseAmount = (ccd005CityData: any, cityId: number, coinbaseAmountBonus: number, coinbaseAmount1: number, coinbaseAmount2: number, coinbaseAmount3: number, coinbaseAmount4: number, coinbaseAmount5: number, coinbaseAmountDefault: number) => {
   const expectedStats = {
     coinbaseAmountBonus: types.uint(coinbaseAmountBonus),
     coinbaseAmount1: types.uint(coinbaseAmount1),
@@ -88,24 +58,10 @@ const testExpectedCoinbaseAmount = (
     coinbaseAmount5: types.uint(coinbaseAmount5),
     coinbaseAmountDefault: types.uint(coinbaseAmountDefault),
   };
-  assertEquals(
-    ccd005CityData
-      .getCityCoinbaseAmounts(cityId)
-      .result.expectSome()
-      .expectTuple(),
-    expectedStats
-  );
+  assertEquals(ccd005CityData.getCityCoinbaseAmounts(cityId).result.expectSome().expectTuple(), expectedStats);
 };
 
-const testExpectedCoinbaseThresholds = (
-  ccd005CityData: any,
-  cityId: number,
-  coinbaseThreshold1: number,
-  coinbaseThreshold2: number,
-  coinbaseThreshold3: number,
-  coinbaseThreshold4: number,
-  coinbaseThreshold5: number
-) => {
+const testExpectedCoinbaseThresholds = (ccd005CityData: any, cityId: number, coinbaseThreshold1: number, coinbaseThreshold2: number, coinbaseThreshold3: number, coinbaseThreshold4: number, coinbaseThreshold5: number) => {
   const expectedStats = {
     coinbaseThreshold1: types.uint(coinbaseThreshold1),
     coinbaseThreshold2: types.uint(coinbaseThreshold2),
@@ -113,13 +69,7 @@ const testExpectedCoinbaseThresholds = (
     coinbaseThreshold4: types.uint(coinbaseThreshold4),
     coinbaseThreshold5: types.uint(coinbaseThreshold5),
   };
-  assertEquals(
-    ccd005CityData
-      .getCityCoinbaseThresholds(cityId)
-      .result.expectSome()
-      .expectTuple(),
-    expectedStats
-  );
+  assertEquals(ccd005CityData.getCityCoinbaseThresholds(cityId).result.expectSome().expectTuple(), expectedStats);
 };
 
 // =============================
@@ -131,19 +81,12 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
 
     // assert
-    ccd005CityData
-      .isDaoOrExtension()
-      .result.expectErr()
-      .expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
+    ccd005CityData.isDaoOrExtension().result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
@@ -156,22 +99,14 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    const { receipts } = chain.mineBlock([
-      ccd005CityData.setCityActivationDetails(sender, miaCityId, 1, 1, 1, 1),
-    ]);
+    const { receipts } = chain.mineBlock([ccd005CityData.setCityActivationDetails(sender, miaCityId, 1, 1, 1, 1)]);
 
     // assert
     assertEquals(receipts.length, 1);
-    receipts[0].result
-      .expectErr()
-      .expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
+    receipts[0].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
@@ -180,22 +115,14 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    const { receipts } = chain.mineBlock([
-      ccd005CityData.setCityActivationStatus(sender, miaCityId, true),
-    ]);
+    const { receipts } = chain.mineBlock([ccd005CityData.setCityActivationStatus(sender, miaCityId, true)]);
 
     // assert
     assertEquals(receipts.length, 1);
-    receipts[0].result
-      .expectErr()
-      .expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
+    receipts[0].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
@@ -204,27 +131,15 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    let block = constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    let block = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
-    block = chain.mineBlock([
-      ccd005CityData.setCityActivationStatus(sender, miaCityId, true),
-    ]);
+    block = chain.mineBlock([ccd005CityData.setCityActivationStatus(sender, miaCityId, true)]);
 
     // assert
-    block.receipts[0].result
-      .expectErr()
-      .expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
+    block.receipts[0].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
@@ -233,27 +148,15 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
     const activated = 1;
     const delay = 1;
     const target = 1;
     const threshold = 1;
-  
+
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
 
@@ -268,18 +171,10 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    let block = constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    let block = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     ccd005CityData.isCityActivated(10).result.expectBool(false);
     block = passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_005);
 
@@ -293,23 +188,11 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
 
@@ -325,23 +208,11 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
 
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
 
     // there should be no signals yet
     ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(0);
@@ -349,17 +220,13 @@ Clarinet.test({
     ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
     testExpectedCityDetails(ccd005CityData, nycCityId, 2, 2, 2, 2);
 
-    let block = chain.mineBlock([
-      ccd005CityData.activateCity(sender, 2, "memo 1"),
-    ]);
+    let block = chain.mineBlock([ccd005CityData.activateCity(sender, 2, "memo 1")]);
 
     ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(1);
     // city should not be activated
     ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
     // sender should have voted already
-    ccd005CityData
-      .getCityActivationVoter(2, sender.address)
-      .result.expectBool(true);
+    ccd005CityData.getCityActivationVoter(2, sender.address).result.expectBool(true);
     // send second signal
     block = chain.mineBlock([ccd005CityData.activateCity(sender, 2, "memo 2")]);
 
@@ -377,46 +244,26 @@ Clarinet.test({
     // arrange
     const approver1 = accounts.get("wallet_1")!;
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(0);
     ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
     testExpectedCityDetails(ccd005CityData, nycCityId, 2, 2, 2, 2);
 
-    let block = chain.mineBlock([
-      ccd005CityData.activateCity(sender, 2, "memo 1"),
-    ]);
+    let block = chain.mineBlock([ccd005CityData.activateCity(sender, 2, "memo 1")]);
 
     ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(1);
     ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
     ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
 
-    block = chain.mineBlock([
-      ccd005CityData.activateCity(approver1, 2, "memo 2"),
-    ]);
+    block = chain.mineBlock([ccd005CityData.activateCity(approver1, 2, "memo 2")]);
 
     // assert
-    ccd005CityData
-      .getCityActivationVoter(nycCityId, sender.address)
-      .result.expectBool(true);
-    ccd005CityData
-      .getCityActivationVoter(nycCityId, approver1.address)
-      .result.expectBool(true);
+    ccd005CityData.getCityActivationVoter(nycCityId, sender.address).result.expectBool(true);
+    ccd005CityData.getCityActivationVoter(nycCityId, approver1.address).result.expectBool(true);
     ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(2);
     ccd005CityData.isCityActivated(nycCityId).result.expectBool(true);
     block.receipts[0].result.expectOk();
@@ -433,30 +280,14 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    const { receipts } = chain.mineBlock([
-      ccd005CityData.setCityCoinbaseThresholds(
-        sender,
-        miaCityId,
-        2,
-        2,
-        2,
-        2,
-        2
-      ),
-    ]);
+    const { receipts } = chain.mineBlock([ccd005CityData.setCityCoinbaseThresholds(sender, miaCityId, 2, 2, 2, 2, 2)]);
 
     // assert
     assertEquals(receipts.length, 1);
-    receipts[0].result
-      .expectErr()
-      .expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
+    receipts[0].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
@@ -465,32 +296,14 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    const { receipts } = chain.mineBlock([
-      ccd005CityData.setCityCoinbaseAmounts(
-        sender,
-        miaCityId,
-        2,
-        2,
-        2,
-        2,
-        2,
-        2,
-        2
-      ),
-    ]);
+    const { receipts } = chain.mineBlock([ccd005CityData.setCityCoinbaseAmounts(sender, miaCityId, 2, 2, 2, 2, 2, 2, 2)]);
 
     // assert
     assertEquals(receipts.length, 1);
-    receipts[0].result
-      .expectErr()
-      .expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
+    receipts[0].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
@@ -499,22 +312,14 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    const { receipts } = chain.mineBlock([
-      ccd005CityData.setCityCoinbaseBonusPeriod(sender, miaCityId, 20),
-    ]);
+    const { receipts } = chain.mineBlock([ccd005CityData.setCityCoinbaseBonusPeriod(sender, miaCityId, 20)]);
 
     // assert
     assertEquals(receipts.length, 1);
-    receipts[0].result
-      .expectErr()
-      .expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
+    receipts[0].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
@@ -523,23 +328,11 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_006);
 
     // assert
@@ -552,21 +345,11 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
-    const receipts = constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_018
-    );
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
     // assert
-    receipts[3].result
-      .expectErr()
-      .expectUint(CCD005CityData.ErrCode.ERR_INVALID_CITY);
+    receipts[3].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_INVALID_CITY);
     ccd005CityData.getCityCoinbaseBonusPeriod(miaCityId).result.expectNone();
   },
 });
@@ -576,28 +359,14 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    const receipts = constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_017
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_017);
     // assert
     ccd005CityData.getCityCoinbaseBonusPeriod(miaCityId).result.expectNone();
-    receipts[3].result
-      .expectErr()
-      .expectUint(CCD005CityData.ErrCode.ERR_INVALID_BONUS_PERIOD);
+    receipts[3].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_INVALID_BONUS_PERIOD);
   },
 });
 
@@ -606,28 +375,13 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_018
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
     // assert
-    ccd005CityData
-      .getCityCoinbaseBonusPeriod(miaCityId)
-      .result.expectSome()
-      .expectUint(20);
+    ccd005CityData.getCityCoinbaseBonusPeriod(miaCityId).result.expectSome().expectUint(20);
   },
 });
 
@@ -636,28 +390,12 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
-    const block = passProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_009
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    const block = passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_009);
 
     // assert
     ccd005CityData.getCityCoinbaseThresholds(miaCityId).result.expectNone();
@@ -670,38 +408,16 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_007);
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(true);
-    testExpectedCoinbaseAmount(
-      ccd005CityData,
-      miaCityId,
-      10,
-      10,
-      10,
-      10,
-      10,
-      10,
-      10
-    );
+    testExpectedCoinbaseAmount(ccd005CityData, miaCityId, 10, 10, 10, 10, 10, 10, 10);
   },
 });
 
@@ -710,39 +426,17 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_007);
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(true);
-    testExpectedCoinbaseAmount(
-      ccd005CityData,
-      miaCityId,
-      10,
-      10,
-      10,
-      10,
-      10,
-      10,
-      10
-    );
+    testExpectedCoinbaseAmount(ccd005CityData, miaCityId, 10, 10, 10, 10, 10, 10, 10);
   },
 });
 
@@ -751,28 +445,12 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
-    const block = passProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_008
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    const block = passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_008);
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(true);
@@ -785,23 +463,11 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
 
     // assert
@@ -815,23 +481,11 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
 
@@ -850,35 +504,17 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
 
     // assert
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(0);
-    ccd005CityData
-      .getCityTreasuryId(miaCityId, miaTreasuryName)
-      .result.expectNone();
-    ccd005CityData
-      .getCityTreasuryName(miaCityId, miaTreasuryId)
-      .result.expectNone();
-    ccd005CityData
-      .getCityTreasuryAddress(miaCityId, miaTreasuryId)
-      .result.expectNone();
+    ccd005CityData.getCityTreasuryId(miaCityId, miaTreasuryName).result.expectNone();
+    ccd005CityData.getCityTreasuryName(miaCityId, miaTreasuryId).result.expectNone();
+    ccd005CityData.getCityTreasuryAddress(miaCityId, miaTreasuryId).result.expectNone();
   },
 });
 
@@ -887,36 +523,18 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
 
     // assert
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(0);
-    ccd005CityData
-      .getCityTreasuryId(miaCityId, miaTreasuryName)
-      .result.expectNone();
-    ccd005CityData
-      .getCityTreasuryName(miaCityId, miaTreasuryId)
-      .result.expectNone();
-    ccd005CityData
-      .getCityTreasuryAddress(miaCityId, miaTreasuryId)
-      .result.expectNone();
+    ccd005CityData.getCityTreasuryId(miaCityId, miaTreasuryName).result.expectNone();
+    ccd005CityData.getCityTreasuryName(miaCityId, miaTreasuryId).result.expectNone();
+    ccd005CityData.getCityTreasuryAddress(miaCityId, miaTreasuryId).result.expectNone();
   },
 });
 
@@ -925,37 +543,19 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_011);
 
     // assert
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
-    ccd005CityData
-      .getCityTreasuryId(miaCityId, miaTreasuryName)
-      .result.expectSome()
-      .expectUint(1);
-    ccd005CityData
-      .getCityTreasuryName(miaCityId, miaTreasuryId)
-      .result.expectSome()
-      .expectAscii(miaTreasuryName);
+    ccd005CityData.getCityTreasuryId(miaCityId, miaTreasuryName).result.expectSome().expectUint(1);
+    ccd005CityData.getCityTreasuryName(miaCityId, miaTreasuryId).result.expectSome().expectAscii(miaTreasuryName);
     ccd005CityData
       .getCityTreasuryAddress(miaCityId, miaTreasuryId)
       .result.expectSome()
@@ -968,23 +568,11 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     // add three treasuries to mia city
@@ -992,33 +580,13 @@ Clarinet.test({
 
     // assert
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(3);
-    ccd005CityData
-      .getCityTreasuryId(miaCityId, "mia-treasury1")
-      .result.expectSome()
-      .expectUint(1);
-    ccd005CityData
-      .getCityTreasuryId(miaCityId, "mia-treasury2")
-      .result.expectSome()
-      .expectUint(2);
-    ccd005CityData
-      .getCityTreasuryId(miaCityId, "mia-treasury3")
-      .result.expectSome()
-      .expectUint(3);
-    ccd005CityData
-      .getCityTreasuryId(miaCityId, "mia-treasury4")
-      .result.expectNone();
-    ccd005CityData
-      .getCityTreasuryName(miaCityId, 1)
-      .result.expectSome()
-      .expectAscii("mia-treasury1");
-    ccd005CityData
-      .getCityTreasuryName(miaCityId, 2)
-      .result.expectSome()
-      .expectAscii("mia-treasury2");
-    ccd005CityData
-      .getCityTreasuryName(miaCityId, 3)
-      .result.expectSome()
-      .expectAscii("mia-treasury3");
+    ccd005CityData.getCityTreasuryId(miaCityId, "mia-treasury1").result.expectSome().expectUint(1);
+    ccd005CityData.getCityTreasuryId(miaCityId, "mia-treasury2").result.expectSome().expectUint(2);
+    ccd005CityData.getCityTreasuryId(miaCityId, "mia-treasury3").result.expectSome().expectUint(3);
+    ccd005CityData.getCityTreasuryId(miaCityId, "mia-treasury4").result.expectNone();
+    ccd005CityData.getCityTreasuryName(miaCityId, 1).result.expectSome().expectAscii("mia-treasury1");
+    ccd005CityData.getCityTreasuryName(miaCityId, 2).result.expectSome().expectAscii("mia-treasury2");
+    ccd005CityData.getCityTreasuryName(miaCityId, 3).result.expectSome().expectAscii("mia-treasury3");
     ccd005CityData.getCityTreasuryName(miaCityId, 4).result.expectNone();
     ccd005CityData
       .getCityTreasuryAddress(miaCityId, 1)
@@ -1041,23 +609,11 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     // add treasury to mia city
@@ -1066,14 +622,8 @@ Clarinet.test({
 
     // assert
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
-    ccd005CityData
-      .getCityTreasuryId(miaCityId, miaTreasuryName)
-      .result.expectSome()
-      .expectUint(1);
-    ccd005CityData
-      .getCityTreasuryName(miaCityId, miaTreasuryId)
-      .result.expectSome()
-      .expectAscii(miaTreasuryName);
+    ccd005CityData.getCityTreasuryId(miaCityId, miaTreasuryName).result.expectSome().expectUint(1);
+    ccd005CityData.getCityTreasuryName(miaCityId, miaTreasuryId).result.expectSome().expectAscii(miaTreasuryName);
     ccd005CityData
       .getCityTreasuryAddress(miaCityId, miaTreasuryId)
       .result.expectSome()
@@ -1086,14 +636,8 @@ Clarinet.test({
 
     // nonce would not be incremented if treasury was not created
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
-    ccd005CityData
-      .getCityTreasuryId(miaCityId, miaTreasuryName)
-      .result.expectSome()
-      .expectUint(1);
-    ccd005CityData
-      .getCityTreasuryName(miaCityId, miaTreasuryId)
-      .result.expectSome()
-      .expectAscii(miaTreasuryName);
+    ccd005CityData.getCityTreasuryId(miaCityId, miaTreasuryName).result.expectSome().expectUint(1);
+    ccd005CityData.getCityTreasuryName(miaCityId, miaTreasuryId).result.expectSome().expectAscii(miaTreasuryName);
     ccd005CityData
       .getCityTreasuryAddress(miaCityId, miaTreasuryId)
       .result.expectSome()
@@ -1191,31 +735,15 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
-    const { receipts } = chain.mineBlock([
-      ccd005CityData.addCityTokenContract(
-        sender,
-        miaCityId,
-        sender.address + "." + miaTokenContract1Address
-      ),
-    ]);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    const { receipts } = chain.mineBlock([ccd005CityData.addCityTokenContract(sender, miaCityId, sender.address + "." + miaTokenContract1Address)]);
 
     // assert
     assertEquals(receipts.length, 1);
-    receipts[0].result
-      .expectErr()
-      .expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
+    receipts[0].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
@@ -1224,36 +752,17 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
 
     // assert
     ccd005CityData.getCityTokenContractNonce(miaCityId).result.expectUint(0);
-    ccd005CityData
-      .getCityTokenContractId(
-        miaCityId,
-        sender.address + "." + miaTokenContract1Address
-      )
-      .result.expectNone();
-    ccd005CityData
-      .getCityTokenContractAddress(miaCityId, 1)
-      .result.expectNone();
+    ccd005CityData.getCityTokenContractId(miaCityId, sender.address + "." + miaTokenContract1Address).result.expectNone();
+    ccd005CityData.getCityTokenContractAddress(miaCityId, 1).result.expectNone();
     ccd005CityData.getActiveCityTokenContract(miaCityId).result.expectNone();
   },
 });
@@ -1263,23 +772,11 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_015);
 
@@ -1288,10 +785,7 @@ Clarinet.test({
     ccd005CityData.getActiveCityTokenContract(miaCityId).result.expectNone();
 
     ccd005CityData
-      .getCityTokenContractId(
-        miaCityId,
-        sender.address + "." + miaTokenContract1Address
-      )
+      .getCityTokenContractId(miaCityId, sender.address + "." + miaTokenContract1Address)
       .result.expectSome()
       .expectUint(1);
     ccd005CityData
@@ -1300,10 +794,7 @@ Clarinet.test({
       .expectPrincipal(sender.address + "." + miaTokenContract1Address);
 
     ccd005CityData
-      .getCityTokenContractId(
-        miaCityId,
-        sender.address + "." + miaTokenContract2Address
-      )
+      .getCityTokenContractId(miaCityId, sender.address + "." + miaTokenContract2Address)
       .result.expectSome()
       .expectUint(2);
     ccd005CityData
@@ -1312,10 +803,7 @@ Clarinet.test({
       .expectPrincipal(sender.address + "." + miaTokenContract2Address);
 
     ccd005CityData
-      .getCityTokenContractId(
-        miaCityId,
-        sender.address + "." + miaTokenContract3Address
-      )
+      .getCityTokenContractId(miaCityId, sender.address + "." + miaTokenContract3Address)
       .result.expectSome()
       .expectUint(3);
     ccd005CityData
@@ -1330,23 +818,11 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_015);
 
@@ -1355,10 +831,7 @@ Clarinet.test({
     ccd005CityData.getActiveCityTokenContract(miaCityId).result.expectNone();
 
     ccd005CityData
-      .getCityTokenContractId(
-        miaCityId,
-        sender.address + "." + miaTokenContract1Address
-      )
+      .getCityTokenContractId(miaCityId, sender.address + "." + miaTokenContract1Address)
       .result.expectSome()
       .expectUint(1);
     ccd005CityData
@@ -1367,10 +840,7 @@ Clarinet.test({
       .expectPrincipal(sender.address + "." + miaTokenContract1Address);
 
     ccd005CityData
-      .getCityTokenContractId(
-        miaCityId,
-        sender.address + "." + miaTokenContract2Address
-      )
+      .getCityTokenContractId(miaCityId, sender.address + "." + miaTokenContract2Address)
       .result.expectSome()
       .expectUint(2);
     ccd005CityData
@@ -1379,10 +849,7 @@ Clarinet.test({
       .expectPrincipal(sender.address + "." + miaTokenContract2Address);
 
     ccd005CityData
-      .getCityTokenContractId(
-        miaCityId,
-        sender.address + "." + miaTokenContract3Address
-      )
+      .getCityTokenContractId(miaCityId, sender.address + "." + miaTokenContract3Address)
       .result.expectSome()
       .expectUint(3);
     ccd005CityData
@@ -1397,28 +864,16 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_015);
-    const { receipts } = chain.mineBlock([
-      ccd005CityData.setActiveCityTokenContract(sender, miaCityId, 1),
-    ]);
+    const { receipts } = chain.mineBlock([ccd005CityData.setActiveCityTokenContract(sender, miaCityId, 1)]);
 
     // assert
     assertEquals(receipts.length, 1);
-    receipts[0].result
-      .expectErr()
-      .expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
+    receipts[0].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
@@ -1427,23 +882,11 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_015);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_016);
 
@@ -1453,13 +896,7 @@ Clarinet.test({
       tokenId: types.uint(3),
       tokenAddress: sender.address + "." + miaTokenContract3Address,
     };
-    assertEquals(
-      ccd005CityData
-        .getActiveCityTokenContract(miaCityId)
-        .result.expectSome()
-        .expectTuple(),
-      expectedStats
-    );
+    assertEquals(ccd005CityData.getActiveCityTokenContract(miaCityId).result.expectSome().expectTuple(), expectedStats);
   },
 });
 
@@ -1468,23 +905,11 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_015);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_016);
@@ -1495,12 +920,6 @@ Clarinet.test({
       tokenId: types.uint(3),
       tokenAddress: sender.address + "." + miaTokenContract3Address,
     };
-    assertEquals(
-      ccd005CityData
-        .getActiveCityTokenContract(miaCityId)
-        .result.expectSome()
-        .expectTuple(),
-      expectedStats
-    );
+    assertEquals(ccd005CityData.getActiveCityTokenContract(miaCityId).result.expectSome().expectTuple(), expectedStats);
   },
 });

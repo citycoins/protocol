@@ -25,12 +25,7 @@ export class CCD004CityRegistry {
   // Internal DAO functions
 
   getOrCreateCityId(sender: Account, cityName: string) {
-    return Tx.contractCall(
-      this.name,
-      "get-or-create-city-id",
-      [types.ascii(cityName)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "get-or-create-city-id", [types.ascii(cityName)], sender.address);
   }
 
   // Read only functions
@@ -46,25 +41,11 @@ export class CCD004CityRegistry {
   // Extension callback
 
   callback(sender: Account, memo: string) {
-    return Tx.contractCall(
-      this.name,
-      "callback",
-      [types.principal(sender.address), types.buff(memo)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "callback", [types.principal(sender.address), types.buff(memo)], sender.address);
   }
 
-  private callReadOnlyFn(
-    method: string,
-    args: Array<any> = [],
-    sender: Account = this.deployer
-  ): ReadOnlyFn {
-    const result = this.chain.callReadOnlyFn(
-      this.name,
-      method,
-      args,
-      sender?.address
-    );
+  private callReadOnlyFn(method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
+    const result = this.chain.callReadOnlyFn(this.name, method, args, sender?.address);
     return result;
   }
 }

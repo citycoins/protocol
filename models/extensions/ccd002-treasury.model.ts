@@ -42,12 +42,7 @@ export class CCD002Treasury {
   // Internal DAO functions
 
   setAllowed(sender: Account, asset: AllowedList) {
-    return Tx.contractCall(
-      this.name,
-      "set-allowed",
-      [types.principal(asset.token), types.bool(asset.enabled)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "set-allowed", [types.principal(asset.token), types.bool(asset.enabled)], sender.address);
   }
 
   setAllowedList(sender: Account, assets: AllowedList[]) {
@@ -60,88 +55,35 @@ export class CCD002Treasury {
         })
       );
     }
-    return Tx.contractCall(
-      this.name,
-      "set-allowed-list",
-      [types.list(assetList)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "set-allowed-list", [types.list(assetList)], sender.address);
   }
 
   // Deposit functions
 
   depositStx(sender: Account, amount: number) {
-    return Tx.contractCall(
-      this.name,
-      "deposit-stx",
-      [types.uint(amount)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "deposit-stx", [types.uint(amount)], sender.address);
   }
 
   depositFt(sender: Account, assetContract: string, amount: number) {
-    return Tx.contractCall(
-      this.name,
-      "deposit-ft",
-      [types.principal(assetContract), types.uint(amount)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "deposit-ft", [types.principal(assetContract), types.uint(amount)], sender.address);
   }
 
   depositNft(sender: Account, assetContract: string, id: number) {
-    return Tx.contractCall(
-      this.name,
-      "deposit-nft",
-      [types.principal(assetContract), types.uint(id)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "deposit-nft", [types.principal(assetContract), types.uint(id)], sender.address);
   }
 
   // Withdraw functions
 
   withdrawStx(sender: Account, amount: number, recipient: string) {
-    return Tx.contractCall(
-      this.name,
-      "withdraw-stx",
-      [types.uint(amount), types.principal(recipient)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "withdraw-stx", [types.uint(amount), types.principal(recipient)], sender.address);
   }
 
-  withdrawFt(
-    sender: Account,
-    assetContract: string,
-    amount: number,
-    recipient: string
-  ) {
-    return Tx.contractCall(
-      this.name,
-      "withdraw-ft",
-      [
-        types.principal(assetContract),
-        types.uint(amount),
-        types.principal(recipient),
-      ],
-      sender.address
-    );
+  withdrawFt(sender: Account, assetContract: string, amount: number, recipient: string) {
+    return Tx.contractCall(this.name, "withdraw-ft", [types.principal(assetContract), types.uint(amount), types.principal(recipient)], sender.address);
   }
 
-  withdrawNft(
-    sender: Account,
-    assetContract: string,
-    id: number,
-    recipient: string
-  ) {
-    return Tx.contractCall(
-      this.name,
-      "withdraw-nft",
-      [
-        types.principal(assetContract),
-        types.uint(id),
-        types.principal(recipient),
-      ],
-      sender.address
-    );
+  withdrawNft(sender: Account, assetContract: string, id: number, recipient: string) {
+    return Tx.contractCall(this.name, "withdraw-nft", [types.principal(assetContract), types.uint(id), types.principal(recipient)], sender.address);
   }
 
   // Read only functions
@@ -151,9 +93,7 @@ export class CCD002Treasury {
   }
 
   getAllowedAsset(assetContract: string): ReadOnlyFn {
-    return this.callReadOnlyFn("get-allowed-asset", [
-      types.principal(assetContract),
-    ]);
+    return this.callReadOnlyFn("get-allowed-asset", [types.principal(assetContract)]);
   }
 
   getBalanceStx(): ReadOnlyFn {
@@ -163,25 +103,11 @@ export class CCD002Treasury {
   // Extension callback
 
   callback(sender: Account, memo: string) {
-    return Tx.contractCall(
-      this.name,
-      "callback",
-      [types.principal(sender.address), types.buff(memo)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "callback", [types.principal(sender.address), types.buff(memo)], sender.address);
   }
 
-  private callReadOnlyFn(
-    method: string,
-    args: Array<any> = [],
-    sender: Account = this.deployer
-  ): ReadOnlyFn {
-    const result = this.chain.callReadOnlyFn(
-      this.name,
-      method,
-      args,
-      sender?.address
-    );
+  private callReadOnlyFn(method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
+    const result = this.chain.callReadOnlyFn(this.name, method, args, sender?.address);
     return result;
   }
 }

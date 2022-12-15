@@ -18,30 +18,11 @@ export class CCEXTNft {
     this.deployer = deployer;
   }
 
-  transfer(
-    tokenId: number,
-    sender: string,
-    recipient: string,
-    txSender: string
-  ): Tx {
-    return Tx.contractCall(
-      this.name,
-      "transfer",
-      [
-        types.uint(tokenId),
-        types.principal(sender),
-        types.principal(recipient),
-      ],
-      txSender
-    );
+  transfer(tokenId: number, sender: string, recipient: string, txSender: string): Tx {
+    return Tx.contractCall(this.name, "transfer", [types.uint(tokenId), types.principal(sender), types.principal(recipient)], txSender);
   }
   mint(recipient: string, txSender: string): Tx {
-    return Tx.contractCall(
-      this.name,
-      "mint",
-      [types.principal(recipient)],
-      txSender
-    );
+    return Tx.contractCall(this.name, "mint", [types.principal(recipient)], txSender);
   }
   getOwner(tokenId: number): ReadOnlyFn {
     return this.callReadOnlyFn("get-owner", [types.uint(tokenId)]);
@@ -53,12 +34,7 @@ export class CCEXTNft {
     args: Array<any> = [],
     sender: Account = this.deployer
   ): ReadOnlyFn {
-    const result = this.chain.callReadOnlyFn(
-      this.name,
-      method,
-      args,
-      sender?.address
-    );
+    const result = this.chain.callReadOnlyFn(this.name, method, args, sender?.address);
 
     return result;
   }

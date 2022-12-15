@@ -27,24 +27,8 @@ export class CCEXTGovernanceToken {
 
   // Internal DAO functions
 
-  transfer(
-    amount: number,
-    sender: string,
-    recipient: string,
-    memo: string,
-    txSender: string
-  ): Tx {
-    return Tx.contractCall(
-      this.name,
-      "transfer",
-      [
-        types.uint(amount),
-        types.principal(sender),
-        types.principal(recipient),
-        memo && memo.length > 0 ? types.some(types.buff(memo)) : types.none(),
-      ],
-      txSender
-    );
+  transfer(amount: number, sender: string, recipient: string, memo: string, txSender: string): Tx {
+    return Tx.contractCall(this.name, "transfer", [types.uint(amount), types.principal(sender), types.principal(recipient), memo && memo.length > 0 ? types.some(types.buff(memo)) : types.none()], txSender);
   }
 
   getName(): ReadOnlyFn {
@@ -67,67 +51,28 @@ export class CCEXTGovernanceToken {
   }
 
   setName(value: string, txSender: string): Tx {
-    return Tx.contractCall(
-      this.name,
-      "set-name",
-      [types.ascii(value)],
-      txSender
-    );
+    return Tx.contractCall(this.name, "set-name", [types.ascii(value)], txSender);
   }
   setSymbol(value: string, txSender: string): Tx {
-    return Tx.contractCall(
-      this.name,
-      "set-symbol",
-      [types.ascii(value)],
-      txSender
-    );
+    return Tx.contractCall(this.name, "set-symbol", [types.ascii(value)], txSender);
   }
   setTokenUri(value: string, txSender: string): Tx {
-    return Tx.contractCall(
-      this.name,
-      "set-token-uri",
-      [types.some(types.utf8(value))],
-      txSender
-    );
+    return Tx.contractCall(this.name, "set-token-uri", [types.some(types.utf8(value))], txSender);
   }
   setDecimals(value: number, txSender: string): Tx {
-    return Tx.contractCall(
-      this.name,
-      "set-decimals",
-      [types.uint(value)],
-      txSender
-    );
+    return Tx.contractCall(this.name, "set-decimals", [types.uint(value)], txSender);
   }
 
   edgMint(amount: number, recipient: string, txSender: string): Tx {
-    return Tx.contractCall(
-      this.name,
-      "edg-mint",
-      [types.uint(amount), types.principal(recipient)],
-      txSender
-    );
+    return Tx.contractCall(this.name, "edg-mint", [types.uint(amount), types.principal(recipient)], txSender);
   }
 
   edgBurn(amount: number, owner: string, txSender: string): Tx {
-    return Tx.contractCall(
-      this.name,
-      "edg-burn",
-      [types.uint(amount), types.principal(owner)],
-      txSender
-    );
+    return Tx.contractCall(this.name, "edg-burn", [types.uint(amount), types.principal(owner)], txSender);
   }
 
-  private callReadOnlyFn(
-    method: string,
-    args: Array<any> = [],
-    sender: Account = this.deployer
-  ): ReadOnlyFn {
-    const result = this.chain.callReadOnlyFn(
-      this.name,
-      method,
-      args,
-      sender?.address
-    );
+  private callReadOnlyFn(method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
+    const result = this.chain.callReadOnlyFn(this.name, method, args, sender?.address);
     return result;
   }
 }

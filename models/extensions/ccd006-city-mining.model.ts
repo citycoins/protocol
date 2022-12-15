@@ -46,95 +46,45 @@ export class CCD006CityMining {
   // Internal DAO functions
 
   mine(sender: Account, cityName: string, amounts: Array<number>) {
-    return Tx.contractCall(
-      this.name,
-      "mine",
-      [
-        types.ascii(cityName),
-        types.list(amounts.map((entry) => types.uint(entry))),
-      ],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "mine", [types.ascii(cityName), types.list(amounts.map((entry) => types.uint(entry)))], sender.address);
   }
 
   setRewardDelay(sender: Account, delay: number) {
-    return Tx.contractCall(
-      this.name,
-      "set-reward-delay",
-      [types.uint(delay)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "set-reward-delay", [types.uint(delay)], sender.address);
   }
 
   claimMiningReward(sender: Account, cityName: string, claimHeight: number) {
-    return Tx.contractCall(
-      this.name,
-      "claim-mining-reward",
-      [types.ascii(cityName), types.uint(claimHeight)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "claim-mining-reward", [types.ascii(cityName), types.uint(claimHeight)], sender.address);
   }
 
   // Read only functions
 
   isBlockWinner(cityId: number, user: string, claimHeight: number): ReadOnlyFn {
-    return this.callReadOnlyFn("is-block-winner", [
-      types.uint(cityId),
-      types.principal(user),
-      types.uint(claimHeight),
-    ]);
+    return this.callReadOnlyFn("is-block-winner", [types.uint(cityId), types.principal(user), types.uint(claimHeight)]);
   }
 
   getBlockWinner(cityId: number, blockHeight: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-block-winner", [
-      types.uint(cityId),
-      types.uint(blockHeight),
-    ]);
+    return this.callReadOnlyFn("get-block-winner", [types.uint(cityId), types.uint(blockHeight)]);
   }
 
   getHighValue(cityId: number, blockHeight: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-high-value", [
-      types.uint(cityId),
-      types.uint(blockHeight),
-    ]);
+    return this.callReadOnlyFn("get-high-value", [types.uint(cityId), types.uint(blockHeight)]);
   }
 
-  getMinerAtBlock(
-    cityId: number,
-    blockHeight: number,
-    userId: number
-  ): ReadOnlyFn {
-    return this.callReadOnlyFn("get-miner-at-block", [
-      types.uint(cityId),
-      types.uint(blockHeight),
-      types.uint(userId),
-    ]);
+  getMinerAtBlock(cityId: number, blockHeight: number, userId: number): ReadOnlyFn {
+    return this.callReadOnlyFn("get-miner-at-block", [types.uint(cityId), types.uint(blockHeight), types.uint(userId)]);
   }
 
-  hasMinedAtBlock(
-    cityId: number,
-    blockHeight: number,
-    userId: number
-  ): ReadOnlyFn {
-    return this.callReadOnlyFn("has-mined-at-block", [
-      types.uint(cityId),
-      types.uint(blockHeight),
-      types.uint(userId),
-    ]);
+  hasMinedAtBlock(cityId: number, blockHeight: number, userId: number): ReadOnlyFn {
+    return this.callReadOnlyFn("has-mined-at-block", [types.uint(cityId), types.uint(blockHeight), types.uint(userId)]);
   }
 
   getMiningStatsAtBlock(cityId: number, blockHeight: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-mining-stats-at-block", [
-      types.uint(cityId),
-      types.uint(blockHeight),
-    ]);
+    return this.callReadOnlyFn("get-mining-stats-at-block", [types.uint(cityId), types.uint(blockHeight)]);
   }
 
   getCoinbaseAmount(cityId: number, blockHeight: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-coinbase-amount", [
-      types.uint(cityId),
-      types.uint(blockHeight),
-    ]);
+    return this.callReadOnlyFn("get-coinbase-amount", [types.uint(cityId), types.uint(blockHeight)]);
   }
 
   getRewardDelay(): ReadOnlyFn {
@@ -144,25 +94,11 @@ export class CCD006CityMining {
   // Extension callback
 
   callback(sender: Account, memo: string) {
-    return Tx.contractCall(
-      this.name,
-      "callback",
-      [types.principal(sender.address), types.buff(memo)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "callback", [types.principal(sender.address), types.buff(memo)], sender.address);
   }
 
-  private callReadOnlyFn(
-    method: string,
-    args: Array<any> = [],
-    sender: Account = this.deployer
-  ): ReadOnlyFn {
-    const result = this.chain.callReadOnlyFn(
-      this.name,
-      method,
-      args,
-      sender?.address
-    );
+  private callReadOnlyFn(method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
+    const result = this.chain.callReadOnlyFn(this.name, method, args, sender?.address);
     return result;
   }
 }

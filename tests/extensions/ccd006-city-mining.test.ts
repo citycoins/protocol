@@ -8,11 +8,7 @@
  *    - set-reward-delay
  */
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import {
-  constructAndPassProposal,
-  passProposal,
-  PROPOSALS,
-} from "../../utils/common.ts";
+import { constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
 import { CCD006CityMining } from "../../models/extensions/ccd006-city-mining.model.ts";
 import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
 import { CCD003UserRegistry } from "../../models/extensions/ccd003-user-registry.model.ts";
@@ -28,36 +24,15 @@ const miaTreasuryId = 1;
 const miaMiningTreasuryName = "mining";
 const miaTreasuryName = "ccd002-treasury-mia";
 
-const dumpMiningData = (
-  ccd006CityMining: any,
-  cityId: number,
-  height: number,
-  userId: number
-) => {
+const dumpMiningData = (ccd006CityMining: any, cityId: number, height: number, userId: number) => {
   ccd006CityMining.getMiningStatsAtBlock(cityId, height).result.expectTuple();
-  console.log(
-    "getMiningStatsAtBlock: " +
-      ccd006CityMining.getMiningStatsAtBlock(cityId, height).result
-  );
-  console.log(
-    "hasMinedAtBlock: " +
-      ccd006CityMining.hasMinedAtBlock(cityId, height, userId).result
-  );
-  console.log(
-    "getMinerAtBlock: " +
-      ccd006CityMining.getMinerAtBlock(cityId, height, userId).result
-  );
-  console.log(
-    "getBlockWinner: " + ccd006CityMining.getBlockWinner(cityId, height).result
-  );
+  console.log("getMiningStatsAtBlock: " + ccd006CityMining.getMiningStatsAtBlock(cityId, height).result);
+  console.log("hasMinedAtBlock: " + ccd006CityMining.hasMinedAtBlock(cityId, height, userId).result);
+  console.log("getMinerAtBlock: " + ccd006CityMining.getMinerAtBlock(cityId, height, userId).result);
+  console.log("getBlockWinner: " + ccd006CityMining.getBlockWinner(cityId, height).result);
   //console.log(ccd006CityMining.isBlockWinner(miaCityId, sender.address, (firstBlock + 100) ).result);
-  console.log(
-    "getHighValue: " + ccd006CityMining.getHighValue(cityId, height).result
-  );
-  console.log(
-    "getCoinbaseAmount: " +
-      ccd006CityMining.getCoinbaseAmount(cityId, height).result
-  );
+  console.log("getHighValue: " + ccd006CityMining.getHighValue(cityId, height).result);
+  console.log("getCoinbaseAmount: " + ccd006CityMining.getCoinbaseAmount(cityId, height).result);
   console.log("getRewardDelay: " + ccd006CityMining.getRewardDelay().result);
 };
 
@@ -70,19 +45,12 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(
-      chain,
-      sender,
-      "ccd006-city-mining"
-    );
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
 
     // act
 
     // assert
-    ccd006CityMining
-      .isDaoOrExtension()
-      .result.expectErr()
-      .expectUint(CCD006CityMining.ErrCode.ERR_UNAUTHORIZED);
+    ccd006CityMining.isDaoOrExtension().result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
@@ -95,23 +63,15 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(
-      chain,
-      sender,
-      "ccd006-city-mining"
-    );
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
 
     // act
     const entries = [10, 10];
-    const { receipts } = chain.mineBlock([
-      ccd006CityMining.mine(sender, miaCityName, entries),
-    ]);
+    const { receipts } = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
     assertEquals(receipts.length, 1);
-    receipts[0].result
-      .expectErr()
-      .expectUint(CCD006CityMining.ErrCode.ERR_CITY_ID_NOT_FOUND);
+    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_CITY_ID_NOT_FOUND);
   },
 });
 
@@ -120,27 +80,15 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(
-      chain,
-      sender,
-      "ccd006-city-mining"
-    );
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
 
     // act
     const entries = [10, 10];
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    const block = chain.mineBlock([
-      ccd006CityMining.mine(sender, miaCityName, entries),
-    ]);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
-    block.receipts[0].result
-      .expectErr()
-      .expectUint(CCD006CityMining.ErrCode.ERR_CITY_NOT_ACTIVATED);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_CITY_NOT_ACTIVATED);
   },
 });
 
@@ -149,29 +97,17 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(
-      chain,
-      sender,
-      "ccd006-city-mining"
-    );
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
 
     // act
     const entries = [10, 10];
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     //passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    const block = chain.mineBlock([
-      ccd006CityMining.mine(sender, miaCityName, entries),
-    ]);
+    const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
-    block.receipts[0].result
-      .expectErr()
-      .expectUint(CCD006CityMining.ErrCode.ERR_CITY_DETAILS_NOT_FOUND);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_CITY_DETAILS_NOT_FOUND);
   },
 });
 
@@ -180,29 +116,17 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(
-      chain,
-      sender,
-      "ccd006-city-mining"
-    );
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
 
     // act
     const entries = [10, 10];
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    const block = chain.mineBlock([
-      ccd006CityMining.mine(sender, miaCityName, entries),
-    ]);
+    const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
-    block.receipts[0].result
-      .expectErr()
-      .expectUint(CCD006CityMining.ErrCode.ERR_CITY_TREASURY_NOT_FOUND);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_CITY_TREASURY_NOT_FOUND);
   },
 });
 
@@ -211,44 +135,22 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
-    const ccd006CityMining = new CCD006CityMining(
-      chain,
-      sender,
-      "ccd006-city-mining"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
 
     // act
     const entries = [10, 10];
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_001);
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
-    ccd005CityData
-      .getCityTreasuryId(miaCityId, miaMiningTreasuryName)
-      .result.expectSome()
-      .expectUint(1);
-    ccd005CityData
-      .getCityTreasuryName(miaCityId, miaTreasuryId)
-      .result.expectSome()
-      .expectAscii(miaMiningTreasuryName);
-    const block = chain.mineBlock([
-      ccd006CityMining.mine(sender, miaCityName, entries),
-    ]);
+    ccd005CityData.getCityTreasuryId(miaCityId, miaMiningTreasuryName).result.expectSome().expectUint(1);
+    ccd005CityData.getCityTreasuryName(miaCityId, miaTreasuryId).result.expectSome().expectAscii(miaMiningTreasuryName);
+    const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
-    block.receipts[0].result
-      .expectErr()
-      .expectUint(CCD003UserRegistry.ErrCode.ERR_UNAUTHORIZED);
+    block.receipts[0].result.expectErr().expectUint(CCD003UserRegistry.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
@@ -257,45 +159,23 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
-    const ccd006CityMining = new CCD006CityMining(
-      chain,
-      sender,
-      "ccd006-city-mining"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
 
     // act
     const entries = [10, 10];
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_003);
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
-    ccd005CityData
-      .getCityTreasuryId(miaCityId, miaMiningTreasuryName)
-      .result.expectSome()
-      .expectUint(1);
-    ccd005CityData
-      .getCityTreasuryName(miaCityId, miaTreasuryId)
-      .result.expectSome()
-      .expectAscii(miaMiningTreasuryName);
-    const block = chain.mineBlock([
-      ccd006CityMining.mine(sender, miaCityName, entries),
-    ]);
+    ccd005CityData.getCityTreasuryId(miaCityId, miaMiningTreasuryName).result.expectSome().expectUint(1);
+    ccd005CityData.getCityTreasuryName(miaCityId, miaTreasuryId).result.expectSome().expectAscii(miaMiningTreasuryName);
+    const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
-    block.receipts[0].result
-      .expectErr()
-      .expectUint(CCD006CityMining.ErrCode.ERR_CITY_NOT_ACTIVATED);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_CITY_NOT_ACTIVATED);
   },
 });
 
@@ -304,44 +184,22 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
-    const ccd006CityMining = new CCD006CityMining(
-      chain,
-      sender,
-      "ccd006-city-mining"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
 
     // act
     const entries: number[] = [];
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
-    ccd005CityData
-      .getCityTreasuryId(miaCityId, miaMiningTreasuryName)
-      .result.expectSome()
-      .expectUint(1);
-    ccd005CityData
-      .getCityTreasuryName(miaCityId, miaTreasuryId)
-      .result.expectSome()
-      .expectAscii(miaMiningTreasuryName);
-    const block = chain.mineBlock([
-      ccd006CityMining.mine(sender, miaCityName, entries),
-    ]);
+    ccd005CityData.getCityTreasuryId(miaCityId, miaMiningTreasuryName).result.expectSome().expectUint(1);
+    ccd005CityData.getCityTreasuryName(miaCityId, miaTreasuryId).result.expectSome().expectAscii(miaMiningTreasuryName);
+    const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
-    block.receipts[0].result
-      .expectErr()
-      .expectUint(CCD006CityMining.ErrCode.ERR_INVALID_COMMIT_AMOUNTS);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_INVALID_COMMIT_AMOUNTS);
   },
 });
 
@@ -350,36 +208,20 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
-    const ccd006CityMining = new CCD006CityMining(
-      chain,
-      sender,
-      "ccd006-city-mining"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
 
     // act
     const entries: number[] = [10, 0, 10];
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
-    const block = chain.mineBlock([
-      ccd006CityMining.mine(sender, miaCityName, entries),
-    ]);
+    const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
-    block.receipts[0].result
-      .expectErr()
-      .expectUint(CCD006CityMining.ErrCode.ERR_INSUFFICIENT_COMMIT);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_INSUFFICIENT_COMMIT);
   },
 });
 
@@ -388,31 +230,17 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
-    const ccd006CityMining = new CCD006CityMining(
-      chain,
-      sender,
-      "ccd006-city-mining"
-    );
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
 
     // act
     const entries: number[] = [10];
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
-    const block = chain.mineBlock([
-      ccd006CityMining.mine(sender, miaCityName, entries),
-    ]);
+    const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
     const firstBlock = 7;
@@ -420,25 +248,10 @@ Clarinet.test({
     const totalAmount = 10;
     const totalBlocks = 1;
     const userId = 1;
-    block.receipts[0].events.expectSTXTransferEvent(
-      10,
-      sender.address,
-      `${sender.address}.${miaTreasuryName}`
-    );
-    const expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${
-      sender.address
-    }.${miaTreasuryName}, firstBlock: ${types.uint(
-      firstBlock
-    )}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(
-      totalAmount
-    )}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(
-      userId
-    )}}`;
+    block.receipts[0].events.expectSTXTransferEvent(10, sender.address, `${sender.address}.${miaTreasuryName}`);
+    const expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
 
-    block.receipts[0].events.expectPrintEvent(
-      `${sender.address}.ccd006-city-mining`,
-      expectedPrintMsg
-    );
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
     block.receipts[0].result.expectOk().expectBool(true);
   },
 });
@@ -448,21 +261,9 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(
-      chain,
-      sender,
-      "ccd002-treasury-mia"
-    );
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
-    const ccd006CityMining = new CCD006CityMining(
-      chain,
-      sender,
-      "ccd006-city-mining"
-    );
+    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia");
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
     const firstBlock = 7;
     const lastBlock = 9;
     const totalAmount = 30;
@@ -471,18 +272,11 @@ Clarinet.test({
     const entries: number[] = [10, 10, 10];
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
-    const block = chain.mineBlock([
-      ccd006CityMining.mine(sender, miaCityName, entries),
-      ccd006CityMining.mine(sender, miaCityName, entries),
-    ]);
+    const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries), ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
 
@@ -491,41 +285,17 @@ Clarinet.test({
     //dumpMiningData(ccd006CityMining, miaCityId, firstBlock, userId);
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
 
-    block.receipts[0].events.expectSTXTransferEvent(
-      totalAmount,
-      sender.address,
-      `${sender.address}.${miaTreasuryName}`
-    );
-    block.receipts[1].events.expectSTXTransferEvent(
-      totalAmount,
-      sender.address,
-      `${sender.address}.${miaTreasuryName}`
-    );
+    block.receipts[0].events.expectSTXTransferEvent(totalAmount, sender.address, `${sender.address}.${miaTreasuryName}`);
+    block.receipts[1].events.expectSTXTransferEvent(totalAmount, sender.address, `${sender.address}.${miaTreasuryName}`);
 
-    const expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${
-      sender.address
-    }.${miaTreasuryName}, firstBlock: ${types.uint(
-      firstBlock
-    )}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(
-      totalAmount
-    )}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(
-      userId
-    )}}`;
+    const expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
 
-    block.receipts[0].events.expectPrintEvent(
-      `${sender.address}.ccd006-city-mining`,
-      expectedPrintMsg
-    );
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
 
-    block.receipts[1].events.expectPrintEvent(
-      `${sender.address}.ccd006-city-mining`,
-      expectedPrintMsg
-    );
+    block.receipts[1].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
 
     // Expecting ERR_ALREADY_MINED if same user tried mine twice at same height ?
-    block.receipts[1].result
-      .expectErr()
-      .expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_MINED);
+    block.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_MINED);
     // and for the treasury balance to show the first tx only ..
     ccd002Treasury.getBalanceStx().result.expectUint(totalAmount);
   },
@@ -643,27 +413,11 @@ Clarinet.test({
     const user3 = accounts.get("wallet_3")!;
     const user4 = accounts.get("wallet_4")!;
 
-    const ccd002Treasury = new CCD002Treasury(
-      chain,
-      sender,
-      "ccd002-treasury-mia"
-    );
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
-    const ccd006CityMining = new CCD006CityMining(
-      chain,
-      sender,
-      "ccd006-city-mining"
-    );
-    const ccd003UserRegistry = new CCD003UserRegistry(
-      chain,
-      sender,
-      "ccd003-user-registry"
-    );
-    
+    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia");
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd003UserRegistry = new CCD003UserRegistry(chain, sender, "ccd003-user-registry");
+
     const firstBlock = 7;
     const lastBlock = 9;
     const totalAmount = 120;
@@ -672,20 +426,11 @@ Clarinet.test({
     const entries: number[] = [10, 10, 10];
 
     // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
-    const block = chain.mineBlock([
-      ccd006CityMining.mine(user1, miaCityName, entries),
-      ccd006CityMining.mine(user2, miaCityName, entries),
-      ccd006CityMining.mine(user3, miaCityName, entries),
-      ccd006CityMining.mine(user4, miaCityName, entries),
-    ]);
+    const block = chain.mineBlock([ccd006CityMining.mine(user1, miaCityName, entries), ccd006CityMining.mine(user2, miaCityName, entries), ccd006CityMining.mine(user3, miaCityName, entries), ccd006CityMining.mine(user4, miaCityName, entries)]);
 
     // assert
 
@@ -705,56 +450,23 @@ Clarinet.test({
     dumpMiningData(ccd006CityMining, miaCityId, firstBlock, userId);
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
 
-    block.receipts[0].events.expectSTXTransferEvent(
-      30,
-      user1.address,
-      `${sender.address}.${miaTreasuryName}`
-    );
-    block.receipts[1].events.expectSTXTransferEvent(
-      30,
-      user2.address,
-      `${sender.address}.${miaTreasuryName}`
-    );
-    block.receipts[2].events.expectSTXTransferEvent(
-      30,
-      user3.address,
-      `${sender.address}.${miaTreasuryName}`
-    );
-    block.receipts[3].events.expectSTXTransferEvent(
-      30,
-      user4.address,
-      `${sender.address}.${miaTreasuryName}`
-    );
+    block.receipts[0].events.expectSTXTransferEvent(30, user1.address, `${sender.address}.${miaTreasuryName}`);
+    block.receipts[1].events.expectSTXTransferEvent(30, user2.address, `${sender.address}.${miaTreasuryName}`);
+    block.receipts[2].events.expectSTXTransferEvent(30, user3.address, `${sender.address}.${miaTreasuryName}`);
+    block.receipts[3].events.expectSTXTransferEvent(30, user4.address, `${sender.address}.${miaTreasuryName}`);
 
-    const expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${
-      sender.address
-    }.${miaTreasuryName}, firstBlock: ${types.uint(
-      firstBlock
-    )}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(
-      totalAmount
-    )}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(
-      userId
-    )}}`;
+    const expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
 
-    block.receipts[0].events.expectPrintEvent(
-      `${sender.address}.ccd006-city-mining`,
-      expectedPrintMsg
-    );
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
 
-    block.receipts[1].events.expectPrintEvent(
-      `${sender.address}.ccd006-city-mining`,
-      expectedPrintMsg
-    );
+    block.receipts[1].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
 
     // Expecting ERR_ALREADY_MINED if same user tried mine twice at same height ?
-    block.receipts[1].result
-      .expectErr()
-      .expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_MINED);
+    block.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_MINED);
     // and for the treasury balance to show the first tx only ..
     ccd002Treasury.getBalanceStx().result.expectUint(totalAmount);
   },
 });
-
 
 // =============================
 // 2. CLAIMING

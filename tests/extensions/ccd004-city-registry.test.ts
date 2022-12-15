@@ -1,9 +1,5 @@
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import {
-  constructAndPassProposal,
-  passProposal,
-  PROPOSALS,
-} from "../../utils/common.ts";
+import { constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
 import { BaseDao } from "../../models/base-dao.model.ts";
 import { CCD004CityRegistry } from "../../models/extensions/ccd004-city-registry.model.ts";
 
@@ -14,19 +10,12 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd004CityRegistry = new CCD004CityRegistry(
-      chain,
-      sender,
-      "ccd004-city-registry"
-    );
+    const ccd004CityRegistry = new CCD004CityRegistry(chain, sender, "ccd004-city-registry");
 
     // act
 
     // assert
-    ccd004CityRegistry
-      .isDaoOrExtension()
-      .result.expectErr()
-      .expectUint(CCD004CityRegistry.ErrCode.ERR_UNAUTHORIZED);
+    ccd004CityRegistry.isDaoOrExtension().result.expectErr().expectUint(CCD004CityRegistry.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
@@ -35,22 +24,14 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd004CityRegistry = new CCD004CityRegistry(
-      chain,
-      sender,
-      "ccd004-city-registry"
-    );
+    const ccd004CityRegistry = new CCD004CityRegistry(chain, sender, "ccd004-city-registry");
 
     // act
-    const { receipts } = chain.mineBlock([
-      ccd004CityRegistry.getOrCreateCityId(sender, "mia"),
-    ]);
+    const { receipts } = chain.mineBlock([ccd004CityRegistry.getOrCreateCityId(sender, "mia")]);
 
     // assert
     assertEquals(receipts.length, 1);
-    receipts[0].result
-      .expectErr()
-      .expectUint(CCD004CityRegistry.ErrCode.ERR_UNAUTHORIZED);
+    receipts[0].result.expectErr().expectUint(CCD004CityRegistry.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
@@ -59,11 +40,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd004CityRegistry = new CCD004CityRegistry(
-      chain,
-      sender,
-      "ccd004-city-registry"
-    );
+    const ccd004CityRegistry = new CCD004CityRegistry(chain, sender, "ccd004-city-registry");
 
     // act
 
@@ -77,11 +54,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd004CityRegistry = new CCD004CityRegistry(
-      chain,
-      sender,
-      "ccd004-city-registry"
-    );
+    const ccd004CityRegistry = new CCD004CityRegistry(chain, sender, "ccd004-city-registry");
 
     // act
 
@@ -98,22 +71,12 @@ Clarinet.test({
     // arrange
 
     // act
-    let receipts = constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
-    receipts = passProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
+    let receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    receipts = passProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
 
     // assert
     assertEquals(receipts.length, 3);
-    receipts[2].result
-      .expectErr()
-      .expectUint(BaseDao.ErrCode.ERR_ALREADY_EXECUTED);
+    receipts[2].result.expectErr().expectUint(BaseDao.ErrCode.ERR_ALREADY_EXECUTED);
   },
 });
 
@@ -122,18 +85,10 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd004CityRegistry = new CCD004CityRegistry(
-      chain,
-      sender,
-      "ccd004-city-registry"
-    );
+    const ccd004CityRegistry = new CCD004CityRegistry(chain, sender, "ccd004-city-registry");
 
     // act
-    const receipts = constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -148,18 +103,10 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd004CityRegistry = new CCD004CityRegistry(
-      chain,
-      sender,
-      "ccd004-city-registry"
-    );
+    const ccd004CityRegistry = new CCD004CityRegistry(chain, sender, "ccd004-city-registry");
 
     // act
-    const receipts = constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
-    );
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
 
     // assert
     assertEquals(receipts.length, 4);
