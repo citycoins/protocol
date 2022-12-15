@@ -319,13 +319,14 @@
       )
       (asserts! (not (has-mined-at-block cityId height userId)) ERR_ALREADY_MINED)
       (asserts! (> amount u0) ERR_INSUFFICIENT_COMMIT)
-      (set-mining-data cityId height userId amount)
+      (set-mining-data cityId userId height amount)
       (ok (merge okReturn
         {
           height: (+ height u1),
           totalAmount: (+ totalAmount amount)
         }
       ))
+      
     )
     errReturn (err errReturn)
   )

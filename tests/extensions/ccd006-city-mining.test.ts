@@ -25,6 +25,10 @@ const miaMiningTreasuryName = "mining";
 const miaTreasuryName = "ccd002-treasury-mia";
 
 const dumpMiningData = (ccd006CityMining: any, cityId: number, height: number, userId: number) => {
+  // mining technically happens in the *next* block
+  height = height + 1;
+  // output all mining data
+  console.log("mining data check: " + height + " - " + userId + " - " + cityId);
   ccd006CityMining.getMiningStatsAtBlock(cityId, height).result.expectTuple();
   console.log("getMiningStatsAtBlock: " + ccd006CityMining.getMiningStatsAtBlock(cityId, height).result);
   console.log("hasMinedAtBlock: " + ccd006CityMining.hasMinedAtBlock(cityId, height, userId).result);
@@ -281,21 +285,22 @@ Clarinet.test({
     // assert
 
     block.receipts[0].result.expectOk().expectBool(true);
-    block.receipts[1].result.expectOk().expectBool(true);
-    //dumpMiningData(ccd006CityMining, miaCityId, firstBlock, userId);
+    block.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_MINED);
+    //console.log("mining data:");
+    //console.log(dumpMiningData(ccd006CityMining, miaCityId, firstBlock, userId));
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
-
     block.receipts[0].events.expectSTXTransferEvent(totalAmount, sender.address, `${sender.address}.${miaTreasuryName}`);
-    block.receipts[1].events.expectSTXTransferEvent(totalAmount, sender.address, `${sender.address}.${miaTreasuryName}`);
+
+    // block.receipts[1].events.expectSTXTransferEvent(totalAmount, sender.address, `${sender.address}.${miaTreasuryName}`);
 
     const expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
 
     block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
 
-    block.receipts[1].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    // block.receipts[1].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
 
     // Expecting ERR_ALREADY_MINED if same user tried mine twice at same height ?
-    block.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_MINED);
+    // block.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_MINED);
     // and for the treasury balance to show the first tx only ..
     ccd002Treasury.getBalanceStx().result.expectUint(totalAmount);
   },
@@ -434,10 +439,10 @@ Clarinet.test({
 
     // assert
 
-    block.receipts[0].result.expectOk().expectBool(true);
-    block.receipts[1].result.expectOk().expectBool(true);
-    block.receipts[2].result.expectOk().expectBool(true);
-    block.receipts[3].result.expectOk().expectBool(true);
+    // simplified pattern when more than 1 or 2
+    for (const receipt of block.receipts) {
+      receipt.result.expectOk().expectBool(true);
+    }
 
     ccd002Treasury.getBalanceStx().result.expectUint(totalAmount);
 
@@ -447,7 +452,7 @@ Clarinet.test({
     ccd003UserRegistry.getUserId(user3.address).result.expectSome().expectUint(3);
     ccd003UserRegistry.getUserId(user4.address).result.expectSome().expectUint(4);
 
-    dumpMiningData(ccd006CityMining, miaCityId, firstBlock, userId);
+    // dumpMiningData(ccd006CityMining, miaCityId, firstBlock, userId);
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
 
     block.receipts[0].events.expectSTXTransferEvent(30, user1.address, `${sender.address}.${miaTreasuryName}`);
@@ -455,15 +460,13 @@ Clarinet.test({
     block.receipts[2].events.expectSTXTransferEvent(30, user3.address, `${sender.address}.${miaTreasuryName}`);
     block.receipts[3].events.expectSTXTransferEvent(30, user4.address, `${sender.address}.${miaTreasuryName}`);
 
-    const expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
-
-    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
-
-    block.receipts[1].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
-
-    // Expecting ERR_ALREADY_MINED if same user tried mine twice at same height ?
-    block.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_MINED);
-    // and for the treasury balance to show the first tx only ..
+    for (const [idx, receipt] of block.receipts.entries()) {
+      // user ID needs to increase with each pass
+      // total needs to be divided by number of miners
+      const expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount / 4)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId + idx)}}`;
+      receipt.events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    }
+    // check that total balance was transferred to treasury
     ccd002Treasury.getBalanceStx().result.expectUint(totalAmount);
   },
 });
