@@ -23,6 +23,7 @@
 (define-constant ERR_INVALID_THRESHOLDS (err u5006))
 (define-constant ERR_INVALID_AMOUNTS (err u5007))
 (define-constant ERR_INVALID_BONUS_PERIOD (err u5008))
+(define-constant ERR_INVALID_CITY (err u5009))
 
 ;; DATA MAPS
 
@@ -197,6 +198,7 @@
       (currentStatus (is-city-activated cityId))
     )
     (try! (is-dao-or-extension))
+    (try! (is-city-registered cityId))
     (asserts! (not (is-eq currentStatus status)) ERR_UNAUTHORIZED)
     (map-set CityActivationStatus cityId status)
     (ok true)
@@ -207,6 +209,7 @@
 (define-public (set-city-activation-details (cityId uint) (activated uint) (delay uint) (target uint) (threshold uint))
   (begin
     (try! (is-dao-or-extension))
+    (try! (is-city-registered cityId))
     (map-set CityActivationDetails cityId {
       activated: activated,
       delay: delay,
@@ -225,6 +228,8 @@
       (details (unwrap! (get-city-activation-details cityId) ERR_ACTIVATION_DETAILS_NOT_FOUND))
       (signals (+ (get-city-activation-signals cityId) u1))
     )
+    ;; check if city ID is registered
+    (try! (is-city-registered cityId))
     ;; check if already active
     (asserts! (not status) ERR_CONTRACT_ALREADY_ACTIVE)
     ;; check if already voted
@@ -277,9 +282,12 @@
     (let
       (
         (nonce (+ u1 (get-city-treasury-nonce cityId)))
-        (cityActivated (asserts! (is-city-activated cityId) ERR_CONTRACT_INACTIVE))
+        ;; check below may be too aggressive, there is reason
+        ;; to add the treasury *before* the city is activated
+        ;; (cityActivated (asserts! (is-city-activated cityId) ERR_CONTRACT_INACTIVE))
       )
       (try! (is-dao-or-extension))
+      (try! (is-city-registered cityId))
       (asserts! (is-none (map-get? CityTreasuryIds { cityId: cityId, treasuryName: name })) ERR_TREASURY_ALREADY_EXISTS)
       (map-set CityTreasuryNonce cityId nonce)
       (map-insert CityTreasuryIds { cityId: cityId, treasuryName: name } nonce)
@@ -297,6 +305,7 @@
       (nonce (+ u1 (get-city-token-contract-nonce cityId)))
     )
     (try! (is-dao-or-extension))
+    (try! (is-city-registered cityId))
     (map-set CityTokenContractNonce cityId nonce)
     (map-insert CityTokenContractIds { cityId: cityId, tokenAddress: address } nonce)
     (map-insert CityTokenContracts { cityId: cityId, tokenId: nonce } address)
@@ -308,6 +317,7 @@
 (define-public (set-active-city-token-contract (cityId uint) (tokenId uint))
   (begin
     (try! (is-dao-or-extension))
+    (try! (is-city-registered cityId))
     (map-set ActiveCityTokenContract cityId {
       tokenId: tokenId,
       tokenAddress: (unwrap! (get-city-token-contract-address cityId tokenId) ERR_UNAUTHORIZED)
@@ -320,6 +330,7 @@
 (define-public (set-city-coinbase-thresholds (cityId uint) (threshold1 uint) (threshold2 uint) (threshold3 uint) (threshold4 uint) (threshold5 uint))
   (begin
     (try! (is-dao-or-extension))
+    (try! (is-city-registered cityId))
     ;; check that all thresholds increase in value
     (asserts! (and (> threshold1 u0) (> threshold2 threshold1) (> threshold3 threshold2) (> threshold4 threshold3) (> threshold5 threshold4)) ERR_INVALID_THRESHOLDS)
     (map-set CityCoinbaseThresholds cityId {
@@ -337,6 +348,7 @@
 (define-public (set-city-coinbase-amounts (cityId uint) (amountBonus uint) (amount1 uint) (amount2 uint) (amount3 uint) (amount4 uint) (amount5 uint) (amountDefault uint))
   (begin
     (try! (is-dao-or-extension))
+    (try! (is-city-registered cityId))
     ;; check that all amounts are greater than zero
     (asserts! (and (> amountBonus u0) (> amount1 u0) (> amount2 u0) (> amount3 u0) (> amount4 u0) (> amount5 u0) (> amountDefault u0)) ERR_INVALID_AMOUNTS)
     (map-set CityCoinbaseAmounts cityId {
@@ -356,6 +368,7 @@
 (define-public (set-city-coinbase-bonus-period (cityId uint) (bonusPeriod uint))
   (begin
     (try! (is-dao-or-extension))
+    (try! (is-city-registered cityId))
     ;; check that bonus period is greater than zero
     (asserts! (> bonusPeriod u0) ERR_INVALID_BONUS_PERIOD)
     (map-set CityCoinbaseBonusPeriod cityId bonusPeriod)
@@ -445,4 +458,13 @@
 ;; returns (some uint) or none
 (define-read-only (get-city-coinbase-bonus-period (cityId uint))
   (map-get? CityCoinbaseBonusPeriod cityId)
+)
+
+;; PRIVATE FUNCTIONS
+
+;; get city name from ccd004-city-registry, if it doesn't exist then city is not registered
+;; returns (ok (string-ascii 32)) or ERR_INVALID_CITY if not found
+(define-private (is-city-registered (cityId uint))
+  ;; #[filter(cityId)]
+  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY))
 )

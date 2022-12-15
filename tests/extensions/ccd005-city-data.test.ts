@@ -243,6 +243,11 @@ Clarinet.test({
     constructAndPassProposal(
       chain,
       accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
+    constructAndPassProposal(
+      chain,
+      accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
@@ -294,6 +299,11 @@ Clarinet.test({
     constructAndPassProposal(
       chain,
       accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
+    constructAndPassProposal(
+      chain,
+      accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
@@ -318,6 +328,11 @@ Clarinet.test({
     );
 
     // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
     constructAndPassProposal(
       chain,
       accounts,
@@ -365,6 +380,11 @@ Clarinet.test({
     );
 
     // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
     constructAndPassProposal(
       chain,
       accounts,
@@ -509,6 +529,11 @@ Clarinet.test({
     constructAndPassProposal(
       chain,
       accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
+    constructAndPassProposal(
+      chain,
+      accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_006);
@@ -529,7 +554,6 @@ Clarinet.test({
       "ccd005-city-data"
     );
 
-    // act
     const receipts = constructAndPassProposal(
       chain,
       accounts,
@@ -555,6 +579,11 @@ Clarinet.test({
     );
 
     // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
     const receipts = constructAndPassProposal(
       chain,
       accounts,
@@ -583,6 +612,11 @@ Clarinet.test({
     constructAndPassProposal(
       chain,
       accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
+    constructAndPassProposal(
+      chain,
+      accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_018
     );
     // assert
@@ -605,6 +639,11 @@ Clarinet.test({
     );
 
     // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
     constructAndPassProposal(
       chain,
       accounts,
@@ -634,6 +673,11 @@ Clarinet.test({
     );
 
     // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
     constructAndPassProposal(
       chain,
       accounts,
@@ -669,6 +713,11 @@ Clarinet.test({
     );
 
     // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
     constructAndPassProposal(
       chain,
       accounts,
@@ -708,6 +757,11 @@ Clarinet.test({
     constructAndPassProposal(
       chain,
       accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
+    constructAndPassProposal(
+      chain,
+      accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
     const block = passProposal(
@@ -737,6 +791,11 @@ Clarinet.test({
     constructAndPassProposal(
       chain,
       accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
+    constructAndPassProposal(
+      chain,
+      accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
@@ -759,6 +818,11 @@ Clarinet.test({
     );
 
     // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
     constructAndPassProposal(
       chain,
       accounts,
@@ -789,6 +853,11 @@ Clarinet.test({
     );
 
     // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
     constructAndPassProposal(
       chain,
       accounts,
@@ -824,6 +893,11 @@ Clarinet.test({
     constructAndPassProposal(
       chain,
       accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
+    constructAndPassProposal(
+      chain,
+      accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
@@ -843,7 +917,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: add-treasury() creates treasury data is as expected if city is known",
+  name: "ccd005-city-data: add-city-treasury() creates treasury data is as expected if city is known",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -854,6 +928,11 @@ Clarinet.test({
     );
 
     // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
     constructAndPassProposal(
       chain,
       accounts,
@@ -881,7 +960,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: add-treasury() ensure the treasury nonce points to the most recently added treasury",
+  name: "ccd005-city-data: add-city-treasury() ensure the treasury nonce points to the most recently added treasury",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -892,6 +971,11 @@ Clarinet.test({
     );
 
     // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
     constructAndPassProposal(
       chain,
       accounts,
@@ -949,7 +1033,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: add-treasury() cannot creates two treasuries for same city with the same name and address",
+  name: "ccd005-city-data: add-city-treasury() cannot creates two treasuries for same city with the same name and address",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -960,6 +1044,11 @@ Clarinet.test({
     );
 
     // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
     constructAndPassProposal(
       chain,
       accounts,
@@ -1018,7 +1107,7 @@ removing code below as I think it contradicts the goal above
       - each city will be expected to have a "mining" and "stacking" treasury for the protocol to use
 
 Clarinet.test({
-  name: "ccd005-city-data: add-treasury() cannot creates two treasuries for different cities with the same name and address",
+  name: "ccd005-city-data: add-city-treasury() cannot creates two treasuries for different cities with the same name and address",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -1138,6 +1227,11 @@ Clarinet.test({
     constructAndPassProposal(
       chain,
       accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
+    constructAndPassProposal(
+      chain,
+      accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
@@ -1169,6 +1263,11 @@ Clarinet.test({
     );
 
     // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
     constructAndPassProposal(
       chain,
       accounts,
@@ -1231,6 +1330,11 @@ Clarinet.test({
     );
 
     // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
     constructAndPassProposal(
       chain,
       accounts,
@@ -1326,6 +1430,11 @@ Clarinet.test({
     constructAndPassProposal(
       chain,
       accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
+    constructAndPassProposal(
+      chain,
+      accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_015);
@@ -1359,6 +1468,11 @@ Clarinet.test({
     );
 
     // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD004_CITY_REGISTRY_001
+    );
     constructAndPassProposal(
       chain,
       accounts,
