@@ -99,8 +99,9 @@
     (
       (cityId (try! (get-city-id cityName)))
       (cityActivated (try! (is-city-activated cityId)))
+      (user tx-sender)
       (userId (try! (as-contract
-        (contract-call? .ccd003-user-registry get-or-create-user-id tx-sender)
+        (contract-call? .ccd003-user-registry get-or-create-user-id user)
       )))
     )
     (asserts! cityActivated ERR_CITY_NOT_ACTIVATED)
