@@ -17,9 +17,7 @@ import {
   CCD006CityMining,
   ErrCode,
 } from "../../models/extensions/ccd006-city-mining.model.ts";
-import {
-  CCD005CityData,
-} from "../../models/extensions/ccd005-city-data.model.ts";
+import { CCD005CityData } from "../../models/extensions/ccd005-city-data.model.ts";
 import { types } from "../../utils/deps.ts";
 
 // =============================
@@ -195,9 +193,7 @@ Clarinet.test({
     ]);
 
     // assert
-    block.receipts[0].result
-      .expectErr()
-      .expectUint(3000) // error thrown by user registry!
+    block.receipts[0].result.expectErr().expectUint(3000); // error thrown by user registry!
   },
 });
 
