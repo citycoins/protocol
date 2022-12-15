@@ -298,6 +298,16 @@
   )
 )
 
+(define-read-only (is-cycle-paid (cityId uint) (cycle uint))
+  (let
+    (
+      (rewardCycleStats (get-stacking-stats-at-cycle cityId cycle))
+      (cycleReward (get reward rewardCycleStats))
+    )
+    (is-some cycleReward)
+  )
+)
+
 (define-read-only (get-stacking-reward (cityId uint) (userId uint) (cycle uint))
   (let
     (
