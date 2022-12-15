@@ -60,6 +60,12 @@ export const PROPOSALS = {
   TEST_CCD005_CITY_DATA_011: ADDRESS.concat(".test-ccd005-city-data-011"),
   TEST_CCD005_CITY_DATA_012: ADDRESS.concat(".test-ccd005-city-data-012"),
   TEST_CCD005_CITY_DATA_013: ADDRESS.concat(".test-ccd005-city-data-013"),
+  TEST_CCD005_CITY_DATA_014: ADDRESS.concat(".test-ccd005-city-data-014"),
+  TEST_CCD005_CITY_DATA_015: ADDRESS.concat(".test-ccd005-city-data-015"),
+  TEST_CCD005_CITY_DATA_016: ADDRESS.concat(".test-ccd005-city-data-016"),
+  TEST_CCD005_CITY_DATA_017: ADDRESS.concat(".test-ccd005-city-data-017"),
+  TEST_CCD005_CITY_DATA_018: ADDRESS.concat(".test-ccd005-city-data-018"),
+  TEST_CCD006_CITY_MINING_001: ADDRESS.concat(".test-ccd006-city-mining-001"),
 };
 
 export const EXTERNAL = {

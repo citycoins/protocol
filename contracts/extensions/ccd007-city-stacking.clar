@@ -114,13 +114,13 @@
   )
 )
 
-(define-public (send-stacking-reward (cityName (string-ascii 32) (targetCycle uint)))
+;;(define-public (send-stacking-reward (cityName (string-ascii 32) (targetCycle uint)))
   ;; TODO: for pool operator use
   ;; whitelist payout address
   ;; dao can change payout address
   ;; checks if payout address is contract-caller
   ;; initiates deposit to treasury based on city
-)
+;;)
 
 (define-public (claim-stacking-reward (cityName (string-ascii 32)) (targetCycle uint))
   (let

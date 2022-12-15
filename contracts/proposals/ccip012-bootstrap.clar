@@ -8,6 +8,9 @@
         {extension: .ccd001-direct-execute, enabled: true}
         {extension: .ccd002-treasury-mia, enabled: true}
         {extension: .ccd002-treasury-nyc, enabled: true}
+        {extension: .ccd005-city-data, enabled: true}
+        {extension: .ccd006-city-mining, enabled: true}
+        {extension: .ccd007-city-stacking, enabled: true}
       )
     ))
 

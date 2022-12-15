@@ -10,6 +10,7 @@ export enum ErrCode {
   ERR_INVALID_THRESHOLDS,
   ERR_INVALID_AMOUNTS,
   ERR_INVALID_BONUS_PERIOD,
+  ERR_INVALID_CITY,
 }
 
 export class CCD005CityData {
@@ -100,6 +101,19 @@ export class CCD005CityData {
       this.name,
       "set-active-city-token-contract",
       [types.uint(cityId), types.uint(tokenId)],
+      sender.address
+    );
+  }
+
+  setCityCoinbaseBonusPeriod(
+    sender: Account,
+    cityId: number,
+    bonusPeriod: number
+  ) {
+    return Tx.contractCall(
+      this.name,
+      "set-city-coinbase-bonus-period",
+      [types.uint(cityId), types.uint(bonusPeriod)],
       sender.address
     );
   }
@@ -240,6 +254,12 @@ export class CCD005CityData {
 
   getCityCoinbaseAmounts(cityId: number): ReadOnlyFn {
     return this.callReadOnlyFn("get-city-coinbase-amounts", [
+      types.uint(cityId),
+    ]);
+  }
+
+  getCityCoinbaseBonusPeriod(cityId: number): ReadOnlyFn {
+    return this.callReadOnlyFn("get-city-coinbase-bonus-period", [
       types.uint(cityId),
     ]);
   }

@@ -152,6 +152,25 @@ path = "tests/contracts/proposals/test-ccd005-city-data-012.clar"
 [contracts.test-ccd005-city-data-013]
 path = "tests/contracts/proposals/test-ccd005-city-data-013.clar"
 
+[contracts.test-ccd005-city-data-014]
+path = "tests/contracts/proposals/test-ccd005-city-data-014.clar"
+
+[contracts.test-ccd005-city-data-015]
+path = "tests/contracts/proposals/test-ccd005-city-data-015.clar"
+
+[contracts.test-ccd005-city-data-016]
+path = "tests/contracts/proposals/test-ccd005-city-data-016.clar"
+
+[contracts.test-ccd005-city-data-017]
+path = "tests/contracts/proposals/test-ccd005-city-data-017.clar"
+
+[contracts.test-ccd005-city-data-018]
+path = "tests/contracts/proposals/test-ccd005-city-data-018.clar"
+
+# CCD006 MINING TEST PROPOSALS
+[contracts.test-ccd006-city-mining-001]
+path = "tests/contracts/proposals/test-ccd006-city-mining-001.clar"
+
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
 

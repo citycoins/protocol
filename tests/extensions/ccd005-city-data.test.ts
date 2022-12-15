@@ -1,15 +1,15 @@
 /**
- * Test class is structured as follows
+ * Test class is structured;
  * 0. AUTHORIZATION CHECKS
  * 1. CITY ACTIVATION TESTS
  *    - set-city-activation-status
  *    - set-city-activation-details
  *    - activate-city
- * 2. CITY DATA TESTS
+ * 2. CITY DATA COINBASE TESTS
  *    - set-city-coinbase-thresholds
  *    - set-city-coinbase-amounts
+ *    - set-city-coinbase-bonus-period
  * 3. CITY TREASURY TESTS
- *    - add-city-treasury
  *    - add-city-treasury
  * 4. CITY TOKEN CONTRACTS TESTS
  *    - add-city-token-contract
@@ -27,9 +27,15 @@ import {
 } from "../../models/extensions/ccd005-city-data.model.ts";
 import { types } from "../../utils/deps.ts";
 
+// =============================
+// INTERNAL DATA / FUNCTIONS
+// =============================
 const miaCityId = 1;
 const miaTreasuryId = 1;
 const miaTreasuryName = "mia-treasury";
+const miaTokenContract1Address = "mia-token-contract-1";
+const miaTokenContract2Address = "mia-token-contract-2";
+const miaTokenContract3Address = "mia-token-contract-3";
 const miaStackingTreasury = 1;
 const miaMiningTreasury = 2;
 
@@ -39,7 +45,6 @@ const nycTreasuryName = "nyc-treasury";
 const nycStackingTreasury = 1;
 const nycMiningTreasury = 2;
 
-// HELPER FUNCTIONS
 const testExpectedCityDetails = (
   ccd005CityData: any,
   cityId: number,
@@ -117,7 +122,9 @@ const testExpectedCoinbaseThresholds = (
   );
 };
 
+// =============================
 // 0. AUTHORIZATION CHECKS
+// =============================
 
 Clarinet.test({
   name: "ccd005-city-data: is-dao-or-extension() fails when called directly",
@@ -140,7 +147,9 @@ Clarinet.test({
   },
 });
 
+// =============================
 // 1. CITY ACTIVATION TESTS
+// =============================
 
 Clarinet.test({
   name: "ccd005-city-data: set-city-activation-details() can't be accessed directly",
@@ -207,7 +216,7 @@ Clarinet.test({
       accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
-    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
     block = chain.mineBlock([
       ccd005CityData.setCityActivationStatus(sender, miaCityId, true),
     ]);
@@ -236,7 +245,7 @@ Clarinet.test({
       accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
-    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
 
     // assert
@@ -262,11 +271,11 @@ Clarinet.test({
       accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
-    ccd005CityData.isCityActivated(10).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
+    ccd005CityData.isCityActivated(10).result.expectBool(false);
     block = passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_005);
 
     // assert
-    ccd005CityData.isCityActivated(10).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
+    ccd005CityData.isCityActivated(10).result.expectBool(false);
   },
 });
 
@@ -287,7 +296,7 @@ Clarinet.test({
       accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
-    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
 
     // assert
@@ -318,7 +327,7 @@ Clarinet.test({
     // there should be no signals yet
     ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(0);
     // city should not be activated
-    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
+    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
     testExpectedCityDetails(ccd005CityData, nycCityId, 2, 2, 2, 2);
 
     let block = chain.mineBlock([
@@ -327,7 +336,7 @@ Clarinet.test({
 
     ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(1);
     // city should not be activated
-    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
+    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
     // sender should have voted already
     ccd005CityData
       .getCityActivationVoter(2, sender.address)
@@ -337,7 +346,7 @@ Clarinet.test({
 
     // assert
     ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(1);
-    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
+    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
     block.receipts[0].result.expectErr().expectUint(ErrCode.ERR_ALREADY_VOTED);
     testExpectedCityDetails(ccd005CityData, nycCityId, 2, 2, 2, 2);
   },
@@ -362,7 +371,7 @@ Clarinet.test({
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
     ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(0);
-    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
+    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
     testExpectedCityDetails(ccd005CityData, nycCityId, 2, 2, 2, 2);
 
     let block = chain.mineBlock([
@@ -370,8 +379,8 @@ Clarinet.test({
     ]);
 
     ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(1);
-    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
-    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(false);
+    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
+    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
 
     block = chain.mineBlock([
       ccd005CityData.activateCity(approver1, 2, "memo 2"),
@@ -385,13 +394,15 @@ Clarinet.test({
       .getCityActivationVoter(nycCityId, approver1.address)
       .result.expectBool(true);
     ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(2);
-    ccd005CityData.isCityActivated(nycCityId).result.expectBool(true); //.expectOk().expectSome().expectBool(false);
+    ccd005CityData.isCityActivated(nycCityId).result.expectBool(true);
     block.receipts[0].result.expectOk();
     testExpectedCityDetails(ccd005CityData, nycCityId, 5, 2, 7, 2);
   },
 });
 
-// 2. CITY DATA TESTS
+// =============================
+// 2. CITY DATA COINBASE TESTS
+// =============================
 
 Clarinet.test({
   name: "ccd005-city-data: set-city-coinbase-thresholds() can't be accessed directly",
@@ -460,6 +471,30 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-bonus-period() can't be accessed directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(
+      chain,
+      sender,
+      "ccd005-city-data"
+    );
+
+    // act
+    const { receipts } = chain.mineBlock([
+      ccd005CityData.setCityCoinbaseBonusPeriod(sender, miaCityId, 20),
+    ]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result
+      .expectErr()
+      .expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
+  },
+});
+
+Clarinet.test({
   name: "ccd005-city-data: set-city-coinbase-amounts() fails if any amount is 0",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
@@ -476,15 +511,85 @@ Clarinet.test({
       accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
-    const block = passProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_006
-    );
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_006);
 
     // assert
-    ccd005CityData.getCityCoinbaseAmounts(miaCityId).result.expectNone(); //.expectOk().expectSome().expectBool(false);
-    //console.log(block);
+    ccd005CityData.getCityCoinbaseAmounts(miaCityId).result.expectNone();
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-bonus-period() fails if city is not registered",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(
+      chain,
+      sender,
+      "ccd005-city-data"
+    );
+
+    // act
+    const receipts = constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD005_CITY_DATA_018
+    );
+    // assert
+    receipts[3].result
+      .expectErr()
+      .expectUint(CCD005CityData.ErrCode.ERR_INVALID_CITY);
+    ccd005CityData.getCityCoinbaseBonusPeriod(miaCityId).result.expectNone();
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-bonus-period() fails if period is 0",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(
+      chain,
+      sender,
+      "ccd005-city-data"
+    );
+
+    // act
+    const receipts = constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD005_CITY_DATA_017
+    );
+    // assert
+    ccd005CityData.getCityCoinbaseBonusPeriod(miaCityId).result.expectNone();
+    receipts[3].result
+      .expectErr()
+      .expectUint(CCD005CityData.ErrCode.ERR_INVALID_BONUS_PERIOD);
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-bonus-period() success if period is greater than 0",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(
+      chain,
+      sender,
+      "ccd005-city-data"
+    );
+
+    // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD005_CITY_DATA_018
+    );
+    // assert
+    ccd005CityData
+      .getCityCoinbaseBonusPeriod(miaCityId)
+      .result.expectSome()
+      .expectUint(20);
   },
 });
 
@@ -512,13 +617,13 @@ Clarinet.test({
     );
 
     // assert
-    ccd005CityData.getCityCoinbaseThresholds(miaCityId).result.expectNone(); //.expectOk().expectSome().expectBool(false);
+    ccd005CityData.getCityCoinbaseThresholds(miaCityId).result.expectNone();
     //console.log(block);
   },
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-amounts() successfully sets amounts",
+  name: "ccd005-city-data: set-city-coinbase-amounts() successfully sets amounts for inactive city",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -534,14 +639,46 @@ Clarinet.test({
       accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
-    const block = passProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_007
-    );
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_007);
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(true);
+    testExpectedCoinbaseAmount(
+      ccd005CityData,
+      miaCityId,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10
+    );
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-amounts() successfully sets amounts for active city",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(
+      chain,
+      sender,
+      "ccd005-city-data"
+    );
+
+    // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD005_CITY_DATA_001
+    );
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_007);
+
+    // assert
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(true);
     testExpectedCoinbaseAmount(
       ccd005CityData,
       miaCityId,
@@ -581,12 +718,12 @@ Clarinet.test({
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(true);
-    ccd005CityData.getCityCoinbaseThresholds(miaCityId).result.expectNone(); //.expectOk().expectSome().expectBool(false);
+    ccd005CityData.getCityCoinbaseThresholds(miaCityId).result.expectNone();
   },
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-thresholds() successfully sets thresholds",
+  name: "ccd005-city-data: set-city-coinbase-thresholds() successfully sets thresholds for inactive city",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -602,18 +739,43 @@ Clarinet.test({
       accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
-    const block = passProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_010
-    );
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
 
     // assert
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
     testExpectedCoinbaseThresholds(ccd005CityData, miaCityId, 6, 7, 8, 9, 10);
   },
 });
 
+Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-thresholds() successfully sets thresholds for active city",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(
+      chain,
+      sender,
+      "ccd005-city-data"
+    );
+
+    // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD005_CITY_DATA_001
+    );
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
+
+    // assert
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(true);
+    testExpectedCoinbaseThresholds(ccd005CityData, miaCityId, 6, 7, 8, 9, 10);
+  },
+});
+
+// =============================
 // 3. CITY TREASURY TESTS
+// =============================
 
 Clarinet.test({
   name: "ccd005-city-data: get-city-treasury-*() data is none if city is unknown",
@@ -631,11 +793,6 @@ Clarinet.test({
       chain,
       accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
-    const block = passProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_010
     );
 
     // assert
@@ -668,11 +825,6 @@ Clarinet.test({
       chain,
       accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
-    const block = passProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_010
     );
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
 
@@ -729,6 +881,74 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "ccd005-city-data: add-treasury() ensure the treasury nonce points to the most recently added treasury",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(
+      chain,
+      sender,
+      "ccd005-city-data"
+    );
+
+    // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD005_CITY_DATA_001
+    );
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    // add three treasuries to mia city
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_014);
+
+    // assert
+    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(3);
+    ccd005CityData
+      .getCityTreasuryId(miaCityId, "mia-treasury1")
+      .result.expectSome()
+      .expectUint(1);
+    ccd005CityData
+      .getCityTreasuryId(miaCityId, "mia-treasury2")
+      .result.expectSome()
+      .expectUint(2);
+    ccd005CityData
+      .getCityTreasuryId(miaCityId, "mia-treasury3")
+      .result.expectSome()
+      .expectUint(3);
+    ccd005CityData
+      .getCityTreasuryId(miaCityId, "mia-treasury4")
+      .result.expectNone();
+    ccd005CityData
+      .getCityTreasuryName(miaCityId, 1)
+      .result.expectSome()
+      .expectAscii("mia-treasury1");
+    ccd005CityData
+      .getCityTreasuryName(miaCityId, 2)
+      .result.expectSome()
+      .expectAscii("mia-treasury2");
+    ccd005CityData
+      .getCityTreasuryName(miaCityId, 3)
+      .result.expectSome()
+      .expectAscii("mia-treasury3");
+    ccd005CityData.getCityTreasuryName(miaCityId, 4).result.expectNone();
+    ccd005CityData
+      .getCityTreasuryAddress(miaCityId, 1)
+      .result.expectSome()
+      .expectPrincipal(sender.address + ".mia-treasury-1");
+    ccd005CityData
+      .getCityTreasuryAddress(miaCityId, 2)
+      .result.expectSome()
+      .expectPrincipal(sender.address + ".mia-treasury-2");
+    ccd005CityData
+      .getCityTreasuryAddress(miaCityId, 3)
+      .result.expectSome()
+      .expectPrincipal(sender.address + ".mia-treasury-3");
+    ccd005CityData.getCityTreasuryAddress(miaCityId, 4).result.expectNone();
+  },
+});
+
+Clarinet.test({
   name: "ccd005-city-data: add-treasury() cannot creates two treasuries for same city with the same name and address",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
@@ -769,7 +989,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_012);
 
     // assert
-    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
+    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(2);
     ccd005CityData
       .getCityTreasuryId(miaCityId, miaTreasuryName)
       .result.expectSome()
@@ -782,10 +1002,15 @@ Clarinet.test({
       .getCityTreasuryAddress(miaCityId, miaTreasuryId)
       .result.expectSome()
       .expectPrincipal(sender.address + "." + miaTreasuryName);
+
+    // contradict above assertions to show expected behaviour - can't create two treasuries with same same and address
+    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
   },
 });
 
-/* removing code below as I think it contradicts the goal above
+/* 
+TODO MJC: Cleanup once reviewed..
+removing code below as I think it contradicts the goal above
       - TEST_CCD005_CITY_DATA_012 adds: u1 .mia-treasury "mia-treasury"
       - TEST_CCD005_CITY_DATA_013 adds: u2 .mia-treasury "mia-treasury"
       - this pattern would be invalidated by the previous test
@@ -809,36 +1034,352 @@ Clarinet.test({
       accounts,
       PROPOSALS.TEST_CCD005_CITY_DATA_001
     );
-    passProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_010
-    );
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    // add treasury to mia city 
+    // add treasury to mia city
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_012);
 
     // assert
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
-    ccd005CityData.getCityTreasuryId(miaCityId, miaTreasuryName).result.expectSome().expectUint(1);
-    ccd005CityData.getCityTreasuryName(miaCityId, miaTreasuryId).result.expectSome().expectAscii(miaTreasuryName);
-    ccd005CityData.getCityTreasuryAddress(miaCityId, miaTreasuryId).result.expectSome().expectPrincipal(sender.address + '.' + miaTreasuryName);
+    ccd005CityData
+      .getCityTreasuryId(miaCityId, miaTreasuryName)
+      .result.expectSome()
+      .expectUint(1);
+    ccd005CityData
+      .getCityTreasuryName(miaCityId, miaTreasuryId)
+      .result.expectSome()
+      .expectAscii(miaTreasuryName);
+    ccd005CityData
+      .getCityTreasuryAddress(miaCityId, miaTreasuryId)
+      .result.expectSome()
+      .expectPrincipal(sender.address + "." + miaTreasuryName);
 
-    // add treasury to mia city 
+    // add treasury to mia city
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_013);
 
     // assert
     ccd005CityData.getCityTreasuryNonce(nycCityId).result.expectUint(1);
-    ccd005CityData.getCityTreasuryId(nycCityId, miaTreasuryName).result.expectSome().expectUint(1);
-    ccd005CityData.getCityTreasuryName(nycCityId, miaTreasuryId).result.expectSome().expectAscii(miaTreasuryName);
-    ccd005CityData.getCityTreasuryAddress(nycCityId, miaTreasuryId).result.expectSome().expectPrincipal(sender.address + '.' + miaTreasuryName);
+    ccd005CityData
+      .getCityTreasuryId(nycCityId, miaTreasuryName)
+      .result.expectSome()
+      .expectUint(1);
+    ccd005CityData
+      .getCityTreasuryName(nycCityId, miaTreasuryId)
+      .result.expectSome()
+      .expectAscii(miaTreasuryName);
+    ccd005CityData
+      .getCityTreasuryAddress(nycCityId, miaTreasuryId)
+      .result.expectSome()
+      .expectPrincipal(sender.address + "." + miaTreasuryName);
 
     // contradict above assertions to show expected behaviour - can't create two treasuries with same same and address
     ccd005CityData.getCityTreasuryNonce(nycCityId).result.expectUint(0);
-    ccd005CityData.getCityTreasuryId(nycCityId, miaTreasuryName).result.expectNone();
-    ccd005CityData.getCityTreasuryName(nycCityId, miaTreasuryId).result.expectNone();
-    ccd005CityData.getCityTreasuryAddress(nycCityId, miaTreasuryId).result.expectNone();
+    ccd005CityData
+      .getCityTreasuryId(nycCityId, miaTreasuryName)
+      .result.expectNone();
+    ccd005CityData
+      .getCityTreasuryName(nycCityId, miaTreasuryId)
+      .result.expectNone();
+    ccd005CityData
+      .getCityTreasuryAddress(nycCityId, miaTreasuryId)
+      .result.expectNone();
+  },
+});
+**/
+// =============================
+// 4. CITY TOKEN CONTRACTS TESTS
+// =============================
+
+Clarinet.test({
+  name: "ccd005-city-data: add-city-token-contract() cannot be called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(
+      chain,
+      sender,
+      "ccd005-city-data"
+    );
+
+    // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD005_CITY_DATA_001
+    );
+    const { receipts } = chain.mineBlock([
+      ccd005CityData.addCityTokenContract(
+        sender,
+        miaCityId,
+        sender.address + "." + miaTokenContract1Address
+      ),
+    ]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result
+      .expectErr()
+      .expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
-*/
+Clarinet.test({
+  name: "ccd005-city-data: get-city-token-contract-*() data is none if city is known and token contracts undefined",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(
+      chain,
+      sender,
+      "ccd005-city-data"
+    );
+
+    // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD005_CITY_DATA_001
+    );
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+
+    // assert
+    ccd005CityData.getCityTokenContractNonce(miaCityId).result.expectUint(0);
+    ccd005CityData
+      .getCityTokenContractId(
+        miaCityId,
+        sender.address + "." + miaTokenContract1Address
+      )
+      .result.expectNone();
+    ccd005CityData
+      .getCityTokenContractAddress(miaCityId, 1)
+      .result.expectNone();
+    ccd005CityData.getActiveCityTokenContract(miaCityId).result.expectNone();
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: add-city-token-contract() successfully adds three token contracts to an active city",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(
+      chain,
+      sender,
+      "ccd005-city-data"
+    );
+
+    // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD005_CITY_DATA_001
+    );
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_015);
+
+    // assert
+    ccd005CityData.getCityTokenContractNonce(miaCityId).result.expectUint(3);
+    ccd005CityData.getActiveCityTokenContract(miaCityId).result.expectNone();
+
+    ccd005CityData
+      .getCityTokenContractId(
+        miaCityId,
+        sender.address + "." + miaTokenContract1Address
+      )
+      .result.expectSome()
+      .expectUint(1);
+    ccd005CityData
+      .getCityTokenContractAddress(miaCityId, 1)
+      .result.expectSome()
+      .expectPrincipal(sender.address + "." + miaTokenContract1Address);
+
+    ccd005CityData
+      .getCityTokenContractId(
+        miaCityId,
+        sender.address + "." + miaTokenContract2Address
+      )
+      .result.expectSome()
+      .expectUint(2);
+    ccd005CityData
+      .getCityTokenContractAddress(miaCityId, 2)
+      .result.expectSome()
+      .expectPrincipal(sender.address + "." + miaTokenContract2Address);
+
+    ccd005CityData
+      .getCityTokenContractId(
+        miaCityId,
+        sender.address + "." + miaTokenContract3Address
+      )
+      .result.expectSome()
+      .expectUint(3);
+    ccd005CityData
+      .getCityTokenContractAddress(miaCityId, 3)
+      .result.expectSome()
+      .expectPrincipal(sender.address + "." + miaTokenContract3Address);
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: add-city-token-contract() fails if try to activate a token contract for an inactive city",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(
+      chain,
+      sender,
+      "ccd005-city-data"
+    );
+
+    // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD005_CITY_DATA_001
+    );
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_015);
+
+    // assert
+    ccd005CityData.getCityTokenContractNonce(miaCityId).result.expectUint(3);
+    ccd005CityData.getActiveCityTokenContract(miaCityId).result.expectNone();
+
+    ccd005CityData
+      .getCityTokenContractId(
+        miaCityId,
+        sender.address + "." + miaTokenContract1Address
+      )
+      .result.expectSome()
+      .expectUint(1);
+    ccd005CityData
+      .getCityTokenContractAddress(miaCityId, 1)
+      .result.expectSome()
+      .expectPrincipal(sender.address + "." + miaTokenContract1Address);
+
+    ccd005CityData
+      .getCityTokenContractId(
+        miaCityId,
+        sender.address + "." + miaTokenContract2Address
+      )
+      .result.expectSome()
+      .expectUint(2);
+    ccd005CityData
+      .getCityTokenContractAddress(miaCityId, 2)
+      .result.expectSome()
+      .expectPrincipal(sender.address + "." + miaTokenContract2Address);
+
+    ccd005CityData
+      .getCityTokenContractId(
+        miaCityId,
+        sender.address + "." + miaTokenContract3Address
+      )
+      .result.expectSome()
+      .expectUint(3);
+    ccd005CityData
+      .getCityTokenContractAddress(miaCityId, 3)
+      .result.expectSome()
+      .expectPrincipal(sender.address + "." + miaTokenContract3Address);
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-active-city-token-contract() cannot be called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(
+      chain,
+      sender,
+      "ccd005-city-data"
+    );
+
+    // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD005_CITY_DATA_001
+    );
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_015);
+    const { receipts } = chain.mineBlock([
+      ccd005CityData.setActiveCityTokenContract(sender, miaCityId, 1),
+    ]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result
+      .expectErr()
+      .expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-active-city-token-contract() successfully sets active contract for inactive city",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(
+      chain,
+      sender,
+      "ccd005-city-data"
+    );
+
+    // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD005_CITY_DATA_001
+    );
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_015);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_016);
+
+    // assert
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
+    const expectedStats = {
+      tokenId: types.uint(3),
+      tokenAddress: sender.address + "." + miaTokenContract3Address,
+    };
+    assertEquals(
+      ccd005CityData
+        .getActiveCityTokenContract(miaCityId)
+        .result.expectSome()
+        .expectTuple(),
+      expectedStats
+    );
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-active-city-token-contract() successfully sets active contract for active city",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(
+      chain,
+      sender,
+      "ccd005-city-data"
+    );
+
+    // act
+    constructAndPassProposal(
+      chain,
+      accounts,
+      PROPOSALS.TEST_CCD005_CITY_DATA_001
+    );
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_015);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_016);
+
+    // assert
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(true);
+    const expectedStats = {
+      tokenId: types.uint(3),
+      tokenAddress: sender.address + "." + miaTokenContract3Address,
+    };
+    assertEquals(
+      ccd005CityData
+        .getActiveCityTokenContract(miaCityId)
+        .result.expectSome()
+        .expectTuple(),
+      expectedStats
+    );
+  },
+});
