@@ -238,7 +238,11 @@ Clarinet.test({
       sender,
       "ccd005-city-data"
     );
-
+    const activated = 1;
+    const delay = 1;
+    const target = 1;
+    const threshold = 1;
+  
     // act
     constructAndPassProposal(
       chain,
@@ -255,7 +259,7 @@ Clarinet.test({
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(true); //.expectOk().expectSome().expectBool(true);
-    testExpectedCityDetails(ccd005CityData, miaCityId, 1, 1, 1, 1);
+    testExpectedCityDetails(ccd005CityData, miaCityId, activated, delay, target, threshold);
   },
 });
 
@@ -416,7 +420,7 @@ Clarinet.test({
     ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(2);
     ccd005CityData.isCityActivated(nycCityId).result.expectBool(true);
     block.receipts[0].result.expectOk();
-    testExpectedCityDetails(ccd005CityData, nycCityId, 5, 2, 7, 2);
+    testExpectedCityDetails(ccd005CityData, nycCityId, 6, 2, 8, 2);
   },
 });
 

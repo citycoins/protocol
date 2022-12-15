@@ -129,11 +129,12 @@
   (let
     (
       (cityId (try! (get-city-id cityName)))
+      (user tx-sender)
       (cityActivated (try! (is-city-activated cityId)))
       (cityDetails (try! (get-city-activation-details cityId)))
       (cityTreasury (try! (get-city-treasury-by-name cityId "mining")))
       (userId (try! (as-contract
-        (contract-call? .ccd003-user-registry get-or-create-user-id tx-sender)
+        (contract-call? .ccd003-user-registry get-or-create-user-id user)
       )))
     )
     (asserts! cityActivated ERR_CITY_NOT_ACTIVATED)
