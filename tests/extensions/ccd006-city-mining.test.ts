@@ -22,7 +22,7 @@ const miaCityId = 1;
 const miaCityName = "mia";
 const miaTreasuryId = 1;
 const miaMiningTreasuryName = "mining";
-const miaTreasuryName = "ccd002-treasury-mia";
+const miaTreasuryName = "ccd002-treasury-mia-mining";
 
 const dumpMiningData = (ccd006CityMining: any, cityId: number, height: number, userId: number) => {
   // mining technically happens in the *next* block
@@ -265,7 +265,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia");
+    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
     const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
     const firstBlock = 7;
@@ -418,7 +418,7 @@ Clarinet.test({
     const user3 = accounts.get("wallet_3")!;
     const user4 = accounts.get("wallet_4")!;
 
-    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia");
+    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
     const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
     const ccd003UserRegistry = new CCD003UserRegistry(chain, sender, "ccd003-user-registry");

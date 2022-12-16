@@ -10,8 +10,7 @@
 
 (define-public (execute (sender principal))
 	(begin
-		;; tests success of setting sunset height
-    	(try! (contract-call? .ccd002-treasury-mia set-allowed 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.test-ccext-governance-token-mia true))
+		(try! (contract-call? .ccd002-treasury-mia-mining set-allowed 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.test-ccext-governance-token-mia true))
 		(ok true)
 	)
 )

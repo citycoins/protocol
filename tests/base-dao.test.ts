@@ -14,11 +14,11 @@ Clarinet.test({
     chain.mineEmptyBlockUntil(100);
 
     // act
-    baseDao.isExtension(EXTENSIONS.CCD001_DIRECT_EXECUTE).result.expectBool(false);
-    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_MIA).result.expectBool(false);
-    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_NYC).result.expectBool(false);
 
     // assert
+    for (const ext of Object.values(EXTENSIONS)) {
+      baseDao.isExtension(ext).result.expectBool(false);
+    }
   },
 });
 
@@ -34,9 +34,9 @@ Clarinet.test({
     // act
 
     // assert
-    baseDao.isExtension(EXTENSIONS.CCD001_DIRECT_EXECUTE).result.expectBool(true);
-    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_MIA).result.expectBool(true);
-    baseDao.isExtension(EXTENSIONS.CCD002_TREASURY_NYC).result.expectBool(true);
+    for (const ext of Object.values(EXTENSIONS)) {
+      baseDao.isExtension(ext).result.expectBool(true);
+    }
   },
 });
 
@@ -72,8 +72,8 @@ Clarinet.test({
 
     const extensions = [
       { extension: EXTENSIONS.CCD001_DIRECT_EXECUTE, enabled: true },
-      { extension: EXTENSIONS.CCD002_TREASURY_MIA, enabled: true },
-      { extension: EXTENSIONS.CCD002_TREASURY_NYC, enabled: true },
+      { extension: EXTENSIONS.CCD002_TREASURY_MIA_MINING, enabled: true },
+      { extension: EXTENSIONS.CCD002_TREASURY_NYC_MINING, enabled: true },
     ];
 
     // act
@@ -193,7 +193,7 @@ Clarinet.test({
     assertEquals(receipts.length, 1);
     receipts[0].result.expectOk().expectBool(true);
 
-    const expectedPrintEvents = [`{event: "execute", proposal: ${ADDRESS}.ccip012-bootstrap}`, `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd001-direct-execute}`, `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd002-treasury-mia}`, `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd002-treasury-nyc}`];
+    const expectedPrintEvents = [`{event: "execute", proposal: ${ADDRESS}.ccip012-bootstrap}`, `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd001-direct-execute}`, `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd002-treasury-mia-mining}`, `{enabled: true, event: "extension", extension: ${ADDRESS}.ccd002-treasury-nyc-mining}`];
     for (const event of expectedPrintEvents) {
       receipts[0].events.expectPrintEvent(BASE_DAO, event);
     }

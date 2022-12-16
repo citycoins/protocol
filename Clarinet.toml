@@ -29,10 +29,16 @@ path = "contracts/base-dao.clar"
 [contracts.ccd001-direct-execute]
 path = "contracts/extensions/ccd001-direct-execute.clar"
 
-[contracts.ccd002-treasury-mia]
+[contracts.ccd002-treasury-mia-mining]
 path = "contracts/extensions/ccd002-treasury.clar"
 
-[contracts.ccd002-treasury-nyc]
+[contracts.ccd002-treasury-mia-stacking]
+path = "contracts/extensions/ccd002-treasury.clar"
+
+[contracts.ccd002-treasury-nyc-mining]
+path = "contracts/extensions/ccd002-treasury.clar"
+
+[contracts.ccd002-treasury-nyc-stacking]
 path = "contracts/extensions/ccd002-treasury.clar"
 
 [contracts.ccd003-user-registry]

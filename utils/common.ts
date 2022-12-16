@@ -8,10 +8,15 @@ export const BASE_DAO = ADDRESS.concat(".base-dao");
 
 export const EXTENSIONS = {
   CCD001_DIRECT_EXECUTE: ADDRESS.concat(".ccd001-direct-execute"),
-  CCD002_TREASURY_MIA: ADDRESS.concat(".ccd002-treasury-mia"),
-  CCD002_TREASURY_NYC: ADDRESS.concat(".ccd002-treasury-nyc"),
+  CCD002_TREASURY_MIA_MINING: ADDRESS.concat(".ccd002-treasury-mia-mining"),
+  CCD002_TREASURY_MIA_STACKING: ADDRESS.concat(".ccd002-treasury-mia-stacking"),
+  CCD002_TREASURY_NYC_MINING: ADDRESS.concat(".ccd002-treasury-nyc-mining"),
+  CCD002_TREASURY_NYC_STACKING: ADDRESS.concat(".ccd002-treasury-nyc-stacking"),
   CCD003_USER_REGISTRY: ADDRESS.concat(".ccd003-user-registry"),
   CCD004_CITY_REGISTRY: ADDRESS.concat(".ccd004-city-registry"),
+  CCD005_CITY_DATA: ADDRESS.concat(".ccd005-city-data"),
+  CCD006_CITY_MINING: ADDRESS.concat(".ccd006-city-mining"),
+  CCD007_CITY_STACKING: ADDRESS.concat(".ccd007-city-stacking"),
 };
 
 export const PROPOSALS = {

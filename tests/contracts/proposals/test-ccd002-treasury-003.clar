@@ -9,7 +9,7 @@
 (define-public (execute (sender principal))
 	(begin
 		;; tests success of setting sunset height
-		(try! (contract-call? .ccd002-treasury-mia set-allowed-list
+		(try! (contract-call? .ccd002-treasury-mia-mining set-allowed-list
 			(list
 				{token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.test-ccext-governance-token-mia, enabled: false}
 				{token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.test-ccext-governance-token-nyc, enabled: true}

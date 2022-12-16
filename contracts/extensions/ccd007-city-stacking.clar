@@ -146,15 +146,13 @@
     ;; next version can use traits as stored principals
     (and
       (is-eq cityName "mia")
-      ;; TODO: update to .ccd002-treasury-mia-stacking
-      ;; TODO: check against city treasury for now?
-      (asserts! (is-ok (contract-call? .ccd002-treasury-mia deposit-stx amount)) ERR_TRANSFER_FAILED)
+      ;; TODO: add check against treasury value?
+      (asserts! (is-ok (contract-call? .ccd002-treasury-mia-stacking deposit-stx amount)) ERR_TRANSFER_FAILED)
     )
     (and
       (is-eq cityName "nyc")
-      ;; TODO: update to .ccd002-treasury-nyc-stacking
-      ;; TODO: check against city treasury for now?
-      (asserts! (is-ok (contract-call? .ccd002-treasury-nyc deposit-stx amount)) ERR_TRANSFER_FAILED)
+      ;; TODO: add check against treasury value?
+      (asserts! (is-ok (contract-call? .ccd002-treasury-nyc-stacking deposit-stx amount)) ERR_TRANSFER_FAILED)
     )
     ;; update stacking stats
     ;; TODO: does this need to add the original value?
@@ -193,40 +191,36 @@
     ;; temporarily hardcoded to cities until Stacks 2.1
     ;; next version can use traits as stored principals
     (and (is-eq cityName "mia")
-      ;; TODO: update to .ccd002-treasury-mia-stacking
-      ;; TODO: check against city treasury for now?
-      ;; TODO: check return value here if fails
-      ;; (shouldn't, but curious if asserts is needed)
+      ;; TODO: add check against treasury value?
       (begin
         (and
           (> reward u0)
           (asserts! (is-ok (as-contract
-            (contract-call? .ccd002-treasury-mia withdraw-stx reward tx-sender)
+            (contract-call? .ccd002-treasury-mia-stacking withdraw-stx reward tx-sender)
           )) ERR_TRANSFER_FAILED)
         )
         (and
           (> claimable u0)
           (asserts! (is-ok (as-contract
-            (contract-call? .ccd002-treasury-mia withdraw-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 claimable tx-sender)
+            (contract-call? .ccd002-treasury-mia-stacking withdraw-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 claimable tx-sender)
           )) ERR_TRANSFER_FAILED)
         )
         true
       )
     )
     (and (is-eq cityName "nyc")
-      ;; TODO: update to .ccd002-treasury-nyc-stacking
-      ;; TODO: check against city treasury for now?
+      ;; TODO: add check against treasury value?
       (begin
         (and
           (> reward u0)
           (asserts! (is-ok (as-contract
-            (contract-call? .ccd002-treasury-nyc withdraw-stx reward tx-sender)
+            (contract-call? .ccd002-treasury-nyc-stacking withdraw-stx reward tx-sender)
           )) ERR_TRANSFER_FAILED)
         )
         (and
           (> claimable u0)
           (asserts! (is-ok (as-contract
-            (contract-call? .ccd002-treasury-nyc withdraw-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 claimable tx-sender)
+            (contract-call? .ccd002-treasury-nyc-stacking withdraw-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 claimable tx-sender)
           )) ERR_TRANSFER_FAILED)
         )
         true
@@ -357,18 +351,16 @@
     ;; next version can use traits as stored principals
     (and
       (is-eq cityName "mia")
-      ;; TODO: update to .ccd002-treasury-mia-stacking
-      ;; TODO: check against city treasury for now?
+      ;; TODO: add check against treasury value?
       (asserts! (is-ok
-        (contract-call? .ccd002-treasury-mia deposit-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 amount))
+        (contract-call? .ccd002-treasury-mia-stacking deposit-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 amount))
       ERR_TRANSFER_FAILED)
     )
     (and
       (is-eq cityName "nyc")
-      ;; TODO: update to .ccd002-treasury-nyc-stacking
-      ;; TODO: check against city treasury for now?
+      ;; TODO: add check against treasury value?
       (asserts! (is-ok
-        (contract-call? .ccd002-treasury-nyc deposit-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 amount))
+        (contract-call? .ccd002-treasury-nyc-stacking deposit-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 amount))
       ERR_TRANSFER_FAILED)
     )
     ;; print details
