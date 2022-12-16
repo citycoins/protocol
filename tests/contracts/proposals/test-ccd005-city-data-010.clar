@@ -8,7 +8,7 @@
 
 (define-public (execute (sender principal))
 	(begin
-    	(try! (contract-call? .ccd005-city-data set-city-coinbase-thresholds u1 u6 u7 u8 u9 u10	))
+		(try! (contract-call? .ccd005-city-data set-city-coinbase-thresholds u1 u6 u7 u8 u9 u10	))
 		(ok true)
 	)
 )

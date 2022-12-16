@@ -9,7 +9,7 @@
 
 (define-public (execute (sender principal))
 	(begin
-    	(try! (contract-call? .ccd001-direct-execute set-signals-required u2))
+    (try! (contract-call? .ccd001-direct-execute set-signals-required u2))
 		(ok true)
 	)
 )

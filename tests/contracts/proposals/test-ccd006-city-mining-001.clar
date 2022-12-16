@@ -7,8 +7,8 @@
 
 (define-public (execute (sender principal))
 	(begin
-    	(try! (contract-call? .ccd005-city-data add-city-treasury u1 .mia-treasury "mining"))
-      	(try! (contract-call? .base-dao set-extension .ccd006-city-mining false))
+		(try! (contract-call? .ccd005-city-data add-city-treasury u1 .mia-treasury "mining"))
+		(try! (contract-call? .base-dao set-extension .ccd006-city-mining false))
 		(ok true)
 	)
 )

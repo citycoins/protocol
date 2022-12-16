@@ -9,8 +9,8 @@
 
 (define-public (execute (sender principal))
 	(begin
-    	(try! (contract-call? .ccd004-city-registry get-or-create-city-id "mia"))
-    	(try! (contract-call? .ccd004-city-registry get-or-create-city-id "nyc"))
+		(try! (contract-call? .ccd004-city-registry get-or-create-city-id "mia"))
+		(try! (contract-call? .ccd004-city-registry get-or-create-city-id "nyc"))
 		(ok true)
 	)
 )
