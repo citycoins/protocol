@@ -32,6 +32,8 @@
   bool ;; status
 )
 
+;; TODO: change activated to success
+;; TODO: change target to activated
 (define-map CityActivationDetails
   uint
   {

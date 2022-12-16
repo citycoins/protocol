@@ -183,6 +183,9 @@ path = "tests/contracts/proposals/test-ccd006-city-mining-002.clar"
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
 
+[contracts.ccip013-migration]
+path = "contracts/proposals/ccip013-migration.clar"
+
 [contracts.extension-trait]
 path = "contracts/traits/extension-trait.clar"
 
