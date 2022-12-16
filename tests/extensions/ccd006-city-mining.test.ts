@@ -506,9 +506,9 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    const blockHeight = 6
+    const claimHeight = 6
     chain.mineEmptyBlock(rewardDelay);
-    const block = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, miaCityName, blockHeight)]);
+    const block = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, miaCityName, claimHeight)]);
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
@@ -527,9 +527,9 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    const blockHeight = 5 // one less than actual bh
+    const claimHeight = 5 // one less than actual bh
     chain.mineEmptyBlock(rewardDelay);
-    const block = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, miaCityName, blockHeight)]);
+    const block = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, miaCityName, claimHeight)]);
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
@@ -550,14 +550,220 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
-    const blockHeight = 6 // one less than actual bh
+    const claimHeight = 6 // one less than actual bh
     chain.mineEmptyBlock(rewardDelay);
-    const block = chain.mineBlock([ccd006CityMining.claimMiningReward(user, miaCityName, blockHeight)]);
+    const block = chain.mineBlock([ccd006CityMining.claimMiningReward(user, miaCityName, claimHeight)]);
     console.log(block)
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
+    /**
+     * TODO MJC: Causes a runtime error in ccd006 at line 389
+     */
+     block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_DID_NOT_MINE);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-city-mining: claim-mining-reward() fails if a user tries claiming another users rewards",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user = accounts.get("wallet_1")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const entries: number[] = [10];
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
+    let block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
+    console.log(block)
+    const claimHeight = block.height - 1 // one less than actual bh
+    chain.mineEmptyBlock(rewardDelay);
+    block = chain.mineBlock([ccd006CityMining.claimMiningReward(user, miaCityName, claimHeight)]);
+
+    // assert
+    ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
     block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_USER_ID_NOT_FOUND);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-city-mining: claim-mining-reward() fails if there is nothing to mint at the given claim height",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user = accounts.get("wallet_1")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const entries: number[] = [10];
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
+    let block = chain.mineBlock([ccd006CityMining.mine(user, miaCityName, entries)]);
+    console.log(block)
+    const claimHeight = block.height - 1 // one less than actual bh
+    chain.mineEmptyBlock(rewardDelay);
+    block = chain.mineBlock([ccd006CityMining.claimMiningReward(user, miaCityName, claimHeight)]);
+
+    // assert
+    ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_NOTHING_TO_MINT);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-city-mining: claim-mining-reward() fails if the coinbase amounts have not been set for the given city",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user = accounts.get("wallet_1")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const entries: number[] = [10];
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
+    let block = chain.mineBlock([ccd006CityMining.mine(user, miaCityName, entries)]);
+    block.receipts[0].result.expectOk().expectBool(true);
+    console.log(block)
+    block.receipts[0].result.expectOk().expectBool(true);
+    const firstBlock = 7;
+    const lastBlock = 7;
+    const totalAmount = 10;
+    const totalBlocks = 1;
+    const userId = 1;
+    block.receipts[0].events.expectSTXTransferEvent(10, user.address, `${sender.address}.${miaTreasuryName}`);
+    const expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    
+    const miningStatsAt = { amount: 10, claimed: false, miners: 1 };
+    const minerAt = { commit: 10, high: 11, low: 0, winner: false };
+    // dumpMiningData(ccd006CityMining, miaCityId, (firstBlock), (1), miningStatsAt, minerAt);
+    
+    const claimHeight = block.height
+    chain.mineEmptyBlock(rewardDelay);
+    block = chain.mineBlock([ccd006CityMining.claimMiningReward(user, miaCityName, 7)]);
+
+    // assert
+
+    ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_NOTHING_TO_MINT);
+
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-city-mining: claim-mining-reward() returns sensible values if called at the wrong claim height",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user = accounts.get("wallet_1")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const entries: number[] = [10];
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_007);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
+    let block = chain.mineBlock([ccd006CityMining.mine(user, miaCityName, entries)]);
+    block.receipts[0].result.expectOk().expectBool(true);
+    console.log(block)
+    block.receipts[0].result.expectOk().expectBool(true);
+    const firstBlock = 8;
+    const lastBlock = 8;
+    const totalAmount = 10;
+    const totalBlocks = 1;
+    const userId = 1;
+    block.receipts[0].events.expectSTXTransferEvent(10, user.address, `${sender.address}.${miaTreasuryName}`);
+    console.log(block.receipts[0].events[1].contract_event.value)
+    const expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    
+    const miningStatsAt = { amount: 10, claimed: false, miners: 1 };
+    const minerAt = { commit: 10, high: 11, low: 0, winner: false };
+    dumpMiningData(ccd006CityMining, miaCityId, (firstBlock), (1), miningStatsAt, minerAt);
+    
+    const claimHeight = block.height
+    chain.mineEmptyBlock(rewardDelay);
+
+    /**
+     * TODO MJC: Causes a runtime error in ccd006 at line 389
+     */
+    block = chain.mineBlock([ccd006CityMining.claimMiningReward(user, miaCityName, (firstBlock - 1))]);
+
+    // assert
+
+    ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_NOTHING_TO_MINT);
+
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-city-mining: claim-mining-reward() allows user to claim rewards",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user = accounts.get("wallet_1")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const entries: number[] = [10];
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_007);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
+    let block = chain.mineBlock([ccd006CityMining.mine(user, miaCityName, entries)]);
+    block.receipts[0].result.expectOk().expectBool(true);
+    console.log(block)
+    block.receipts[0].result.expectOk().expectBool(true);
+    const firstBlock = 8;
+    const lastBlock = 8;
+    const totalAmount = 10;
+    const totalBlocks = 1;
+    const userId = 1;
+    block.receipts[0].events.expectSTXTransferEvent(10, user.address, `${sender.address}.${miaTreasuryName}`);
+    console.log(block.receipts[0].events[1].contract_event.value)
+    const expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    
+    const miningStatsAt = { amount: 10, claimed: false, miners: 1 };
+    const minerAt = { commit: 10, high: 11, low: 0, winner: false };
+    dumpMiningData(ccd006CityMining, miaCityId, (firstBlock), (1), miningStatsAt, minerAt);
+    
+    const claimHeight = block.height
+    chain.mineEmptyBlock(rewardDelay);
+
+    /**
+     * Leaving this in here - its causes a runtime error in ccd006 at line 389
+     */
+    block = chain.mineBlock([ccd006CityMining.claimMiningReward(user, miaCityName, (firstBlock))]);
+
+    // assert
+
+    ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_NOTHING_TO_MINT);
+
   },
 });
 
