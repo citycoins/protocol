@@ -386,6 +386,7 @@
       (minerStats (get-miner-at-block cityId claimHeight userId))
       (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_VRF_SEED_NOT_FOUND))
       (commitTotal (get-high-value cityId claimHeight))
+      (commitValid (asserts! (> commitTotal u0) ERR_MINER_DATA_NOT_FOUND))
       (winningValue (mod vrfSample commitTotal))
     )
     ;; check that user mined in this block
