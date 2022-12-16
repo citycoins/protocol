@@ -2,7 +2,6 @@
 ;; Version: 1.0.0
 ;; Synopsis: Test proposal for clarinet layer
 ;; Description:
-;; ccd005-city-data: set-city-coinbase-amounts() successfully sets amounts
 
 (impl-trait .proposal-trait.proposal-trait)
 

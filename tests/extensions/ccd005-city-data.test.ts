@@ -386,7 +386,25 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-thresholds() fails if any threshold is 0",
+  name: "ccd005-city-data: set-city-coinbase-thresholds() fails if any amount is 0",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+
+    // act
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    const block = passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_006);
+
+    // assert
+    ccd005CityData.getCityCoinbaseAmounts(miaCityId).result.expectNone();
+    //console.log(block);
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-thresholds() succeeds if amounts increase",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -398,7 +416,7 @@ Clarinet.test({
     const block = passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_009);
 
     // assert
-    ccd005CityData.getCityCoinbaseThresholds(miaCityId).result.expectNone();
+    ccd005CityData.getCityCoinbaseAmounts(miaCityId).result.expectSome();
     //console.log(block);
   },
 });
