@@ -538,7 +538,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() is not possible if user is not registered",
+  name: "ccd006-city-mining: claim-mining-reward() returns sensible values if called without having mined",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
