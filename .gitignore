@@ -3,4 +3,5 @@
 **/settings/Testnet.toml
 .cache/
 .requirements/
+/coverage_report
 history.txt
