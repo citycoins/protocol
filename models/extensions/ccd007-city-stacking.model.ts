@@ -38,7 +38,7 @@ export class CCD007CityStacking {
   // Internal DAO functions
 
   claimStackingReward(sender: Account, cityName: string, targetCycle: number) {
-    return Tx.contractCall(this.name, "claim-stacking-reward", [types.ascii(cityName), types.uint(targetCycle), types.uint(amount)], sender.address);
+    return Tx.contractCall(this.name, "claim-stacking-reward", [types.ascii(cityName), types.uint(targetCycle)], sender.address);
   }
   sendStackingReward(sender: Account, cityName: string, targetCycle: number, amount: number) {
     return Tx.contractCall(this.name, "send-stacking-reward", [types.ascii(cityName), types.uint(targetCycle), types.uint(amount)], sender.address);

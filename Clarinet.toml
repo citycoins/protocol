@@ -198,6 +198,9 @@ path = "tests/contracts/proposals/test-ccd007-city-stacking-003.clar"
 [contracts.test-ccd007-city-stacking-007]
 path = "tests/contracts/proposals/test-ccd007-city-stacking-007.clar"
 
+[contracts.test-ccd007-city-stacking-008]
+path = "tests/contracts/proposals/test-ccd007-city-stacking-008.clar"
+
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
 

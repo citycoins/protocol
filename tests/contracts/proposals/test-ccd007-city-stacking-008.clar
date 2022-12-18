@@ -7,7 +7,7 @@
 
 (define-public (execute (sender principal))
 	(begin
-		(try! (contract-call? .ccd007-city-stacking set-reward-cycle-length u100))
+		(try! (contract-call? .ccd005-city-data add-city-treasury u2 .nyc-treasury "stacking"))
 		(ok true)
 	)
 )

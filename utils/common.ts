@@ -64,6 +64,7 @@ export const PROPOSALS = {
   TEST_CCD007_CITY_STACKING_002: ADDRESS.concat(".test-ccd007-city-stacking-002"),
   TEST_CCD007_CITY_STACKING_003: ADDRESS.concat(".test-ccd007-city-stacking-003"),
   TEST_CCD007_CITY_STACKING_007: ADDRESS.concat(".test-ccd007-city-stacking-007"),
+  TEST_CCD007_CITY_STACKING_008: ADDRESS.concat(".test-ccd007-city-stacking-008"),
 };
 
 export const EXTERNAL = {
