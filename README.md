@@ -6,12 +6,26 @@ CityCoins give communities the power to improve and program their cities.
 
 ## Code Management
 
+### Code Formatting
+
 The following will report and fix formatting issues;
 
 ```bash
 npx prettier -c .
 npx prettier --write .
 ```
+
+### Test Code Coverage
+
+Generate code coverage report;
+
+```bash
+clarinet test --coverage
+cd coverage_report
+genhtml ../coverage.lcov
+```
+
+The generated files are not committed to the repository (coverage_report is git ignored).
 
 ## Purpose
 
