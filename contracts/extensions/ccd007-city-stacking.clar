@@ -24,11 +24,11 @@
 (define-constant ERR_TRANSFER_FAILED (err u7006))
 (define-constant ERR_INVALID_STACKING_PAYOUT (err u7007))
 (define-constant ERR_STACKING_PAYOUT_NOT_COMPLETE (err u7008))
-(define-constant ERR_USER_ID_NOT_FOUND (err u7008))
-(define-constant ERR_CITY_ID_NOT_FOUND (err u7009))
-(define-constant ERR_CITY_NOT_ACTIVATED (err u7010))
-(define-constant ERR_CITY_DETAILS_NOT_FOUND (err u7011))
-(define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7012))
+(define-constant ERR_USER_ID_NOT_FOUND (err u7009))
+(define-constant ERR_CITY_ID_NOT_FOUND (err u7010))
+(define-constant ERR_CITY_NOT_ACTIVATED (err u7011))
+(define-constant ERR_CITY_DETAILS_NOT_FOUND (err u7012))
+(define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7013))
 
 ;; stacking configuration
 (define-constant SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
@@ -328,6 +328,10 @@
       none
     )
   )
+)
+
+(define-read-only (get-pool-operator)
+  (some (var-get poolOperator))
 )
 
 ;; PRIVATE FUNCTIONS

@@ -68,6 +68,24 @@ Clarinet.test({
   },
 });
 
+// Extension callback
+
+Clarinet.test({
+  name: "ccd006-city-mining: callback() succeeds when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd006CityMining.callback(sender, "test")]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result.expectOk().expectBool(true);
+  },
+});
+
 // =============================
 // 1. MINING
 // =============================
@@ -321,8 +339,8 @@ Clarinet.test({
     const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
-    const firstBlock = 7;
-    const lastBlock = 7;
+    const firstBlock = 8;
+    const lastBlock = 8;
     const totalAmount = 10;
     const totalBlocks = 1;
     const userId = 1;
@@ -342,8 +360,8 @@ Clarinet.test({
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
     const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
-    const firstBlock = 7;
-    const lastBlock = 9;
+    const firstBlock = 8;
+    const lastBlock = 10;
     const totalAmount = 30;
     const totalBlocks = 3;
     const userId = 1;
@@ -388,8 +406,8 @@ Clarinet.test({
     const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
     const ccd003UserRegistry = new CCD003UserRegistry(chain, sender, "ccd003-user-registry");
 
-    const firstBlock = 7;
-    const lastBlock = 9;
+    const firstBlock = 8;
+    const lastBlock = 10;
     const totalAmount = 120;
     const totalBlocks = 3;
     const userId = 1;
@@ -510,7 +528,7 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    const claimHeight = 6;
+    const claimHeight = 7;
     chain.mineEmptyBlock(rewardDelay);
     const block = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, miaCityName, claimHeight)]);
 
@@ -637,8 +655,8 @@ Clarinet.test({
     let block = chain.mineBlock([ccd006CityMining.mine(user, miaCityName, entries)]);
     block.receipts[0].result.expectOk().expectBool(true);
     block.receipts[0].result.expectOk().expectBool(true);
-    const firstBlock = 7;
-    const lastBlock = 7;
+    const firstBlock = 8;
+    const lastBlock = 8;
     const totalAmount = 10;
     const totalBlocks = 1;
     const userId = 1;
@@ -681,8 +699,8 @@ Clarinet.test({
     let block = chain.mineBlock([ccd006CityMining.mine(user, miaCityName, entries)]);
     block.receipts[0].result.expectOk().expectBool(true);
     block.receipts[0].result.expectOk().expectBool(true);
-    const firstBlock = 8;
-    const lastBlock = 8;
+    const firstBlock = 9;
+    const lastBlock = 9;
     const totalAmount = 10;
     const totalBlocks = 1;
     const userId = 1;
@@ -726,8 +744,8 @@ Clarinet.test({
     let block = chain.mineBlock([ccd006CityMining.mine(user, miaCityName, entries)]);
     block.receipts[0].result.expectOk().expectBool(true);
     block.receipts[0].result.expectOk().expectBool(true);
-    const firstBlock = 8;
-    const lastBlock = 8;
+    const firstBlock = 9;
+    const lastBlock = 9;
     const totalAmount = 10;
     const totalBlocks = 1;
     const userId = 1;
@@ -758,8 +776,8 @@ Clarinet.test({
     const user2 = accounts.get("wallet_2")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
     const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
-    const firstBlock = 8;
-    const lastBlock = 8;
+    const firstBlock = 9;
+    const lastBlock = 9;
     const totalAmount = 10;
     const totalBlocks = 1;
     const userId = 1;

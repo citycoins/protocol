@@ -19,6 +19,24 @@ Clarinet.test({
   },
 });
 
+// Extension callback
+
+Clarinet.test({
+  name: "ccd004-city-registry: callback() succeeds when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd004CityRegistry = new CCD004CityRegistry(chain, sender, "ccd004-city-registry");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd004CityRegistry.callback(sender, "test")]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result.expectOk().expectBool(true);
+  },
+});
+
 Clarinet.test({
   name: "ccd004-city-registry: get-or-create-city-id() fails if not called by the base dao or by a valid extension",
   fn(chain: Chain, accounts: Map<string, Account>) {

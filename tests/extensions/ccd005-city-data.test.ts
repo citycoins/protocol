@@ -90,6 +90,24 @@ Clarinet.test({
   },
 });
 
+// Extension callback
+
+Clarinet.test({
+  name: "ccd005-city-data: callback() succeeds when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd005CityData.callback(sender, "test")]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result.expectOk().expectBool(true);
+  },
+});
+
 // =============================
 // 1. CITY ACTIVATION TESTS
 // =============================
@@ -267,7 +285,7 @@ Clarinet.test({
     ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(2);
     ccd005CityData.isCityActivated(nycCityId).result.expectBool(true);
     block.receipts[0].result.expectOk();
-    testExpectedCityDetails(ccd005CityData, nycCityId, 6, 2, 8, 2);
+    testExpectedCityDetails(ccd005CityData, nycCityId, 7, 2, 9, 2);
   },
 });
 

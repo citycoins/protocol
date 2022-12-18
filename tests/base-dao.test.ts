@@ -103,7 +103,7 @@ Clarinet.test({
     // assert
     assertEquals(receipts.length, 1);
     for (const receipt of receipts) {
-      receipt.result.expectSome().expectUint(targetBlock + 2);
+      receipt.result.expectSome().expectUint(targetBlock + 3);
     }
   },
 });

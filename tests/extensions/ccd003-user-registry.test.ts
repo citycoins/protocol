@@ -20,6 +20,24 @@ Clarinet.test({
   },
 });
 
+// Extension callback
+
+Clarinet.test({
+  name: "ccd003-user-registry: callback() succeeds when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd003userRegistry = new CCD003UserRegistry(chain, sender, "ccd003-user-registry");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd003userRegistry.callback(sender, "test")]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result.expectOk().expectBool(true);
+  },
+});
+
 Clarinet.test({
   name: "ccd003-user-registry: get-or-create-user-id() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {

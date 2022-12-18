@@ -60,6 +60,10 @@ export const PROPOSALS = {
   TEST_CCD006_CITY_MINING_002: ADDRESS.concat(".test-ccd006-city-mining-002"),
   TEST_CCD006_CITY_MINING_003: ADDRESS.concat(".test-ccd006-city-mining-003"),
   TEST_CCD006_CITY_MINING_004: ADDRESS.concat(".test-ccd006-city-mining-004"),
+  TEST_CCD007_CITY_STACKING_001: ADDRESS.concat(".test-ccd007-city-stacking-001"),
+  TEST_CCD007_CITY_STACKING_002: ADDRESS.concat(".test-ccd007-city-stacking-002"),
+  TEST_CCD007_CITY_STACKING_003: ADDRESS.concat(".test-ccd007-city-stacking-003"),
+  TEST_CCD007_CITY_STACKING_007: ADDRESS.concat(".test-ccd007-city-stacking-007"),
 };
 
 export const EXTERNAL = {
@@ -87,6 +91,5 @@ export const constructAndPassProposal = (chain: Chain, accounts: Map<string, Acc
   const approver2 = accounts.get("wallet_2")!;
   const approver3 = accounts.get("wallet_3")!;
   const { receipts } = chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012), ccd001DirectExecute.directExecute(approver1, proposal), ccd001DirectExecute.directExecute(approver2, proposal), ccd001DirectExecute.directExecute(approver3, proposal)]);
-  // console.log(receipts);
   return receipts;
 };
