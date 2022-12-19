@@ -52,7 +52,6 @@ Clarinet.test({
     // assert
     miningBlock.receipts[0].result.expectOk().expectBool(true);
 
-
     // Check stx transfer events
     miningBlock.receipts[0].events.expectSTXTransferEvent(10, user1.address, `${sender.address}.${miaTreasuryName}`);
 
@@ -66,11 +65,17 @@ Clarinet.test({
       claimed: types.bool(false),
       winner: types.bool(true),
     };
-    assertEquals(ccd006CityMining.isBlockWinner(miaCityId, user1.address, claimHeight).result.expectSome().expectTuple(), expected);
+    const isBlockWinner = ccd006CityMining.isBlockWinner(miaCityId, user1.address, claimHeight);
+    console.log(JSON.stringify(isBlockWinner, null, 2));
+    assertEquals(isBlockWinner.result.expectSome().expectTuple(), expected);
     // TODO MJC: is-block-winner calculates the winning status of given user.
     // get-block-winner reads it from the map which is written by claim-mining-reward.
     // so user1 is not returned by the following even though previous lines indicate they won.
-    ccd006CityMining.getBlockWinner(miaCityId, claimHeight).result.expectSome().expectUint(1);
+    //
+    // JS: this is correct, since the map isn't written to until the reward is claimed,
+    // we would expect the value to be none here while the output of isBlockWinner() above
+    // will be (some (claimed false) (winner true)).
+    ccd006CityMining.getBlockWinner(miaCityId, claimHeight).result.expectNone(); // expectSome().expectUint(1);
   },
 });
 
@@ -107,7 +112,6 @@ Clarinet.test({
 
     // assert
     miningBlock.receipts[0].result.expectOk().expectBool(true);
-    //console.log(miningClaimBlock.receipts[0].events[1].contract_event.value);
     // Check mining event
     let expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(claimHeight)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(1)}}`;
     miningBlock.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
@@ -130,11 +134,6 @@ Clarinet.test({
     ccd006CityMining.getBlockWinner(miaCityId, claimHeight).result.expectSome().expectUint(1);
   },
 });
-
-
-
-
-
 
 const twoMinersMine = (user1: Account, user2: Account, ccd006CityMining: CCD006CityMining, chain: Chain, sender: Account): any => {
   const entries: number[] = [10];
@@ -164,17 +163,17 @@ const twoMinersMine = (user1: Account, user2: Account, ccd006CityMining: CCD006C
     //miningClaimBlock.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_NOT_WINNER);
     miningClaimBlock.receipts[1].result.expectOk().expectBool(true);
     coinbase = Number(ccd006CityMining.getCoinbaseAmount(miaCityId, claimHeight).result.substring(1));
-    winner = 2
+    winner = 2;
     /**
     console.log("getCoinbaseAmount : " + coinbase)
     console.log("isBlockWinner : " + ccd006CityMining.isBlockWinner(miaCityId, user2.address, claimHeight).result.expectSome().expectTuple())
     console.log("getMiningStatsAtBlock : ", ccd006CityMining.getMiningStatsAtBlock(miaCityId, claimHeight))
      */
   } else {
-    console.log("======== NOONE WINS =========================")
-    return 3
+    console.log("======== NOONE WINS =========================");
+    return 3;
   }
-  return { miningBlock, miningClaimBlock, claimHeight, winner, coinbase }
+  return { miningBlock, miningClaimBlock, claimHeight, winner, coinbase };
   /**
   console.log("miningBlock receipts[0].result : " + miningBlock.receipts[0].result)
   console.log("miningBlock receipts[1].result : " + miningBlock.receipts[1].result)
@@ -183,7 +182,7 @@ const twoMinersMine = (user1: Account, user2: Account, ccd006CityMining: CCD006C
   console.log(miningBlock.receipts[0].events[1].contract_event.value)
   console.log("claimHeight : " + claimHeight)
    */
-}
+};
 
 Clarinet.test({
   name: "ccd006-city-mining: claim-mining-reward() two miners compete and each wins within 10% of half the time",
@@ -219,20 +218,19 @@ Clarinet.test({
       result = twoMinersMine(user1, user2, ccd006CityMining, chain, sender);
       if (result.winner === 1) {
         count1 = count1 + result.coinbase;
-        winner1++
+        winner1++;
       } else if (result.winner === 2) {
         count2 = count2 + result.coinbase;
-        winner2++
+        winner2++;
       }
     }
     console.log("winner1 = " + winner1);
     console.log("winner2 = " + winner2);
-    
+
     gt.getBalance(user1.address).result.expectOk().expectUint(count1);
     gt.getBalance(user2.address).result.expectOk().expectUint(count2);
     // ensure that each wins within 10% of half the time
-    assert(winner1 > (runs / 2) - ((runs * 10) /100));
-    assert(winner2 > (runs / 2) - ((runs * 10) /100));
-
+    assert(winner1 > runs / 2 - (runs * 10) / 100);
+    assert(winner2 > runs / 2 - (runs * 10) / 100);
   },
 });
