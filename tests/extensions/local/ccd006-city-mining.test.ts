@@ -5,7 +5,7 @@
  * 2. claim-mining-reward
  * 3. reward-delay
  */
-import { types, Account, Clarinet, Chain, assertEquals } from "../../../utils/deps.ts";
+import { types, Account, Clarinet, Chain, assert, assertEquals } from "../../../utils/deps.ts";
 import { constructAndPassProposal, passProposal, PROPOSALS, EXTENSIONS } from "../../../utils/common.ts";
 import { CCD006CityMining } from "../../../models/extensions/ccd006-city-mining.model.ts";
 import { CCD005CityData } from "../../../models/extensions/ccd005-city-data.model.ts";
@@ -136,13 +136,57 @@ Clarinet.test({
 
 
 
-const twoMiners = (chain: Chain, accounts: Map<string, Account>) => {
+const twoMinersMine = (user1: Account, user2: Account, ccd006CityMining: CCD006CityMining, chain: Chain, sender: Account): any => {
+  const entries: number[] = [10];
+  const miningBlock = chain.mineBlock([ccd006CityMining.mine(user1, miaCityName, entries), ccd006CityMining.mine(user2, miaCityName, entries)]);
+  const claimHeight = miningBlock.height - 1;
+  chain.mineEmptyBlock(rewardDelay + 1);
+  const miningClaimBlock = chain.mineBlock([ccd006CityMining.claimMiningReward(user1, miaCityName, claimHeight), ccd006CityMining.claimMiningReward(user2, miaCityName, claimHeight)]);
 
+  miningBlock.receipts[0].events.expectSTXTransferEvent(10, user1.address, `${sender.address}.${miaTreasuryName}`);
+  miningBlock.receipts[1].events.expectSTXTransferEvent(10, user2.address, `${sender.address}.${miaTreasuryName}`);
+  let winner = 0;
+  let coinbase = 0;
+  if (miningClaimBlock.receipts[0].result === "(ok true)") {
+    //console.log("======== USER 1 WINS =========================")
+    ccd006CityMining.getBlockWinner(miaCityId, claimHeight).result.expectSome().expectUint(1);
+    coinbase = Number(ccd006CityMining.getCoinbaseAmount(miaCityId, claimHeight).result.substring(1));
+    miningClaimBlock.receipts[0].result.expectOk().expectBool(true);
+    /**
+    console.log("getCoinbaseAmount : " + coinbase)
+    console.log("isBlockWinner : " + ccd006CityMining.isBlockWinner(miaCityId, user1.address, claimHeight).result.expectSome().expectTuple())
+    console.log("getMiningStatsAtBlock : ", ccd006CityMining.getMiningStatsAtBlock(miaCityId, claimHeight))
+    */
+    winner = 1;
+  } else if (miningClaimBlock.receipts[1].result === "(ok true)") {
+    //console.log("======== USER 2 WINS =========================")
+    ccd006CityMining.getBlockWinner(miaCityId, claimHeight).result.expectSome().expectUint(2);
+    //miningClaimBlock.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_NOT_WINNER);
+    miningClaimBlock.receipts[1].result.expectOk().expectBool(true);
+    coinbase = Number(ccd006CityMining.getCoinbaseAmount(miaCityId, claimHeight).result.substring(1));
+    winner = 2
+    /**
+    console.log("getCoinbaseAmount : " + coinbase)
+    console.log("isBlockWinner : " + ccd006CityMining.isBlockWinner(miaCityId, user2.address, claimHeight).result.expectSome().expectTuple())
+    console.log("getMiningStatsAtBlock : ", ccd006CityMining.getMiningStatsAtBlock(miaCityId, claimHeight))
+     */
+  } else {
+    console.log("======== NOONE WINS =========================")
+    return 3
+  }
+  return { miningBlock, miningClaimBlock, claimHeight, winner, coinbase }
+  /**
+  console.log("miningBlock receipts[0].result : " + miningBlock.receipts[0].result)
+  console.log("miningBlock receipts[1].result : " + miningBlock.receipts[1].result)
+  console.log("miningClaimBlock receipts[0].result : " + miningClaimBlock.receipts[0].result)
+  console.log("miningClaimBlock receipts[1].result : " + miningClaimBlock.receipts[1].result)
+  console.log(miningBlock.receipts[0].events[1].contract_event.value)
+  console.log("claimHeight : " + claimHeight)
+   */
 }
 
-
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() user makes successful claim",
+  name: "ccd006-city-mining: claim-mining-reward() two miners compete and each wins within 10% of half the time",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -151,9 +195,6 @@ Clarinet.test({
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
     const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
     const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
-    const totalAmount = 10;
-    const totalBlocks = 1;
-    const entries: number[] = [10];
     gt.getBalance(user1.address).result.expectOk().expectUint(0);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_MINING).result.expectOk().expectUint(0);
 
@@ -167,52 +208,31 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
 
-    // miner1 ad miner2 compete for the same block every reward cycle
-    const miningBlock = chain.mineBlock([ccd006CityMining.mine(user1, miaCityName, entries), ccd006CityMining.mine(user2, miaCityName, entries)]);
-    const claimHeight = miningBlock.height - 1;
-    const lastBlock = claimHeight + totalBlocks - 1;
-    chain.mineEmptyBlock(rewardDelay + 1);
-    const miningClaimBlock = chain.mineBlock([ccd006CityMining.claimMiningReward(user1, miaCityName, claimHeight), ccd006CityMining.claimMiningReward(user2, miaCityName, claimHeight)]);
-
     // assert
-    ccd005CityData.getCityCoinbaseAmounts(miaCityId).result.expectSome().expectTuple();
-    ccd005CityData.getCityCoinbaseThresholds(miaCityId).result.expectSome().expectTuple();
-
-    miningBlock.receipts[0].result.expectOk().expectBool(true);
-    miningBlock.receipts[1].result.expectOk().expectBool(true);
-
-    /**
-     * TODO MJC: Note that the previous test does not set coinbase amounts
-     * this one sets the amounts and thresholds via CITY_DATA 009 and 010
-     */
-    if (miningClaimBlock.receipts[1].result === "(err u6010)") {
-      miningClaimBlock.receipts[0].result.expectOk().expectBool(true);
-      miningClaimBlock.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_CLAIMED);
-      gt.getBalance(user1.address).result.expectOk().expectUint(1000000);
-      gt.getBalance(user2.address).result.expectOk().expectUint(0);
-    } else {
-      miningClaimBlock.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_CLAIMED);
-      miningClaimBlock.receipts[1].result.expectOk().expectBool(true);
-      gt.getBalance(user1.address).result.expectOk().expectUint(0);
-      gt.getBalance(user2.address).result.expectOk().expectUint(1000000);
+    let result;
+    let winner1 = 0;
+    let winner2 = 0;
+    let count1 = 0;
+    let count2 = 0;
+    const runs = 100;
+    for (let i = 0; i < runs; i++) {
+      result = twoMinersMine(user1, user2, ccd006CityMining, chain, sender);
+      if (result.winner === 1) {
+        count1 = count1 + result.coinbase;
+        winner1++
+      } else if (result.winner === 2) {
+        count2 = count2 + result.coinbase;
+        winner2++
+      }
     }
+    console.log("winner1 = " + winner1);
+    console.log("winner2 = " + winner2);
+    
+    gt.getBalance(user1.address).result.expectOk().expectUint(count1);
+    gt.getBalance(user2.address).result.expectOk().expectUint(count2);
+    // ensure that each wins within 10% of half the time
+    assert(winner1 > (runs / 2) - ((runs * 10) /100));
+    assert(winner2 > (runs / 2) - ((runs * 10) /100));
 
-
-    // Check stx transfer events
-    miningBlock.receipts[0].events.expectSTXTransferEvent(10, user1.address, `${sender.address}.${miaTreasuryName}`);
-    miningBlock.receipts[1].events.expectSTXTransferEvent(10, user2.address, `${sender.address}.${miaTreasuryName}`);
-
-    // Check mining events
-    let expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(claimHeight)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(1)}}`;
-    miningBlock.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
-    expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(claimHeight)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(2)}}`;
-    miningBlock.receipts[1].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
-
-    // Check print event: mining-claim
-    expectedPrintMsg = `{action: "mining-claim", cityId: u1, cityName: "mia", claimHeight: ${types.uint(10)}, userId: ${types.uint(1)}}`;
-    miningClaimBlock.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
-
-    ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
-    ccd006CityMining.getBlockWinner(miaCityId, claimHeight).result.expectSome().expectUint(1);
   },
 });
