@@ -68,7 +68,9 @@ Clarinet.test({
       winner: types.bool(true),
     };
     assertEquals(ccd006CityMining.isBlockWinner(miaCityId, user1.address, claimHeight).result.expectSome().expectTuple(), expected);
-  
+    // TODO MJC: is-block-winner calculates the winning status of given user.
+    // get-block-winner reads it from the map which is written by claim-mining-reward.
+    // so user1 is not returned by the following even though previous lines indicate they won.
     ccd006CityMining.getBlockWinner(miaCityId, claimHeight).result.expectSome().expectUint(1);
   },
 });
