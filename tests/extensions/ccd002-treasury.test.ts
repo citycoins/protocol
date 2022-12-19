@@ -229,7 +229,7 @@ Clarinet.test({
     gt.getBalance(depositor.address).result.expectOk().expectUint(1000);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_MINING).result.expectOk().expectUint(1000);
     receipts[0].result.expectOk().expectBool(true);
-    receipts[0].events.expectFungibleTokenTransferEvent(1000, depositor.address, EXTENSIONS.CCD002_TREASURY_MIA_MINING, EXTERNAL.FT_MIA + "::edg-token");
+    receipts[0].events.expectFungibleTokenTransferEvent(1000, depositor.address, EXTENSIONS.CCD002_TREASURY_MIA_MINING, EXTERNAL.FT_MIA + "::miamicoin");
     receipts[0].events.expectPrintEvent(EXTENSIONS.CCD002_TREASURY_MIA_MINING, event);
   },
 });

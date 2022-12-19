@@ -39,4 +39,4 @@ comment:
   require_head: true
 
 ignore:
-- "**/test-*"
+  - "**/test-*"

@@ -15,8 +15,8 @@ export enum ErrCode {
   ERR_CITY_NOT_ACTIVATED,
   ERR_CITY_DETAILS_NOT_FOUND,
   ERR_CITY_TREASURY_NOT_FOUND,
-  }
-  
+}
+
 export class CCD007CityStacking {
   name: string;
   static readonly ErrCode = ErrCode;

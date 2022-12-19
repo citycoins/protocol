@@ -84,14 +84,14 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
-    ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal('SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M');
+    ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal("SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M");
 
     // act
     const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
 
     // assert
     receipts[3].result.expectOk().expectUint(3);
-    ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal('ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG');
+    ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal("ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG");
   },
 });
 
@@ -116,7 +116,7 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
-    ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal('SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M');
+    ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal("SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M");
 
     // act
     const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_002);
@@ -245,7 +245,7 @@ Clarinet.test({
 
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_STACKING_NOT_AVAILABLE);
-  }, 
+  },
 });
 
 Clarinet.test({
@@ -264,7 +264,7 @@ Clarinet.test({
 
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_TRANSFER_FAILED);
-  }, 
+  },
 });
 
 // =============================
@@ -317,7 +317,7 @@ Clarinet.test({
 
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_STACKING_NOT_AVAILABLE);
-  }, 
+  },
 });
 
 Clarinet.test({
@@ -338,7 +338,7 @@ Clarinet.test({
 
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_UNAUTHORIZED);
-  }, 
+  },
 });
 
 Clarinet.test({
@@ -359,7 +359,7 @@ Clarinet.test({
 
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_STACKING_PAYOUT);
-  }, 
+  },
 });
 
 Clarinet.test({
@@ -383,7 +383,7 @@ Clarinet.test({
 
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_STACKING_PAYOUT);
-  }, 
+  },
 });
 
 Clarinet.test({
@@ -522,7 +522,7 @@ Clarinet.test({
 
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_STACKING_NOT_AVAILABLE);
-  }, 
+  },
 });
 
 Clarinet.test({
@@ -543,7 +543,7 @@ Clarinet.test({
 
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_STACKING_NOT_AVAILABLE);
-  }, 
+  },
 });
 
 Clarinet.test({
@@ -553,7 +553,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
-    ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false)
+    ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
     //const ccd003UserRegistry = new CCD003UserRegistry(chain, sender, "ccd003-user-registry");
 
     // act
@@ -568,4 +568,3 @@ Clarinet.test({
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_NOTHING_TO_CLAIM);
   },
 });
-

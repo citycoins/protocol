@@ -16,7 +16,7 @@
  *    - set-active-city-token-contract
  */
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import { constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
+import { START_BLOCK_CCD005, constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
 import { CCD005CityData, ErrCode } from "../../models/extensions/ccd005-city-data.model.ts";
 import { types } from "../../utils/deps.ts";
 
@@ -285,7 +285,7 @@ Clarinet.test({
     ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(2);
     ccd005CityData.isCityActivated(nycCityId).result.expectBool(true);
     block.receipts[0].result.expectOk();
-    testExpectedCityDetails(ccd005CityData, nycCityId, 7, 2, 9, 2);
+    testExpectedCityDetails(ccd005CityData, nycCityId, START_BLOCK_CCD005, 2, START_BLOCK_CCD005 + 2, 2);
   },
 });
 

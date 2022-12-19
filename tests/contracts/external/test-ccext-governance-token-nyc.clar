@@ -10,8 +10,8 @@
 
 ;; TOKEN DEFINITIONS
 
-(define-fungible-token edg-token)
-(define-fungible-token edg-token-locked)
+(define-fungible-token newyorkcitycoin)
+(define-fungible-token newyorkcitycoin-locked)
 
 ;; CONSTANTS
 
@@ -38,11 +38,15 @@
   ))
 )
 
+(define-public (mint (amount uint) (recipient principal))
+    (ft-mint? newyorkcitycoin amount recipient)
+)
+
 ;; guarded: mint governance token
 (define-public (edg-mint (amount uint) (recipient principal))
 	(begin
 		(try! (is-dao-or-extension))
-		(ft-mint? edg-token amount recipient)
+		(ft-mint? newyorkcitycoin amount recipient)
 	)
 )
 
@@ -58,7 +62,7 @@
 (define-public (edg-burn (amount uint) (owner principal))
 	(begin
 		(try! (is-dao-or-extension))
-		(ft-burn? edg-token amount owner)
+		(ft-burn? newyorkcitycoin amount owner)
 	)
 )
 
@@ -98,7 +102,7 @@
 (define-public (transfer (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34))))
 	(begin
 		(asserts! (or (is-eq tx-sender sender) (is-eq contract-caller sender)) ERR_NOT_TOKEN_OWNER)
-		(ft-transfer? edg-token amount sender recipient)
+		(ft-transfer? newyorkcitycoin amount sender recipient)
 	)
 )
 
@@ -119,11 +123,11 @@
 )
 
 (define-read-only (get-balance (who principal))
-	(ok (+ (ft-get-balance edg-token who) (ft-get-balance edg-token-locked who)))
+	(ok (+ (ft-get-balance newyorkcitycoin who) (ft-get-balance newyorkcitycoin-locked who)))
 )
 
 (define-read-only (get-total-supply)
-	(ok (+ (ft-get-supply edg-token) (ft-get-supply edg-token-locked)))
+	(ok (+ (ft-get-supply newyorkcitycoin) (ft-get-supply newyorkcitycoin-locked)))
 )
 
 (define-read-only (get-token-uri)
@@ -133,5 +137,5 @@
 ;; PRIVATE FUNCTIONS
 
 (define-private (edg-mint-many-iter (item {amount: uint, recipient: principal}))
-	(ft-mint? edg-token (get amount item) (get recipient item))
+	(ft-mint? newyorkcitycoin (get amount item) (get recipient item))
 )
