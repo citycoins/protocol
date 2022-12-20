@@ -8,7 +8,7 @@ import { CCEXTNft } from "../../models/external/test-ccext-nft.model.ts";
 // Authorization check
 
 Clarinet.test({
-  name: "ccd002-treasury: is-dao-or-extenion() fails when called directly",
+  name: "ccd002-treasury: is-dao-or-extension() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;

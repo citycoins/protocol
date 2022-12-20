@@ -38,7 +38,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd004-city-registry: get-or-create-city-id() fails if not called by the base dao or by a valid extension",
+  name: "ccd004-city-registry: get-or-create-city-id() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -54,7 +54,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd004-city-registry: get-city-name() return none for unknown city name",
+  name: "ccd004-city-registry: get-city-name() succeeds and returns none for unknown city name",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -68,7 +68,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd004-city-registry: get-city-id() return none for unknown city id",
+  name: "ccd004-city-registry: get-city-id() succeeds and returns none for unknown city id",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -84,7 +84,7 @@ Clarinet.test({
 // Internal DAO functions
 
 Clarinet.test({
-  name: "ccd004-city-registry: get-or-create-city-id() cannot be executed more than once from the same proposal",
+  name: "ccd004-city-registry: get-or-create-city-id() fails if executed more than once from the same proposal",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
 
@@ -99,7 +99,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd004-city-registry: get-or-create-city-id() creates an entry",
+  name: "ccd004-city-registry: get-or-create-city-id() succeeds and creates an entry",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -117,7 +117,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd004-city-registry: get-or-create-city-id() increments the city id nonce",
+  name: "ccd004-city-registry: get-or-create-city-id() succeeds and increments the city id nonce",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;

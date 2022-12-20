@@ -113,23 +113,7 @@ Clarinet.test({
 // =============================
 
 Clarinet.test({
-  name: "ccd005-city-data: set-city-activation-details() can't be accessed directly",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-
-    // act
-    const { receipts } = chain.mineBlock([ccd005CityData.setCityActivationDetails(sender, miaCityId, 1, 1, 1, 1)]);
-
-    // assert
-    assertEquals(receipts.length, 1);
-    receipts[0].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
-  },
-});
-
-Clarinet.test({
-  name: "ccd005-city-data: set-city-activation-status() can't be accessed directly",
+  name: "ccd005-city-data: set-city-activation-status() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -162,7 +146,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: set-city-activation-status() successfully changes city status",
+  name: "ccd005-city-data: set-city-activation-status() succeeds and changes city status",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -185,6 +169,22 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "ccd005-city-data: set-city-activation-details() fails when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd005CityData.setCityActivationDetails(sender, miaCityId, 1, 1, 1, 1)]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
+  },
+});
+
+Clarinet.test({
   name: "ccd005-city-data: set-city-activation-details() fails if city is unknown",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
@@ -202,7 +202,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: set-city-activation-details() successfully changes city details",
+  name: "ccd005-city-data: set-city-activation-details() succeeds and changes city details",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -257,7 +257,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: activate-city() successfully activated by two different voters",
+  name: "ccd005-city-data: activate-city() succeeds if activated by two different voters",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const approver1 = accounts.get("wallet_1")!;
@@ -294,7 +294,7 @@ Clarinet.test({
 // =============================
 
 Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-thresholds() can't be accessed directly",
+  name: "ccd005-city-data: set-city-coinbase-thresholds() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -310,7 +310,62 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-amounts() can't be accessed directly",
+  name: "ccd005-city-data: set-city-coinbase-thresholds() fails if threshold T(n) <= T(n-1)",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+
+    // act
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    const block = passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_008);
+
+    // assert
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(true);
+    ccd005CityData.getCityCoinbaseThresholds(miaCityId).result.expectNone();
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-thresholds() succeeds and sets thresholds for inactive city",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+
+    // act
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
+
+    // assert
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
+    testExpectedCoinbaseThresholds(ccd005CityData, miaCityId, 6, 7, 8, 9, 10);
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-thresholds() succeeds and sets thresholds for active city",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+
+    // act
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
+
+    // assert
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(true);
+    testExpectedCoinbaseThresholds(ccd005CityData, miaCityId, 6, 7, 8, 9, 10);
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-amounts() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -318,22 +373,6 @@ Clarinet.test({
 
     // act
     const { receipts } = chain.mineBlock([ccd005CityData.setCityCoinbaseAmounts(sender, miaCityId, 2, 2, 2, 2, 2, 2, 2)]);
-
-    // assert
-    assertEquals(receipts.length, 1);
-    receipts[0].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
-  },
-});
-
-Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-bonus-period() can't be accessed directly",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-
-    // act
-    const { receipts } = chain.mineBlock([ccd005CityData.setCityCoinbaseBonusPeriod(sender, miaCityId, 20)]);
 
     // assert
     assertEquals(receipts.length, 1);
@@ -355,6 +394,77 @@ Clarinet.test({
 
     // assert
     ccd005CityData.getCityCoinbaseAmounts(miaCityId).result.expectNone();
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-amounts() succeeds if amounts increase",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+
+    // act
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_009);
+
+    // assert
+    ccd005CityData.getCityCoinbaseAmounts(miaCityId).result.expectSome();
+    //console.log(block);
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-amounts() succeeds and sets amounts for active city",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+
+    // act
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_007);
+
+    // assert
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(true);
+    testExpectedCoinbaseAmount(ccd005CityData, miaCityId, 10, 10, 10, 10, 10, 10, 10);
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-amounts() succeeds and sets amounts for inactive city",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+
+    // act
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_007);
+
+    // assert
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(true);
+    testExpectedCoinbaseAmount(ccd005CityData, miaCityId, 10, 10, 10, 10, 10, 10, 10);
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-bonus-period() fails when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd005CityData.setCityCoinbaseBonusPeriod(sender, miaCityId, 20)]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
@@ -389,7 +499,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-bonus-period() success if period is greater than 0",
+  name: "ccd005-city-data: set-city-coinbase-bonus-period() succeeds if period is greater than 0",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -403,140 +513,12 @@ Clarinet.test({
   },
 });
 
-Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-thresholds() fails if any amount is 0",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-
-    // act
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
-    const block = passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_006);
-
-    // assert
-    ccd005CityData.getCityCoinbaseAmounts(miaCityId).result.expectNone();
-    //console.log(block);
-  },
-});
-
-Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-thresholds() succeeds if amounts increase",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-
-    // act
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
-    const block = passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_009);
-
-    // assert
-    ccd005CityData.getCityCoinbaseAmounts(miaCityId).result.expectSome();
-    //console.log(block);
-  },
-});
-
-Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-amounts() successfully sets amounts for inactive city",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-
-    // act
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_007);
-
-    // assert
-    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(true);
-    testExpectedCoinbaseAmount(ccd005CityData, miaCityId, 10, 10, 10, 10, 10, 10, 10);
-  },
-});
-
-Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-amounts() successfully sets amounts for active city",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-
-    // act
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_007);
-
-    // assert
-    ccd005CityData.isCityActivated(miaCityId).result.expectBool(true);
-    testExpectedCoinbaseAmount(ccd005CityData, miaCityId, 10, 10, 10, 10, 10, 10, 10);
-  },
-});
-
-Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-thresholds() fails if threshold T(n) <= T(n-1)",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-
-    // act
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
-    const block = passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_008);
-
-    // assert
-    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(true);
-    ccd005CityData.getCityCoinbaseThresholds(miaCityId).result.expectNone();
-  },
-});
-
-Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-thresholds() successfully sets thresholds for inactive city",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-
-    // act
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
-
-    // assert
-    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
-    testExpectedCoinbaseThresholds(ccd005CityData, miaCityId, 6, 7, 8, 9, 10);
-  },
-});
-
-Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-thresholds() successfully sets thresholds for active city",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-
-    // act
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
-
-    // assert
-    ccd005CityData.isCityActivated(miaCityId).result.expectBool(true);
-    testExpectedCoinbaseThresholds(ccd005CityData, miaCityId, 6, 7, 8, 9, 10);
-  },
-});
-
 // =============================
 // 3. CITY TREASURY TESTS
 // =============================
 
 Clarinet.test({
-  name: "ccd005-city-data: get-city-treasury-*() data is none if city is unknown",
+  name: "ccd005-city-data: get-city-treasury-*() succeeds and returns none if city is unknown",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -555,7 +537,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: get-city-treasury-*() data is none if city is known and treasury undefined",
+  name: "ccd005-city-data: get-city-treasury-*() succeeds and returns none if city is known and treasury undefined",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -575,7 +557,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: add-city-treasury() creates treasury data is as expected if city is known",
+  name: "ccd005-city-data: add-city-treasury() succeeds and creates treasury data if city is known",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -600,7 +582,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: add-city-treasury() ensure the treasury nonce points to the most recently added treasury",
+  name: "ccd005-city-data: add-city-treasury() succeeds and returns the correct nonces for the treasury",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -641,7 +623,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: add-city-treasury() cannot creates two treasuries for same city with the same name",
+  name: "ccd005-city-data: add-city-treasury() fails when creating two treasuries for the same city with the same name",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -767,7 +749,7 @@ Clarinet.test({
 // =============================
 
 Clarinet.test({
-  name: "ccd005-city-data: add-city-token-contract() cannot be called directly",
+  name: "ccd005-city-data: add-city-token-contract() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -784,7 +766,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: get-city-token-contract-*() data is none if city is known and token contracts undefined",
+  name: "ccd005-city-data: get-city-token-contract-*() succeeds and returns none if city is known and token contracts undefined",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -804,7 +786,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: add-city-token-contract() successfully adds three token contracts to an active city",
+  name: "ccd005-city-data: add-city-token-contract() succeeds and adds three token contracts to an active city",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -850,7 +832,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: add-city-token-contract() fails if try to activate a token contract for an inactive city",
+  name: "ccd005-city-data: add-city-token-contract() fails when activating a token contract for an inactive city",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -896,7 +878,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: set-active-city-token-contract() cannot be called directly",
+  name: "ccd005-city-data: set-active-city-token-contract() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -914,7 +896,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: set-active-city-token-contract() successfully sets active contract for inactive city",
+  name: "ccd005-city-data: set-active-city-token-contract() succeeds and sets active contract for inactive city",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -937,7 +919,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: set-active-city-token-contract() successfully sets active contract for active city",
+  name: "ccd005-city-data: set-active-city-token-contract() succeeds and sets active contract for active city",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;

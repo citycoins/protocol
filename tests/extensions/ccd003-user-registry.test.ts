@@ -1,13 +1,11 @@
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
 import { constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
 import { CCD003UserRegistry } from "../../models/extensions/ccd003-user-registry.model.ts";
-import { BaseDao } from "../../models/base-dao.model.ts";
-import { EXTENSIONS } from "../../utils/common.ts";
 
 // Authorization checks
 
 Clarinet.test({
-  name: "ccd003-user-registry: is-dao-or-extension() can only be called by the base dao or valid extension",
+  name: "ccd003-user-registry: is-dao-or-extension() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -55,7 +53,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd003-user-registry: get-user-id() returns none for unknown user principal",
+  name: "ccd003-user-registry: get-user-id() succeeds and returns none for unknown user principal",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -69,7 +67,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd003-user-registry: get-user() returns none for unknown user id",
+  name: "ccd003-user-registry: get-user() succeeds and returns none for unknown user id",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -85,7 +83,7 @@ Clarinet.test({
 // Internal DAO functions
 
 Clarinet.test({
-  name: "ccd003-user-registry: get-or-create-user-id() can be called by the base dao or valid extension",
+  name: "ccd003-user-registry: get-or-create-user-id() succeeds when called by the base dao or valid extension",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -105,7 +103,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd003-user-registry: get-or-create-user-id() creates an entry for id=1",
+  name: "ccd003-user-registry: get-or-create-user-id() succeeds and creates an entry for id=1",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -125,7 +123,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd003-user-registry: get-or-create-user-id() increments the user id nonce",
+  name: "ccd003-user-registry: get-or-create-user-id() succeeds and increments the user id nonce",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;

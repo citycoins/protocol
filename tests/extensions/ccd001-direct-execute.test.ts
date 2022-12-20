@@ -6,7 +6,7 @@ import { CCD001DirectExecute } from "../../models/extensions/ccd001-direct-execu
 // Authorization check
 
 Clarinet.test({
-  name: "ccd001-direct-execute: is-dao-or-extenion() fails when called directly",
+  name: "ccd001-direct-execute: is-dao-or-extension() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -68,7 +68,7 @@ Clarinet.test({
  * itself when proposal is executed.
  */
 Clarinet.test({
-  name: "ccd001-direct-execute: set-sunset-block-height() succeeds",
+  name: "ccd001-direct-execute: set-sunset-block-height() succeeds and returns new sunset block height",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -124,7 +124,7 @@ Clarinet.test({
 // Public Functions
 
 Clarinet.test({
-  name: "ccd001-direct-execute: is-approver() returns false if approver is not in map",
+  name: "ccd001-direct-execute: is-approver() succeeds and returns false if approver is not in map",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -139,7 +139,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd001-direct-execute: get-signals() returns true if approver is in map",
+  name: "ccd001-direct-execute: is-approver() succeeds and returns true if approver is in map",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -158,7 +158,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd001-direct-execute: is-approver() returns false if account is not an approver",
+  name: "ccd001-direct-execute: is-approver() succeeds and returns false if account is not an approver",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -175,7 +175,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd001-direct-execute: has-signalled() returns false if approver is not in map",
+  name: "ccd001-direct-execute: has-signalled() succeeds and returns false if approver is not in map",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -190,7 +190,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd001-direct-execute: has-signalled() returns false if approver has not signalled",
+  name: "ccd001-direct-execute: has-signalled() succeeds and returns false if approver has not signalled",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -207,7 +207,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd001-direct-execute: has-signalled() returns true if approver has signalled",
+  name: "ccd001-direct-execute: has-signalled() succeeds and returns true if approver has signalled",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -224,7 +224,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd001-direct-execute: has-signalled() returns false if approver has signalled on a different proposal",
+  name: "ccd001-direct-execute: has-signalled() succeeds and returns false if approver has signalled on a different proposal",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -241,7 +241,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd001-direct-execute: get-signals-required() returns required signals variable",
+  name: "ccd001-direct-execute: get-signals-required() succeeds and returns required signals variable",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -256,7 +256,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd001-direct-execute: get-signals() returns correct number of signals for a proposal",
+  name: "ccd001-direct-execute: get-signals() succeeds and returns correct number of signals for a proposal",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
