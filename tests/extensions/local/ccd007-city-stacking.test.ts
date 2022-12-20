@@ -162,6 +162,9 @@ Clarinet.test({
       claimable: types.uint(500),
       stacked: types.uint(500),
     };
+    /**
+     * TODO MJC: Expecting the reward to match the operators reward for cycle 0 ?
+     */
     assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 1, 1).result.expectTuple(), expected);
     expected = {
       reward: types.uint(50000),
