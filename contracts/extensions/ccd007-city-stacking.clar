@@ -140,7 +140,7 @@
     ;; TODO: use contract-caller here?
     (asserts! (is-eq tx-sender (var-get poolOperator)) ERR_UNAUTHORIZED)
     (asserts! (> amount u0) ERR_INVALID_STACKING_PAYOUT)
-    (asserts! (< currentCycle targetCycle) ERR_INVALID_STACKING_PAYOUT)
+    (asserts! (< targetCycle currentCycle) ERR_REWARD_CYCLE_NOT_COMPLETE)
     ;; transfer to stacking treasury
     ;; temporarily hardcoded to cities until Stacks 2.1
     ;; next version can use traits as stored principals
@@ -162,6 +162,16 @@
         reward: (some amount),
       })
     )
+    ;; print details
+    (print {
+      action: "stacking-reward-payout",
+      cityName: cityName,
+      cityId: cityId,
+      cityTreasury: cityTreasury,
+      currentCycle: currentCycle,
+      targetCycle: targetCycle,
+      amount: amount,
+    })
     (ok true)
   )
 )
