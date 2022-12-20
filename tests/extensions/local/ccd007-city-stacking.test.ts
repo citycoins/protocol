@@ -16,7 +16,8 @@ import { CCEXTGovernanceToken } from "../../../models/external/test-ccext-govern
 // =============================
 // INTERNAL DATA / FUNCTIONS
 // =============================
-const lockPeriod = 32;
+const lockPeriod = 1;
+const rewardCycleLength = 2100;
 const miaCityName = "mia";
 const miaTreasuryName = "mia-treasury";
 const miaCityId = 1;
@@ -109,8 +110,9 @@ Clarinet.test({
       ccd007CityStacking.stack(user1, miaCityName, amountStacked, lockPeriod),
       ccd007CityStacking.claimStackingReward(user1, miaCityName, 2)
     ]);
-    ccd007CityStacking.getStackingReward(miaCityId, 1, 1).result.expectNone()
+    
     // assert
+    ccd007CityStacking.getStackingReward(miaCityId, 1, 1).result.expectNone()
     block.receipts[1].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_NOTHING_TO_CLAIM);
   },
 });
@@ -124,28 +126,57 @@ Clarinet.test({
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
     const amountStacked = 500;
+    const operator = accounts.get("wallet_2")!;
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
     // 009 mints mia to user1 and user2
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_009);
     // 010 adds the token contract to the treasury allow list
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_010);
+    const block0 = chain.mineBlock([
+      ccd007CityStacking.sendStackingReward(operator, miaCityName, 0, 50000),
+      ccd007CityStacking.sendStackingReward(operator, miaCityName, 1, 150000),
+    ]);
+    block0.receipts[1].result.expectOk().expectBool(true);
+    block0.receipts[0].result.expectOk().expectBool(true);
     const block1 = chain.mineBlock([
       ccd007CityStacking.stack(user1, miaCityName, amountStacked, lockPeriod),
     ]);
-    chain.mineEmptyBlock(lockPeriod + 1);
+    chain.mineEmptyBlock(rewardCycleLength + 10);
     const block2 = chain.mineBlock([
+      ccd007CityStacking.claimStackingReward(user1, miaCityName, 0),
       ccd007CityStacking.claimStackingReward(user1, miaCityName, 1)
     ]);
 
-    ccd007CityStacking.getStackingReward(miaCityId, 1, 1).result.expectNone()
     // assert
     block1.receipts[0].result.expectOk().expectBool(true);
     block2.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_NOTHING_TO_CLAIM);
+    ccd007CityStacking.getRewardCycle(miaCityId, block2.height).result.expectSome().expectUint(1)
+    let expected: any = {
+      claimable: types.uint(0),
+      stacked: types.uint(0),
+    };
+    assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 0, 1).result.expectTuple(), expected);
+    expected = {
+      claimable: types.uint(500),
+      stacked: types.uint(500),
+    };
+    /**
+     * TODO MJC: Expecting the reward to match the operators reward for cycle 0 ?
+     */
+    assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 1, 1).result.expectTuple(), expected);
+    expected = {
+      reward: types.uint(50000),
+      total: types.uint(500),
+    };
+    assertEquals(ccd007CityStacking.getStackingStatsAtCycle(miaCityId, 1).result.expectTuple(), expected);
+    ccd007CityStacking.getStackingReward(miaCityId, 1, 0).result.expectNone()
   },
 });

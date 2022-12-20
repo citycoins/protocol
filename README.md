@@ -63,8 +63,7 @@ Generate code coverage report;
 
 ```bash
 clarinet test --coverage
-cd coverage_report
-genhtml ../coverage.lcov
+genhtml -o coverage_report coverage.lcov
 ```
 
 The generated files are not committed to the repository (coverage_report is git ignored).
