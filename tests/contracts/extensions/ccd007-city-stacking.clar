@@ -180,6 +180,7 @@
   (let
     (
       (cityId (try! (get-city-id cityName)))
+      (user tx-sender)
       (userId (try! (get-user-id tx-sender)))
       (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
       (stackerAtCycle (get-stacker-at-cycle cityId targetCycle userId))
@@ -206,13 +207,13 @@
         (and
           (> reward u0)
           (asserts! (is-ok (as-contract
-            (contract-call? .ccd002-treasury-mia-stacking withdraw-stx reward tx-sender)
+            (contract-call? .ccd002-treasury-mia-stacking withdraw-stx reward user)
           )) ERR_TRANSFER_FAILED)
         )
         (and
           (> claimable u0)
           (asserts! (is-ok (as-contract
-            (contract-call? .ccd002-treasury-mia-stacking withdraw-ft .test-ccext-governance-token-mia claimable tx-sender)
+            (contract-call? .ccd002-treasury-mia-stacking withdraw-ft .test-ccext-governance-token-mia claimable user)
           )) ERR_TRANSFER_FAILED)
         )
         true

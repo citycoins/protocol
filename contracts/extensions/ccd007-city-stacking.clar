@@ -180,6 +180,7 @@
   (let
     (
       (cityId (try! (get-city-id cityName)))
+      (user tx-sender)
       (userId (try! (get-user-id tx-sender)))
       (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
       (stackerAtCycle (get-stacker-at-cycle cityId targetCycle userId))
@@ -206,13 +207,13 @@
         (and
           (> reward u0)
           (asserts! (is-ok (as-contract
-            (contract-call? .ccd002-treasury-mia-stacking withdraw-stx reward tx-sender)
+            (contract-call? .ccd002-treasury-mia-stacking withdraw-stx reward user)
           )) ERR_TRANSFER_FAILED)
         )
         (and
           (> claimable u0)
           (asserts! (is-ok (as-contract
-            (contract-call? .ccd002-treasury-mia-stacking withdraw-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 claimable tx-sender)
+            (contract-call? .ccd002-treasury-mia-stacking withdraw-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 claimable user)
           )) ERR_TRANSFER_FAILED)
         )
         true
@@ -224,13 +225,13 @@
         (and
           (> reward u0)
           (asserts! (is-ok (as-contract
-            (contract-call? .ccd002-treasury-nyc-stacking withdraw-stx reward tx-sender)
+            (contract-call? .ccd002-treasury-nyc-stacking withdraw-stx reward user)
           )) ERR_TRANSFER_FAILED)
         )
         (and
           (> claimable u0)
           (asserts! (is-ok (as-contract
-            (contract-call? .ccd002-treasury-nyc-stacking withdraw-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 claimable tx-sender)
+            (contract-call? .ccd002-treasury-nyc-stacking withdraw-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 claimable user)
           )) ERR_TRANSFER_FAILED)
         )
         true
