@@ -319,24 +319,17 @@
       (rewardCycleStats (get-stacking-stats-at-cycle cityId cycle))
       (stackerAtCycle (get-stacker-at-cycle cityId cycle userId))
       (totalStacked (get total rewardCycleStats))
-      (cycleReward (get reward rewardCycleStats))
+      (cycleReward (unwrap! (get reward rewardCycleStats) none))
       (userStacked (get stacked stackerAtCycle))
+      (currentCycle (unwrap! (get-reward-cycle cityId block-height) none))
     )
     ;; (asserts! (is-some cycleReward) ERR_STACKING_PAYOUT_NOT_COMPLETE)
-    (match (get-reward-cycle cityId block-height)
-      currentCycle
-      (if (or (<= currentCycle cycle) (is-eq userStacked u0))
-        ;; this cycle hasn't finished
-        ;; or stacker is not stacking
-        none
-        (match cycleReward
-          ;; (payout * userStacked) / totalStacked
-          payout (some (/ (* payout userStacked) totalStacked))
-          none
-        )
-      )
-      ;; before first reward cycle
+    (if (or (<= currentCycle cycle) (is-eq userStacked u0))
+      ;; this cycle hasn't finished
+      ;; or stacker is not stacking
       none
+      ;; calculate reward
+      (some (/ (* cycleReward userStacked) totalStacked))
     )
   )
 )
@@ -392,10 +385,8 @@
       lastCycle: (- (+ targetCycle lockPeriod) u1)
     })
     ;; fold over closure
-    (match (fold stack-tokens-closure REWARD_CYCLE_INDEXES (ok stackingInfo))
-      okReturn (ok true)
-      errReturn (err errReturn)
-    )
+    (try! (fold stack-tokens-closure REWARD_CYCLE_INDEXES (ok stackingInfo)))
+    (ok true)
   )
 )
 
@@ -410,29 +401,25 @@
     }
     uint
   )))
-
-  (match return
-    okReturn
-    (let
-      (
-        (cityId (get cityId okReturn))
-        (userId (get userId okReturn))
-        (amount (get amount okReturn))
-        (firstCycle (get first okReturn))
-        (lastCycle (get last okReturn))
-        (targetCycle (+ firstCycle rewardCycleIdx))
-      )
-      (and
-        (>= targetCycle firstCycle)
-        (< targetCycle lastCycle)
-        (if (is-eq targetCycle (- lastCycle u1))
-          (set-stacking-data cityId userId targetCycle amount amount)
-          (set-stacking-data cityId userId targetCycle amount u0)
-        )
-      )
-      return
+  (let
+    (
+      (okReturn (try! return))
+      (cityId (get cityId okReturn))
+      (userId (get userId okReturn))
+      (amount (get amount okReturn))
+      (firstCycle (get first okReturn))
+      (lastCycle (get last okReturn))
+      (targetCycle (+ firstCycle rewardCycleIdx))
     )
-    errReturn return
+    (and
+      (>= targetCycle firstCycle)
+      (< targetCycle lastCycle)
+      (if (is-eq targetCycle (- lastCycle u1))
+        (set-stacking-data cityId userId targetCycle amount amount)
+        (set-stacking-data cityId userId targetCycle amount u0)
+      )
+    )
+    return
   )
 )
 

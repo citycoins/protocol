@@ -297,7 +297,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() fails if a commit amount is insufficient",
+  name: "ccd006-city-mining: mine() fails if a commit amount in the list is zero",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -305,7 +305,7 @@ Clarinet.test({
     const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
 
     // act
-    const entries: number[] = [10, 0, 10];
+    const entries: number[] = [10, 10, 10, 0, 10];
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
@@ -319,7 +319,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() successfully mines 1 block",
+  name: "ccd006-city-mining: mine() succeeds and mines 1 block for 1 user",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -372,7 +372,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() successfully mines 200 blocks",
+  name: "ccd006-city-mining: mine() succeeds and mines 200 blocks for 1 user",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -499,7 +499,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() fails if already mined",
+  name: "ccd006-city-mining: mine() fails if user has already mined",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;

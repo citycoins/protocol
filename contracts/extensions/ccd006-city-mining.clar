@@ -136,37 +136,32 @@
       (userId (try! (as-contract
         (contract-call? .ccd003-user-registry get-or-create-user-id user)
       )))
+      (totalAmount (fold + amounts u0))
     )
     (asserts! cityActivated ERR_CITY_NOT_ACTIVATED)
+    (asserts! (>= (stx-get-balance tx-sender) totalAmount) ERR_INSUFFICIENT_BALANCE)
     (asserts! (> (len amounts) u0) ERR_INVALID_COMMIT_AMOUNTS)
-    (match (fold mine-block amounts (ok {
-      cityId: cityId,
-      userId: userId,
-      height: block-height,
-      totalAmount: u0,
-    }))
-      okReturn
-      (let
-        (
-          (totalAmount (get totalAmount okReturn))
-        )
-        (asserts! (>= (stx-get-balance tx-sender) totalAmount) ERR_INSUFFICIENT_BALANCE)
-        ;; TODO: this should use CCD002 deposit function
-        (try! (stx-transfer? totalAmount tx-sender cityTreasury))
-        (print {
-          action: "mining",
-          userId: userId,
-          cityName: cityName,
-          cityId: cityId,
-          cityTreasury: cityTreasury,
-          firstBlock: block-height,
-          lastBlock: (- (+ block-height (len amounts)) u1),
-          totalBlocks: (len amounts),
-          totalAmount: totalAmount
-        })
-        (ok true)
-      )
-      errReturn (err errReturn)
+    (begin
+      (try! (fold mine-block amounts (ok {
+        cityId: cityId,
+        userId: userId,
+        height: block-height,
+        totalAmount: u0,
+      })))
+      ;; TODO: this should use CCD002 deposit function
+      (try! (stx-transfer? totalAmount tx-sender cityTreasury))
+      (print {
+        action: "mining",
+        userId: userId,
+        cityName: cityName,
+        cityId: cityId,
+        cityTreasury: cityTreasury,
+        firstBlock: block-height,  
+        lastBlock: (- (+ block-height (len amounts)) u1),
+        totalBlocks: (len amounts),
+        totalAmount: totalAmount,
+      })                
+      (ok true)
     )
   )
 )
@@ -308,27 +303,23 @@
     }
     uint
   )))
-  (match return
-    okReturn
-    (let
-      (
-        (cityId (get cityId okReturn))
-        (userId (get userId okReturn))
-        (height (get height okReturn))
-        (totalAmount (get totalAmount okReturn))
-      )
-      (asserts! (not (has-mined-at-block cityId height userId)) ERR_ALREADY_MINED)
-      (asserts! (> amount u0) ERR_INSUFFICIENT_COMMIT)
-      (set-mining-data cityId userId height amount)
-      (ok (merge okReturn
-        {
-          height: (+ height u1),
-          totalAmount: (+ totalAmount amount)
-        }
-      ))
-      
+  (let
+    (
+      (okReturn (try! return))
+      (cityId (get cityId okReturn))
+      (userId (get userId okReturn))
+      (height (get height okReturn))
+      (totalAmount (get totalAmount okReturn))
     )
-    errReturn (err errReturn)
+    (asserts! (not (has-mined-at-block cityId height userId)) ERR_ALREADY_MINED)
+    (asserts! (> amount u0) ERR_INSUFFICIENT_COMMIT)
+    (set-mining-data cityId userId height amount)
+    (ok (merge okReturn
+      {
+        height: (+ height u1),
+        totalAmount: (+ totalAmount amount)
+      }
+    ))
   )
 )
 
