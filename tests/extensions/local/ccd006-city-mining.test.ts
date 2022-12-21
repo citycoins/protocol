@@ -66,7 +66,7 @@ Clarinet.test({
       winner: types.bool(true),
     };
     const isBlockWinner = ccd006CityMining.isBlockWinner(miaCityId, user1.address, claimHeight);
-    console.log(JSON.stringify(isBlockWinner, null, 2));
+    //console.log(JSON.stringify(isBlockWinner, null, 2));
     assertEquals(isBlockWinner.result.expectSome().expectTuple(), expected);
     // TODO MJC: is-block-winner calculates the winning status of given user.
     // get-block-winner reads it from the map which is written by claim-mining-reward.
@@ -224,8 +224,8 @@ Clarinet.test({
         winner2++;
       }
     }
-    console.log("winner1 = " + winner1);
-    console.log("winner2 = " + winner2);
+    //console.log("winner1 = " + winner1);
+    //console.log("winner2 = " + winner2);
 
     gt.getBalance(user1.address).result.expectOk().expectUint(count1);
     gt.getBalance(user2.address).result.expectOk().expectUint(count2);

@@ -382,7 +382,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd007CityStacking.sendStackingReward(operator, miaCityName, 1, 50000)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_STACKING_PAYOUT);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_REWARD_CYCLE_NOT_COMPLETE);
   },
 });
 
@@ -402,7 +402,8 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
-    chain.mineEmptyBlock(rewardCycleLength);
+    // could change this to rewardCycleLength * (targetCycle + 1) + 1
+    chain.mineEmptyBlock(rewardCycleLength * 11 + 10);
 
     const block = chain.mineBlock([ccd007CityStacking.sendStackingReward(operator, miaCityName, 10, 50000)]);
 
@@ -428,7 +429,8 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_008);
-    chain.mineEmptyBlock(rewardCycleLength);
+    // could change this to rewardCycleLength * (targetCycle + 1) + 1
+    chain.mineEmptyBlock(rewardCycleLength * 11 + 10);
 
     const block = chain.mineBlock([ccd007CityStacking.sendStackingReward(operator, nycCityName, 10, 50000)]);
 

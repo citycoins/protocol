@@ -25,13 +25,13 @@ const miaTreasuryName = "ccd002-treasury-mia-mining";
 
 const dumpMiningData = (ccd006CityMining: any, cityId: number, height: number, userId: number, miningStatsAt: object, minerAt: object) => {
   console.log("getMiningStatsAtBlock: [height: " + height + "] --> " + ccd006CityMining.getMiningStatsAtBlock(cityId, height).result);
-  //console.log("getMiningStatsAtBlock: [height: " + height + "] --> ", miningStatsAt);
+  console.log("getMiningStatsAtBlock: [height: " + height + "] --> ", miningStatsAt);
   console.log("getMinerAtBlock: [height: " + height + ", userId: " + userId + "] --> " + ccd006CityMining.getMinerAtBlock(cityId, height, userId).result);
-  //console.log("getMinerAtBlock: [height: " + height + ", userId: " + userId + "] --> ", minerAt);
+  console.log("getMinerAtBlock: [height: " + height + ", userId: " + userId + "] --> ", minerAt);
 };
 
-const checkMiningData = (ccd006CityMining: any, cityId: number, height: number, userId: number, miningStatsAt: object, minerAt: object) => {
-  let expectedStats = {
+const checkMiningData = (ccd006CityMining: any, cityId: number, height: number, userId: number, miningStatsAt: any, minerAt: any) => {
+  let expectedStats: any = {
     amount: types.uint(miningStatsAt.amount),
     claimed: types.bool(miningStatsAt.claimed),
     miners: types.uint(miningStatsAt.miners),
@@ -345,12 +345,11 @@ Clarinet.test({
     const totalBlocks = 1;
     const userId = 1;
 
-    block.receipts[0].result.expectOk().expectBool(true)
-    
+    block.receipts[0].result.expectOk().expectBool(true);
+
     block.receipts[0].events.expectSTXTransferEvent(10, user.address, `${sender.address}.${miaTreasuryName}`);
     const expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
     //console.log(block.receipts[0].events[1].contract_event.value)
-    console.log("TODO MJC: isBlockWinner causes UnwrapFailure here - maybe because of the contract call to citycoin-vrf-v2.")
     //ccd006CityMining.isBlockWinner(miaCityId, user.address, firstBlock).result.expectBool(true)
     const expectedStats2 = {
       commit: types.uint(10),
@@ -365,7 +364,7 @@ Clarinet.test({
       miners: types.uint(1),
     };
     assertEquals(ccd006CityMining.getMiningStatsAtBlock(miaCityId, firstBlock).result.expectTuple(), expectedStats);
-    ccd006CityMining.getBlockWinner(miaCityId, firstBlock).result.expectNone()
+    ccd006CityMining.getBlockWinner(miaCityId, firstBlock).result.expectNone();
 
     block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -675,7 +674,7 @@ Clarinet.test({
     let block = chain.mineBlock([ccd006CityMining.mine(user, miaCityName, entries)]);
     block.receipts[0].result.expectOk().expectBool(true);
     block.receipts[0].result.expectOk().expectBool(true);
-    console.log(block.receipts[0].events[1].contract_event.value)
+    //console.log(block.receipts[0].events[1].contract_event.value)
     const firstBlock = START_BLOCK_CCD006 - 2;
     const lastBlock = START_BLOCK_CCD006 - 2;
     const totalAmount = 10;
@@ -765,7 +764,7 @@ Clarinet.test({
     let block = chain.mineBlock([ccd006CityMining.mine(user, miaCityName, entries)]);
     block.receipts[0].result.expectOk().expectBool(true);
     block.receipts[0].result.expectOk().expectBool(true);
-    const firstBlock = START_BLOCK_CCD006 -1;
+    const firstBlock = START_BLOCK_CCD006 - 1;
     const lastBlock = START_BLOCK_CCD006 - 1;
     const totalAmount = 10;
     const totalBlocks = 1;
@@ -828,11 +827,11 @@ Clarinet.test({
     //dumpMiningData(ccd006CityMining, miaCityId, (firstBlock), (2), miningStatsAt, minerAt);
 
     if (block2.receipts[0].result === "(err u6011)") {
-      console.log("USER 2 WINS");
+      //console.log("USER 2 WINS");
       block2.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_NOT_WINNER);
       block2.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_NOTHING_TO_MINT);
     } else {
-      console.log("USER 1 WINS");
+      //console.log("USER 1 WINS");
       block2.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_NOTHING_TO_MINT);
       block2.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_NOT_WINNER);
     }
@@ -902,11 +901,11 @@ Clarinet.test({
      * this one sets the amounts and thresholds via CITY_DATA 009 and 010
      */
     if (miningClaimBlock.receipts[0].result === "(err u6010)") {
-      console.log("USER 2 WINS");
+      //console.log("USER 2 WINS");
       miningClaimBlock.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_CLAIMED);
       miningClaimBlock.receipts[1].result.expectOk().expectBool(true);
     } else {
-      console.log("USER 1 WINS");
+      //console.log("USER 1 WINS");
       miningClaimBlock.receipts[0].result.expectOk().expectBool(true);
       miningClaimBlock.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_CLAIMED);
     }
