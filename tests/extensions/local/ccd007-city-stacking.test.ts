@@ -19,7 +19,7 @@ import { CCEXTGovernanceToken } from "../../../models/external/test-ccext-govern
 const lockPeriod = 1;
 const rewardCycleLength = 2100;
 const miaCityName = "mia";
-const miaTreasuryName = "mia-treasury";
+const miaTreasuryName = "ccd002-treasury-mia-stacking";
 const miaCityId = 1;
 const nycCityId = 2;
 
@@ -283,7 +283,7 @@ Clarinet.test({
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
     const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
-    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
+    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-stacking");
 
     // act
 
@@ -322,10 +322,15 @@ Clarinet.test({
     const block1 = chain.mineBlock([ccd007CityStacking.sendStackingReward(operator, miaCityName, 1, 150000)]);
 
     // mid point check of the stx/mia token balances
-    ccd002Treasury.getBalanceStx().result.expectUint(150000);
+    const expected1 = {
+      claimable: types.uint(500),
+      stacked: types.uint(500),
+    };
+    assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 1, 1).result.expectTuple(), expected1);
     
     // confirm stacking reward is correct for the user and attempt to claim
     ccd007CityStacking.getStackingReward(miaCityId, 1, 1).result.expectSome().expectUint(150000);
+    ccd002Treasury.getBalanceStx().result.expectUint(150000);
     const block2 = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, miaCityName, 1)]);
 
     // assert
@@ -344,7 +349,7 @@ Clarinet.test({
       claimable: types.uint(0),
       stacked: types.uint(0),
     };
-    assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 0, 1).result.expectTuple(), expected);
+    assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 1, 1).result.expectTuple(), expected);
     // confirm stacked and return amounts cleared in cycle 1 for the user
     expected = {
       claimable: types.uint(0),
