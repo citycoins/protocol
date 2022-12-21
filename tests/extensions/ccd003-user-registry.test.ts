@@ -76,7 +76,7 @@ Clarinet.test({
     // act
 
     // assert
-    ccd003userRegistry.getUser(1).result.expectNone();
+    ccd003userRegistry.getUser(10).result.expectNone();
   },
 });
 
@@ -103,11 +103,13 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd003-user-registry: get-or-create-user-id() succeeds and creates an entry for id=1",
+  name: "ccd003-user-registry: get-or-create-user-id() succeeds and creates three user entries",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const approver1 = accounts.get("wallet_1")!;
+    const approver2 = accounts.get("wallet_2")!;
+    const approver3 = accounts.get("wallet_3")!;
     const ccd003userRegistry = new CCD003UserRegistry(chain, sender, "ccd003-user-registry");
 
     // act
@@ -116,9 +118,15 @@ Clarinet.test({
     // assert
     assertEquals(receipts.length, 4);
     receipts[3].result.expectOk().expectUint(3); // numb signals - not the result of execution!
+    // check each user known to the contract
     ccd003userRegistry.getUser(1).result.expectSome().expectPrincipal(approver1.address);
     ccd003userRegistry.getUserId(approver1.address).result.expectSome().expectUint(1);
-    ccd003userRegistry.getUser(2).result.expectNone();
+    ccd003userRegistry.getUser(2).result.expectSome().expectPrincipal(approver2.address);
+    ccd003userRegistry.getUserId(approver2.address).result.expectSome().expectUint(2);
+    ccd003userRegistry.getUser(3).result.expectSome().expectPrincipal(approver3.address);
+    ccd003userRegistry.getUserId(approver3.address).result.expectSome().expectUint(3);
+    // check that next user is unknown
+    ccd003userRegistry.getUser(4).result.expectNone();
   },
 });
 
