@@ -322,7 +322,7 @@ Clarinet.test({
     const block1 = chain.mineBlock([ccd007CityStacking.sendStackingReward(operator, miaCityName, 1, 150000)]);
 
     // mid point check of the stx/mia token balances
-    const expected1 = {
+    let expected1 = {
       claimable: types.uint(500),
       stacked: types.uint(500),
     };
@@ -345,17 +345,12 @@ Clarinet.test({
     //console.log(`block2:\n${JSON.stringify(block2, null, 2)}`);
 
     // confirm nothing stacked in cycle 0 for the user
-    let expected: any = {
+    expected1 = {
       claimable: types.uint(0),
       stacked: types.uint(0),
     };
-    assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 1, 1).result.expectTuple(), expected);
+    assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 1, 1).result.expectTuple(), expected1);
     // confirm stacked and return amounts cleared in cycle 1 for the user
-    expected = {
-      claimable: types.uint(0),
-      stacked: types.uint(0),
-    };
-    assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 1, 1).result.expectTuple(), expected);
     /**
      * TODO MJC: Expecting the reward to match the operators reward for cycle 0 ?
      *
@@ -367,7 +362,7 @@ Clarinet.test({
      * (payout * userStacked) / totalStacked
      */
     // confirm reward amount is set in overall cycle 1 data
-    expected = {
+    const expected = {
       reward: types.some(types.uint(150000)),
       total: types.uint(amountStacked),
     };
