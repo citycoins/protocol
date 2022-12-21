@@ -5,3 +5,4 @@
 .requirements/
 /coverage_report
 history.txt
+coverage.lcov

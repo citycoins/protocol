@@ -964,7 +964,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: set-reward-delay() can only be called by the dao",
+  name: "ccd006-city-mining: set-reward-delay() successfully changes the reward delay when called by the dao",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;

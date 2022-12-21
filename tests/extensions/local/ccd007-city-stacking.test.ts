@@ -21,6 +21,7 @@ const rewardCycleLength = 2100;
 const miaCityName = "mia";
 const miaTreasuryName = "mia-treasury";
 const miaCityId = 1;
+const nycCityId = 2;
 
 Clarinet.test({
   name: "ccd007-city-stacking: stack() fails with ERR_TRANSFER_FAILED if the token contract is unknown to the treasury",
@@ -192,7 +193,6 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
-    const operator = accounts.get("wallet_2")!;
     const amountStacked = 500;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
@@ -282,6 +282,8 @@ Clarinet.test({
     const amountStacked = 500;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
+    const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
+    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
 
     // act
 
@@ -304,15 +306,24 @@ Clarinet.test({
     // adds the token contract to the treasury allow list
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_010);
 
+    // mid point check of the stx/mia token balances
+    gt.getBalance(user1.address).result.expectOk().expectUint(1000);
+    ccd002Treasury.getBalanceStx().result.expectUint(0);
+
     // stack during cycle 0, which starts in cycle 1
     const block0 = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, amountStacked, lockPeriod)]);
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(true);
+
+    gt.getBalance(user1.address).result.expectOk().expectUint(500);
 
     // simulate pool operator sending stacking rewards for cycle 1
     // after progressing past cycle 1
     chain.mineEmptyBlock(rewardCycleLength * 2 + 10);
     const block1 = chain.mineBlock([ccd007CityStacking.sendStackingReward(operator, miaCityName, 1, 150000)]);
 
+    // mid point check of the stx/mia token balances
+    ccd002Treasury.getBalanceStx().result.expectUint(150000);
+    
     // confirm stacking reward is correct for the user and attempt to claim
     ccd007CityStacking.getStackingReward(miaCityId, 1, 1).result.expectSome().expectUint(150000);
     const block2 = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, miaCityName, 1)]);
@@ -356,5 +367,78 @@ Clarinet.test({
       total: types.uint(amountStacked),
     };
     assertEquals(ccd007CityStacking.getStackingStatsAtCycle(miaCityId, 1).result.expectTuple(), expected);
+
+    // end point check of the stx/mia token balances
+    ccd002Treasury.getBalanceStx().result.expectUint(0);
+    gt.getBalance(user1.address).result.expectOk().expectUint(1000);
+
   },
 });
+
+Clarinet.test({
+  name: "ccd007-city-stacking: get-first-block-in-reward-cycle() returns none if city activation details are not set",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
+
+    // act
+
+    // assert
+    ccd007CityStacking.getFirstBlockInRewardCycle(1, 0).result.expectNone();
+
+  },
+});
+
+Clarinet.test({
+  name: "ccd007-city-stacking: get-first-block-in-reward-cycle() returns correct block for mia with activation=1, for first few cycles",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
+
+    // act
+    // get or create user ID
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
+    // get or create city IDs
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    // set city activation details
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+
+    // assert
+    chain.mineEmptyBlock(rewardCycleLength * 2 + 10);
+    ccd007CityStacking.getFirstBlockInRewardCycle(miaCityId, 0).result.expectSome().expectUint(1);
+    ccd007CityStacking.getFirstBlockInRewardCycle(miaCityId, 1).result.expectSome().expectUint(2101);
+    ccd007CityStacking.getFirstBlockInRewardCycle(miaCityId, 2).result.expectSome().expectUint(4201);
+    ccd007CityStacking.getFirstBlockInRewardCycle(miaCityId, 3).result.expectSome().expectUint(6301);
+
+  },
+});
+
+Clarinet.test({
+  name: "ccd007-city-stacking: get-first-block-in-reward-cycle() returns correct block for nyc with activation=2, for first few cycles",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    ccd007CityStacking.isStackingActive(nycCityId, 1).result.expectBool(false);
+
+    // act
+    // get or create user ID
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
+    // get or create city IDs
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    // set city activation details
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+
+    // assert
+    //chain.mineEmptyBlock(rewardCycleLength * 2 + 10);
+    ccd007CityStacking.getFirstBlockInRewardCycle(nycCityId, 0).result.expectSome().expectUint(2);
+    ccd007CityStacking.getFirstBlockInRewardCycle(nycCityId, 1).result.expectSome().expectUint(2102);
+    ccd007CityStacking.getFirstBlockInRewardCycle(nycCityId, 2).result.expectSome().expectUint(4202);
+
+  },
+});
+
