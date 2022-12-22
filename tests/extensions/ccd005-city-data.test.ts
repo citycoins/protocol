@@ -58,7 +58,8 @@ const testExpectedCoinbaseAmount = (ccd005CityData: any, cityId: number, coinbas
     coinbaseAmount5: types.uint(coinbaseAmount5),
     coinbaseAmountDefault: types.uint(coinbaseAmountDefault),
   };
-  assertEquals(ccd005CityData.getCityCoinbaseAmounts(cityId).result.expectSome().expectTuple(), expectedStats);
+  const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(cityId).result.expectTuple();
+  assertEquals(coinbaseInfo.amounts.expectSome().expectTuple(), expectedStats);
 };
 
 const testExpectedCoinbaseThresholds = (ccd005CityData: any, cityId: number, coinbaseThreshold1: number, coinbaseThreshold2: number, coinbaseThreshold3: number, coinbaseThreshold4: number, coinbaseThreshold5: number) => {
@@ -69,7 +70,8 @@ const testExpectedCoinbaseThresholds = (ccd005CityData: any, cityId: number, coi
     coinbaseThreshold4: types.uint(coinbaseThreshold4),
     coinbaseThreshold5: types.uint(coinbaseThreshold5),
   };
-  assertEquals(ccd005CityData.getCityCoinbaseThresholds(cityId).result.expectSome().expectTuple(), expectedStats);
+  const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(cityId).result.expectTuple();
+  assertEquals(coinbaseInfo.thresholds.expectSome().expectTuple(), expectedStats);
 };
 
 // =============================
@@ -317,13 +319,17 @@ Clarinet.test({
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
+    // create city ids
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    // set city activation details
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
-    const block = passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_008);
+    // set city coinbase thresholds
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_008);
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(true);
-    ccd005CityData.getCityCoinbaseThresholds(miaCityId).result.expectNone();
+    const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
+    coinbaseInfo.thresholds.expectNone();
   },
 });
 
@@ -393,7 +399,8 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_006);
 
     // assert
-    ccd005CityData.getCityCoinbaseAmounts(miaCityId).result.expectNone();
+    const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
+    coinbaseInfo.amounts.expectNone();
   },
 });
 
@@ -410,8 +417,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_009);
 
     // assert
-    ccd005CityData.getCityCoinbaseAmounts(miaCityId).result.expectSome();
-    //console.log(block);
+    testExpectedCoinbaseAmount(ccd005CityData, miaCityId, 10, 100, 1000, 10000, 100000, 1000000, 10000000);
   },
 });
 
@@ -478,7 +484,8 @@ Clarinet.test({
     const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
     // assert
     receipts[3].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_INVALID_CITY);
-    ccd005CityData.getCityCoinbaseBonusPeriod(miaCityId).result.expectNone();
+    const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
+    coinbaseInfo.bonusPeriod.expectNone();
   },
 });
 
@@ -493,8 +500,9 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_017);
     // assert
-    ccd005CityData.getCityCoinbaseBonusPeriod(miaCityId).result.expectNone();
     receipts[3].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_INVALID_BONUS_PERIOD);
+    const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
+    coinbaseInfo.bonusPeriod.expectNone();
   },
 });
 
@@ -509,7 +517,8 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
     // assert
-    ccd005CityData.getCityCoinbaseBonusPeriod(miaCityId).result.expectSome().expectUint(20);
+    const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
+    coinbaseInfo.bonusPeriod.expectSome().expectUint(20);
   },
 });
 

@@ -444,16 +444,6 @@
   (map-get? ActiveCityTokenContract cityId)
 )
 
-;; returns (some thresholds) or none
-(define-read-only (get-city-coinbase-thresholds (cityId uint))
-  (map-get? CityCoinbaseThresholds cityId)
-)
-
-;; returns (some amounts) or none
-(define-read-only (get-city-coinbase-amounts (cityId uint))
-  (map-get? CityCoinbaseAmounts cityId)
-)
-
 ;; returns (some uint) or none
 (define-read-only (get-city-coinbase-bonus-period (cityId uint))
   (map-get? CityCoinbaseBonusPeriod cityId)

@@ -119,16 +119,8 @@ export class CCD005CityData {
     return this.callReadOnlyFn("get-active-city-token-contract", [types.uint(cityId)]);
   }
 
-  getCityCoinbaseThresholds(cityId: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-city-coinbase-thresholds", [types.uint(cityId)]);
-  }
-
-  getCityCoinbaseAmounts(cityId: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-city-coinbase-amounts", [types.uint(cityId)]);
-  }
-
-  getCityCoinbaseBonusPeriod(cityId: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-city-coinbase-bonus-period", [types.uint(cityId)]);
+  getCityCoinbaseInfo(cityId: number): ReadOnlyFn {
+    return this.callReadOnlyFn("get-city-coinbase-info", [types.uint(cityId)]);
   }
 
   // Extension callback

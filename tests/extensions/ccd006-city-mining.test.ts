@@ -1017,8 +1017,28 @@ Clarinet.test({
     const miningClaimBlock = chain.mineBlock([ccd006CityMining.claimMiningReward(user1, miaCityName, claimHeight), ccd006CityMining.claimMiningReward(user2, miaCityName, claimHeight)]);
 
     // assert
-    ccd005CityData.getCityCoinbaseAmounts(miaCityId).result.expectSome().expectTuple();
-    ccd005CityData.getCityCoinbaseThresholds(miaCityId).result.expectSome().expectTuple();
+
+    const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
+    // verify coinbase amounts
+    const expectedAmounts = {
+      coinbaseAmountBonus: types.uint(10),
+      coinbaseAmount1: types.uint(100),
+      coinbaseAmount2: types.uint(1000),
+      coinbaseAmount3: types.uint(10000),
+      coinbaseAmount4: types.uint(100000),
+      coinbaseAmount5: types.uint(1000000),
+      coinbaseAmountDefault: types.uint(10000000),
+    };
+    assertEquals(coinbaseInfo.amounts.expectSome().expectTuple(), expectedAmounts);
+    // verify coinbase thresholds
+    const expectedThresholds = {
+      coinbaseThreshold1: types.uint(6),
+      coinbaseThreshold2: types.uint(7),
+      coinbaseThreshold3: types.uint(8),
+      coinbaseThreshold4: types.uint(9),
+      coinbaseThreshold5: types.uint(10),
+    };
+    assertEquals(coinbaseInfo.thresholds.expectSome().expectTuple(), expectedThresholds);
 
     miningBlock.receipts[0].result.expectOk().expectBool(true);
     miningBlock.receipts[1].result.expectOk().expectBool(true);
