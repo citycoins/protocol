@@ -113,7 +113,12 @@ Clarinet.test({
 
     // act
     const entries = [10, 10];
+    // create city ids
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    // set city details (fails before this check)
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    // set city treasury (fails before this check)
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_012);
     const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert

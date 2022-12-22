@@ -104,13 +104,12 @@
   (let
     (
       (cityId (try! (get-city-id cityName)))
-      (cityActivated (try! (is-city-activated cityId)))
       (user tx-sender)
       (userId (try! (as-contract
         (contract-call? .ccd003-user-registry get-or-create-user-id user)
       )))
     )
-    (asserts! cityActivated ERR_CITY_NOT_ACTIVATED)
+    (asserts! (is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
     (asserts! (and 
       (> amount u0)
       (> lockPeriod u0)
@@ -463,7 +462,7 @@
 ;; returns (ok true) or ERR_CITY_NOT_ACTIVATED if not found
 (define-private (is-city-activated (cityId uint))
   ;; #[filter(cityId)]
-  (ok (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED))
+  (contract-call? .ccd005-city-data is-city-activated cityId)
 )
 
 ;; get city activation details from ccd005-city-data

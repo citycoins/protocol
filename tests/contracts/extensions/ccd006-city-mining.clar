@@ -129,7 +129,6 @@
   (let
     (
       (cityId (try! (get-city-id cityName)))
-      (cityActivated (try! (is-city-activated cityId)))
       (cityDetails (try! (get-city-activation-details cityId)))
       (cityTreasury (try! (get-city-treasury-by-name cityId "mining")))
       (user tx-sender)
@@ -138,7 +137,7 @@
       )))
       (totalAmount (fold + amounts u0))
     )
-    (asserts! cityActivated ERR_CITY_NOT_ACTIVATED)
+    (asserts! (is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
     (asserts! (>= (stx-get-balance tx-sender) totalAmount) ERR_INSUFFICIENT_BALANCE)
     (asserts! (> (len amounts) u0) ERR_INVALID_COMMIT_AMOUNTS)
     (begin
@@ -170,8 +169,8 @@
   (let
     (
       (cityId (try! (get-city-id cityName)))
-      (cityActivated (try! (is-city-activated cityId)))
     )
+    (asserts! (is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
     (claim-mining-reward-at-block cityName cityId tx-sender block-height claimHeight)
   )
 )
@@ -267,12 +266,10 @@
     (
       (thresholds (unwrap! (get-city-coinbase-thresholds cityId) u0))
       (amounts (unwrap! (get-city-coinbase-amounts cityId) u0))
-      (cityActivated (unwrap! (is-city-activated cityId) u0))
+      (cityActivated (asserts! (is-city-activated cityId) u0))
       (cityDetails (unwrap! (get-city-activation-details cityId) u0))
       (cityBonusPeriod (unwrap! (get-city-coinbase-bonus-period cityId) u0))
     )
-    ;; if contract is not active, return 0
-    (asserts! (is-eq cityActivated true) u0)
     ;; if contract is active, return amount based on thresholds
     (asserts! (> blockHeight (get activated cityDetails))
       (if (<= (- blockHeight (get activated cityDetails)) cityBonusPeriod)
@@ -470,7 +467,7 @@
 ;; get city activation status from .ccd005-city-data
 ;; returns (ok true) or ERR_CITY_NOT_ACTIVATED if not found
 (define-private (is-city-activated (cityId uint))
-  (ok (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED))
+  (contract-call? .ccd005-city-data is-city-activated cityId)
 )
 
 ;; get city activation details from ccd005-city-data
