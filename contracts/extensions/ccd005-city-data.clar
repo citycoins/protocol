@@ -195,13 +195,10 @@
 
 ;; guarded: sets activation status for a given city
 (define-public (set-city-activation-status (cityId uint) (status bool))
-  (let
-    (
-      (currentStatus (is-city-activated cityId))
-    )
+  (begin
     (try! (is-dao-or-extension))
     (try! (is-city-registered cityId))
-    (asserts! (not (is-eq currentStatus status)) ERR_UNAUTHORIZED)
+    (asserts! (not (is-eq (is-city-activated cityId) status)) ERR_UNAUTHORIZED)
     (ok (map-set CityActivationStatus cityId status))
   )
 )
@@ -224,14 +221,13 @@
 (define-public (activate-city (cityId uint) (memo (optional (string-ascii 100))))
   (let
     (
-      (status (is-city-activated cityId))
       (details (unwrap! (get-city-activation-details cityId) ERR_ACTIVATION_DETAILS_NOT_FOUND))
       (signals (+ (get-city-activation-signals cityId) u1))
     )
     ;; check if city ID is registered
     (try! (is-city-registered cityId))
     ;; check if already active
-    (asserts! (not status) ERR_CONTRACT_ALREADY_ACTIVE)
+    (asserts! (not (is-city-activated cityId)) ERR_CONTRACT_ALREADY_ACTIVE)
     ;; check if already voted
     (asserts! (not (get-city-activation-voter cityId tx-sender)) ERR_ALREADY_VOTED)
     ;; set activation signals
@@ -240,17 +236,14 @@
     (map-insert CityActivationVoters { cityId: cityId, signaler: tx-sender } true)
     ;; if signals = threshold
     (and (is-eq signals (get threshold details))
-      (let
-        (
-          (target (+ block-height (get delay details)))
-        )
+      (begin
         ;; set city activation status
         (map-set CityActivationStatus cityId true)
         ;; set city activation details
         (map-set CityActivationDetails cityId 
           (merge details {
             activated: block-height,
-            target: target
+            target: (+ block-height (get delay details))
           }))
           ;; TOKEN_BONUS_PERIOD u10000
           ;; TOKEN_EPOCH_LENGTH u25000
