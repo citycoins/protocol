@@ -397,19 +397,14 @@
   (let
     (
       (okReturn (try! return))
-      (cityId (get cityId okReturn))
-      (userId (get userId okReturn))
-      (amount (get amount okReturn))
-      (firstCycle (get first okReturn))
-      (lastCycle (get last okReturn))
-      (targetCycle (+ firstCycle rewardCycleIdx))
+      (targetCycle (+ (get first okReturn) rewardCycleIdx))
     )
     (and
-      (>= targetCycle firstCycle)
-      (< targetCycle lastCycle)
-      (if (is-eq targetCycle (- lastCycle u1))
-        (set-stacking-data cityId userId targetCycle amount amount)
-        (set-stacking-data cityId userId targetCycle amount u0)
+      (>= targetCycle (get first okReturn))
+      (< targetCycle (get last okReturn))
+      (if (is-eq targetCycle (- (get last okReturn) u1))
+        (set-stacking-data (get cityId okReturn) (get userId okReturn) targetCycle (get amount okReturn) (get amount okReturn))
+        (set-stacking-data (get cityId okReturn) (get userId okReturn) targetCycle (get amount okReturn) u0)
       )
     )
     return
