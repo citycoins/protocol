@@ -103,13 +103,13 @@
 (define-public (stack (cityName (string-ascii 32)) (amount uint) (lockPeriod uint))
   (let
     (
-      (cityId (try! (get-city-id cityName)))
+      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
       (user tx-sender)
       (userId (try! (as-contract
         (contract-call? .ccd003-user-registry get-or-create-user-id user)
       )))
     )
-    (asserts! (is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
+    (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
     (asserts! (and 
       (> amount u0)
       (> lockPeriod u0)
@@ -130,8 +130,8 @@
 (define-public (send-stacking-reward (cityName (string-ascii 32)) (targetCycle uint) (amount uint))
   (let
     (
-      (cityId (try! (get-city-id cityName)))
-      (cityTreasury (try! (get-city-treasury-by-name cityId "stacking")))
+      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
+      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
       (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
       (stackingStatsAtCycle (get-stacking-stats-at-cycle cityId targetCycle))
     )
@@ -174,9 +174,9 @@
 (define-public (claim-stacking-reward (cityName (string-ascii 32)) (targetCycle uint))
   (let
     (
-      (cityId (try! (get-city-id cityName)))
+      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
       (user tx-sender)
-      (userId (try! (get-user-id tx-sender)))
+      (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))
       (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
       (stackerAtCycle (get-stacker-at-cycle cityId targetCycle userId))
       (reward (unwrap! (get-stacking-reward cityId userId targetCycle) ERR_NOTHING_TO_CLAIM))
@@ -269,7 +269,7 @@
 (define-read-only (get-reward-cycle (cityId uint) (blockHeight uint))
   (let
     (
-      (activationDetails (unwrap! (get-city-activation-details cityId) none))
+      (activationDetails (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) none))
       (activationBlock (get activated activationDetails))
     )
     (if (>= blockHeight activationBlock)
@@ -281,7 +281,7 @@
 (define-read-only (get-first-block-in-reward-cycle (cityId uint) (cycle uint))
   (let
     (
-      (activationDetails (unwrap! (get-city-activation-details cityId) none))
+      (activationDetails (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) none))
     )
     (some (+ (get activated activationDetails) (* cycle (get-reward-cycle-length))))
   )
@@ -304,6 +304,7 @@
     (is-some (get reward rewardCycleStats))
   )
 )
+
 (define-read-only (get-stacking-reward (cityId uint) (userId uint) (cycle uint))
   (let
     (
@@ -333,7 +334,7 @@
 (define-private (stack-at-cycle (cityName (string-ascii 32)) (cityId uint) (user principal) (userId uint) (amount uint) (lockPeriod uint) (startHeight uint))
   (let
     (
-      (cityTreasury (try! (get-city-treasury-by-name cityId "stacking")))
+      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
       (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
       (targetCycle (+ u1 currentCycle))
       (stackingInfo {
@@ -429,45 +430,5 @@
         claimable: (+ toReturn (get claimable stackerAtCycle))
       })
     )
-  )
-)
-
-;; get user ID from ccd003-user-registry
-;; returns (ok uint) or ERR_USER_ID_NOT_FOUND if not found
-(define-private (get-user-id (user principal))
-  ;; #[filter(user)]
-  (ok (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))
-)
-
-;; get city ID from ccd004-city-registry
-;; returns (ok uint) or ERR_CITY_ID_NOT_FOUND if not found
-(define-private (get-city-id (cityName (string-ascii 32)))
-  ;; #[filter(cityName)]
-  (ok (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
-)
-
-;; get city activation status from .ccd005-city-data
-;; returns (ok true) or ERR_CITY_NOT_ACTIVATED if not found
-(define-private (is-city-activated (cityId uint))
-  ;; #[filter(cityId)]
-  (contract-call? .ccd005-city-data is-city-activated cityId)
-)
-
-;; get city activation details from ccd005-city-data
-;; returns (ok tuple) or ERR_CITY_DETAILS_NOT_FOUND if not found
-(define-private (get-city-activation-details (cityId uint))
-    ;; #[filter(cityId)]
-  (ok (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_CITY_DETAILS_NOT_FOUND))
-)
-
-;; city treasury details from ccd005-city-data
-;; returns (ok principal) or ERR_CITY_TREASURY_NOT_FOUND if not found
-(define-private (get-city-treasury-by-name (cityId uint) (treasuryName (string-ascii 32)))
-  (let
-    (
-      (treasuryId (unwrap! (contract-call? .ccd005-city-data get-city-treasury-id cityId treasuryName) ERR_CITY_TREASURY_NOT_FOUND))
-    )
-    ;; #[filter(cityId, treasuryName)]
-    (ok (unwrap! (contract-call? .ccd005-city-data get-city-treasury-address cityId treasuryId) ERR_CITY_TREASURY_NOT_FOUND))
   )
 )

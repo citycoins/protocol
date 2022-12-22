@@ -414,6 +414,16 @@
   (map-get? CityTreasuryAddress { cityId: cityId, treasuryId: treasuryId })
 )
 
+;; returns (some principal) or none
+(define-read-only (get-city-treasury-by-name (cityId uint) (treasuryName (string-ascii 32)))
+  (let
+    (
+      (treasuryId (unwrap! (map-get? CityTreasuryIds { cityId: cityId, treasuryName: treasuryName }) none))
+    )
+    (map-get? CityTreasuryAddress { cityId: cityId, treasuryId: treasuryId })
+  )
+)
+
 ;; returns current nonce or default of u0
 (define-read-only (get-city-token-contract-nonce (cityId uint))
   (default-to u0 (map-get? CityTokenContractNonce cityId))
@@ -447,6 +457,14 @@
 ;; returns (some uint) or none
 (define-read-only (get-city-coinbase-bonus-period (cityId uint))
   (map-get? CityCoinbaseBonusPeriod cityId)
+)
+
+(define-read-only (get-city-coinbase-info (cityId uint))
+  {
+    thresholds: (map-get? CityCoinbaseThresholds cityId),
+    amounts: (map-get? CityCoinbaseAmounts cityId),
+    bonusPeriod: (map-get? CityCoinbaseBonusPeriod cityId)
+  }
 )
 
 ;; PRIVATE FUNCTIONS
