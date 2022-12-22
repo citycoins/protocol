@@ -202,8 +202,7 @@
     (try! (is-dao-or-extension))
     (try! (is-city-registered cityId))
     (asserts! (not (is-eq currentStatus status)) ERR_UNAUTHORIZED)
-    (map-set CityActivationStatus cityId status)
-    (ok true)
+    (ok (map-set CityActivationStatus cityId status))
   )
 )
 
@@ -212,13 +211,12 @@
   (begin
     (try! (is-dao-or-extension))
     (try! (is-city-registered cityId))
-    (map-set CityActivationDetails cityId {
+    (ok (map-set CityActivationDetails cityId {
       activated: activated,
       delay: delay,
       target: target,
       threshold: threshold
-    })
-    (ok true)
+    }))
   )
 )
 
@@ -320,11 +318,10 @@
   (begin
     (try! (is-dao-or-extension))
     (try! (is-city-registered cityId))
-    (map-set ActiveCityTokenContract cityId {
+    (ok (map-set ActiveCityTokenContract cityId {
       tokenId: tokenId,
       tokenAddress: (unwrap! (get-city-token-contract-address cityId tokenId) ERR_UNAUTHORIZED)
-    })
-    (ok true)
+    }))
   )
 )
 
@@ -335,14 +332,13 @@
     (try! (is-city-registered cityId))
     ;; check that all thresholds increase in value
     (asserts! (and (> threshold1 u0) (> threshold2 threshold1) (> threshold3 threshold2) (> threshold4 threshold3) (> threshold5 threshold4)) ERR_INVALID_THRESHOLDS)
-    (map-set CityCoinbaseThresholds cityId {
+    (ok (map-set CityCoinbaseThresholds cityId {
       coinbaseThreshold1: threshold1,
       coinbaseThreshold2: threshold2,
       coinbaseThreshold3: threshold3,
       coinbaseThreshold4: threshold4,
       coinbaseThreshold5: threshold5
-    })
-    (ok true)
+    }))
   )
 )
 
@@ -353,7 +349,7 @@
     (try! (is-city-registered cityId))
     ;; check that all amounts are greater than zero
     (asserts! (and (> amountBonus u0) (> amount1 u0) (> amount2 u0) (> amount3 u0) (> amount4 u0) (> amount5 u0) (> amountDefault u0)) ERR_INVALID_AMOUNTS)
-    (map-set CityCoinbaseAmounts cityId {
+    (ok (map-set CityCoinbaseAmounts cityId {
       coinbaseAmountBonus: amountBonus,
       coinbaseAmount1: amount1,
       coinbaseAmount2: amount2,
@@ -361,8 +357,7 @@
       coinbaseAmount4: amount4,
       coinbaseAmount5: amount5,
       coinbaseAmountDefault: amountDefault
-    })
-    (ok true)
+    }))
   )
 )
 
@@ -373,8 +368,7 @@
     (try! (is-city-registered cityId))
     ;; check that bonus period is greater than zero
     (asserts! (> bonusPeriod u0) ERR_INVALID_BONUS_PERIOD)
-    (map-set CityCoinbaseBonusPeriod cityId bonusPeriod)
-    (ok true)
+    (ok (map-set CityCoinbaseBonusPeriod cityId bonusPeriod))
   )
 )
 
