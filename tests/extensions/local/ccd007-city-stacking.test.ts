@@ -51,7 +51,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd007-city-stacking: stack() succeeds and transfers mia tokens if the token contract is known to the treasury",
+  name: "ccd007-city-stacking: stack() succeeds and stacks for 1 cycle",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -61,6 +61,82 @@ Clarinet.test({
     const amountStacked = 500;
     const currentCycle = 0;
     const targetCycle = 1;
+    gt.getBalance(user1.address).result.expectOk().expectUint(0);
+    gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(0);
+
+    // act
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
+    // 009 mints mia to user1 and user2
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_009);
+    // 010 adds the token contract to the treasury allow list
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_010);
+    gt.getBalance(user1.address).result.expectOk().expectUint(1000);
+    gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(0);
+    const block = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, amountStacked, lockPeriod)]);
+
+    // assert
+    block.receipts[0].result.expectOk().expectBool(true);
+    gt.getBalance(user1.address).result.expectOk().expectUint(amountStacked);
+    gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(amountStacked);
+    //console.log(block.receipts[0].events[2].contract_event.value)
+    const expected = `{action: "stacking", amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, currentCycle: ${types.uint(currentCycle)}, firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-city-stacking`, expected);
+  },
+});
+
+Clarinet.test({
+  name: "ccd007-city-stacking: stack() succeeds and stacks for 16 cycles",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
+    const user1 = accounts.get("wallet_1")!;
+    const amountStacked = 500;
+    const currentCycle = 0;
+    const targetCycle = 1;
+    const lockPeriod = 16;
+    gt.getBalance(user1.address).result.expectOk().expectUint(0);
+    gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(0);
+
+    // act
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
+    // 009 mints mia to user1 and user2
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_009);
+    // 010 adds the token contract to the treasury allow list
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_010);
+    gt.getBalance(user1.address).result.expectOk().expectUint(1000);
+    gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(0);
+    const block = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, amountStacked, lockPeriod)]);
+
+    // assert
+    block.receipts[0].result.expectOk().expectBool(true);
+    gt.getBalance(user1.address).result.expectOk().expectUint(amountStacked);
+    gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(amountStacked);
+    //console.log(block.receipts[0].events[2].contract_event.value)
+    const expected = `{action: "stacking", amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, currentCycle: ${types.uint(currentCycle)}, firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-city-stacking`, expected);
+  },
+});
+
+Clarinet.test({
+  name: "ccd007-city-stacking: stack() succeeds and stacks for 32 cycles",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
+    const user1 = accounts.get("wallet_1")!;
+    const amountStacked = 500;
+    const currentCycle = 0;
+    const targetCycle = 1;
+    const lockPeriod = 32;
     gt.getBalance(user1.address).result.expectOk().expectUint(0);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(0);
 
@@ -327,7 +403,7 @@ Clarinet.test({
       stacked: types.uint(500),
     };
     assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 1, 1).result.expectTuple(), expected1);
-    
+
     // confirm stacking reward is correct for the user and attempt to claim
     ccd007CityStacking.getStackingReward(miaCityId, 1, 1).result.expectSome().expectUint(150000);
     ccd002Treasury.getBalanceStx().result.expectUint(150000);
@@ -371,7 +447,6 @@ Clarinet.test({
     // end point check of the stx/mia token balances
     ccd002Treasury.getBalanceStx().result.expectUint(0);
     gt.getBalance(user1.address).result.expectOk().expectUint(1000);
-
   },
 });
 
@@ -387,7 +462,6 @@ Clarinet.test({
 
     // assert
     ccd007CityStacking.getFirstBlockInRewardCycle(1, 0).result.expectNone();
-
   },
 });
 
@@ -413,7 +487,6 @@ Clarinet.test({
     ccd007CityStacking.getFirstBlockInRewardCycle(miaCityId, 1).result.expectSome().expectUint(2101);
     ccd007CityStacking.getFirstBlockInRewardCycle(miaCityId, 2).result.expectSome().expectUint(4201);
     ccd007CityStacking.getFirstBlockInRewardCycle(miaCityId, 3).result.expectSome().expectUint(6301);
-
   },
 });
 
@@ -438,7 +511,5 @@ Clarinet.test({
     ccd007CityStacking.getFirstBlockInRewardCycle(nycCityId, 0).result.expectSome().expectUint(2);
     ccd007CityStacking.getFirstBlockInRewardCycle(nycCityId, 1).result.expectSome().expectUint(2102);
     ccd007CityStacking.getFirstBlockInRewardCycle(nycCityId, 2).result.expectSome().expectUint(4202);
-
   },
 });
-
