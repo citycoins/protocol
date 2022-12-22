@@ -115,8 +115,7 @@
       (> lockPeriod u0)
       (<= lockPeriod MAX_REWARD_CYCLES)
     ) ERR_INVALID_STACKING_PARAMS)
-    (try! (stack-at-cycle cityName cityId tx-sender userId amount lockPeriod block-height))
-    (ok true)
+    (stack-at-cycle cityName cityId tx-sender userId amount lockPeriod block-height)
   )
 )
 
@@ -153,14 +152,6 @@
       ;; TODO: add check against treasury value?
       (asserts! (is-ok (contract-call? .ccd002-treasury-nyc-stacking deposit-stx amount)) ERR_TRANSFER_FAILED)
     )
-    ;; update stacking stats
-    ;; TODO: does this need to add the original value?
-    (map-set StackingStatsAtCycle
-      { cityId: cityId, cycle: targetCycle }
-      (merge stackingStatsAtCycle {
-        reward: (some amount),
-      })
-    )
     ;; print details
     (print {
       action: "stacking-reward-payout",
@@ -171,7 +162,12 @@
       targetCycle: targetCycle,
       amount: amount,
     })
-    (ok true)
+    ;; update stacking stats
+    ;; TODO: does this need to add the original value?
+    (ok (map-set StackingStatsAtCycle
+      { cityId: cityId, cycle: targetCycle }
+      (merge stackingStatsAtCycle { reward: (some amount) })
+    ))
   )
 )
 
@@ -188,15 +184,6 @@
     )
     (asserts! (> currentCycle targetCycle) ERR_REWARD_CYCLE_NOT_COMPLETE)
     (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
-    ;; disable ability to claim again
-    (map-set StackerAtCycle {
-      cityId: cityId,
-      cycle: targetCycle,
-      userId: userId
-    } {
-      stacked: u0,
-      claimable: u0
-    })
     ;; send back CityCoins if user was eligible
     ;; temporarily hardcoded to cities until Stacks 2.1
     ;; next version can use traits as stored principals
@@ -236,7 +223,15 @@
         true
       )
     )
-    (ok true)
+    ;; disable ability to claim again
+    (ok (map-set StackerAtCycle {
+      cityId: cityId,
+      cycle: targetCycle,
+      userId: userId
+    } {
+      stacked: u0,
+      claimable: u0
+    }))
   )
 )
 
@@ -287,9 +282,8 @@
   (let
     (
       (activationDetails (unwrap! (get-city-activation-details cityId) none))
-      (activationBlock (get activated activationDetails))
     )
-    (some (+ activationBlock (* cycle (get-reward-cycle-length))))
+    (some (+ (get activated activationDetails) (* cycle (get-reward-cycle-length))))
   )
 )
 
@@ -306,18 +300,15 @@
   (let
     (
       (rewardCycleStats (get-stacking-stats-at-cycle cityId cycle))
-      (cycleReward (get reward rewardCycleStats))
     )
-    (is-some cycleReward)
+    (is-some (get reward rewardCycleStats))
   )
 )
-
 (define-read-only (get-stacking-reward (cityId uint) (userId uint) (cycle uint))
   (let
     (
       (rewardCycleStats (get-stacking-stats-at-cycle cityId cycle))
       (stackerAtCycle (get-stacker-at-cycle cityId cycle userId))
-      (totalStacked (get total rewardCycleStats))
       (cycleReward (unwrap! (get reward rewardCycleStats) none))
       (userStacked (get stacked stackerAtCycle))
       (currentCycle (unwrap! (get-reward-cycle cityId block-height) none))
@@ -328,7 +319,7 @@
       ;; or stacker is not stacking
       none
       ;; calculate reward
-      (some (/ (* cycleReward userStacked) totalStacked))
+      (some (/ (* cycleReward userStacked) (get total rewardCycleStats)))
     )
   )
 )
@@ -350,6 +341,7 @@
         userId: userId,
         amount: amount,
         first: targetCycle,
+        ;; TODO: should this be minus 1?
         last: (+ targetCycle lockPeriod)
       })
     )
@@ -381,6 +373,7 @@
       lockPeriod: lockPeriod,
       currentCycle: currentCycle,
       firstCycle: targetCycle,
+      ;; TODO: should this be minus 1?
       lastCycle: (- (+ targetCycle lockPeriod) u1)
     })
     ;; fold over closure

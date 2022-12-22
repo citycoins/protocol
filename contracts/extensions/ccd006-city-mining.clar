@@ -147,8 +147,6 @@
         height: block-height,
         totalAmount: u0,
       })))
-      ;; TODO: this should use CCD002 deposit function
-      (try! (stx-transfer? totalAmount tx-sender cityTreasury))
       (print {
         action: "mining",
         userId: userId,
@@ -160,7 +158,8 @@
         totalBlocks: (len amounts),
         totalAmount: totalAmount,
       })                
-      (ok true)
+      ;; TODO: this should use CCD002 deposit function
+      (stx-transfer? totalAmount tx-sender cityTreasury)
     )
   )
 )
@@ -406,7 +405,6 @@
       { cityId: cityId, height: claimHeight }
       userId
     )
-    (try! (mint-coinbase cityName cityId user claimHeight))
     (print {
       action: "mining-claim",
       userId: userId,
@@ -414,7 +412,7 @@
       cityId: cityId,
       claimHeight: claimHeight
     })
-    (ok true)
+    (mint-coinbase cityName cityId user claimHeight)
   )
 )
 
