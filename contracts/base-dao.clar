@@ -38,7 +38,6 @@
   )
 )
 
-;; execute a proposal
 (define-public (execute (proposal <proposal-trait>) (sender principal))
   (begin
     (try! (is-self-or-extension))
@@ -48,7 +47,6 @@
   )
 )
 
-;; iniitial dao configuration
 (define-public (construct (proposal <proposal-trait>))
   (let
     ((sender tx-sender))
@@ -58,7 +56,6 @@
   )
 )
 
-;; extension requests
 (define-public (request-extension-callback (extension <extension-trait>) (memo (buff 34)))
   (let
     ((sender tx-sender))

@@ -5,7 +5,7 @@ import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts
 import { CCEXTGovernanceToken } from "../../models/external/test-ccext-governance-token.model.ts";
 import { CCEXTNft } from "../../models/external/test-ccext-nft.model.ts";
 
-// Authorization check
+// PUBLIC FUNCTIONS
 
 Clarinet.test({
   name: "ccd002-treasury: is-dao-or-extension() fails when called directly",
@@ -14,16 +14,27 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
 
-    // act
-
     // assert
     ccd002Treasury.isDaoOrExtension().result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
-// Internal DAO functions
+Clarinet.test({
+  name: "ccd002-treasury: callback() succeeds when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
 
-// ccd002-treasury: set-allowed() fails when called directly
+    // act
+    const { receipts } = chain.mineBlock([ccd002Treasury.callback(sender, "test")]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result.expectOk().expectBool(true);
+  },
+});
+
 Clarinet.test({
   name: "ccd002-treasury: set-allowed() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
@@ -51,9 +62,9 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_001);
 
     // act
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_001);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -62,7 +73,6 @@ Clarinet.test({
   },
 });
 
-// ccd002-treasury: set-allowed-list() fails when called directly
 Clarinet.test({
   name: "ccd002-treasury: set-allowed-list() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
@@ -137,8 +147,6 @@ Clarinet.test({
   },
 });
 
-// Deposit functions
-
 Clarinet.test({
   name: "ccd002-treasury: deposit-stx() succeeds and transfers STX to the vault",
   fn(chain: Chain, accounts: Map<string, Account>) {
@@ -160,7 +168,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd002-treasury: deposit-ft() fails if asset is unknown",
+  name: "ccd002-treasury: deposit-ft() fails if asset is not on allow list",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -176,12 +184,8 @@ Clarinet.test({
   },
 });
 
-/**
- * Pre-conditions check that none is returned before the proposal is executed.
- * The proposal adds two asset contracts, one allowed the other denied.
- */
 Clarinet.test({
-  name: "ccd002-treasury: deposit-ft() fails if asset is not allowed",
+  name: "ccd002-treasury: deposit-ft() fails if asset is not enabled",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -199,12 +203,6 @@ Clarinet.test({
   },
 });
 
-/**
- * Setup:
- * 1. construct dao and allow list a sip 10 token contract
- * 2. Dao mints token to user
- * 3. User transfers token to treasury
- */
 Clarinet.test({
   name: "ccd002-treasury: deposit-ft() succeeds and transfers FT to the vault",
   fn(chain: Chain, accounts: Map<string, Account>) {
@@ -235,7 +233,25 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd002-treasury: deposit-nft() fails if asset is not allowed",
+  name: "ccd002-treasury: deposit-nft() fails if asset is not on allow list",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
+    const tokenId = 1000;
+    ccd002Treasury.isAllowed(EXTERNAL.NFT_NYC).result.expectBool(false);
+
+    // act
+    const block = chain.mineBlock([ccd002Treasury.depositNft(sender, EXTERNAL.NFT_NYC, tokenId)]);
+
+    // assert
+    assertEquals(block.receipts.length, 1);
+    block.receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd002-treasury: deposit-nft() fails if asset is not enabled",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -280,8 +296,6 @@ Clarinet.test({
     receipts[0].events.expectPrintEvent(EXTENSIONS.CCD002_TREASURY_NYC_MINING, event);
   },
 });
-
-// Withdraw functions
 
 Clarinet.test({
   name: "ccd002-treasury: withdraw-stx() fails when called directly",
@@ -345,7 +359,25 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd002-treasury: withdraw-ft() fails if asset is not allowed",
+  name: "ccd002-treasury: withdraw-ft() fails if asset is not on allow list",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-nyc-mining");
+    ccd002Treasury.isAllowed(EXTERNAL.FT_NYC).result.expectBool(false);
+
+    // act
+    // Proposal attempts to withdraw nyc coin
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_007);
+
+    // assert
+    assertEquals(receipts.length, 4);
+    receipts[3].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd002-treasury: withdraw-ft() fails if asset is not enabled",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -436,7 +468,33 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd002-treasury: withdraw-nft() fails if asset is not allowed",
+  name: "ccd002-treasury: withdraw-nft() fails if asset is not on allow list",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-nyc-mining");
+    ccd002Treasury.isAllowed(EXTERNAL.NFT_NYC).result.expectBool(false);
+    const tokenId = 1;
+    const nft = new CCEXTNft(chain, sender, "test-ccext-nft-nyc");
+    // mint an asset to the treasury
+    chain.mineBlock([nft.mint(EXTENSIONS.CCD002_TREASURY_NYC_MINING, sender.address)]);
+    // Check asset is owned by the nyc treasury
+    nft.getOwner(tokenId).result.expectOk().expectSome().expectPrincipal(EXTENSIONS.CCD002_TREASURY_NYC_MINING);
+
+    // act
+    // Proposal 9 attempts to withdraw nyc nft
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_009);
+
+    // assert
+    // Demonstrate ownership of asset is unchanged
+    nft.getOwner(tokenId).result.expectOk().expectSome().expectPrincipal(EXTENSIONS.CCD002_TREASURY_NYC_MINING);
+    assertEquals(receipts.length, 4);
+    receipts[3].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd002-treasury: withdraw-nft() fails if asset is not enabled",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -493,7 +551,7 @@ Clarinet.test({
   },
 });
 
-// Read only functions
+// READ ONLY FUNCTIONS
 
 Clarinet.test({
   name: "ccd002-treasury: is-allowed() succeeds and returns false if asset is not in map",
@@ -502,8 +560,6 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
     const asset = EXTERNAL.FT_MIA;
-
-    // act
 
     // assert
     ccd002Treasury.isAllowed(asset).result.expectBool(false);
@@ -535,8 +591,6 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
     const asset = EXTERNAL.FT_MIA;
-
-    // act
 
     // assert
     ccd002Treasury.getAllowedAsset(asset).result.expectNone();
@@ -576,23 +630,5 @@ Clarinet.test({
 
     // assert
     ccd002Treasury.getBalanceStx().result.expectUint(amount);
-  },
-});
-
-// Extension callback
-
-Clarinet.test({
-  name: "ccd002-treasury: callback() succeeds when called directly",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
-
-    // act
-    const { receipts } = chain.mineBlock([ccd002Treasury.callback(sender, "test")]);
-
-    // assert
-    assertEquals(receipts.length, 1);
-    receipts[0].result.expectOk().expectBool(true);
   },
 });

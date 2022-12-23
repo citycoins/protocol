@@ -3,7 +3,7 @@ import { PROPOSALS } from "../../utils/common.ts";
 import { BaseDao } from "../../models/base-dao.model.ts";
 import { CCD001DirectExecute } from "../../models/extensions/ccd001-direct-execute.model.ts";
 
-// Authorization check
+// PUBLIC FUNCTIONS
 
 Clarinet.test({
   name: "ccd001-direct-execute: is-dao-or-extension() fails when called directly",
@@ -12,14 +12,26 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
 
-    // act
-
     // assert
     ccd001DirectExecute.isDaoOrExtension().result.expectErr().expectUint(CCD001DirectExecute.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
-// Internal DAO functions
+Clarinet.test({
+  name: "ccd001-direct-execute: callback() succeeds when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
+
+    // act
+    const { receipts } = chain.mineBlock([ccd001DirectExecute.callback(sender, "test")]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result.expectOk().expectBool(true);
+  },
+});
 
 Clarinet.test({
   name: "ccd001-direct-execute: set-sunset-block-height() fails when called directly",
@@ -37,13 +49,8 @@ Clarinet.test({
   },
 });
 
-/**
- * Tests error code ERR_SUNSET_IN_PAST by calling set-sunset-block-height from a
- * proposal. This avoids the is-dao-or-extension check because base-dao switches tx-sender to
- * itself when proposal is executed.
- */
 Clarinet.test({
-  name: "ccd001-direct-execute: set-sunset-block-height() fails when in past",
+  name: "ccd001-direct-execute: set-sunset-block-height() fails if block height is in the past",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -62,11 +69,6 @@ Clarinet.test({
   },
 });
 
-/**
- * Tests error code ERR_SUNSET_IN_PAST by calling set-sunset-block-height from a
- * proposal. This avoids the is-dao-or-extension check because base-dao switches tx-sender to
- * itself when proposal is executed.
- */
 Clarinet.test({
   name: "ccd001-direct-execute: set-sunset-block-height() succeeds and returns new sunset block height",
   fn(chain: Chain, accounts: Map<string, Account>) {
@@ -118,168 +120,6 @@ Clarinet.test({
     // assert
     assertEquals(receipts.length, 1);
     receipts[0].result.expectErr().expectUint(CCD001DirectExecute.ErrCode.ERR_UNAUTHORIZED);
-  },
-});
-
-// Public Functions
-
-Clarinet.test({
-  name: "ccd001-direct-execute: is-approver() succeeds and returns false if approver is not in map",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-    const approver = accounts.get("wallet_1")!;
-
-    // act
-
-    // assert
-    ccd001DirectExecute.isApprover(approver.address).result.expectBool(false);
-  },
-});
-
-Clarinet.test({
-  name: "ccd001-direct-execute: is-approver() succeeds and returns true if approver is in map",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-    const baseDao = new BaseDao(chain, sender);
-    const approver1 = accounts.get("wallet_1")!;
-
-    // act
-    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(0);
-
-    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
-
-    // assert
-    ccd001DirectExecute.isApprover(approver1.address).result.expectBool(true);
-  },
-});
-
-Clarinet.test({
-  name: "ccd001-direct-execute: is-approver() succeeds and returns false if account is not an approver",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-    const baseDao = new BaseDao(chain, sender);
-    const approver5 = accounts.get("wallet_6")!;
-
-    // act
-    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
-
-    // assert
-    ccd001DirectExecute.isApprover(approver5.address).result.expectBool(false);
-  },
-});
-
-Clarinet.test({
-  name: "ccd001-direct-execute: has-signalled() succeeds and returns false if approver is not in map",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-    const approver = accounts.get("wallet_1")!;
-
-    // act
-
-    // assert
-    ccd001DirectExecute.hasSignalled(PROPOSALS.CCIP_012, approver.address).result.expectBool(false);
-  },
-});
-
-Clarinet.test({
-  name: "ccd001-direct-execute: has-signalled() succeeds and returns false if approver has not signalled",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-    const baseDao = new BaseDao(chain, sender);
-    const approver1 = accounts.get("wallet_1")!;
-
-    // act
-    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
-
-    // assert
-    ccd001DirectExecute.hasSignalled(PROPOSALS.CCIP_012, approver1.address).result.expectBool(false);
-  },
-});
-
-Clarinet.test({
-  name: "ccd001-direct-execute: has-signalled() succeeds and returns true if approver has signalled",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-    const baseDao = new BaseDao(chain, sender);
-    const approver1 = accounts.get("wallet_1")!;
-
-    // act
-    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012), ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_012)]);
-
-    // assert
-    ccd001DirectExecute.hasSignalled(PROPOSALS.CCIP_012, approver1.address).result.expectBool(true);
-  },
-});
-
-Clarinet.test({
-  name: "ccd001-direct-execute: has-signalled() succeeds and returns false if approver has signalled on a different proposal",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-    const baseDao = new BaseDao(chain, sender);
-    const approver1 = accounts.get("wallet_1")!;
-
-    // act
-    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012), ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)]);
-
-    // assert
-    ccd001DirectExecute.hasSignalled(PROPOSALS.CCIP_012, approver1.address).result.expectBool(false);
-  },
-});
-
-Clarinet.test({
-  name: "ccd001-direct-execute: get-signals-required() succeeds and returns required signals variable",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-    const expectedSignals = 1; // default value
-
-    // act
-
-    // assert
-    ccd001DirectExecute.getSignalsRequired().result.expectUint(expectedSignals);
-  },
-});
-
-Clarinet.test({
-  name: "ccd001-direct-execute: get-signals() succeeds and returns correct number of signals for a proposal",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-    const baseDao = new BaseDao(chain, sender);
-    const approver1 = accounts.get("wallet_1")!;
-    const approver2 = accounts.get("wallet_2")!;
-    const approver3 = accounts.get("wallet_3")!;
-
-    // assert
-    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(0);
-
-    // act
-    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012), ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)]);
-
-    // assert
-    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(1);
-
-    // act
-    chain.mineBlock([ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001), ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)]);
-
-    // assert
-    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(3);
   },
 });
 
@@ -339,10 +179,6 @@ Clarinet.test({
   },
 });
 
-/**
- * The proposal, TEST_CCD001_DIRECT_EXECUTE_001, on successful execution, changes the number of signals required from 3 to 2.
- * Test direct-execute and set-signals-required.
- */
 Clarinet.test({
   name: "ccd001-direct-execute: direct-execute() succeeds and executes proposal if signal count reached",
   fn(chain: Chain, accounts: Map<string, Account>) {
@@ -364,20 +200,156 @@ Clarinet.test({
   },
 });
 
-// Extension callback
+// READ ONLY FUNCTIONS
 
 Clarinet.test({
-  name: "ccd001-direct-execute: callback() succeeds when called directly",
+  name: "ccd001-direct-execute: is-approver() succeeds and returns false if approver is not in map",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
-
-    // act
-    const { receipts } = chain.mineBlock([ccd001DirectExecute.callback(sender, "test")]);
+    const approver = accounts.get("wallet_1")!;
 
     // assert
-    assertEquals(receipts.length, 1);
-    receipts[0].result.expectOk().expectBool(true);
+    ccd001DirectExecute.isApprover(approver.address).result.expectBool(false);
+  },
+});
+
+Clarinet.test({
+  name: "ccd001-direct-execute: is-approver() succeeds and returns false if account is not an approver",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
+    const baseDao = new BaseDao(chain, sender);
+    const approver5 = accounts.get("wallet_6")!;
+
+    // act
+    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
+
+    // assert
+    ccd001DirectExecute.isApprover(approver5.address).result.expectBool(false);
+  },
+});
+
+Clarinet.test({
+  name: "ccd001-direct-execute: is-approver() succeeds and returns true if approver is in map",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
+    const baseDao = new BaseDao(chain, sender);
+    const approver1 = accounts.get("wallet_1")!;
+
+    // act
+    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
+
+    // assert
+    ccd001DirectExecute.isApprover(approver1.address).result.expectBool(true);
+  },
+});
+
+Clarinet.test({
+  name: "ccd001-direct-execute: has-signalled() succeeds and returns false if approver is not in map",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
+    const approver = accounts.get("wallet_1")!;
+
+    // assert
+    ccd001DirectExecute.hasSignalled(PROPOSALS.CCIP_012, approver.address).result.expectBool(false);
+  },
+});
+
+Clarinet.test({
+  name: "ccd001-direct-execute: has-signalled() succeeds and returns false if approver has not signalled",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
+    const baseDao = new BaseDao(chain, sender);
+    const approver = accounts.get("wallet_1")!;
+
+    // act
+    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
+
+    // assert
+    ccd001DirectExecute.hasSignalled(PROPOSALS.CCIP_012, approver.address).result.expectBool(false);
+  },
+});
+
+Clarinet.test({
+  name: "ccd001-direct-execute: has-signalled() succeeds and returns false if approver has signalled on a different proposal",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
+    const baseDao = new BaseDao(chain, sender);
+    const approver1 = accounts.get("wallet_1")!;
+
+    // act
+    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012), ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)]);
+
+    // assert
+    ccd001DirectExecute.hasSignalled(PROPOSALS.CCIP_012, approver1.address).result.expectBool(false);
+  },
+});
+
+Clarinet.test({
+  name: "ccd001-direct-execute: has-signalled() succeeds and returns true if approver has signalled",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
+    const baseDao = new BaseDao(chain, sender);
+    const approver1 = accounts.get("wallet_1")!;
+
+    // act
+    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012), ccd001DirectExecute.directExecute(approver1, PROPOSALS.CCIP_012)]);
+
+    // assert
+    ccd001DirectExecute.hasSignalled(PROPOSALS.CCIP_012, approver1.address).result.expectBool(true);
+  },
+});
+
+Clarinet.test({
+  name: "ccd001-direct-execute: get-signals-required() succeeds and returns required signals variable",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
+    const expectedSignals = 1; // default value
+
+    // assert
+    ccd001DirectExecute.getSignalsRequired().result.expectUint(expectedSignals);
+  },
+});
+
+Clarinet.test({
+  name: "ccd001-direct-execute: get-signals() succeeds and returns correct number of signals for a proposal",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
+    const baseDao = new BaseDao(chain, sender);
+    const approver1 = accounts.get("wallet_1")!;
+    const approver2 = accounts.get("wallet_2")!;
+    const approver3 = accounts.get("wallet_3")!;
+
+    // assert
+    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(0);
+
+    // act
+    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012), ccd001DirectExecute.directExecute(approver1, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)]);
+
+    // assert
+    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(1);
+
+    // act
+    chain.mineBlock([ccd001DirectExecute.directExecute(approver2, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001), ccd001DirectExecute.directExecute(approver3, PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001)]);
+
+    // assert
+    ccd001DirectExecute.getSignals(PROPOSALS.TEST_CCD001_DIRECT_EXECUTE_001).result.expectUint(3);
   },
 });

@@ -23,10 +23,7 @@
 ;; DATA MAPS
 
 (define-map Approvers principal bool)
-(define-map ApproverSignals
-  { proposal: principal, approver: principal }
-  bool
-)
+(define-map ApproverSignals { proposal: principal, approver: principal } bool)
 (define-map SignalCount principal uint)
 
 ;; PUBLIC FUNCTIONS
