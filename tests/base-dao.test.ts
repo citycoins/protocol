@@ -94,16 +94,21 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const baseDao = new BaseDao(chain, sender);
-    const targetBlock = 100; //START_BLOCK_BASE_DAO;
+    const targetBlock = 100;
     chain.mineEmptyBlockUntil(targetBlock);
-    chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
+    const { height } = chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012)]);
 
     // act
     const { receipts } = chain.mineBlock([baseDao.executedAt(sender, PROPOSALS.CCIP_012)]);
 
     // assert
     assertEquals(receipts.length, 1);
-    // TODO MJC: figure out why this changes? receipts[0].result.expectSome().expectUint(targetBlock);
+    // TODO MJC: figure out why this changes?
+    // JS: figured this one out:
+    // - mineEmptyBlock until progresses to 101
+    // - construct is processed in block 102, which means it was submitted at block 101
+    // - if we take the height from construct - 1 then we get the correct value
+    receipts[0].result.expectSome().expectUint(height - 1);
   },
 });
 

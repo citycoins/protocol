@@ -677,12 +677,12 @@ Clarinet.test({
 
 /* 
 TODO MJC: Cleanup once reviewed..
-removing code below as I think it contradicts the goal above
-      - TEST_CCD005_CITY_DATA_012 adds: u1 .mia-treasury "mia-treasury"
-      - TEST_CCD005_CITY_DATA_013 adds: u2 .mia-treasury "mia-treasury"
-      - this pattern would be invalidated by the previous test
-      - treasuries between cities are independent, so the same contract could be set for both cities if there was a need
-      - each city will be expected to have a "mining" and "stacking" treasury for the protocol to use
+JS: removing code below as I think it contradicts the goal above
+- TEST_CCD005_CITY_DATA_012 adds: u1 .mia-treasury "mia-treasury"
+- TEST_CCD005_CITY_DATA_013 adds: u2 .mia-treasury "mia-treasury"
+- this pattern would be invalidated by the previous test
+- treasuries between cities are independent, so the same contract could be set for both cities if there was a need
+- each city will be expected to have a "mining" and "stacking" treasury for the protocol to use
 
 Clarinet.test({
   name: "ccd005-city-data: add-city-treasury() cannot creates two treasuries for different cities with the same name and address",
