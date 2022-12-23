@@ -209,19 +209,16 @@
   )
 )
 
-;; TODO: more to inline?
 (define-read-only (get-stacking-reward (cityId uint) (userId uint) (cycle uint))
   (let
     (
       (rewardCycleStats (get-stacking-stats-at-cycle cityId cycle))
       (stackerAtCycle (get-stacker-at-cycle cityId cycle userId))
-      (cycleReward (unwrap! (get reward rewardCycleStats) none))
       (userStacked (get stacked stackerAtCycle))
-      (currentCycle (unwrap! (get-reward-cycle cityId block-height) none))
     )
-    (if (or (<= currentCycle cycle) (is-eq userStacked u0))
+    (if (or (<= (unwrap! (get-reward-cycle cityId block-height) none) cycle) (is-eq userStacked u0))
       none
-      (some (/ (* cycleReward userStacked) (get total rewardCycleStats)))
+      (some (/ (* (unwrap! (get reward rewardCycleStats) none) userStacked) (get total rewardCycleStats)))
     )
   )
 )

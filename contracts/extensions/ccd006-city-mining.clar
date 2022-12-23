@@ -215,7 +215,6 @@
     )
     (asserts! (not (has-mined-at-block cityId height userId)) ERR_ALREADY_MINED)
     (asserts! (> amount u0) ERR_INSUFFICIENT_COMMIT)
-    ;; TODO: check inlining this
     (set-mining-data cityId userId height amount)
     (ok (merge okReturn
       { height: (+ height u1), totalAmount: (+ totalAmount amount) }
@@ -227,12 +226,11 @@
   (let
     (
       (blockStats (get-mining-stats-at-block cityId height))
-      (minerCount (+ (get miners blockStats) u1))
       (vrfLowVal (get-high-value cityId height))
     )
     (map-set MiningStatsAtBlock
       { cityId: cityId, height: height }
-      { miners: minerCount, amount: (+ (get amount blockStats) amount), claimed: false }
+      { miners: (+ (get miners blockStats) u1), amount: (+ (get amount blockStats) amount), claimed: false }
     )
     (map-insert MinerAtBlock
       { cityId: cityId, height: height, userId: userId }
