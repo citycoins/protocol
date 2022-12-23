@@ -1,6 +1,5 @@
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import { constructAndPassProposal, passProposal, EXTENSIONS, EXTERNAL } from "../../utils/common.ts";
-import { PROPOSALS } from "../../utils/common.ts";
+import { constructAndPassProposal, passProposal, EXTENSIONS, EXTERNAL, PROPOSALS } from "../../utils/common.ts";
 import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
 import { CCEXTGovernanceToken } from "../../models/external/test-ccext-governance-token.model.ts";
 import { CCEXTNft } from "../../models/external/test-ccext-nft.model.ts";
@@ -625,8 +624,6 @@ Clarinet.test({
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
     const amount = 1000;
     chain.mineBlock([ccd002Treasury.depositStx(sender, amount)]);
-
-    // act
 
     // assert
     ccd002Treasury.getBalanceStx().result.expectUint(amount);
