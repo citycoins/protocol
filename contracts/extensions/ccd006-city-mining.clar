@@ -83,13 +83,14 @@
   (let
     (
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
-      (cityDetails (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_CITY_DETAILS_NOT_FOUND))
-      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "mining") ERR_CITY_TREASURY_NOT_FOUND))
+      (cityInfo (contract-call? .ccd005-city-data get-city-info cityId "mining"))
+      (cityDetails (unwrap! (get details cityInfo) ERR_CITY_DETAILS_NOT_FOUND))
+      (cityTreasury (unwrap! (get treasury cityInfo) ERR_CITY_TREASURY_NOT_FOUND))
       (user tx-sender)
       (userId (try! (as-contract (contract-call? .ccd003-user-registry get-or-create-user-id user))))
       (totalAmount (fold + amounts u0))
     )
-    (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
+    (asserts! (get activated cityInfo) ERR_CITY_NOT_ACTIVATED)
     (asserts! (>= (stx-get-balance tx-sender) totalAmount) ERR_INSUFFICIENT_BALANCE)
     (asserts! (> (len amounts) u0) ERR_INVALID_COMMIT_AMOUNTS)
     (begin

@@ -241,6 +241,14 @@
 
 ;; READ ONLY FUNCTIONS
 
+(define-read-only (get-city-info (cityId uint) (treasuryName (string-ascii 10)))
+  {
+    activated: (is-city-activated cityId),
+    details: (get-city-activation-details cityId),
+    treasury: (get-city-treasury-by-name cityId treasuryName),
+  }
+)
+
 (define-read-only (is-city-activated (cityId uint))
   (default-to false (map-get? CityActivationStatus cityId))
 )
