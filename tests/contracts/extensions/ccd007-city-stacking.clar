@@ -30,17 +30,13 @@
 (define-constant ERR_CITY_DETAILS_NOT_FOUND (err u7012))
 (define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7013))
 
-;; stacking configuration
-(define-constant SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
+(define-constant SCALE_FACTOR (pow u10 u16))
 (define-constant MAX_REWARD_CYCLES u32)
 (define-constant REWARD_CYCLE_INDEXES (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29 u30 u31))
 
 ;; DATA VARS
 
-;; reward cycle length in Stacks blocks
 (define-data-var rewardCycleLength uint u2100)
-
-;; stacking pool operator
 (define-data-var poolOperator principal 'SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M)
 
 ;; DATA MAPS

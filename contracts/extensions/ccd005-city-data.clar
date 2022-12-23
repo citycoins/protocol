@@ -138,7 +138,6 @@
   )
 )
 
-;; allows voting for the activation of a given city
 (define-public (activate-city (cityId uint) (memo (optional (string-ascii 100))))
   (let
     (
@@ -217,7 +216,6 @@
   )
 )
 
-;; guarded: sets coinbase amounts for a given city
 (define-public (set-city-coinbase-amounts (cityId uint) (amountBonus uint) (amount1 uint) (amount2 uint) (amount3 uint) (amount4 uint) (amount5 uint) (amountDefault uint))
   (begin
     (try! (is-dao-or-extension))

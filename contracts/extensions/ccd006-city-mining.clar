@@ -40,7 +40,6 @@
 
 ;; DATA VARS
 
-;; delay before mining rewards can be claimed
 (define-data-var rewardDelay uint u100)
 
 ;; DATA MAPS
@@ -116,7 +115,7 @@
         totalBlocks: (len amounts),
         totalAmount: totalAmount,
       })                
-      ;; TODO: this should use CCD002 deposit function
+      ;; TODO: use ccd002 deposit?
       (stx-transfer? totalAmount tx-sender cityTreasury)
     )
   )
