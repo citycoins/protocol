@@ -45,53 +45,28 @@
 
 ;; DATA MAPS
 
-;; For a given city and reward cycle
-;; - how many CityCoins are stacked?
-;; - how many STX rewards were received?
 (define-map StackingStatsAtCycle
-  {
-    cityId: uint,
-    cycle: uint
-  }
-  {
-    total: uint,
-    reward: (optional uint)
-  }
+  { cityId: uint, cycle: uint }
+  { total: uint, reward: (optional uint) }
 )
 
-;; For a given city, reward cycle, and user
-;; - how many CityCoins are stacked?
-;; - can unlocked CityCoins be claimed?
 (define-map StackerAtCycle
-  {
-    cityId: uint,
-    cycle: uint,
-    userId: uint
-  }
-  {
-    stacked: uint,
-    claimable: uint
-  }
+  { cityId: uint, cycle: uint, userId: uint }
+  { stacked: uint, claimable: uint }
 )
 
 ;; PUBLIC FUNCTIONS
 
-;; authorization check
 (define-public (is-dao-or-extension)
-  (ok (asserts!
-    (or
-      (is-eq tx-sender .base-dao)
-      (contract-call? .base-dao is-extension contract-caller))
-    ERR_UNAUTHORIZED
+  (ok (asserts! (or (is-eq tx-sender .base-dao)
+    (contract-call? .base-dao is-extension contract-caller)) ERR_UNAUTHORIZED
   ))
 )
 
-;; extension callback
 (define-public (callback (sender principal) (memo (buff 34)))
   (ok true)
 )
 
-;; guarded: set the reward cycle length in Stacks blocks
 (define-public (set-reward-cycle-length (length uint))
   (begin
     (try! (is-dao-or-extension))
@@ -105,16 +80,10 @@
     (
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
       (user tx-sender)
-      (userId (try! (as-contract
-        (contract-call? .ccd003-user-registry get-or-create-user-id user)
-      )))
+      (userId (try! (as-contract (contract-call? .ccd003-user-registry get-or-create-user-id user))))
     )
     (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
-    (asserts! (and 
-      (> amount u0)
-      (> lockPeriod u0)
-      (<= lockPeriod MAX_REWARD_CYCLES)
-    ) ERR_INVALID_STACKING_PARAMS)
+    (asserts! (and (> amount u0) (> lockPeriod u0) (<= lockPeriod MAX_REWARD_CYCLES)) ERR_INVALID_STACKING_PARAMS)
     (stack-at-cycle cityName cityId tx-sender userId amount lockPeriod block-height)
   )
 )
@@ -126,7 +95,6 @@
   )
 )
 
-;; used by the pool operator to pay out rewards for the protocol
 (define-public (send-stacking-reward (cityName (string-ascii 32)) (targetCycle uint) (amount uint))
   (let
     (
@@ -135,24 +103,16 @@
       (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
       (stackingStatsAtCycle (get-stacking-stats-at-cycle cityId targetCycle))
     )
-    ;; TODO: use contract-caller here?
     (asserts! (is-eq tx-sender (var-get poolOperator)) ERR_UNAUTHORIZED)
     (asserts! (> amount u0) ERR_INVALID_STACKING_PAYOUT)
     (asserts! (< targetCycle currentCycle) ERR_REWARD_CYCLE_NOT_COMPLETE)
-    ;; transfer to stacking treasury
-    ;; temporarily hardcoded to cities until Stacks 2.1
-    ;; next version can use traits as stored principals
-    (and
-      (is-eq cityName "mia")
-      ;; TODO: add check against treasury value?
-      (asserts! (is-ok (contract-call? .ccd002-treasury-mia-stacking deposit-stx amount)) ERR_TRANSFER_FAILED)
+    ;; contract addresses hardcoded for this version
+    (and (is-eq cityName "mia")
+      (try! (contract-call? .ccd002-treasury-mia-stacking deposit-stx amount))
     )
-    (and
-      (is-eq cityName "nyc")
-      ;; TODO: add check against treasury value?
-      (asserts! (is-ok (contract-call? .ccd002-treasury-nyc-stacking deposit-stx amount)) ERR_TRANSFER_FAILED)
+    (and (is-eq cityName "nyc")
+      (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-stx amount))
     )
-    ;; print details
     (print {
       action: "stacking-reward-payout",
       cityName: cityName,
@@ -162,8 +122,6 @@
       targetCycle: targetCycle,
       amount: amount,
     })
-    ;; update stacking stats
-    ;; TODO: does this need to add the original value?
     (ok (map-set StackingStatsAtCycle
       { cityId: cityId, cycle: targetCycle }
       (merge stackingStatsAtCycle { reward: (some amount) })
@@ -184,54 +142,33 @@
     )
     (asserts! (> currentCycle targetCycle) ERR_REWARD_CYCLE_NOT_COMPLETE)
     (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
-    ;; send back CityCoins if user was eligible
-    ;; temporarily hardcoded to cities until Stacks 2.1
-    ;; next version can use traits as stored principals
+    ;; contract addresses hardcoded for this version
     (and (is-eq cityName "mia")
-      ;; TODO: add check against treasury value?
       (begin
-        (and
-          (> reward u0)
-          (asserts! (is-ok (as-contract
-            (contract-call? .ccd002-treasury-mia-stacking withdraw-stx reward user)
-          )) ERR_TRANSFER_FAILED)
+        (and (> reward u0)
+          (try! (as-contract (contract-call? .ccd002-treasury-mia-stacking withdraw-stx reward user)))
         )
-        (and
-          (> claimable u0)
-          (asserts! (is-ok (as-contract
-            (contract-call? .ccd002-treasury-mia-stacking withdraw-ft .test-ccext-governance-token-mia claimable user)
-          )) ERR_TRANSFER_FAILED)
+        (and (> claimable u0)
+          (try! (as-contract (contract-call? .ccd002-treasury-mia-stacking withdraw-ft .test-ccext-governance-token-mia claimable user)))
         )
         true
       )
     )
     (and (is-eq cityName "nyc")
-      ;; TODO: add check against treasury value?
       (begin
-        (and
-          (> reward u0)
-          (asserts! (is-ok (as-contract
-            (contract-call? .ccd002-treasury-nyc-stacking withdraw-stx reward user)
-          )) ERR_TRANSFER_FAILED)
+        (and (> reward u0)
+          (try! (as-contract (contract-call? .ccd002-treasury-nyc-stacking withdraw-stx reward user)))
         )
-        (and
-          (> claimable u0)
-          (asserts! (is-ok (as-contract
-            (contract-call? .ccd002-treasury-nyc-stacking withdraw-ft .test-ccext-governance-token-mia claimable user)
-          )) ERR_TRANSFER_FAILED)
+        (and (> claimable u0)
+          (try! (as-contract (contract-call? .ccd002-treasury-nyc-stacking withdraw-ft .test-ccext-governance-token-mia claimable user)))
         )
         true
       )
     )
-    ;; disable ability to claim again
-    (ok (map-set StackerAtCycle {
-      cityId: cityId,
-      cycle: targetCycle,
-      userId: userId
-    } {
-      stacked: u0,
-      claimable: u0
-    }))
+    (ok (map-set StackerAtCycle
+      { cityId: cityId, cycle: targetCycle, userId: userId }
+      { stacked: u0, claimable: u0 }
+    ))
   )
 )
 
@@ -242,27 +179,14 @@
 )
 
 (define-read-only (get-stacking-stats-at-cycle (cityId uint) (cycle uint))
-  (default-to {
-    total: u0,
-    reward: none
-    }
-    (map-get? StackingStatsAtCycle {
-      cityId: cityId,
-      cycle: cycle
-    })
+  (default-to { total: u0, reward: none }
+    (map-get? StackingStatsAtCycle { cityId: cityId, cycle: cycle })
   )
 )
 
 (define-read-only (get-stacker-at-cycle (cityId uint) (cycle uint) (userId uint))
-  (default-to {
-    stacked: u0,
-    claimable: u0
-    }
-    (map-get? StackerAtCycle {
-      cityId: cityId,
-      cycle: cycle,
-      userId: userId
-    })
+  (default-to { stacked: u0, claimable: u0 }
+    (map-get? StackerAtCycle { cityId: cityId, cycle: cycle, userId: userId })
   )
 )
 
@@ -280,31 +204,23 @@
 
 (define-read-only (get-first-block-in-reward-cycle (cityId uint) (cycle uint))
   (let
-    (
-      (activationDetails (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) none))
-    )
+    ((activationDetails (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) none)))
     (some (+ (get activated activationDetails) (* cycle (get-reward-cycle-length))))
   )
 )
 
 (define-read-only (is-stacking-active (cityId uint) (cycle uint))
-  (is-some
-    (map-get? StackingStatsAtCycle {
-      cityId: cityId,
-      cycle: cycle
-    })
-  )
+  (is-some (map-get? StackingStatsAtCycle { cityId: cityId, cycle: cycle }))
 )
 
 (define-read-only (is-cycle-paid (cityId uint) (cycle uint))
   (let
-    (
-      (rewardCycleStats (get-stacking-stats-at-cycle cityId cycle))
-    )
+    ((rewardCycleStats (get-stacking-stats-at-cycle cityId cycle)))
     (is-some (get reward rewardCycleStats))
   )
 )
 
+;; TODO: more to inline?
 (define-read-only (get-stacking-reward (cityId uint) (userId uint) (cycle uint))
   (let
     (
@@ -314,12 +230,8 @@
       (userStacked (get stacked stackerAtCycle))
       (currentCycle (unwrap! (get-reward-cycle cityId block-height) none))
     )
-    ;; (asserts! (is-some cycleReward) ERR_STACKING_PAYOUT_NOT_COMPLETE)
     (if (or (<= currentCycle cycle) (is-eq userStacked u0))
-      ;; this cycle hasn't finished
-      ;; or stacker is not stacking
       none
-      ;; calculate reward
       (some (/ (* cycleReward userStacked) (get total rewardCycleStats)))
     )
   )
@@ -342,28 +254,16 @@
         userId: userId,
         amount: amount,
         first: targetCycle,
-        ;; TODO: should this be minus 1?
         last: (+ targetCycle lockPeriod)
       })
     )
-    ;; transfer to stacking treasury
-    ;; temporarily hardcoded to cities until Stacks 2.1
-    ;; next version can use traits as stored principals
-    (and
-      (is-eq cityName "mia")
-      ;; TODO: add check against treasury value?
-      (asserts! (is-ok
-        (contract-call? .ccd002-treasury-mia-stacking deposit-ft .test-ccext-governance-token-mia amount))
-      ERR_TRANSFER_FAILED)
+    ;; contract addresses hardcoded for this version
+    (and (is-eq cityName "mia")
+      (try! (contract-call? .ccd002-treasury-mia-stacking deposit-ft .test-ccext-governance-token-mia amount))
     )
-    (and
-      (is-eq cityName "nyc")
-      ;; TODO: add check against treasury value?
-      (asserts! (is-ok
-        (contract-call? .ccd002-treasury-nyc-stacking deposit-ft .test-ccext-governance-token-nyc amount))
-      ERR_TRANSFER_FAILED)
+    (and (is-eq cityName "nyc")
+      (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-ft .test-ccext-governance-token-nyc amount))
     )
-    ;; print details
     (print {
       action: "stacking",
       userId: userId,
@@ -374,10 +274,8 @@
       lockPeriod: lockPeriod,
       currentCycle: currentCycle,
       firstCycle: targetCycle,
-      ;; TODO: should this be minus 1?
       lastCycle: (- (+ targetCycle lockPeriod) u1)
     })
-    ;; fold over closure
     (try! (fold stack-tokens-closure REWARD_CYCLE_INDEXES (ok stackingInfo)))
     (ok true)
   )
@@ -385,13 +283,7 @@
 
 (define-private (stack-tokens-closure (rewardCycleIdx uint)
   (return (response 
-    {
-      cityId: uint,
-      userId: uint,
-      amount: uint,
-      first: uint,
-      last: uint
-    }
+    { cityId: uint, userId: uint, amount: uint, first: uint, last: uint }
     uint
   )))
   (let
@@ -399,9 +291,7 @@
       (okReturn (try! return))
       (targetCycle (+ (get first okReturn) rewardCycleIdx))
     )
-    (and
-      (>= targetCycle (get first okReturn))
-      (< targetCycle (get last okReturn))
+    (and (>= targetCycle (get first okReturn)) (< targetCycle (get last okReturn))
       (if (is-eq targetCycle (- (get last okReturn) u1))
         (set-stacking-data (get cityId okReturn) (get userId okReturn) targetCycle (get amount okReturn) (get amount okReturn))
         (set-stacking-data (get cityId okReturn) (get userId okReturn) targetCycle (get amount okReturn) u0)

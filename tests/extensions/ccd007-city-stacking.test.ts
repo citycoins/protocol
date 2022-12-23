@@ -263,7 +263,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd007CityStacking.stack(sender, miaCityName, 5000, lockingPeriod)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_TRANSFER_FAILED);
+    block.receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
   },
 });
 

@@ -23,24 +23,16 @@
 
 ;; DATA MAPS
 
-(define-map AllowedAssets
-  principal ;; token contract
-  bool      ;; enabled
-)
+(define-map AllowedAssets principal bool)
 
 ;; PUBLIC FUNCTIONS
 
-;; authorization check
 (define-public (is-dao-or-extension)
-  (ok (asserts!
-    (or
-      (is-eq tx-sender .base-dao)
-      (contract-call? .base-dao is-extension contract-caller))
-    ERR_UNAUTHORIZED
+  (ok (asserts! (or (is-eq tx-sender .base-dao)
+    (contract-call? .base-dao is-extension contract-caller)) ERR_UNAUTHORIZED
   ))
 )
 
-;; extension callback
 (define-public (callback (sender principal) (memo (buff 34)))
   (ok true)
 )
@@ -66,7 +58,6 @@
 
 (define-public (deposit-stx (amount uint))
   (begin
-    (try! (stx-transfer? amount tx-sender TREASURY))
     (print {
       event: "deposit-stx",
       amount: amount,
@@ -74,14 +65,13 @@
       sender: tx-sender,
       recipient: TREASURY
     })
-    (ok true)
+    (stx-transfer? amount tx-sender TREASURY)
   )
 )
 
 (define-public (deposit-ft (ft <ft-trait>) (amount uint))
   (begin
     (asserts! (is-allowed (contract-of ft)) ERR_ASSET_NOT_ALLOWED)
-    (try! (contract-call? ft transfer amount tx-sender TREASURY none))
     (print {
       event: "deposit-ft",
       amount: amount,
@@ -90,14 +80,13 @@
       sender: tx-sender,
       recipient: TREASURY
     })
-    (ok true)
+    (contract-call? ft transfer amount tx-sender TREASURY none)
   )
 )
 
 (define-public (deposit-nft (nft <nft-trait>) (id uint))
   (begin
     (asserts! (is-allowed (contract-of nft)) ERR_ASSET_NOT_ALLOWED)
-    (try! (contract-call? nft transfer id tx-sender TREASURY))
     (print {
       event: "deposit-nft",
       assetContract: (contract-of nft),
@@ -106,14 +95,13 @@
       sender: tx-sender,
       recipient: TREASURY
     })
-    (ok true)
+    (contract-call? nft transfer id tx-sender TREASURY)
   )
 )
 
 (define-public (withdraw-stx (amount uint) (recipient principal))
   (begin
     (try! (is-dao-or-extension))
-    (try! (as-contract (stx-transfer? amount TREASURY recipient)))
     (print {
       event: "withdraw-stx",
       amount: amount,
@@ -121,7 +109,7 @@
       sender: tx-sender,
       recipient: recipient
     })
-    (ok true)
+    (as-contract (stx-transfer? amount TREASURY recipient))
   )
 )
 
@@ -129,7 +117,6 @@
   (begin
     (try! (is-dao-or-extension))
     (asserts! (is-allowed (contract-of ft)) ERR_ASSET_NOT_ALLOWED)
-    (try! (as-contract (contract-call? ft transfer amount TREASURY recipient none)))
     (print {
       event: "withdraw-ft",
       assetContract: (contract-of ft),
@@ -137,7 +124,7 @@
       sender: tx-sender,
       recipient: recipient
     })
-    (ok true)
+    (as-contract (contract-call? ft transfer amount TREASURY recipient none))
   )
 )
 
@@ -145,7 +132,6 @@
   (begin
     (try! (is-dao-or-extension))
     (asserts! (is-allowed (contract-of nft)) ERR_ASSET_NOT_ALLOWED)
-    (try! (as-contract (contract-call? nft transfer id TREASURY recipient)))
     (print {
       event: "withdraw-nft",
       assetContract: (contract-of nft),
@@ -154,7 +140,7 @@
       sender: tx-sender,
       recipient: recipient
     })
-    (ok true)
+    (as-contract (contract-call? nft transfer id TREASURY recipient))
   )
 )
 

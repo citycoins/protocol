@@ -26,45 +26,26 @@
 
 ;; DATA VARS
 
-;; ~6 months from initial deployment
-;; can be changed by future proposal
 (define-data-var sunsetBlockHeight uint (+ block-height u25920))
-
-;; signals required for an action
 (define-data-var signalsRequired uint u1)
 
 ;; DATA MAPS
 
-;; approver information
-(define-map Approvers
-  principal ;; address
-  bool      ;; status
-)
+(define-map Approvers principal bool)
 (define-map ApproverSignals
-  {
-    proposal: principal,
-    approver: principal
-  }
-  bool ;; yes/no
+  { proposal: principal, approver: principal }
+  bool
 )
-(define-map SignalCount
-  principal ;; proposal
-  uint      ;; signals
-)
+(define-map SignalCount principal uint)
 
 ;; PUBLIC FUNCTIONS
 
-;; authorization check
 (define-public (is-dao-or-extension)
-  (ok (asserts!
-    (or
-      (is-eq tx-sender .base-dao)
-      (contract-call? .base-dao is-extension contract-caller))
-    ERR_UNAUTHORIZED
+  (ok (asserts! (or (is-eq tx-sender .base-dao)
+    (contract-call? .base-dao is-extension contract-caller)) ERR_UNAUTHORIZED
   ))
 )
 
-;; extension callback
 (define-public (callback (sender principal) (memo (buff 34)))
   (ok true)
 )

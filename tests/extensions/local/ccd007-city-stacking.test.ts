@@ -44,7 +44,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, 500, lockPeriod)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_TRANSFER_FAILED);
+    block.receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
     gt.getBalance(user1.address).result.expectOk().expectUint(1000);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(0);
   },

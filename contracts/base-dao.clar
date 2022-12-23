@@ -54,9 +54,7 @@
 ;; iniitial dao configuration
 (define-public (construct (proposal <proposal-trait>))
   (let
-    (
-      (sender tx-sender)
-    )
+    ((sender tx-sender))
     (asserts! (is-eq sender (var-get executive)) ERR_UNAUTHORIZED)
     (var-set executive (as-contract tx-sender))
     (as-contract (execute proposal sender))
@@ -66,9 +64,7 @@
 ;; extension requests
 (define-public (request-extension-callback (extension <extension-trait>) (memo (buff 34)))
   (let
-    (
-      (sender tx-sender)
-    )
+    ((sender tx-sender))
     (asserts! (is-extension contract-caller) ERR_INVALID_EXTENSION)
     (asserts! (is-eq contract-caller (contract-of extension)) ERR_INVALID_EXTENSION)
     (as-contract (contract-call? extension callback sender memo))
@@ -89,11 +85,7 @@
 
 ;; authorization check
 (define-private (is-self-or-extension)
-  (ok (asserts! (or
-      (is-eq tx-sender (as-contract tx-sender))
-      (is-extension contract-caller))
-    ERR_UNAUTHORIZED
-  ))
+  (ok (asserts! (or (is-eq tx-sender (as-contract tx-sender)) (is-extension contract-caller)) ERR_UNAUTHORIZED))
 )
 
 (define-private (set-extensions-iter (item {extension: principal, enabled: bool}))

@@ -45,78 +45,38 @@
 
 ;; DATA MAPS
 
-;; For a given city and Stacks block height
-;; - how many miners were there
-;; - what was the total amount submitted
-;; - was the block reward claimed
 (define-map MiningStatsAtBlock
-  {
-    cityId: uint,
-    height: uint
-  }
-  {
-    miners: uint,
-    amount: uint,
-    claimed: bool
-  }
+  { cityId: uint, height: uint }
+  { miners: uint, amount: uint, claimed: bool }
 )
 
-;; For a given Stacks block height and user ID:
-;; - what is their ustx commitment
-;; - what are the low/high values (used for VRF)
 (define-map MinerAtBlock
-  {
-    cityId: uint,
-    height: uint,
-    userId: uint
-  }
-  {
-    commit: uint,
-    low: uint,
-    high: uint,
-    winner: bool
-  }
+  { cityId: uint, height: uint, userId: uint }
+  { commit: uint, low: uint, high: uint, winner: bool }
 )
 
-;; For a given city and Stacks block height
-;; - what is the high value from MinerAtBlock
 (define-map HighValueAtBlock
-  {
-    cityId: uint,
-    height: uint
-  }
+  { cityId: uint, height: uint }
   uint
 )
 
-;; For a given city and Stacks block height
-;; - what is the ID of the miner who won the block?
-;; (only known after the miner claims the block)
 (define-map WinnerAtBlock
-  {
-    cityId: uint,
-    height: uint
-  }
+  { cityId: uint, height: uint }
   uint
 )
 
 ;; PUBLIC FUNCTIONS
 
-;; authorization check
 (define-public (is-dao-or-extension)
-  (ok (asserts!
-    (or
-      (is-eq tx-sender .base-dao)
-      (contract-call? .base-dao is-extension contract-caller))
-    ERR_UNAUTHORIZED
+  (ok (asserts! (or (is-eq tx-sender .base-dao)
+    (contract-call? .base-dao is-extension contract-caller)) ERR_UNAUTHORIZED
   ))
 )
 
-;; extension callback
 (define-public (callback (sender principal) (memo (buff 34)))
   (ok true)
 )
 
-;; guarded: set the delay before mining rewards can be claimed
 (define-public (set-reward-delay (delay uint))
   (begin 
     (try! (is-dao-or-extension))
@@ -132,9 +92,7 @@
       (cityDetails (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_CITY_DETAILS_NOT_FOUND))
       (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "mining") ERR_CITY_TREASURY_NOT_FOUND))
       (user tx-sender)
-      (userId (try! (as-contract
-        (contract-call? .ccd003-user-registry get-or-create-user-id user)
-      )))
+      (userId (try! (as-contract (contract-call? .ccd003-user-registry get-or-create-user-id user))))
       (totalAmount (fold + amounts u0))
     )
     (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
@@ -166,9 +124,7 @@
 
 (define-public (claim-mining-reward (cityName (string-ascii 32)) (claimHeight uint))
   (let
-    (
-      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
-    )
+    ((cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND)))
     (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
     (claim-mining-reward-at-block cityName cityId tx-sender block-height claimHeight)
   )
@@ -181,56 +137,29 @@
 )
 
 (define-read-only (get-mining-stats-at-block (cityId uint) (height uint))
-  (default-to {
-      miners: u0,
-      amount: u0,
-      claimed: false
-    }
-    (map-get? MiningStatsAtBlock {
-      cityId: cityId,
-      height: height
-    })
+  (default-to { miners: u0, amount: u0, claimed: false }
+    (map-get? MiningStatsAtBlock { cityId: cityId, height: height })
   )
 )
 
-;; returns true if a miner already mined at a given city and block height
 (define-read-only (has-mined-at-block (cityId uint) (height uint) (userId uint))
-  (is-some (map-get? MinerAtBlock {
-    cityId: cityId,
-    height: height,
-    userId: userId
-  }))
+  (is-some (map-get? MinerAtBlock { cityId: cityId, height: height, userId: userId }))
 )
 
-;; returns miner statistics if found
 (define-read-only (get-miner-at-block (cityId uint) (height uint) (userId uint))
-  (default-to {
-      commit: u0,
-      low: u0,
-      high: u0
-    }
-    (map-get? MinerAtBlock {
-      cityId: cityId,
-      height: height,
-      userId: userId
-    })
+  (default-to { commit: u0, low: u0, high: u0 }
+    (map-get? MinerAtBlock { cityId: cityId, height: height, userId: userId })
   )
 )
 
 (define-read-only (get-high-value (cityId uint) (height uint))
   (default-to u0
-    (map-get? HighValueAtBlock {
-      cityId: cityId,
-      height: height
-    })
+    (map-get? HighValueAtBlock { cityId: cityId, height: height })
   )
 )
 
 (define-read-only (get-block-winner (cityId uint) (height uint))
-  (map-get? WinnerAtBlock {
-    cityId: cityId,
-    height: height
-  })
+  (map-get? WinnerAtBlock { cityId: cityId, height: height })
 )
 
 (define-read-only (is-block-winner (cityId uint) (user principal) (claimHeight uint))
@@ -244,18 +173,9 @@
       (commitTotal (get-high-value cityId claimHeight))
       (winningValue (mod vrfSample commitTotal))
     )
-    ;; check that user ID was found and if user is winner
     (if (and (> userId u0) (>= winningValue (get low minerStats)) (<= winningValue (get high minerStats)))
-      ;; true
-      (some {
-        winner: true,
-        claimed: (get claimed blockStats),
-      })
-      ;; false
-      (some {
-        winner: false,
-        claimed: (get claimed blockStats),
-      })
+      (some { winner: true, claimed: (get claimed blockStats) })
+      (some { winner: false, claimed: (get claimed blockStats) })
     )
   )
 )
@@ -270,12 +190,9 @@
       (cityActivated (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) u0))
       (cityDetails (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) u0))
     )
-    ;; if contract is active, return amount based on thresholds
     (asserts! (> blockHeight (get activated cityDetails))
       (if (<= (- blockHeight (get activated cityDetails)) bonusPeriod)
-        ;; bonus reward for initial miners
         (get coinbaseAmountBonus amounts)
-        ;; standard reward until 1st halving
         (get coinbaseAmount1 amounts)
       )
     )
@@ -283,7 +200,6 @@
     (asserts! (> blockHeight (get coinbaseThreshold3 thresholds)) (get coinbaseAmount3 amounts))
     (asserts! (> blockHeight (get coinbaseThreshold4 thresholds)) (get coinbaseAmount4 amounts))
     (asserts! (> blockHeight (get coinbaseThreshold5 thresholds)) (get coinbaseAmount5 amounts))
-    ;; default value after final halving
     (get coinbaseAmountDefault amounts)
   )
 )
@@ -292,12 +208,7 @@
 
 (define-private (mine-block (amount uint)
   (return (response
-    {
-      cityId: uint,
-      userId: uint,
-      height: uint,
-      totalAmount: uint
-    }
+    { cityId: uint, userId: uint, height: uint, totalAmount: uint }
     uint
   )))
   (let
@@ -310,12 +221,10 @@
     )
     (asserts! (not (has-mined-at-block cityId height userId)) ERR_ALREADY_MINED)
     (asserts! (> amount u0) ERR_INSUFFICIENT_COMMIT)
+    ;; TODO: check inlining this
     (set-mining-data cityId userId height amount)
     (ok (merge okReturn
-      {
-        height: (+ height u1),
-        totalAmount: (+ totalAmount amount)
-      }
+      { height: (+ height u1), totalAmount: (+ totalAmount amount) }
     ))
   )
 )
@@ -327,25 +236,12 @@
       (minerCount (+ (get miners blockStats) u1))
       (vrfLowVal (get-high-value cityId height))
     )
-    ;; update mining stats at block
     (map-set MiningStatsAtBlock
-      {
-        cityId: cityId,
-        height: height
-      }
-      {
-        miners: minerCount,
-        amount: (+ (get amount blockStats) amount),
-        claimed: false
-      }
+      { cityId: cityId, height: height }
+      { miners: minerCount, amount: (+ (get amount blockStats) amount), claimed: false }
     )
-    ;; set miner details at block
     (map-insert MinerAtBlock
-      {
-        cityId: cityId,
-        height: height,
-        userId: userId
-      }
+      { cityId: cityId, height: height, userId: userId }
       {
         commit: amount,
         low: (if (> vrfLowVal u0) (+ vrfLowVal u1) u0),
@@ -353,12 +249,8 @@
         winner: false
       }
     )
-    ;; set new high value for VRF
     (map-set HighValueAtBlock
-      {
-        cityId: cityId,
-        height: height
-      }
+      { cityId: cityId, height: height }
       (+ vrfLowVal amount)
     )
   )
@@ -377,31 +269,18 @@
       (commitValid (asserts! (> commitTotal u0) ERR_MINER_DATA_NOT_FOUND))
       (winningValue (mod vrfSample commitTotal))
     )
-    ;; check that user mined in this block
     (asserts! (has-mined-at-block cityId claimHeight userId) ERR_DID_NOT_MINE)
-    ;; check that stats and miner data are populated
-    (asserts! (and
-      (> (get miners blockStats) u0)
-      (> (get commit minerStats) u0))
-      ERR_MINER_DATA_NOT_FOUND)
-    ;; check that block has not already been claimed
+    (asserts! (and (> (get miners blockStats) u0) (> (get commit minerStats) u0)) ERR_MINER_DATA_NOT_FOUND)
     (asserts! (not (get claimed blockStats)) ERR_ALREADY_CLAIMED)
-    ;; check that user is the winner
-    (asserts! (and
-      (>= winningValue (get low minerStats))
-      (<= winningValue (get high minerStats)))
-      ERR_MINER_NOT_WINNER)
-    ;; update mining stats at block
+    (asserts! (and (>= winningValue (get low minerStats)) (<= winningValue (get high minerStats))) ERR_MINER_NOT_WINNER)
     (map-set MiningStatsAtBlock
       { cityId: cityId, height: claimHeight }
       (merge blockStats { claimed: true })
     )
-    ;; set miner details at block
     (map-set MinerAtBlock
       { cityId: cityId, height: claimHeight, userId: userId }
       (merge minerStats { winner: true })
     )
-    ;; set winner at block
     (map-set WinnerAtBlock
       { cityId: cityId, height: claimHeight }
       userId
@@ -419,24 +298,14 @@
 
 (define-private (mint-coinbase (cityName (string-ascii 32)) (cityId uint) (recipient principal) (blockHeight uint))
   (let
-    (
-      (amount (get-coinbase-amount cityId blockHeight))
-    )
-    ;; check that amount is greater than 0
+    ((amount (get-coinbase-amount cityId blockHeight)))
     (asserts! (> amount u0) ERR_NOTHING_TO_MINT)
-    ;; temporarily hardcoded to cities until Stacks 2.1
-    ;; next version can use traits as stored principals
-    (and
-      (is-eq cityName "mia")
-      (is-ok (as-contract
-        (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 mint amount recipient)
-      ))
+    ;; contract addresses hardcoded for this version
+    (and (is-eq cityName "mia")
+      (try! (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 mint amount recipient)))
     )
-    (and
-      (is-eq cityName "nyc")
-      (is-ok (as-contract
-        (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 mint amount recipient)
-      ))
+    (and (is-eq cityName "nyc")
+      (try! (as-contract (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 mint amount recipient)))
     )
     (ok true)
   )
