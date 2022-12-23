@@ -24,8 +24,6 @@
 
 (define-map CityActivationStatus uint bool)
 
-;; TODO: change activated to success
-;; TODO: change target to activated
 (define-map CityActivationDetails
   uint
   { activated: uint, delay: uint, target: uint, threshold: uint }
@@ -67,7 +65,6 @@
   uint
 )
 
-;; TODO maybe just return the principal here?
 (define-map ActiveCityTokenContract
   uint
   { tokenId: uint, tokenAddress: principal }
@@ -236,8 +233,6 @@
     (ok (map-set CityCoinbaseBonusPeriod cityId bonusPeriod))
   )
 )
-
-;; TODO: how to handle epoch length?
 
 ;; READ ONLY FUNCTIONS
 

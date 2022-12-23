@@ -5,7 +5,6 @@
 
 ;; TRAITS
 
-;; TODO: protocol traits?
 (impl-trait .extension-trait.extension-trait)
 
 ;; CONSTANTS
@@ -111,7 +110,6 @@
         totalBlocks: (len amounts),
         totalAmount: totalAmount,
       })                
-      ;; TODO: use ccd002 deposit?
       (stx-transfer? totalAmount tx-sender cityTreasury)
     )
   )
