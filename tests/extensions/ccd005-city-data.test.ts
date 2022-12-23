@@ -25,7 +25,7 @@ import { types } from "../../utils/deps.ts";
 // =============================
 const miaCityId = 1;
 const miaTreasuryId = 1;
-const miaTreasuryName = "mia-treasury";
+const miaTreasuryName = "mia-test";
 const miaTokenContract1Address = "mia-token-contract-1";
 const miaTokenContract2Address = "mia-token-contract-2";
 const miaTokenContract3Address = "mia-token-contract-3";
@@ -607,13 +607,13 @@ Clarinet.test({
 
     // assert
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(3);
-    ccd005CityData.getCityTreasuryId(miaCityId, "mia-treasury1").result.expectSome().expectUint(1);
-    ccd005CityData.getCityTreasuryId(miaCityId, "mia-treasury2").result.expectSome().expectUint(2);
-    ccd005CityData.getCityTreasuryId(miaCityId, "mia-treasury3").result.expectSome().expectUint(3);
-    ccd005CityData.getCityTreasuryId(miaCityId, "mia-treasury4").result.expectNone();
-    ccd005CityData.getCityTreasuryName(miaCityId, 1).result.expectSome().expectAscii("mia-treasury1");
-    ccd005CityData.getCityTreasuryName(miaCityId, 2).result.expectSome().expectAscii("mia-treasury2");
-    ccd005CityData.getCityTreasuryName(miaCityId, 3).result.expectSome().expectAscii("mia-treasury3");
+    ccd005CityData.getCityTreasuryId(miaCityId, "mia-test-1").result.expectSome().expectUint(1);
+    ccd005CityData.getCityTreasuryId(miaCityId, "mia-test-2").result.expectSome().expectUint(2);
+    ccd005CityData.getCityTreasuryId(miaCityId, "mia-test-3").result.expectSome().expectUint(3);
+    ccd005CityData.getCityTreasuryId(miaCityId, "mia-test-4").result.expectNone();
+    ccd005CityData.getCityTreasuryName(miaCityId, 1).result.expectSome().expectAscii("mia-test-1");
+    ccd005CityData.getCityTreasuryName(miaCityId, 2).result.expectSome().expectAscii("mia-test-2");
+    ccd005CityData.getCityTreasuryName(miaCityId, 3).result.expectSome().expectAscii("mia-test-3");
     ccd005CityData.getCityTreasuryName(miaCityId, 4).result.expectNone();
     ccd005CityData
       .getCityTreasuryAddress(miaCityId, 1)

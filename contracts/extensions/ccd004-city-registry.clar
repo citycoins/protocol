@@ -3,7 +3,7 @@
 ;; Synopsis:
 ;; A central city registry for the CityCoins protocol.
 ;; Description:
-;; An extension contract that associates a city name (string-ascii 32)
+;; An extension contract that associates a city name (string-ascii 10)
 ;; with an ID (uint) for use in other CityCoins extensions.
 
 ;; TRAITS
@@ -21,8 +21,8 @@
 
 ;; DATA MAPS
 
-(define-map CityNames uint (string-ascii 32))
-(define-map CityIds (string-ascii 32) uint)
+(define-map CityNames uint (string-ascii 10))
+(define-map CityIds (string-ascii 10) uint)
 
 ;; PUBLIC FUNCTIONS
 
@@ -36,7 +36,7 @@
   (ok true)
 )
 
-(define-public (get-or-create-city-id (cityName (string-ascii 32)))
+(define-public (get-or-create-city-id (cityName (string-ascii 10)))
   (begin 
     (try! (is-dao-or-extension))
     (match (map-get? CityIds cityName)
@@ -54,7 +54,7 @@
 
 ;; READ ONLY FUNCTIONS
 
-(define-read-only (get-city-id (cityName (string-ascii 32)))
+(define-read-only (get-city-id (cityName (string-ascii 10)))
   (map-get? CityIds cityName)
 )
 

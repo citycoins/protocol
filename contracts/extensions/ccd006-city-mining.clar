@@ -79,7 +79,7 @@
   )
 )
 
-(define-public (mine (cityName (string-ascii 32)) (amounts (list 200 uint)))
+(define-public (mine (cityName (string-ascii 10)) (amounts (list 200 uint)))
   (let
     (
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
@@ -116,7 +116,7 @@
   )
 )
 
-(define-public (claim-mining-reward (cityName (string-ascii 32)) (claimHeight uint))
+(define-public (claim-mining-reward (cityName (string-ascii 10)) (claimHeight uint))
   (let
     ((cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND)))
     (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
@@ -211,44 +211,39 @@
       (cityId (get cityId okReturn))
       (userId (get userId okReturn))
       (height (get height okReturn))
-      (totalAmount (get totalAmount okReturn))
     )
     (asserts! (not (has-mined-at-block cityId height userId)) ERR_ALREADY_MINED)
     (asserts! (> amount u0) ERR_INSUFFICIENT_COMMIT)
-    (set-mining-data cityId userId height amount)
+    (let
+      (
+        (blockStats (get-mining-stats-at-block cityId height))
+        (vrfLowVal (get-high-value cityId height))
+      )
+      (map-set MiningStatsAtBlock
+        { cityId: cityId, height: height }
+        { miners: (+ (get miners blockStats) u1), amount: (+ (get amount blockStats) amount), claimed: false }
+      )
+      (map-insert MinerAtBlock
+        { cityId: cityId, height: height, userId: userId }
+        {
+          commit: amount,
+          low: (if (> vrfLowVal u0) (+ vrfLowVal u1) u0),
+          high: (+ vrfLowVal amount),
+          winner: false
+        }
+      )
+      (map-set HighValueAtBlock
+        { cityId: cityId, height: height }
+        (+ vrfLowVal amount)
+      )
+    )
     (ok (merge okReturn
-      { height: (+ height u1), totalAmount: (+ totalAmount amount) }
+      { height: (+ height u1), totalAmount: (+ (get totalAmount okReturn) amount) }
     ))
   )
 )
 
-(define-private (set-mining-data (cityId uint) (userId uint) (height uint) (amount uint))
-  (let
-    (
-      (blockStats (get-mining-stats-at-block cityId height))
-      (vrfLowVal (get-high-value cityId height))
-    )
-    (map-set MiningStatsAtBlock
-      { cityId: cityId, height: height }
-      { miners: (+ (get miners blockStats) u1), amount: (+ (get amount blockStats) amount), claimed: false }
-    )
-    (map-insert MinerAtBlock
-      { cityId: cityId, height: height, userId: userId }
-      {
-        commit: amount,
-        low: (if (> vrfLowVal u0) (+ vrfLowVal u1) u0),
-        high: (+ vrfLowVal amount),
-        winner: false
-      }
-    )
-    (map-set HighValueAtBlock
-      { cityId: cityId, height: height }
-      (+ vrfLowVal amount)
-    )
-  )
-)
-
-(define-private (claim-mining-reward-at-block (cityName (string-ascii 32)) (cityId uint) (user principal) (stacksHeight uint) (claimHeight uint))
+(define-private (claim-mining-reward-at-block (cityName (string-ascii 10)) (cityId uint) (user principal) (stacksHeight uint) (claimHeight uint))
   (let
     (
       (maturityHeight (+ (get-reward-delay) claimHeight))
@@ -288,7 +283,7 @@
   )
 )
 
-(define-private (mint-coinbase (cityName (string-ascii 32)) (cityId uint) (recipient principal) (blockHeight uint))
+(define-private (mint-coinbase (cityName (string-ascii 10)) (cityId uint) (recipient principal) (blockHeight uint))
   (let
     ((amount (get-coinbase-amount cityId blockHeight)))
     (asserts! (> amount u0) ERR_NOTHING_TO_MINT)

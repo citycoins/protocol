@@ -42,11 +42,11 @@
 
 (define-map CityTreasuryNames
   { cityId: uint, treasuryId: uint }
-  (string-ascii 32)
+  (string-ascii 10)
 )
 
 (define-map CityTreasuryIds
-  { cityId: uint, treasuryName: (string-ascii 32) }
+  { cityId: uint, treasuryName: (string-ascii 10) }
   uint
 )
 
@@ -157,7 +157,7 @@
   )
 )
 
-(define-public (add-city-treasury (cityId uint) (address principal) (name (string-ascii 32)))
+(define-public (add-city-treasury (cityId uint) (address principal) (name (string-ascii 10)))
   (begin
     (let
       ((nonce (+ u1 (get-city-treasury-nonce cityId))))
@@ -261,7 +261,7 @@
   (default-to u0 (map-get? CityTreasuryNonce cityId))
 )
 
-(define-read-only (get-city-treasury-id (cityId uint) (treasuryName (string-ascii 32)))
+(define-read-only (get-city-treasury-id (cityId uint) (treasuryName (string-ascii 10)))
   (map-get? CityTreasuryIds { cityId: cityId, treasuryName: treasuryName })
 )
 
@@ -273,7 +273,7 @@
   (map-get? CityTreasuryAddress { cityId: cityId, treasuryId: treasuryId })
 )
 
-(define-read-only (get-city-treasury-by-name (cityId uint) (treasuryName (string-ascii 32)))
+(define-read-only (get-city-treasury-by-name (cityId uint) (treasuryName (string-ascii 10)))
   (let
     ((treasuryId (unwrap! (map-get? CityTreasuryIds { cityId: cityId, treasuryName: treasuryName }) none)))
     (map-get? CityTreasuryAddress { cityId: cityId, treasuryId: treasuryId })

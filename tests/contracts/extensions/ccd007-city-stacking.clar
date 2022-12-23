@@ -64,7 +64,7 @@
   )
 )
 
-(define-public (stack (cityName (string-ascii 32)) (amount uint) (lockPeriod uint))
+(define-public (stack (cityName (string-ascii 10)) (amount uint) (lockPeriod uint))
   (let
     (
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
@@ -84,7 +84,7 @@
   )
 )
 
-(define-public (send-stacking-reward (cityName (string-ascii 32)) (targetCycle uint) (amount uint))
+(define-public (send-stacking-reward (cityName (string-ascii 10)) (targetCycle uint) (amount uint))
   (let
     (
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
@@ -118,7 +118,7 @@
   )
 )
 
-(define-public (claim-stacking-reward (cityName (string-ascii 32)) (targetCycle uint))
+(define-public (claim-stacking-reward (cityName (string-ascii 10)) (targetCycle uint))
   (let
     (
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
@@ -229,7 +229,7 @@
 
 ;; PRIVATE FUNCTIONS
 
-(define-private (stack-at-cycle (cityName (string-ascii 32)) (cityId uint) (user principal) (userId uint) (amount uint) (lockPeriod uint) (startHeight uint))
+(define-private (stack-at-cycle (cityName (string-ascii 10)) (cityId uint) (user principal) (userId uint) (amount uint) (lockPeriod uint) (startHeight uint))
   (let
     (
       (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
