@@ -1,11 +1,7 @@
 ;; Title: CCD006 City Mining
 ;; Version: 1.0.0
-;; Synopsis:
-;; A central city mining contract for the CityCoins protocol.
-;; Description:
-;; An extension that provides a mining interface per city, in which
-;; each mining participant spends STX per block for a weighted chance
-;; to mint new CityCoins per the issuance schedule.
+;; Synopsis: A central city mining contract for the CityCoins protocol.
+;; Description: An extension that provides a mining interface per city, in which each mining participant spends STX per block for a weighted chance to mint new CityCoins per the issuance schedule.
 
 ;; TRAITS
 
@@ -14,7 +10,6 @@
 
 ;; CONSTANTS
 
-;; error codes
 (define-constant ERR_UNAUTHORIZED (err u6000))
 (define-constant ERR_INVALID_DELAY (err u6001))
 (define-constant ERR_INVALID_COMMIT_AMOUNTS (err u6002))

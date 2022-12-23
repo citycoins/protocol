@@ -1,7 +1,5 @@
 ;; Title: CityCoins base DAO contract
-;; Synopsis:
-;; An opinionated ExecutorDAO implementation inspired by
-;; the one DAO to rule them all.
+;; Synopsis: An opinionated ExecutorDAO implementation inspired by the one DAO to rule them all.
 
 ;; TRAITS
 
@@ -10,7 +8,6 @@
 
 ;; CONSTANTS
 
-;; error codes
 (define-constant ERR_UNAUTHORIZED (err u900))
 (define-constant ERR_ALREADY_EXECUTED (err u901))
 (define-constant ERR_INVALID_EXTENSION (err u902))

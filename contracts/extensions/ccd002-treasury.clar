@@ -1,13 +1,7 @@
 ;; Title: CCD002 Treasury
 ;; Version: 1.0.0
-;; Synopsis:
-;; A treasury contract that can manage STX, SIP-009 NFTs, and SIP-010 FTs.
-;; Description:
-;; An extension contract that holds assets on behalf of the DAO. SIP-009
-;; and SIP-010 assets must be allowed before they are supported.
-;; Deposits can be made by anyone either by transferring to the contract
-;; or using a deposit function below. Withdrawals are restricted to the DAO
-;; through either extensions or proposals.
+;; Synopsis: A treasury contract that can manage STX, SIP-009 NFTs, and SIP-010 FTs.
+;; Description: An extension contract that holds assets on behalf of the DAO. SIP-009 and SIP-010 assets must be allowed before they are supported. Deposits can be made by anyone either by transferring to the contract or using a deposit function below. Withdrawals are restricted to the DAO through either extensions or proposals.
 
 ;; TRAITS
 

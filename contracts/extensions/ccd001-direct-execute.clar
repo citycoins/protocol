@@ -1,15 +1,7 @@
 ;; Title: CCD001 Direct Execute
 ;; Version: 1.0.0
-;; Synopsis:
-;; This extension allows a small number of very trusted principals to immediately
-;; execute a proposal once a super majority is reached.
-;; Description:
-;; An extension meant for the bootstrapping period of a DAO. It temporarily gives
-;; trusted principals the ability to perform a "direct execution"; meaning, they
-;; can immediately execute a proposal with the required signals.
-;; The Direct Execute extension is set with a sunset period of ~6 months from
-;; deployment. Approvers, the parameters, and sunset period may be changed by
-;; means of a future proposal.
+;; Synopsis: This extension allows a small number of very trusted principals to immediately execute a proposal once a super majority is reached. 
+;; Description: An extension meant for the bootstrapping period of a DAO. It temporarily gives trusted principals the ability to perform a "direct execution"; meaning, they can immediately execute a proposal with the required signals. The Direct Execute extension is set with a sunset period of ~6 months from deployment. Approvers, the parameters, and sunset period may be changed by means of a future proposal.
 
 ;; TRAITS
 
@@ -18,7 +10,6 @@
 
 ;; CONSTANTS
 
-;; error codes
 (define-constant ERR_UNAUTHORIZED (err u1000))
 (define-constant ERR_NOT_APPROVER (err u1001))
 (define-constant ERR_SUNSET_REACHED (err u1002))

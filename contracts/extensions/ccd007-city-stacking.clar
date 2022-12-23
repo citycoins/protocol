@@ -1,12 +1,7 @@
 ;; Title: CCD007 City Stacking
 ;; Version: 1.0.0
-;; Synopsis:
-;; A central city stacking contract for the CityCoins protocol.
-;; Description:
-;; An extension that provides a stacking interface per city, in which
-;; a user can lock their CityCoins for a specified number of cycles,
-;; in return for a proportion of the stacking rewards accrued by the
-;; related city wallet.
+;; Synopsis: A central city stacking contract for the CityCoins protocol.
+;; Description: An extension that provides a stacking interface per city, in which a user can lock their CityCoins for a specified number of cycles, in return for a proportion of the stacking rewards accrued by the related city wallet.
 
 ;; TRAITS
 
@@ -14,7 +9,6 @@
 
 ;; CONSTANTS
 
-;; error codes
 (define-constant ERR_UNAUTHORIZED (err u7000))
 (define-constant ERR_INVALID_CYCLE_LENGTH (err u7001))
 (define-constant ERR_INVALID_STACKING_PARAMS (err u7002))
@@ -29,7 +23,6 @@
 (define-constant ERR_CITY_NOT_ACTIVATED (err u7011))
 (define-constant ERR_CITY_DETAILS_NOT_FOUND (err u7012))
 (define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7013))
-
 (define-constant SCALE_FACTOR (pow u10 u16))
 (define-constant MAX_REWARD_CYCLES u32)
 (define-constant REWARD_CYCLE_INDEXES (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29 u30 u31))
