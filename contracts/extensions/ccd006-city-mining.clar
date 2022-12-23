@@ -211,7 +211,6 @@
       (userId (get userId okReturn))
       (height (get height okReturn))
     )
-    (asserts! (not (has-mined-at-block cityId height userId)) ERR_ALREADY_MINED)
     (asserts! (> amount u0) ERR_INSUFFICIENT_COMMIT)
     (let
       (
@@ -222,7 +221,7 @@
         { cityId: cityId, height: height }
         { miners: (+ (get miners blockStats) u1), amount: (+ (get amount blockStats) amount), claimed: false }
       )
-      (map-insert MinerAtBlock
+      (asserts! (map-insert MinerAtBlock
         { cityId: cityId, height: height, userId: userId }
         {
           commit: amount,
@@ -230,7 +229,7 @@
           high: (+ vrfLowVal amount),
           winner: false
         }
-      )
+      ) ERR_ALREADY_MINED)
       (map-set HighValueAtBlock
         { cityId: cityId, height: height }
         (+ vrfLowVal amount)
