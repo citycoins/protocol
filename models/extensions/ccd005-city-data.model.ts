@@ -2,11 +2,7 @@ import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 export enum ErrCode {
   ERR_UNAUTHORIZED = 5000,
-  ERR_ACTIVATION_DETAILS_NOT_FOUND,
-  ERR_CONTRACT_ALREADY_ACTIVE,
-  ERR_CONTRACT_INACTIVE,
   ERR_TREASURY_ALREADY_EXISTS,
-  ERR_ALREADY_VOTED,
   ERR_INVALID_THRESHOLDS,
   ERR_INVALID_AMOUNTS,
   ERR_INVALID_BONUS_PERIOD,
@@ -41,10 +37,6 @@ export class CCD005CityData {
     return Tx.contractCall(this.name, "set-city-activation-details", [types.uint(cityId), types.uint(activated), types.uint(delay), types.uint(target), types.uint(threshold)], sender.address);
   }
 
-  activateCity(sender: Account, cityId: number, memo: string) {
-    return Tx.contractCall(this.name, "activate-city", [types.uint(cityId), memo ? types.some(types.ascii(memo)) : types.none()], sender.address);
-  }
-
   addCityTreasury(sender: Account, cityId: number, address: string, name: string) {
     return Tx.contractCall(this.name, "add-city-treasury", [types.uint(cityId), types.principal(address), types.ascii(name)], sender.address);
   }
@@ -77,14 +69,6 @@ export class CCD005CityData {
 
   getCityActivationDetails(cityId: number): ReadOnlyFn {
     return this.callReadOnlyFn("get-city-activation-details", [types.uint(cityId)]);
-  }
-
-  getCityActivationSignals(cityId: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-city-activation-signals", [types.uint(cityId)]);
-  }
-
-  getCityActivationVoter(cityId: number, signaler: string): ReadOnlyFn {
-    return this.callReadOnlyFn("get-city-activation-voter", [types.uint(cityId), types.principal(signaler)]);
   }
 
   getCityTreasuryNonce(cityId: number): ReadOnlyFn {

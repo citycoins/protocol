@@ -15,6 +15,7 @@
         {extension: .ccd005-city-data, enabled: true}
         {extension: .ccd006-city-mining, enabled: true}
         {extension: .ccd007-city-stacking, enabled: true}
+        {extension: .ccd008-city-activation, enabled: true}
       )
     ))
 

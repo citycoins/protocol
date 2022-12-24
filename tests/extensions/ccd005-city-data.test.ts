@@ -4,7 +4,6 @@
  * 1. CITY ACTIVATION TESTS
  *    - set-city-activation-status
  *    - set-city-activation-details
- *    - activate-city
  * 2. CITY DATA COINBASE TESTS
  *    - set-city-coinbase-thresholds
  *    - set-city-coinbase-amounts
@@ -15,10 +14,9 @@
  *    - add-city-token-contract
  *    - set-active-city-token-contract
  */
-import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import { START_BLOCK_CCD005, constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
-import { CCD005CityData, ErrCode } from "../../models/extensions/ccd005-city-data.model.ts";
-import { types } from "../../utils/deps.ts";
+import { Account, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
+import { constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
+import { CCD005CityData } from "../../models/extensions/ccd005-city-data.model.ts";
 
 // =============================
 // INTERNAL DATA / FUNCTIONS
@@ -85,14 +83,10 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
-    // act
-
     // assert
     ccd005CityData.isDaoOrExtension().result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_UNAUTHORIZED);
   },
 });
-
-// Extension callback
 
 Clarinet.test({
   name: "ccd005-city-data: callback() succeeds when called directly",
@@ -219,75 +213,6 @@ Clarinet.test({
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(true); //.expectOk().expectSome().expectBool(true);
     testExpectedCityDetails(ccd005CityData, miaCityId, 1, 1, 1, 1);
-  },
-});
-
-Clarinet.test({
-  name: "ccd005-city-data: activate-city() fails to activate if signalled by same account",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-
-    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-
-    // act
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
-
-    // there should be no signals yet
-    ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(0);
-    // city should not be activated
-    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
-    testExpectedCityDetails(ccd005CityData, nycCityId, 2, 2, 2, 2);
-
-    let block = chain.mineBlock([ccd005CityData.activateCity(sender, 2, "memo 1")]);
-
-    ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(1);
-    // city should not be activated
-    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
-    // sender should have voted already
-    ccd005CityData.getCityActivationVoter(2, sender.address).result.expectBool(true);
-    // send second signal
-    block = chain.mineBlock([ccd005CityData.activateCity(sender, 2, "memo 2")]);
-
-    // assert
-    ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(1);
-    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
-    block.receipts[0].result.expectErr().expectUint(ErrCode.ERR_ALREADY_VOTED);
-    testExpectedCityDetails(ccd005CityData, nycCityId, 2, 2, 2, 2);
-  },
-});
-
-Clarinet.test({
-  name: "ccd005-city-data: activate-city() succeeds if activated by two different voters",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const approver1 = accounts.get("wallet_1")!;
-    const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-
-    // act
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
-    ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(0);
-    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
-    testExpectedCityDetails(ccd005CityData, nycCityId, 2, 2, 2, 2);
-
-    let block = chain.mineBlock([ccd005CityData.activateCity(sender, 2, "memo 1")]);
-
-    ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(1);
-    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
-    ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
-
-    block = chain.mineBlock([ccd005CityData.activateCity(approver1, 2, "memo 2")]);
-
-    // assert
-    ccd005CityData.getCityActivationVoter(nycCityId, sender.address).result.expectBool(true);
-    ccd005CityData.getCityActivationVoter(nycCityId, approver1.address).result.expectBool(true);
-    ccd005CityData.getCityActivationSignals(nycCityId).result.expectUint(2);
-    ccd005CityData.isCityActivated(nycCityId).result.expectBool(true);
-    block.receipts[0].result.expectOk();
-    testExpectedCityDetails(ccd005CityData, nycCityId, START_BLOCK_CCD005, 2, START_BLOCK_CCD005 + 2, 2);
   },
 });
 

@@ -10,15 +10,11 @@
 ;; CONSTANTS
 
 (define-constant ERR_UNAUTHORIZED (err u5000))
-(define-constant ERR_ACTIVATION_DETAILS_NOT_FOUND (err u5001))
-(define-constant ERR_CONTRACT_ALREADY_ACTIVE (err u5002))
-(define-constant ERR_CONTRACT_INACTIVE (err u5003))
-(define-constant ERR_TREASURY_ALREADY_EXISTS (err u5004))
-(define-constant ERR_ALREADY_VOTED (err u5005))
-(define-constant ERR_INVALID_THRESHOLDS (err u5006))
-(define-constant ERR_INVALID_AMOUNTS (err u5007))
-(define-constant ERR_INVALID_BONUS_PERIOD (err u5008))
-(define-constant ERR_INVALID_CITY (err u5009))
+(define-constant ERR_TREASURY_ALREADY_EXISTS (err u5001))
+(define-constant ERR_INVALID_THRESHOLDS (err u5002))
+(define-constant ERR_INVALID_AMOUNTS (err u5003))
+(define-constant ERR_INVALID_BONUS_PERIOD (err u5004))
+(define-constant ERR_INVALID_CITY (err u5005))
 
 ;; DATA MAPS
 
@@ -27,13 +23,6 @@
 (define-map CityActivationDetails
   uint
   { activated: uint, delay: uint, target: uint, threshold: uint }
-)
-
-(define-map CityActivationSignals uint uint)
-
-(define-map CityActivationVoters
-  { cityId: uint, signaler: principal }
-  bool
 )
 
 (define-map CityTreasuryNonce uint uint)
@@ -127,30 +116,6 @@
       target: target,
       threshold: threshold
     }))
-  )
-)
-
-(define-public (activate-city (cityId uint) (memo (optional (string-ascii 100))))
-  (let
-    (
-      (details (unwrap! (get-city-activation-details cityId) ERR_ACTIVATION_DETAILS_NOT_FOUND))
-      (signals (+ (get-city-activation-signals cityId) u1))
-    )
-    (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
-    (asserts! (not (is-city-activated cityId)) ERR_CONTRACT_ALREADY_ACTIVE)
-    (asserts! (not (get-city-activation-voter cityId tx-sender)) ERR_ALREADY_VOTED)
-    (map-set CityActivationSignals cityId signals)
-    (map-insert CityActivationVoters { cityId: cityId, signaler: tx-sender } true)
-    (and (is-eq signals (get threshold details))
-      (begin
-        (map-set CityActivationStatus cityId true)
-        (map-set CityActivationDetails cityId (merge details {
-          activated: block-height,
-          target: (+ block-height (get delay details))
-        }))
-      )
-    )
-    (ok true)
   )
 )
 
@@ -250,14 +215,6 @@
 
 (define-read-only (get-city-activation-details (cityId uint))
   (map-get? CityActivationDetails cityId)
-)
-
-(define-read-only (get-city-activation-signals (cityId uint))
-  (default-to u0 (map-get? CityActivationSignals cityId))
-)
-
-(define-read-only (get-city-activation-voter (cityId uint) (voter principal))
-  (default-to false (map-get? CityActivationVoters { cityId: cityId, signaler: voter }))
 )
 
 (define-read-only (get-city-treasury-nonce (cityId uint))

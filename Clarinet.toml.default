@@ -62,6 +62,9 @@ path = "contracts/extensions/ccd006-city-mining.clar"
 [contracts.ccd007-city-stacking]
 path = "contracts/extensions/ccd007-city-stacking.clar"
 
+[contracts.ccd008-city-activation]
+path = "contracts/extensions/ccd008-city-activation.clar"
+
 [contracts.citycoin-vrf-v2]
 path = "tests/contracts/external/citycoin-vrf-v2.clar"
 
