@@ -151,11 +151,22 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    const block = chain.mineBlock([ccd007CityStacking.stack(sender, miaCityName, 200, lockingPeriod)]);
+    // sets city activation details
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    // sets city activation status to true
+    // passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    // add city treasury named "stacking"
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
+    // 009 mints mia to user1 and user2
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_009);
+    // 010 adds the token contract to the treasury allow list
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_010);
+    const block = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, 200, lockingPeriod)]);
 
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_CITY_NOT_ACTIVATED);
@@ -167,12 +178,22 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    // sets city activation details
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    // sets city activation status to true
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    const block = chain.mineBlock([ccd007CityStacking.stack(sender, miaCityName, 5000, 0)]);
+    // add city treasury named "stacking"
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
+    // 009 mints mia to user1 and user2
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_009);
+    // 010 adds the token contract to the treasury allow list
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_010);
+    const block = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, 5000, 0)]);
 
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_STACKING_PARAMS);
@@ -184,12 +205,22 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    // sets city activation details
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    // sets city activation status to true
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    const block = chain.mineBlock([ccd007CityStacking.stack(sender, miaCityName, 5000, 33)]);
+    // add city treasury named "stacking"
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
+    // 009 mints mia to user1 and user2
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_009);
+    // 010 adds the token contract to the treasury allow list
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_010);
+    const block = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, 5000, 33)]);
 
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_STACKING_PARAMS);
@@ -201,12 +232,22 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    // sets city activation details
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    // sets city activation status to true
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    const block = chain.mineBlock([ccd007CityStacking.stack(sender, miaCityName, 0, lockingPeriod)]);
+    // add city treasury named "stacking"
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
+    // 009 mints mia to user1 and user2
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_009);
+    // 010 adds the token contract to the treasury allow list
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_010);
+    const block = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, 0, lockingPeriod)]);
 
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_STACKING_PARAMS);
