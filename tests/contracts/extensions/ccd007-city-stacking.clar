@@ -79,12 +79,8 @@
     (asserts! (and (> amount u0) (> lockPeriod u0) (<= lockPeriod MAX_REWARD_CYCLES)) ERR_INVALID_STACKING_PARAMS)
     (try! (fold stack-tokens-closure REWARD_CYCLE_INDEXES (ok stackingInfo)))
     ;; contract addresses hardcoded for this version
-    (and (is-eq cityName "mia")
-      (try! (contract-call? .ccd002-treasury-mia-stacking deposit-ft .test-ccext-governance-token-mia amount))
-    )
-    (and (is-eq cityName "nyc")
-      (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-ft .test-ccext-governance-token-nyc amount))
-    )
+    (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-ft .test-ccext-governance-token-mia amount)))
+    (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-ft .test-ccext-governance-token-nyc amount)))
     (print {
       action: "stacking",
       userId: userId,
