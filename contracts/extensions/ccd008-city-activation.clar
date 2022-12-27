@@ -9,7 +9,6 @@
 
 ;; CONSTANTS
 
-;; TODO: update error codes
 (define-constant ERR_UNAUTHORIZED (err u8000))
 (define-constant ERR_ACTIVATION_DETAILS_NOT_FOUND (err u8001))
 (define-constant ERR_CONTRACT_ALREADY_ACTIVE (err u8002))
@@ -57,7 +56,6 @@
         (try! (as-contract
           (contract-call? .ccd005-city-data set-city-activation-details cityId block-height (get delay details) (+ block-height (get delay details)) (get threshold details))
         ))
-        ;; TODO: what else needs to be set here?
       )
     )
     (ok true)
