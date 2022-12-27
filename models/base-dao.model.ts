@@ -1,7 +1,7 @@
-import { Account, Tx, types } from "../utils/deps.ts";
+import { Chain, Account, Tx, types, ReadOnlyFn } from "../utils/deps.ts";
 
 enum ErrCode {
-  ERR_UNAUTHORIZED = 1000,
+  ERR_UNAUTHORIZED = 900,
   ERR_ALREADY_EXECUTED,
   ERR_INVALID_EXTENSION,
 }
@@ -16,25 +16,22 @@ export class BaseDao {
 
   name = "base-dao";
   static readonly ErrCode = ErrCode;
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
 
   // Extensions
 
-  isExtension(sender: Account, extension: string) {
-    return Tx.contractCall(
-      this.name,
-      "is-extension",
-      [types.principal(extension)],
-      sender.address
-    );
+  isExtension(extension: string): ReadOnlyFn {
+    return this.callReadOnlyFn("is-extension", [types.principal(extension)]);
   }
 
   setExtension(sender: Account, ext: Extension) {
-    return Tx.contractCall(
-      this.name,
-      "set-extension",
-      [types.principal(ext.extension), types.bool(ext.enabled)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "set-extension", [types.principal(ext.extension), types.bool(ext.enabled)], sender.address);
   }
 
   setExtensions(sender: Account, exts: Extension[]) {
@@ -47,53 +44,33 @@ export class BaseDao {
         })
       );
     }
-    return Tx.contractCall(
-      this.name,
-      "set-extensions",
-      [types.list(extensionList)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "set-extensions", [types.list(extensionList)], sender.address);
   }
 
   // Proposals
 
   executedAt(sender: Account, proposal: string) {
-    return Tx.contractCall(
-      this.name,
-      "executed-at",
-      [types.principal(proposal)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "executed-at", [types.principal(proposal)], sender.address);
   }
 
   execute(sender: Account, proposal: string, proposer: string) {
-    return Tx.contractCall(
-      this.name,
-      "execute",
-      [types.principal(proposal), types.principal(proposer)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "execute", [types.principal(proposal), types.principal(proposer)], sender.address);
   }
 
   // Bootstrap
 
   construct(sender: Account, proposal: string) {
-    return Tx.contractCall(
-      this.name,
-      "construct",
-      [types.principal(proposal)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "construct", [types.principal(proposal)], sender.address);
   }
 
   // Extension requests
 
   requestExtensionCallback(sender: Account, extension: string, memo: string) {
-    return Tx.contractCall(
-      this.name,
-      "request-extension-callback",
-      [types.principal(extension), types.buff(memo)],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "request-extension-callback", [types.principal(extension), types.buff(memo)], sender.address);
+  }
+
+  private callReadOnlyFn(method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
+    const result = this.chain.callReadOnlyFn(this.name, method, args, sender?.address);
+    return result;
   }
 }

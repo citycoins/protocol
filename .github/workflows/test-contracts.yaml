@@ -1,7 +1,7 @@
 # GitHub action to run Clarinet tests against the contracts
 # and fail if code is invalid or a test fails.
 
-name: Smart Contract Tests
+name: Test Contracts
 
 on:
   push:
