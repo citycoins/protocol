@@ -36,11 +36,11 @@ const nycTreasuryName = "nyc-treasury";
 const nycStackingTreasury = 1;
 const nycMiningTreasury = 2;
 
-const testExpectedCityDetails = (ccd005CityData: any, cityId: number, activated: number, delay: number, target: number, threshold: number) => {
+const testExpectedCityDetails = (ccd005CityData: any, cityId: number, succeeded: number, delay: number, activated: number, threshold: number) => {
   const expectedStats = {
-    activated: types.uint(activated),
+    succeeded: types.uint(succeeded),
     delay: types.uint(delay),
-    target: types.uint(target),
+    activated: types.uint(activated),
     threshold: types.uint(threshold),
   };
   assertEquals(ccd005CityData.getCityActivationDetails(cityId).result.expectSome().expectTuple(), expectedStats);
@@ -147,9 +147,9 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const activated = 1;
+    const succeeded = 1;
     const delay = 1;
-    const target = 1;
+    const activated = 1;
     const threshold = 1;
 
     // act
@@ -160,7 +160,7 @@ Clarinet.test({
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(true); //.expectOk().expectSome().expectBool(true);
-    testExpectedCityDetails(ccd005CityData, miaCityId, activated, delay, target, threshold);
+    testExpectedCityDetails(ccd005CityData, miaCityId, succeeded, delay, activated, threshold);
   },
 });
 
