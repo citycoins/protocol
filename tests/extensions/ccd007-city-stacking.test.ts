@@ -287,25 +287,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd007-city-stacking: stack() fails if stacking is unavailable",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
-
-    // act
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
-    const block = chain.mineBlock([ccd007CityStacking.stack(sender, miaCityName, 5000, lockingPeriod)]);
-
-    // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_STACKING_NOT_AVAILABLE);
-  },
-});
-
-Clarinet.test({
-  name: "ccd007-city-stacking: stack() fails if stacking is unavailable",
+  name: "ccd007-city-stacking: stack() fails if asset is not on allow list",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -320,6 +302,24 @@ Clarinet.test({
 
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd007-city-stacking: stack() fails if stacking is unavailable",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+
+    // act
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
+    const block = chain.mineBlock([ccd007CityStacking.stack(sender, miaCityName, 5000, lockingPeriod)]);
+
+    // assert
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_STACKING_NOT_AVAILABLE);
   },
 });
 
