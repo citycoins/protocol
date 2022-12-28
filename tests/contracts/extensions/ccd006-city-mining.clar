@@ -6,6 +6,7 @@
 ;; TRAITS
 
 (impl-trait .extension-trait.extension-trait)
+(impl-trait 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2)
 
 ;; CONSTANTS
 
@@ -31,6 +32,7 @@
 (define-constant ERR_CITY_COINBASE_THRESHOLDS_NOT_FOUND (err u6019))
 (define-constant ERR_CITY_COINBASE_AMOUNTS_NOT_FOUND (err u6020))
 (define-constant ERR_CITY_COINBASE_BONUS_PERIOD_NOT_FOUND (err u6021))
+(define-constant ERR_FUNCTION_DISABLED (err u6022))
 
 ;; DATA VARS
 
@@ -115,13 +117,27 @@
   )
 )
 
-(define-public (claim-mining-reward (cityName (string-ascii 10)) (claimHeight uint))
+(define-public (claim-mining-block (cityName (string-ascii 10)) (claimHeight uint))
   (let
     ((cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND)))
     (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
     (claim-mining-reward-at-block cityName cityId tx-sender block-height claimHeight)
   )
 )
+
+;; DISABLED PUBLIC FUNCTIONS
+;; from the original CityCoins Protocol v2
+;; only used for backwards-compatibility
+(define-public (register-user (memo (optional (string-utf8 50)))) ERR_FUNCTION_DISABLED)
+(define-public (mine-tokens (amount uint) (memo (optional (buff 34)))) ERR_FUNCTION_DISABLED)
+(define-public (mine-many (amounts (list 200 uint))) ERR_FUNCTION_DISABLED)
+(define-public (claim-mining-reward (minerBlockHeight uint)) ERR_FUNCTION_DISABLED)
+(define-public (stack-tokens (amountTokens uint) (lockPeriod uint)) ERR_FUNCTION_DISABLED)
+(define-public (claim-stacking-reward (targetCycle uint)) ERR_FUNCTION_DISABLED)
+(define-public (set-city-wallet (newCityWallet principal)) ERR_FUNCTION_DISABLED)
+(define-public (update-coinbase-thresholds) ERR_FUNCTION_DISABLED)
+(define-public (update-coinbase-amounts) ERR_FUNCTION_DISABLED)
+(define-public (shutdown-contract (stacksHeight uint)) ERR_FUNCTION_DISABLED)
 
 ;; READ ONLY FUNCTIONS
 
