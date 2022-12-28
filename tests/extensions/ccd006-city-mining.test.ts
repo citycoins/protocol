@@ -4,6 +4,7 @@
  * 1. mine
  * 2. claim-mining-reward
  * 3. reward-delay
+ * 4. disabled functions (old protocol)
  */
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
 import { START_BLOCK_CCD006, constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
@@ -1130,5 +1131,159 @@ Clarinet.test({
     ccd006CityMining.getRewardDelay().result.expectUint(50);
     assertEquals(receipts.length, 4);
     receipts[3].result.expectOk();
+  },
+});
+
+// =============================
+// 4. disabled functions (legacy protocol)
+// =============================
+
+Clarinet.test({
+  name: "ccd006-city-mining (legacy): register-user() is disabled",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd006CityMining.registerUser(sender, "mia", 1)]);
+
+    // assert
+    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_FUNCTION_DISABLED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-city-mining (legacy): mine-tokens() is disabled",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd006CityMining.mineTokens(sender, 1, "mia")]);
+
+    // assert
+    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_FUNCTION_DISABLED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-city-mining (legacy): mine-many() is disabled",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd006CityMining.mineMany(sender, [1, 1, 1])]);
+
+    // assert
+    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_FUNCTION_DISABLED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-city-mining (legacy): claim-mining-reward() is disabled",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, 1)]);
+
+    // assert
+    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_FUNCTION_DISABLED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-city-mining (legacy): stack-tokens() is disabled",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd006CityMining.stackTokens(sender, 1, 1)]);
+
+    // assert
+    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_FUNCTION_DISABLED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-city-mining (legacy): claim-stacking-reward() is disabled",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd006CityMining.claimStackingReward(sender, 1)]);
+
+    // assert
+    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_FUNCTION_DISABLED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-city-mining (legacy): set-city-wallet() is disabled",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd006CityMining.setCityWallet(sender, sender.address)]);
+
+    // assert
+    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_FUNCTION_DISABLED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-city-mining (legacy): update-coinbase-thresholds() is disabled",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd006CityMining.updateCoinbaseThresholds(sender, 1, 1)]);
+
+    // assert
+    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_FUNCTION_DISABLED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-city-mining (legacy): update-coinbase-amounts() is disabled",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd006CityMining.updateCoinbaseAmounts(sender, 1, 1)]);
+
+    // assert
+    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_FUNCTION_DISABLED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-city-mining (legacy): shutdown-contract() is disabled",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    const { receipts } = chain.mineBlock([ccd006CityMining.shutdownContract(sender, 100)]);
+
+    // assert
+    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_FUNCTION_DISABLED);
   },
 });
