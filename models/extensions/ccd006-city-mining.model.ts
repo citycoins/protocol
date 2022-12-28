@@ -20,6 +20,7 @@ export enum ErrCode {
   ERR_CITY_NOT_ACTIVATED,
   ERR_CITY_DETAILS_NOT_FOUND,
   ERR_CITY_TREASURY_NOT_FOUND,
+  ERR_FUNCTION_DISABLED,
 }
 
 export class CCD006CityMining {
@@ -52,6 +53,48 @@ export class CCD006CityMining {
 
   claimMiningBlock(sender: Account, cityName: string, claimHeight: number) {
     return Tx.contractCall(this.name, "claim-mining-block", [types.ascii(cityName), types.uint(claimHeight)], sender.address);
+  }
+
+  // disabled functions (legacy protocol)
+
+  registerUser(sender: Account, memo: string) {
+    return Tx.contractCall(this.name, "register-user", [types.some(types.utf8(memo))], sender.address);
+  }
+
+  mineTokens(sender: Account, amount: number, memo: string) {
+    return Tx.contractCall(this.name, "mine-tokens", [types.uint(amount), types.some(types.buff(memo))], sender.address);
+  }
+
+  mineMany(sender: Account, amounts: Array<number>) {
+    return Tx.contractCall(this.name, "mine-many", [types.list(amounts.map((entry) => types.uint(entry)))], sender.address);
+  }
+
+  claimMiningReward(sender: Account, blockHeight: number) {
+    return Tx.contractCall(this.name, "claim-mining-reward", [types.uint(blockHeight)], sender.address);
+  }
+
+  stackTokens(sender: Account, amountTokens: number, lockPeriod: number) {
+    return Tx.contractCall(this.name, "stack-tokens", [types.uint(amountTokens), types.uint(lockPeriod)], sender.address);
+  }
+
+  claimStackingReward(sender: Account, targetCycle: number) {
+    return Tx.contractCall(this.name, "claim-stacking-reward", [types.uint(targetCycle)], sender.address);
+  }
+
+  setCityWallet(sender: Account, newCityWallet: string) {
+    return Tx.contractCall(this.name, "set-city-wallet", [types.principal(newCityWallet)], sender.address);
+  }
+
+  updateCoinbaseThresholds(sender: Account) {
+    return Tx.contractCall(this.name, "update-coinbase-thresholds", [], sender.address);
+  }
+
+  updateCoinbaseAmounts(sender: Account) {
+    return Tx.contractCall(this.name, "update-coinbase-amounts", [], sender.address);
+  }
+
+  shutdownContract(sender: Account, height: number) {
+    return Tx.contractCall(this.name, "shutdown-contract", [types.uint(height)], sender.address);
   }
 
   // Read only functions

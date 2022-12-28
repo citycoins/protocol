@@ -133,6 +133,7 @@
 (define-public (set-city-wallet (newCityWallet principal)) ERR_FUNCTION_DISABLED)
 (define-public (update-coinbase-thresholds) ERR_FUNCTION_DISABLED)
 (define-public (update-coinbase-amounts) ERR_FUNCTION_DISABLED)
+(define-public (shutdown-contract (stacksHeight uint)) ERR_FUNCTION_DISABLED)
 
 ;; READ ONLY FUNCTIONS
 
