@@ -621,7 +621,7 @@ Clarinet.test({
     const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
 
     // act
-    const { receipts } = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, miaCityName, 50)]);
+    const { receipts } = chain.mineBlock([ccd006CityMining.claimMiningBlock(sender, miaCityName, 50)]);
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(100);
@@ -641,7 +641,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_003);
-    const { receipts } = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, miaCityName, 50)]);
+    const { receipts } = chain.mineBlock([ccd006CityMining.claimMiningBlock(sender, miaCityName, 50)]);
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(100);
@@ -660,7 +660,7 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    const block = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, miaCityName, 50)]);
+    const block = chain.mineBlock([ccd006CityMining.claimMiningBlock(sender, miaCityName, 50)]);
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(100);
@@ -681,7 +681,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     const claimHeight = 7;
     chain.mineEmptyBlock(rewardDelay);
-    const block = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, miaCityName, claimHeight)]);
+    const block = chain.mineBlock([ccd006CityMining.claimMiningBlock(sender, miaCityName, claimHeight)]);
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
@@ -702,7 +702,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     const claimHeight = 5; // one less than actual bh
     chain.mineEmptyBlock(rewardDelay);
-    const block = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, miaCityName, claimHeight)]);
+    const block = chain.mineBlock([ccd006CityMining.claimMiningBlock(sender, miaCityName, claimHeight)]);
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
@@ -725,7 +725,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
     const claimHeight = 6; // one less than actual bh
     chain.mineEmptyBlock(rewardDelay);
-    const block = chain.mineBlock([ccd006CityMining.claimMiningReward(user, miaCityName, claimHeight)]);
+    const block = chain.mineBlock([ccd006CityMining.claimMiningBlock(user, miaCityName, claimHeight)]);
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
@@ -752,7 +752,7 @@ Clarinet.test({
     let block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
     const claimHeight = block.height - 1; // one less than actual bh
     chain.mineEmptyBlock(rewardDelay);
-    block = chain.mineBlock([ccd006CityMining.claimMiningReward(user, miaCityName, claimHeight)]);
+    block = chain.mineBlock([ccd006CityMining.claimMiningBlock(user, miaCityName, claimHeight)]);
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
@@ -779,7 +779,7 @@ Clarinet.test({
     let block = chain.mineBlock([ccd006CityMining.mine(user, miaCityName, entries)]);
     const claimHeight = block.height - 1; // one less than actual bh
     chain.mineEmptyBlock(rewardDelay);
-    block = chain.mineBlock([ccd006CityMining.claimMiningReward(user, miaCityName, claimHeight)]);
+    block = chain.mineBlock([ccd006CityMining.claimMiningBlock(user, miaCityName, claimHeight)]);
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
@@ -822,7 +822,7 @@ Clarinet.test({
 
     const claimHeight = block.height - 1;
     chain.mineEmptyBlock(rewardDelay + 1);
-    block = chain.mineBlock([ccd006CityMining.claimMiningReward(user, miaCityName, claimHeight)]);
+    block = chain.mineBlock([ccd006CityMining.claimMiningBlock(user, miaCityName, claimHeight)]);
 
     // assert
 
@@ -867,7 +867,7 @@ Clarinet.test({
     const claimHeight = block.height - 1;
     chain.mineEmptyBlock(rewardDelay + 1);
 
-    block = chain.mineBlock([ccd006CityMining.claimMiningReward(user, miaCityName, claimHeight)]);
+    block = chain.mineBlock([ccd006CityMining.claimMiningBlock(user, miaCityName, claimHeight)]);
 
     // assert
 
@@ -910,7 +910,7 @@ Clarinet.test({
     //dumpMiningData(ccd006CityMining, miaCityId, (firstBlock), (1), miningStatsAt, minerAt);
 
     chain.mineEmptyBlock(rewardDelay);
-    block = chain.mineBlock([ccd006CityMining.claimMiningReward(user, miaCityName, firstBlock)]);
+    block = chain.mineBlock([ccd006CityMining.claimMiningBlock(user, miaCityName, firstBlock)]);
 
     // assert
 
@@ -946,7 +946,7 @@ Clarinet.test({
     const block1 = chain.mineBlock([ccd006CityMining.mine(user1, miaCityName, entries), ccd006CityMining.mine(user2, miaCityName, entries)]);
 
     chain.mineEmptyBlock(rewardDelay);
-    const block2 = chain.mineBlock([ccd006CityMining.claimMiningReward(user1, miaCityName, firstBlock), ccd006CityMining.claimMiningReward(user2, miaCityName, firstBlock)]);
+    const block2 = chain.mineBlock([ccd006CityMining.claimMiningBlock(user1, miaCityName, firstBlock), ccd006CityMining.claimMiningBlock(user2, miaCityName, firstBlock)]);
 
     // assert
 
@@ -1014,7 +1014,7 @@ Clarinet.test({
     const lastBlock = claimHeight + totalBlocks - 1;
     chain.mineEmptyBlock(rewardDelay + 1);
 
-    const miningClaimBlock = chain.mineBlock([ccd006CityMining.claimMiningReward(user1, miaCityName, claimHeight), ccd006CityMining.claimMiningReward(user2, miaCityName, claimHeight)]);
+    const miningClaimBlock = chain.mineBlock([ccd006CityMining.claimMiningBlock(user1, miaCityName, claimHeight), ccd006CityMining.claimMiningBlock(user2, miaCityName, claimHeight)]);
 
     // assert
 

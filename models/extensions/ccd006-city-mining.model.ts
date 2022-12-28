@@ -50,8 +50,8 @@ export class CCD006CityMining {
     return Tx.contractCall(this.name, "set-reward-delay", [types.uint(delay)], sender.address);
   }
 
-  claimMiningReward(sender: Account, cityName: string, claimHeight: number) {
-    return Tx.contractCall(this.name, "claim-mining-reward", [types.ascii(cityName), types.uint(claimHeight)], sender.address);
+  claimMiningBlock(sender: Account, cityName: string, claimHeight: number) {
+    return Tx.contractCall(this.name, "claim-mining-block", [types.ascii(cityName), types.uint(claimHeight)], sender.address);
   }
 
   // Read only functions
