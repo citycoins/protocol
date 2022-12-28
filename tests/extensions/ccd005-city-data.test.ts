@@ -384,14 +384,14 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-bonus-period() fails when called directly",
+  name: "ccd005-city-data: set-city-coinbase-details() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    const { receipts } = chain.mineBlock([ccd005CityData.setCityCoinbaseBonusPeriod(sender, miaCityId, 20)]);
+    const { receipts } = chain.mineBlock([ccd005CityData.setCityCoinbaseDetails(sender, miaCityId, 20, 1)]);
 
     // assert
     assertEquals(receipts.length, 1);
@@ -400,7 +400,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-bonus-period() fails if city is not registered",
+  name: "ccd005-city-data: set-city-coinbase-details() fails if city is not registered",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -410,12 +410,12 @@ Clarinet.test({
     // assert
     receipts[3].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_INVALID_CITY);
     const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
-    coinbaseInfo.bonusPeriod.expectNone();
+    coinbaseInfo.details.expectNone();
   },
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-bonus-period() fails if period is 0",
+  name: "ccd005-city-data: set-city-coinbase-details() fails if bonus period is 0",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -425,14 +425,31 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_017);
     // assert
-    receipts[3].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_INVALID_BONUS_PERIOD);
+    receipts[3].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_INVALID_DETAILS);
     const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
-    coinbaseInfo.bonusPeriod.expectNone();
+    coinbaseInfo.details.expectNone();
   },
 });
 
 Clarinet.test({
-  name: "ccd005-city-data: set-city-coinbase-bonus-period() succeeds if period is greater than 0",
+  name: "ccd005-city-data: set-city-coinbase-details() fails if epoch length is 0",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+
+    // act
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_019);
+    // assert
+    receipts[3].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_INVALID_DETAILS);
+    const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
+    coinbaseInfo.details.expectNone();
+  },
+});
+
+Clarinet.test({
+  name: "ccd005-city-data: set-city-coinbase-details() succeeds if values are greater than 0",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -443,7 +460,8 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
     // assert
     const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
-    coinbaseInfo.bonusPeriod.expectSome().expectUint(20);
+    const expected = { coinbaseBonusPeriod: types.uint(20), coinbaseEpochLength: types.uint(1) };
+    coinbaseInfo.details.expectSome().expectTuple(expected);
   },
 });
 

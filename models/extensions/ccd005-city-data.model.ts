@@ -5,7 +5,7 @@ export enum ErrCode {
   ERR_TREASURY_ALREADY_EXISTS,
   ERR_INVALID_THRESHOLDS,
   ERR_INVALID_AMOUNTS,
-  ERR_INVALID_BONUS_PERIOD,
+  ERR_INVALID_DETAILS,
   ERR_INVALID_CITY,
 }
 
@@ -49,16 +49,16 @@ export class CCD005CityData {
     return Tx.contractCall(this.name, "set-active-city-token-contract", [types.uint(cityId), types.uint(tokenId)], sender.address);
   }
 
-  setCityCoinbaseBonusPeriod(sender: Account, cityId: number, bonusPeriod: number) {
-    return Tx.contractCall(this.name, "set-city-coinbase-bonus-period", [types.uint(cityId), types.uint(bonusPeriod)], sender.address);
-  }
-
   setCityCoinbaseThresholds(sender: Account, cityId: number, threshold1: number, threshold2: number, threshold3: number, threshold4: number, threshold5: number) {
     return Tx.contractCall(this.name, "set-city-coinbase-thresholds", [types.uint(cityId), types.uint(threshold1), types.uint(threshold2), types.uint(threshold3), types.uint(threshold4), types.uint(threshold5)], sender.address);
   }
 
   setCityCoinbaseAmounts(sender: Account, cityId: number, amountBonus: number, amount1: number, amount2: number, amount3: number, amount4: number, amount5: number, amountDefault: number) {
     return Tx.contractCall(this.name, "set-city-coinbase-amounts", [types.uint(cityId), types.uint(amountBonus), types.uint(amount1), types.uint(amount2), types.uint(amount3), types.uint(amount4), types.uint(amount5), types.uint(amountDefault)], sender.address);
+  }
+
+  setCityCoinbaseDetails(sender: Account, cityId: number, bonusPeriod: number, epochLength: number) {
+    return Tx.contractCall(this.name, "set-city-coinbase-details", [types.uint(cityId), types.uint(bonusPeriod), types.uint(epochLength)], sender.address);
   }
 
   // Read only functions

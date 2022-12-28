@@ -6,7 +6,7 @@
 
 (define-public (execute (sender principal))
 	(begin
-		(try! (contract-call? .ccd005-city-data set-city-coinbase-details u1 u0 u1))
+		(try! (contract-call? .ccd005-city-data set-city-coinbase-details u1 u1 u0))
 		(ok true)
 	)
 )

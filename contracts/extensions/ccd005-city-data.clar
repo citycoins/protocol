@@ -13,7 +13,7 @@
 (define-constant ERR_TREASURY_ALREADY_EXISTS (err u5001))
 (define-constant ERR_INVALID_THRESHOLDS (err u5002))
 (define-constant ERR_INVALID_AMOUNTS (err u5003))
-(define-constant ERR_INVALID_BONUS_PERIOD (err u5004))
+(define-constant ERR_INVALID_DETAILS (err u5004))
 (define-constant ERR_INVALID_CITY (err u5005))
 
 ;; DATA MAPS
@@ -83,7 +83,10 @@
   }
 )
 
-(define-map CityCoinbaseBonusPeriod uint uint)
+(define-map CityCoinbaseDetails
+  uint
+  { coinbaseBonusPeriod: uint, coinbaseEpochLength: uint }
+)
 
 ;; PUBLIC FUNCTIONS
 
@@ -190,12 +193,15 @@
   )
 )
 
-(define-public (set-city-coinbase-bonus-period (cityId uint) (bonusPeriod uint))
+(define-public (set-city-coinbase-details (cityId uint) (bonusPeriod uint) (epochLength uint))
   (begin
     (try! (is-dao-or-extension))
     (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
-    (asserts! (> bonusPeriod u0) ERR_INVALID_BONUS_PERIOD)
-    (ok (map-set CityCoinbaseBonusPeriod cityId bonusPeriod))
+    (asserts! (and (> bonusPeriod u0) (> epochLength u0)) ERR_INVALID_DETAILS)
+    (ok (map-set CityCoinbaseDetails cityId {
+      coinbaseBonusPeriod: bonusPeriod,
+      coinbaseEpochLength: epochLength
+    }))
   )
 )
 
@@ -256,14 +262,10 @@
   (map-get? ActiveCityTokenContract cityId)
 )
 
-(define-read-only (get-city-coinbase-bonus-period (cityId uint))
-  (map-get? CityCoinbaseBonusPeriod cityId)
-)
-
 (define-read-only (get-city-coinbase-info (cityId uint))
   {
     thresholds: (map-get? CityCoinbaseThresholds cityId),
     amounts: (map-get? CityCoinbaseAmounts cityId),
-    bonusPeriod: (map-get? CityCoinbaseBonusPeriod cityId)
+    details: (map-get? CityCoinbaseDetails cityId)
   }
 )

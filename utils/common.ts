@@ -2,9 +2,9 @@ import { Account, Chain } from "./deps.ts";
 import { CCD001DirectExecute } from "../models/extensions/ccd001-direct-execute.model.ts";
 import { BaseDao } from "../models/base-dao.model.ts";
 
-// Toggle startBlock to align starting block height - this varies with contracts (and nested contracts) in toml 
+// Toggle startBlock to align starting block height - this varies with contracts (and nested contracts) in toml
 // export const START_BLOCK_BASE_DAO = 100; // or 99
-export const START_BLOCK_CCD005 = 6; // 6 or 7 
+export const START_BLOCK_CCD005 = 6; // 6 or 7
 export const START_BLOCK_CCD006 = 9; // or 9 or 10
 
 export const ADDRESS = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM";
@@ -61,6 +61,7 @@ export const PROPOSALS = {
   TEST_CCD005_CITY_DATA_016: ADDRESS.concat(".test-ccd005-city-data-016"),
   TEST_CCD005_CITY_DATA_017: ADDRESS.concat(".test-ccd005-city-data-017"),
   TEST_CCD005_CITY_DATA_018: ADDRESS.concat(".test-ccd005-city-data-018"),
+  TEST_CCD005_CITY_DATA_019: ADDRESS.concat(".test-ccd005-city-data-019"),
   TEST_CCD006_CITY_MINING_001: ADDRESS.concat(".test-ccd006-city-mining-001"),
   TEST_CCD006_CITY_MINING_002: ADDRESS.concat(".test-ccd006-city-mining-002"),
   TEST_CCD006_CITY_MINING_003: ADDRESS.concat(".test-ccd006-city-mining-003"),
