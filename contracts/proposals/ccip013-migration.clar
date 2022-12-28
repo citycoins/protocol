@@ -84,10 +84,16 @@
       (get coinbaseAmount5 nycAmounts)
       (get coinbaseAmountDefault nycAmounts)
     ))
-    ;; set city coinbase bonus period
-    ;; same as TOKEN_BONUS_PERIOD in both token contracts
-    (try! (contract-call? .ccd005-city-data set-city-coinbase-bonus-period miaId u10000))
-    (try! (contract-call? .ccd005-city-data set-city-coinbase-bonus-period nycId u10000))
+    ;; set city coinbase details
+    ;; same as TOKEN_BONUS_PERIOD and TOKEN_EPOCH_LENGTH in token contracts
+    (try! (contract-call? .ccd005-city-data set-city-coinbase-details miaId {
+      bonusPeriod: u10000,
+      epochLength: u35000
+    }))
+    (try! (contract-call? .ccd005-city-data set-city-coinbase-details nycId {
+      bonusPeriod: u10000,
+      epochLength: u35000
+    }))
     ;; end
     (ok true)
   )
