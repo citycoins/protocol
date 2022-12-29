@@ -65,6 +65,22 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "ccd004-city-registry: get-or-create-city-id() succeeds and returns the city id if the city already exists",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+
+    // act
+    let receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    receipts = passProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_002);
+
+    // assert
+    assertEquals(receipts.length, 3);
+    // this returns the number of signals - the actual return value is consumed by base dao
+    receipts[2].result.expectOk().expectUint(3);
+  },
+});
+
+Clarinet.test({
   name: "ccd004-city-registry: get-or-create-city-id() succeeds and increments the city id nonce",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange

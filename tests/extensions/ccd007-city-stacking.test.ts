@@ -5,7 +5,6 @@
  * 2. stack
  * 3. send-stacking-reward
  * 4. claim-stacking-reward
- * 5. set-reward-cycle-length
  */
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
 import { constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
@@ -124,6 +123,22 @@ Clarinet.test({
     // assert
     receipts[3].result.expectOk().expectUint(3);
     ccd007CityStacking.getRewardCycleLength().result.expectUint(rewardCycleLength);
+  },
+});
+
+Clarinet.test({
+  name: "ccd007-city-stacking: set-reward-cycle-length() fails if cycle length is invalid",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal("SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M");
+
+    // act
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_011);
+
+    // assert
+    receipts[3].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_CYCLE_LENGTH);
   },
 });
 

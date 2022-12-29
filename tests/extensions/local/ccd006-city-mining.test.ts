@@ -204,6 +204,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_009);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
+    // add mining treasury
     passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
 
@@ -234,3 +235,44 @@ Clarinet.test({
     assert(winner2 > runs / 2 - (runs * 10) / 100);
   },
 });
+
+Clarinet.test({
+  name: "ccd006-city-mining: claim-mining-reward() fails if user claims at incorrect height",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
+    const user2 = accounts.get("wallet_2")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+
+    // act
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_009);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
+    // add mining treasury
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
+
+    // assert
+    const entries: number[] = [10];
+    const miningBlock = chain.mineBlock([
+      ccd006CityMining.mine(user1, miaCityName, entries), 
+      ccd006CityMining.mine(user2, miaCityName, entries)
+    ]);
+    const claimHeight = miningBlock.height - 1;
+    chain.mineEmptyBlock(rewardDelay + 1);
+    const miningClaimBlock = chain.mineBlock([
+      ccd006CityMining.claimMiningReward(user1, miaCityName, claimHeight),
+      ccd006CityMining.claimMiningReward(user1, miaCityName, claimHeight - 1)
+    ]);
+  
+    // assert
+    miningClaimBlock.receipts[0].result.expectOk().expectBool(true);
+    miningClaimBlock.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_DATA_NOT_FOUND);
+  },
+});
+

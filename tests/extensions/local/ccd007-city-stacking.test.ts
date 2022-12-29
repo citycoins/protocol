@@ -24,7 +24,7 @@ const miaCityId = 1;
 const nycCityId = 2;
 
 Clarinet.test({
-  name: "ccd007-city-stacking: stack() fails with ERR_TRANSFER_FAILED if the token contract is unknown to the treasury",
+  name: "ccd007-city-stacking: stack() fails if the token contract is unknown to the treasury",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;

@@ -11,9 +11,8 @@
 
 (define-constant ERR_UNAUTHORIZED (err u8000))
 (define-constant ERR_ACTIVATION_DETAILS_NOT_FOUND (err u8001))
-(define-constant ERR_CONTRACT_ALREADY_ACTIVE (err u8002))
+(define-constant ERR_CITY_ALREADY_ACTIVE (err u8002))
 (define-constant ERR_ALREADY_VOTED (err u8003))
-(define-constant ERR_INVALID_CITY (err u8004))
 
 ;; DATA MAPS
 
@@ -42,8 +41,7 @@
       (details (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_ACTIVATION_DETAILS_NOT_FOUND))
       (signals (+ (get-city-activation-signals cityId) u1))
     )
-    (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
-    (asserts! (not (contract-call? .ccd005-city-data is-city-activated cityId)) ERR_CONTRACT_ALREADY_ACTIVE)
+    (asserts! (not (contract-call? .ccd005-city-data is-city-activated cityId)) ERR_CITY_ALREADY_ACTIVE)
     (map-set CityActivationSignals cityId signals)
     (asserts! (map-insert CityActivationVoters
       { cityId: cityId, signaler: tx-sender } true)

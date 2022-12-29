@@ -43,6 +43,7 @@ export const PROPOSALS = {
   TEST_CCD003_USER_REGISTRY_002: ADDRESS.concat(".test-ccd003-user-registry-002"),
   TEST_CCD003_USER_REGISTRY_003: ADDRESS.concat(".test-ccd003-user-registry-003"),
   TEST_CCD004_CITY_REGISTRY_001: ADDRESS.concat(".test-ccd004-city-registry-001"),
+  TEST_CCD004_CITY_REGISTRY_002: ADDRESS.concat(".test-ccd004-city-registry-002"),
   TEST_CCD005_CITY_DATA_001: ADDRESS.concat(".test-ccd005-city-data-001"),
   TEST_CCD005_CITY_DATA_002: ADDRESS.concat(".test-ccd005-city-data-002"),
   TEST_CCD005_CITY_DATA_003: ADDRESS.concat(".test-ccd005-city-data-003"),
@@ -73,6 +74,7 @@ export const PROPOSALS = {
   TEST_CCD007_CITY_STACKING_008: ADDRESS.concat(".test-ccd007-city-stacking-008"),
   TEST_CCD007_CITY_STACKING_009: ADDRESS.concat(".test-ccd007-city-stacking-009"),
   TEST_CCD007_CITY_STACKING_010: ADDRESS.concat(".test-ccd007-city-stacking-010"),
+  TEST_CCD007_CITY_STACKING_011: ADDRESS.concat(".test-ccd007-city-stacking-011"),
 };
 
 export const EXTERNAL = {

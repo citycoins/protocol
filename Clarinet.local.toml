@@ -119,6 +119,9 @@ path = "tests/contracts/proposals/test-ccd003-user-registry-003.clar"
 [contracts.test-ccd004-city-registry-001]
 path = "tests/contracts/proposals/test-ccd004-city-registry-001.clar"
 
+[contracts.test-ccd004-city-registry-002]
+path = "tests/contracts/proposals/test-ccd004-city-registry-002.clar"
+
 [contracts.test-ccd005-city-data-001]
 path = "tests/contracts/proposals/test-ccd005-city-data-001.clar"
 
@@ -205,6 +208,9 @@ path = "tests/contracts/proposals/test-ccd007-city-stacking-009.clar"
 
 [contracts.test-ccd007-city-stacking-010]
 path = "tests/contracts/proposals/test-ccd007-city-stacking-010.clar"
+
+[contracts.test-ccd007-city-stacking-011]
+path = "tests/contracts/proposals/test-ccd007-city-stacking-011.clar"
 
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
