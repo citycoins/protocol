@@ -125,9 +125,8 @@
   )
 )
 
-;; DISABLED PUBLIC FUNCTIONS
-;; from the original CityCoins Protocol v2
-;; only used for backwards-compatibility
+;; CITYCOINS PROTOCOL V2 FUNCTIONS
+;; disabled functions
 (define-public (register-user (memo (optional (string-utf8 50)))) ERR_FUNCTION_DISABLED)
 (define-public (mine-tokens (amount uint) (memo (optional (buff 34)))) ERR_FUNCTION_DISABLED)
 (define-public (mine-many (amounts (list 200 uint))) ERR_FUNCTION_DISABLED)
@@ -138,6 +137,17 @@
 (define-public (update-coinbase-thresholds) ERR_FUNCTION_DISABLED)
 (define-public (update-coinbase-amounts) ERR_FUNCTION_DISABLED)
 (define-public (shutdown-contract (stacksHeight uint)) ERR_FUNCTION_DISABLED)
+;; backwards-compatibility
+(define-public (set-city-wallet (newCityWallet principal)) (ok true))
+(define-public (update-coinbase-thresholds) (ok true))
+(define-public (update-coinbase-amounts) (ok true))
+(define-public (activate-core-contracts (activationHeight uint))
+  (begin
+    (try! (is-dao-or-extension))
+    (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+  )
+)
 
 ;; READ ONLY FUNCTIONS
 
