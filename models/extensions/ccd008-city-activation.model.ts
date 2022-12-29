@@ -3,9 +3,8 @@ import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 export enum ErrCode {
   ERR_UNAUTHORIZED = 8000,
   ERR_ACTIVATION_DETAILS_NOT_FOUND,
-  ERR_CONTRACT_ALREADY_ACTIVE,
+  ERR_CITY_ALREADY_ACTIVE,
   ERR_ALREADY_VOTED,
-  ERR_INVALID_CITY,
 }
 
 export class CCD008CityActivation {

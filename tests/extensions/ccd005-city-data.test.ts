@@ -252,7 +252,8 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_008);
 
     // assert
-    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(true);
+    // CCD005CityData.ErrCode.ERR_INVALID_THRESHOLDS is swallowed by base dao
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
     const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
     coinbaseInfo.thresholds.expectNone();
   },
@@ -603,6 +604,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_013);
 
     // assert
+    // CCD005CityData.ErrCode.ERR_TREASURY_ALREADY_EXISTS is swallowed by base dao
 
     // nonce would not be incremented if treasury was not created
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);

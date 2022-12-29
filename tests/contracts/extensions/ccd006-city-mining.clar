@@ -24,13 +24,9 @@
 (define-constant ERR_NOTHING_TO_MINT (err u6012))
 (define-constant ERR_USER_ID_NOT_FOUND (err u6013))
 (define-constant ERR_CITY_ID_NOT_FOUND (err u6014))
-(define-constant ERR_CITY_NAME_NOT_FOUND (err u6015))
 (define-constant ERR_CITY_NOT_ACTIVATED (err u6016))
 (define-constant ERR_CITY_DETAILS_NOT_FOUND (err u6017))
 (define-constant ERR_CITY_TREASURY_NOT_FOUND (err u6018))
-(define-constant ERR_CITY_COINBASE_THRESHOLDS_NOT_FOUND (err u6019))
-(define-constant ERR_CITY_COINBASE_AMOUNTS_NOT_FOUND (err u6020))
-(define-constant ERR_CITY_COINBASE_BONUS_PERIOD_NOT_FOUND (err u6021))
 
 ;; DATA VARS
 

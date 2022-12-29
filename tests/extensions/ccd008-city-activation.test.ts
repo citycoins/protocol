@@ -39,7 +39,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd008CityActivation = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd008CityActivation = new CCD005CityData(chain, sender, "ccd008-city-activation");
 
     // act
     const { receipts } = chain.mineBlock([ccd008CityActivation.callback(sender, "test")]);
@@ -61,7 +61,7 @@ Clarinet.test({
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
 
     // there should be no signals yet
     ccd008CityActivation.getCityActivationSignals(nycCityId).result.expectUint(0);
