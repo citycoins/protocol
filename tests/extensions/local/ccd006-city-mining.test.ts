@@ -266,13 +266,15 @@ Clarinet.test({
     const claimHeight = miningBlock.height - 1;
     chain.mineEmptyBlock(rewardDelay + 1);
     const miningClaimBlock = chain.mineBlock([
+      ccd006CityMining.claimMiningReward(user1, miaCityName, claimHeight + 1),
+      ccd006CityMining.claimMiningReward(user1, miaCityName, claimHeight - 1),
       ccd006CityMining.claimMiningReward(user1, miaCityName, claimHeight),
-      ccd006CityMining.claimMiningReward(user1, miaCityName, claimHeight - 1)
     ]);
   
     // assert
-    miningClaimBlock.receipts[0].result.expectOk().expectBool(true);
+    miningClaimBlock.receipts[2].result.expectOk().expectBool(true);
     miningClaimBlock.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_DATA_NOT_FOUND);
+    miningClaimBlock.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_DATA_NOT_FOUND);
   },
 });
 
