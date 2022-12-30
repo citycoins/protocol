@@ -1230,7 +1230,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining (legacy): set-city-wallet() is disabled",
+  name: "ccd006-city-mining (legacy): set-city-wallet() succeeds and returns (ok true)",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -1240,12 +1240,12 @@ Clarinet.test({
     const { receipts } = chain.mineBlock([ccd006CityMining.setCityWallet(sender, sender.address)]);
 
     // assert
-    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_FUNCTION_DISABLED);
+    receipts[0].result.expectOk();
   },
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining (legacy): update-coinbase-thresholds() is disabled",
+  name: "ccd006-city-mining (legacy): update-coinbase-thresholds() succeeds and returns (ok true)",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -1255,12 +1255,12 @@ Clarinet.test({
     const { receipts } = chain.mineBlock([ccd006CityMining.updateCoinbaseThresholds(sender, 1, 1)]);
 
     // assert
-    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_FUNCTION_DISABLED);
+    receipts[0].result.expectOk();
   },
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining (legacy): update-coinbase-amounts() is disabled",
+  name: "ccd006-city-mining (legacy): update-coinbase-amounts() succeeds and returns (ok true)",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -1270,7 +1270,7 @@ Clarinet.test({
     const { receipts } = chain.mineBlock([ccd006CityMining.updateCoinbaseAmounts(sender, 1, 1)]);
 
     // assert
-    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_FUNCTION_DISABLED);
+    receipts[0].result.expectOk();
   },
 });
 
