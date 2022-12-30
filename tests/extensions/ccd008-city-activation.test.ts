@@ -109,6 +109,7 @@ Clarinet.test({
     ccd005CityData.isCityActivated(nycCityId).result.expectBool(false);
 
     block = chain.mineBlock([ccd008CityActivation.activateCity(approver1, 2, "memo 2")]);
+    const claimHeight = block.height - 1;
 
     // assert
     ccd008CityActivation.getCityActivationVoter(nycCityId, sender.address).result.expectBool(true);
@@ -116,6 +117,6 @@ Clarinet.test({
     ccd008CityActivation.getCityActivationSignals(nycCityId).result.expectUint(2);
     ccd005CityData.isCityActivated(nycCityId).result.expectBool(true);
     block.receipts[0].result.expectOk();
-    testExpectedCityDetails(ccd005CityData, nycCityId, START_BLOCK_CCD005, 2, START_BLOCK_CCD005 + 2, 2);
+    testExpectedCityDetails(ccd005CityData, nycCityId, claimHeight, 2, claimHeight + 2, 2);
   },
 });

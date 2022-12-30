@@ -185,7 +185,7 @@
       (blockStats (get-mining-stats-at-block cityId claimHeight))
       (minerStats (get-miner-at-block cityId claimHeight userId))
       (maturityHeight (+ (get-reward-delay) claimHeight))
-      (vrfSample (unwrap-panic (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-rnd maturityHeight)))
+      (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-rnd maturityHeight) none))
       (commitTotal (get-high-value cityId claimHeight))
       (winningValue (mod vrfSample commitTotal))
     )
