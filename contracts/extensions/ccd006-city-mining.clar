@@ -130,9 +130,6 @@
 (define-public (claim-mining-reward (minerBlockHeight uint)) ERR_FUNCTION_DISABLED)
 (define-public (stack-tokens (amountTokens uint) (lockPeriod uint)) ERR_FUNCTION_DISABLED)
 (define-public (claim-stacking-reward (targetCycle uint)) ERR_FUNCTION_DISABLED)
-(define-public (set-city-wallet (newCityWallet principal)) ERR_FUNCTION_DISABLED)
-(define-public (update-coinbase-thresholds) ERR_FUNCTION_DISABLED)
-(define-public (update-coinbase-amounts) ERR_FUNCTION_DISABLED)
 (define-public (shutdown-contract (stacksHeight uint)) ERR_FUNCTION_DISABLED)
 ;; backwards-compatibility
 (define-public (set-city-wallet (newCityWallet principal)) (ok true))
@@ -143,6 +140,7 @@
     (try! (is-dao-or-extension))
     (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
     (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    (ok true)
   )
 )
 

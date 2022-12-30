@@ -6,12 +6,10 @@
  * 3. send-stacking-reward
  * 4. claim-stacking-reward
  */
-import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
+import { Account, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
 import { constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
 import { CCD007CityStacking } from "../../models/extensions/ccd007-city-stacking.model.ts";
 import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
-import { CCD003UserRegistry } from "../../models/extensions/ccd003-user-registry.model.ts";
-import { types } from "../../utils/deps.ts";
 
 // =============================
 // INTERNAL DATA / FUNCTIONS
