@@ -6,13 +6,12 @@
  * 3. reward-delay
  * 4. disabled functions (old protocol)
  */
-import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import { START_BLOCK_CCD006, constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
+import { Account, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
+import { constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
 import { CCD006CityMining } from "../../models/extensions/ccd006-city-mining.model.ts";
 import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
 import { CCD003UserRegistry } from "../../models/extensions/ccd003-user-registry.model.ts";
 import { CCD005CityData } from "../../models/extensions/ccd005-city-data.model.ts";
-import { types } from "../../utils/deps.ts";
 
 // =============================
 // INTERNAL DATA / FUNCTIONS

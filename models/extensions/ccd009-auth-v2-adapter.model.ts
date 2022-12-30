@@ -87,11 +87,11 @@ export class CCD009AuthV2Adapter {
     return Tx.contractCall(this.name, "execute-update-coinbase-amounts-job-nyc", [types.uint(jobId), types.principal(targetCore), types.principal(targetToken)], sender.address);
   }
 
-  executeReplaceApproverJobMia(sender: Account, jobId: number, target: string, newApprover: string) {
-    return Tx.contractCall(this.name, "execute-replace-approver-job-mia", [types.uint(jobId), types.principal(target), types.principal(newApprover)], sender.address);
+  executeReplaceApproverJobMia(sender: Account, jobId: number) {
+    return Tx.contractCall(this.name, "execute-replace-approver-job-mia", [types.uint(jobId)], sender.address);
   }
-  executeReplaceApproverJobNyc(sender: Account, jobId: number, target: string, newApprover: string) {
-    return Tx.contractCall(this.name, "execute-replace-approver-job-nyc", [types.uint(jobId), types.principal(target), types.principal(newApprover)], sender.address);
+  executeReplaceApproverJobNyc(sender: Account, jobId: number) {
+    return Tx.contractCall(this.name, "execute-replace-approver-job-nyc", [types.uint(jobId)], sender.address);
   }
 
   // Extension callback
