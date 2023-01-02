@@ -70,7 +70,7 @@ export class CCD009AuthV2Adapter {
     return Tx.contractCall(this.name, "execute-upgrade-core-contract-job-mia", [types.uint(jobId), types.principal(oldContract), types.principal(newContract)], sender.address);
   }
   executeUpgradeCoreContractJobNyc(sender: Account, jobId: number, oldContract: string, newContract: string) {
-    return Tx.contractCall(this.name, "execute-upgrade-core-contract-job-mia", [types.uint(jobId), types.principal(oldContract), types.principal(newContract)], sender.address);
+    return Tx.contractCall(this.name, "execute-upgrade-core-contract-job-nyc", [types.uint(jobId), types.principal(oldContract), types.principal(newContract)], sender.address);
   }
 
   executeUpdateCoinbaseThresholdsJobMia(sender: Account, jobId: number, targetCore: string, targetToken: string) {
