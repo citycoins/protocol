@@ -12,7 +12,23 @@ contract_id = "SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standa
 contract_id = "SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait"
 
 [[project.requirements]]
+contract_id = "SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait"
+
+[[project.requirements]]
 contract_id = "SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2"
+
+[[project.requirements]]
+contract_id = "SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2"
+
+[[project.requirements]]
+contract_id = "SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2"
+
+[[project.requirements]]
+contract_id = "SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2"
+
+[[project.requirements]]
+contract_id = "SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2"
+
 
 [project.cache_location]
 path = ".requirements"
@@ -52,6 +68,9 @@ path = "tests/contracts/extensions/ccd007-city-stacking.clar"
 
 [contracts.ccd008-city-activation]
 path = "contracts/extensions/ccd008-city-activation.clar"
+
+[contracts.ccd009-auth-v2-adapter]
+path = "contracts/extensions/ccd009-auth-v2-adapter.clar"
 
 [contracts.citycoin-vrf-v2]
 path = "tests/contracts/external/citycoin-vrf-v2.clar"

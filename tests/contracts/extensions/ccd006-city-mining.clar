@@ -6,6 +6,8 @@
 ;; TRAITS
 
 (impl-trait .extension-trait.extension-trait)
+(impl-trait 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2)
+(impl-trait 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2)
 
 ;; CONSTANTS
 
@@ -27,6 +29,7 @@
 (define-constant ERR_CITY_NOT_ACTIVATED (err u6016))
 (define-constant ERR_CITY_DETAILS_NOT_FOUND (err u6017))
 (define-constant ERR_CITY_TREASURY_NOT_FOUND (err u6018))
+(define-constant ERR_FUNCTION_DISABLED (err u6019))
 
 ;; DATA VARS
 
@@ -111,11 +114,33 @@
   )
 )
 
-(define-public (claim-mining-reward (cityName (string-ascii 10)) (claimHeight uint))
+(define-public (claim-mining-block (cityName (string-ascii 10)) (claimHeight uint))
   (let
     ((cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND)))
     (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
     (claim-mining-reward-at-block cityName cityId tx-sender block-height claimHeight)
+  )
+)
+
+;; CITYCOINS PROTOCOL V2 FUNCTIONS
+;; disabled functions
+(define-public (register-user (memo (optional (string-utf8 50)))) ERR_FUNCTION_DISABLED)
+(define-public (mine-tokens (amount uint) (memo (optional (buff 34)))) ERR_FUNCTION_DISABLED)
+(define-public (mine-many (amounts (list 200 uint))) ERR_FUNCTION_DISABLED)
+(define-public (claim-mining-reward (minerBlockHeight uint)) ERR_FUNCTION_DISABLED)
+(define-public (stack-tokens (amountTokens uint) (lockPeriod uint)) ERR_FUNCTION_DISABLED)
+(define-public (claim-stacking-reward (targetCycle uint)) ERR_FUNCTION_DISABLED)
+(define-public (shutdown-contract (stacksHeight uint)) ERR_FUNCTION_DISABLED)
+;; backwards-compatibility
+(define-public (set-city-wallet (newCityWallet principal)) (ok true))
+(define-public (update-coinbase-thresholds) (ok true))
+(define-public (update-coinbase-amounts) (ok true))
+(define-public (activate-core-contracts (activationHeight uint))
+  (begin
+    (try! (is-dao-or-extension))
+    (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    (ok true)
   )
 )
 
@@ -158,7 +183,7 @@
       (blockStats (get-mining-stats-at-block cityId claimHeight))
       (minerStats (get-miner-at-block cityId claimHeight userId))
       (maturityHeight (+ (get-reward-delay) claimHeight))
-      (vrfSample (unwrap-panic (contract-call? .citycoin-vrf-v2 get-rnd maturityHeight)))
+      (vrfSample (unwrap! (contract-call? .citycoin-vrf-v2 get-rnd maturityHeight) none))
       (commitTotal (get-high-value cityId claimHeight))
       (winningValue (mod vrfSample commitTotal))
     )

@@ -84,6 +84,11 @@ export const EXTERNAL = {
   NFT_NYC: ADDRESS.concat(".test-ccext-nft-nyc"),
 };
 
+export const CITYCOINS = {
+  MIA_TOKEN: "SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2",
+  NYC_TOKEN: "SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2",
+};
+
 export const passProposal = (chain: Chain, accounts: Map<string, Account>, proposal: string): any => {
   const sender = accounts.get("deployer")!;
   const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
