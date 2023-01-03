@@ -154,7 +154,7 @@
     (and (is-eq cityName "nyc")
       (begin
         (and (> reward u0) (try! (as-contract (contract-call? .ccd002-treasury-nyc-stacking withdraw-stx reward user))))
-        (and (> claimable u0) (try! (as-contract (contract-call? .ccd002-treasury-nyc-stacking withdraw-ft .test-ccext-governance-token-mia claimable user))))
+        (and (> claimable u0) (try! (as-contract (contract-call? .ccd002-treasury-nyc-stacking withdraw-ft .test-ccext-governance-token-nyc claimable user))))
       )
     )
     (ok (map-set StackerAtCycle

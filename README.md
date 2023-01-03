@@ -14,7 +14,7 @@ the tests run in one of two modes;
 - local
 - default
 
-The default way to run the tests is to copy Clarinet.toml.default to Clarinet.toml.
+The default way to run the tests is to copy Clarinet.default.toml to Clarinet.toml.
 
 This will run the tests against the two deployed contracts;
 
@@ -23,7 +23,7 @@ contracts/extensions/ccd006-city-mining.clar
 contracts/extensions/ccd007-city-stacking.clar
 ```
 
-By copying Clarinet.toml.local to Clarinet.toml the test will be run against;
+By copying Clarinet.local.toml to Clarinet.toml the test will be run against;
 
 ```bash
 tests/contracts/extensions/ccd006-city-mining.clar
@@ -43,10 +43,18 @@ They will need to filtered/removed from the unit test run when running in defaul
 
 #### Automation of Above
 
-To automate the above strategy we can create a wrapper script for `clarinet test` which
-copies / filters the mining and stacking contracts and copies the `clarinet.toml.local` file to
-`clarinet.toml`. Running the tests in local mode will include the tests in the `tests/extensions/local`
-directory. Running them in integration mode will exclude these tests.
+To automate the above strategy;
+
+```bash
+scripts/copy-contracts.sh
+```
+
+To copy and filter the mining and stacking contracts and copies the `clarinet.local.toml` file to
+`clarinet.toml`. To make the script executable in your environment run
+
+```bash
+chmod 755 scripts/copy-contracts.sh
+```
 
 ### Code Formatting
 
