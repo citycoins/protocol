@@ -79,7 +79,7 @@
     (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 amount)))
     (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 amount)))
     (print {
-      action: "stacking",
+      event: "stacking",
       userId: userId,
       cityName: cityName,
       cityId: cityId,
@@ -116,7 +116,7 @@
     (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-stx amount)))
     (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-stx amount)))
     (print {
-      action: "stacking-reward-payout",
+      event: "stacking-reward-payout",
       cityName: cityName,
       cityId: cityId,
       cityTreasury: cityTreasury,
@@ -157,6 +157,15 @@
         (and (> claimable u0) (try! (as-contract (contract-call? .ccd002-treasury-nyc-stacking withdraw-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 claimable user))))
       )
     )
+    (print {
+      cityId: cityId,
+      cityName: cityName,
+      claimable: claimable,
+      event: "stacking-claim",
+      reward: reward,
+      targetCycle: targetCycle,
+      userId: userId
+    })
     (ok (map-set StackerAtCycle
       { cityId: cityId, cycle: targetCycle, userId: userId }
       { stacked: u0, claimable: u0 }

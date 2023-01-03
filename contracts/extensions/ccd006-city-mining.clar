@@ -99,7 +99,7 @@
         totalAmount: u0,
       })))
       (print {
-        action: "mining",
+        event: "mining",
         userId: userId,
         cityName: cityName,
         cityId: cityId,
@@ -293,7 +293,7 @@
       userId
     )
     (print {
-      action: "mining-claim",
+      event: "mining-claim",
       userId: userId,
       cityName: cityName,
       cityId: cityId,
