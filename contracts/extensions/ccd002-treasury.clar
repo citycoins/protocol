@@ -36,8 +36,8 @@
     (try! (is-dao-or-extension))
     (print {
       event: "allow-asset",
-      token: token,
-      enabled: enabled
+      enabled: enabled,
+      token: token
     })
     (ok (map-set AllowedAssets token enabled))
   )
@@ -56,8 +56,8 @@
       event: "deposit-stx",
       amount: amount,
       caller: contract-caller,
-      sender: tx-sender,
-      recipient: TREASURY
+      recipient: TREASURY,
+      sender: tx-sender
     })
     (stx-transfer? amount tx-sender TREASURY)
   )
@@ -71,8 +71,8 @@
       amount: amount,
       assetContract: (contract-of ft),
       caller: contract-caller,
-      sender: tx-sender,
-      recipient: TREASURY
+      recipient: TREASURY,
+      sender: tx-sender
     })
     (contract-call? ft transfer amount tx-sender TREASURY none)
   )
@@ -84,10 +84,10 @@
     (print {
       event: "deposit-nft",
       assetContract: (contract-of nft),
-      tokenId: id,
       caller: contract-caller,
+      recipient: TREASURY,
       sender: tx-sender,
-      recipient: TREASURY
+      tokenId: id,
     })
     (contract-call? nft transfer id tx-sender TREASURY)
   )
@@ -100,8 +100,8 @@
       event: "withdraw-stx",
       amount: amount,
       caller: contract-caller,
-      sender: tx-sender,
-      recipient: recipient
+      recipient: recipient,
+      sender: tx-sender
     })
     (as-contract (stx-transfer? amount TREASURY recipient))
   )
@@ -115,8 +115,8 @@
       event: "withdraw-ft",
       assetContract: (contract-of ft),
       caller: contract-caller,
-      sender: tx-sender,
-      recipient: recipient
+      recipient: recipient,
+      sender: tx-sender
     })
     (as-contract (contract-call? ft transfer amount TREASURY recipient none))
   )
@@ -129,10 +129,10 @@
     (print {
       event: "withdraw-nft",
       assetContract: (contract-of nft),
-      tokenId: id,
       caller: contract-caller,
+      recipient: recipient,
       sender: tx-sender,
-      recipient: recipient
+      tokenId: id
     })
     (as-contract (contract-call? nft transfer id TREASURY recipient))
   )
@@ -158,8 +158,8 @@
   (begin
     (print {
       event: "allow-asset",
-      token: (get token item),
-      enabled: (get enabled item)
+      enabled: (get enabled item),
+      token: (get token item)
     })
     (map-set AllowedAssets (get token item) (get enabled item))
   )

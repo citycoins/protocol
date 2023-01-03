@@ -80,15 +80,15 @@
     (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 amount)))
     (print {
       event: "stacking",
-      userId: userId,
-      cityName: cityName,
-      cityId: cityId,
-      cityTreasury: cityTreasury,
       amountStacked: amount,
-      lockPeriod: lockPeriod,
+      cityId: cityId,
+      cityName: cityName,
+      cityTreasury: cityTreasury,
       currentCycle: currentCycle,
       firstCycle: targetCycle,
-      lastCycle: (- (+ targetCycle lockPeriod) u1)
+      lastCycle: (- (+ targetCycle lockPeriod) u1),
+      lockPeriod: lockPeriod,
+      userId: userId
     })
     (ok true)
   )
@@ -117,12 +117,12 @@
     (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-stx amount)))
     (print {
       event: "stacking-reward-payout",
-      cityName: cityName,
+      amount: amount,
       cityId: cityId,
+      cityName: cityName,
       cityTreasury: cityTreasury,
       currentCycle: currentCycle,
       targetCycle: targetCycle,
-      amount: amount,
     })
     (ok (map-set StackingStatsAtCycle
       { cityId: cityId, cycle: targetCycle }
@@ -158,10 +158,10 @@
       )
     )
     (print {
+      event: "stacking-claim",
       cityId: cityId,
       cityName: cityName,
       claimable: claimable,
-      event: "stacking-claim",
       reward: reward,
       targetCycle: targetCycle,
       userId: userId
