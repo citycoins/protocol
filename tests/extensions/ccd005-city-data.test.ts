@@ -27,14 +27,6 @@ const miaTreasuryName = "mia-test";
 const miaTokenContract1Address = "mia-token-contract-1";
 const miaTokenContract2Address = "mia-token-contract-2";
 const miaTokenContract3Address = "mia-token-contract-3";
-const miaStackingTreasury = 1;
-const miaMiningTreasury = 2;
-
-const nycCityId = 2;
-const nycTreasuryId = 2;
-const nycTreasuryName = "nyc-treasury";
-const nycStackingTreasury = 1;
-const nycMiningTreasury = 2;
 
 const testExpectedCityDetails = (ccd005CityData: any, cityId: number, succeeded: number, delay: number, activated: number, threshold: number) => {
   const expectedStats = {
@@ -188,9 +180,9 @@ Clarinet.test({
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
     // act
-    let block = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     ccd005CityData.isCityActivated(10).result.expectBool(false);
-    block = passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_005);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_005);
 
     // assert
     ccd005CityData.isCityActivated(10).result.expectBool(false);
@@ -379,7 +371,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_007);
 
     // assert
-    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false); //.expectOk().expectSome().expectBool(true);
+    ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
     testExpectedCoinbaseAmount(ccd005CityData, miaCityId, 10, 10, 10, 10, 10, 10, 10);
   },
 });
@@ -462,7 +454,7 @@ Clarinet.test({
     // assert
     const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
     const expected = { coinbaseBonusPeriod: types.uint(20), coinbaseEpochLength: types.uint(1) };
-    coinbaseInfo.details.expectSome().expectTuple(expected);
+    assertEquals(coinbaseInfo.details.expectSome().expectTuple(), expected);
   },
 });
 
@@ -589,7 +581,6 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     // add treasury to mia city
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_011);
-    // passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_012);
 
     // assert
     ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
@@ -620,84 +611,6 @@ Clarinet.test({
   },
 });
 
-/* 
-TODO MJC: Cleanup once reviewed..
-JS: removing code below as I think it contradicts the goal above
-- TEST_CCD005_CITY_DATA_012 adds: u1 .mia-treasury "mia-treasury"
-- TEST_CCD005_CITY_DATA_013 adds: u2 .mia-treasury "mia-treasury"
-- this pattern would be invalidated by the previous test
-- treasuries between cities are independent, so the same contract could be set for both cities if there was a need
-- each city will be expected to have a "mining" and "stacking" treasury for the protocol to use
-
-Clarinet.test({
-  name: "ccd005-city-data: add-city-treasury() cannot creates two treasuries for different cities with the same name and address",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd005CityData = new CCD005CityData(
-      chain,
-      sender,
-      "ccd005-city-data"
-    );
-
-    // act
-    constructAndPassProposal(
-      chain,
-      accounts,
-      PROPOSALS.TEST_CCD005_CITY_DATA_001
-    );
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    // add treasury to mia city
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_012);
-
-    // assert
-    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
-    ccd005CityData
-      .getCityTreasuryId(miaCityId, miaTreasuryName)
-      .result.expectSome()
-      .expectUint(1);
-    ccd005CityData
-      .getCityTreasuryName(miaCityId, miaTreasuryId)
-      .result.expectSome()
-      .expectAscii(miaTreasuryName);
-    ccd005CityData
-      .getCityTreasuryAddress(miaCityId, miaTreasuryId)
-      .result.expectSome()
-      .expectPrincipal(sender.address + "." + miaTreasuryName);
-
-    // add treasury to mia city
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_013);
-
-    // assert
-    ccd005CityData.getCityTreasuryNonce(nycCityId).result.expectUint(1);
-    ccd005CityData
-      .getCityTreasuryId(nycCityId, miaTreasuryName)
-      .result.expectSome()
-      .expectUint(1);
-    ccd005CityData
-      .getCityTreasuryName(nycCityId, miaTreasuryId)
-      .result.expectSome()
-      .expectAscii(miaTreasuryName);
-    ccd005CityData
-      .getCityTreasuryAddress(nycCityId, miaTreasuryId)
-      .result.expectSome()
-      .expectPrincipal(sender.address + "." + miaTreasuryName);
-
-    // contradict above assertions to show expected behaviour - can't create two treasuries with same same and address
-    ccd005CityData.getCityTreasuryNonce(nycCityId).result.expectUint(0);
-    ccd005CityData
-      .getCityTreasuryId(nycCityId, miaTreasuryName)
-      .result.expectNone();
-    ccd005CityData
-      .getCityTreasuryName(nycCityId, miaTreasuryId)
-      .result.expectNone();
-    ccd005CityData
-      .getCityTreasuryAddress(nycCityId, miaTreasuryId)
-      .result.expectNone();
-  },
-});
-**/
 // =============================
 // 4. CITY TOKEN CONTRACTS TESTS
 // =============================

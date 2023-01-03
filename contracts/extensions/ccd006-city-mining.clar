@@ -99,15 +99,15 @@
         totalAmount: u0,
       })))
       (print {
-        action: "mining",
-        userId: userId,
-        cityName: cityName,
+        event: "mining",
         cityId: cityId,
+        cityName: cityName,
         cityTreasury: cityTreasury,
         firstBlock: block-height,  
         lastBlock: (- (+ block-height (len amounts)) u1),
-        totalBlocks: (len amounts),
         totalAmount: totalAmount,
+        totalBlocks: (len amounts),
+        userId: userId,
       })                
       (stx-transfer? totalAmount tx-sender cityTreasury)
     )
@@ -293,11 +293,11 @@
       userId
     )
     (print {
-      action: "mining-claim",
-      userId: userId,
-      cityName: cityName,
+      event: "mining-claim",
       cityId: cityId,
-      claimHeight: claimHeight
+      cityName: cityName,
+      claimHeight: claimHeight,
+      userId: userId
     })
     (mint-coinbase cityName cityId user claimHeight)
   )

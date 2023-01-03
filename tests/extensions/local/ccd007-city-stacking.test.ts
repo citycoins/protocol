@@ -81,8 +81,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
     gt.getBalance(user1.address).result.expectOk().expectUint(amountStacked);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(amountStacked);
-    //console.log(block.receipts[0].events[2].contract_event.value)
-    const expected = `{action: "stacking", amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, currentCycle: ${types.uint(currentCycle)}, firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
+    const expected = `{amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, currentCycle: ${types.uint(currentCycle)}, event: "stacking", firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
     block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-city-stacking`, expected);
   },
 });
@@ -119,8 +118,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
     gt.getBalance(user1.address).result.expectOk().expectUint(amountStacked);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(amountStacked);
-    //console.log(block.receipts[0].events[2].contract_event.value)
-    const expected = `{action: "stacking", amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, currentCycle: ${types.uint(currentCycle)}, firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
+    const expected = `{amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, currentCycle: ${types.uint(currentCycle)}, event: "stacking", firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
     block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-city-stacking`, expected);
   },
 });
@@ -158,7 +156,7 @@ Clarinet.test({
     gt.getBalance(user1.address).result.expectOk().expectUint(amountStacked);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(amountStacked);
     //console.log(block.receipts[0].events[2].contract_event.value)
-    const expected = `{action: "stacking", amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, currentCycle: ${types.uint(currentCycle)}, firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
+    const expected = `{amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, currentCycle: ${types.uint(currentCycle)}, event: "stacking", firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
     block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-city-stacking`, expected);
   },
 });
@@ -239,10 +237,6 @@ Clarinet.test({
     // attempt to claim reward for cycle 1
     const block2 = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, miaCityName, 1)]);
 
-    //console.log(`block0:\n${JSON.stringify(block0, null, 2)}`);
-    //console.log(`block1:\n${JSON.stringify(block1, null, 2)}`);
-    //console.log(`block2:\n${JSON.stringify(block2, null, 2)}`);
-
     // assert
     // confirm reward cycle 0 is active
     ccd007CityStacking.getRewardCycle(miaCityId, block2.height).result.expectSome().expectUint(0);
@@ -285,8 +279,6 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     // set stacking pool operator
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
-    // set reward cycle length to 100 blocks
-    //passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_002);
     // add mia stacking treasury
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
     // mints mia to user1 and user2
@@ -301,9 +293,6 @@ Clarinet.test({
     // progress to the next reward cycle
     chain.mineEmptyBlock(rewardCycleLength + 10);
 
-    // simulate pool operator sending stacking rewards for cycle 1
-    // const block1 = chain.mineBlock([ccd007CityStacking.sendStackingReward(operator, miaCityName, 1, 150000)]);
-
     // attempt to claim reward for cycle 1
     const block2 = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, miaCityName, 1)]);
 
@@ -313,9 +302,6 @@ Clarinet.test({
     ccd007CityStacking.getRewardCycle(miaCityId, block2.height).result.expectSome().expectUint(1);
     block0.receipts[0].result.expectOk().expectBool(true);
     block2.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_NOTHING_TO_CLAIM);
-
-    //console.log(`block0:\n${JSON.stringify(block0, null, 2)}`);
-    //console.log(`block2:\n${JSON.stringify(block2, null, 2)}`);
 
     // confirm nothing stacked in cycle 0 for the user
     let expected: any = {
@@ -329,15 +315,6 @@ Clarinet.test({
       stacked: types.uint(amountStacked),
     };
     assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 1, 1).result.expectTuple(), expected);
-    /**
-     * TODO MJC: Expecting the reward to match the operators reward for cycle 0 ?
-     * JS: The stacking payout (paid by the pool operator) is for the total amount
-     * stacked in the city treasury. Once that reward is paid, users can claim their
-     * portion based on how much they stacked against the total.
-     *
-     * Formula for reference from the contract:
-     * (payout * userStacked) / totalStacked
-     */
     // confirm reward amount is not set in overall cycle 1 data
     expected = {
       reward: types.none(),
@@ -355,6 +332,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
     const operator = accounts.get("wallet_2")!;
+    const userId = 1;
     const amountStacked = 500;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
@@ -410,6 +388,9 @@ Clarinet.test({
     const block2 = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, miaCityName, 1)]);
 
     // assert
+    const expectedPrintMsg = `{cityId: u1, cityName: "mia", claimable: ${types.uint(500)}, event: "stacking-claim", reward: ${types.uint(150000)}, targetCycle: ${types.uint(1)}, userId: ${types.uint(userId)}}`;
+    block2.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-city-stacking`, expectedPrintMsg);
+
 
     // confirm reward cycle 2 is active
     ccd007CityStacking.getRewardCycle(miaCityId, block2.height).result.expectSome().expectUint(2);
@@ -417,26 +398,12 @@ Clarinet.test({
     block1.receipts[0].result.expectOk().expectBool(true);
     block2.receipts[0].result.expectOk().expectBool(true);
 
-    //console.log(`block0:\n${JSON.stringify(block0, null, 2)}`);
-    //console.log(`block2:\n${JSON.stringify(block2, null, 2)}`);
-
     // confirm nothing stacked in cycle 0 for the user
     expected1 = {
       claimable: types.uint(0),
       stacked: types.uint(0),
     };
     assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 1, 1).result.expectTuple(), expected1);
-    // confirm stacked and return amounts cleared in cycle 1 for the user
-    /**
-     * TODO MJC: Expecting the reward to match the operators reward for cycle 0 ?
-     *
-     * JS: The stacking payout (paid by the pool operator) is for the total amount
-     * stacked in the city treasury. Once that reward is paid, users can claim their
-     * portion based on how much they stacked against the total.
-     *
-     * Formula for reference from the contract:
-     * (payout * userStacked) / totalStacked
-     */
     // confirm reward amount is set in overall cycle 1 data
     const expected = {
       reward: types.some(types.uint(150000)),

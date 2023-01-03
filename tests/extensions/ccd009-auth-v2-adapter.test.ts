@@ -1,5 +1,5 @@
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
-import { constructAndPassProposal, CITYCOINS, EXTENSIONS, passProposal, PROPOSALS } from "../../utils/common.ts";
+import { CITYCOINS, EXTENSIONS } from "../../utils/common.ts";
 import { CCD009AuthV2Adapter } from "../../models/extensions/ccd009-auth-v2-adapter.model.ts";
 
 // These tests will interact with the auth-v2 contracts for MIA/NYC.

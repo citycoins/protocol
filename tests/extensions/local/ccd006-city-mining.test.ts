@@ -57,7 +57,7 @@ Clarinet.test({
     miningBlock.receipts[0].events.expectSTXTransferEvent(10, user1.address, `${sender.address}.${miaTreasuryName}`);
 
     // Check mining events
-    const expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(claimHeight)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(1)}}`;
+    const expectedPrintMsg = `{cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "mining", firstBlock: ${types.uint(claimHeight)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(1)}}`;
     miningBlock.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
 
     gt.getBalance(user1.address).result.expectOk().expectUint(0);
@@ -70,14 +70,13 @@ Clarinet.test({
     //console.log(JSON.stringify(isBlockWinner, null, 2));
     // console.log(`isBlockWinner:\n${JSON.stringify(isBlockWinner, null, 2)}}`);
     assertEquals(isBlockWinner.result.expectSome().expectTuple(), expected);
-    // TODO MJC: is-block-winner calculates the winning status of given user.
+    // is-block-winner calculates the winning status of given user.
     // get-block-winner reads it from the map which is written by claim-mining-reward.
-    // so user1 is not returned by the following even though previous lines indicate they won.
-    //
-    // JS: this is correct, since the map isn't written to until the reward is claimed,
+    // so user1 is not returned by the following. This is correct, since the map isn't written 
+    // to until the reward is claimed,
     // we would expect the value to be none here while the output of isBlockWinner() above
     // will be (some (claimed false) (winner true)).
-    ccd006CityMining.getBlockWinner(miaCityId, claimHeight).result.expectNone(); // expectSome().expectUint(1);
+    ccd006CityMining.getBlockWinner(miaCityId, claimHeight).result.expectNone();
   },
 });
 
@@ -114,10 +113,10 @@ Clarinet.test({
     // assert
     miningBlock.receipts[0].result.expectOk().expectBool(true);
     // Check mining event
-    let expectedPrintMsg = `{action: "mining", cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, firstBlock: ${types.uint(miningHeight)}, lastBlock: ${types.uint(miningHeight)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(1)}}`;
+    let expectedPrintMsg = `{cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "mining", firstBlock: ${types.uint(miningHeight)}, lastBlock: ${types.uint(miningHeight)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(1)}}`;
     miningBlock.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
     // Check mining claim event
-    expectedPrintMsg = `{action: "mining-claim", cityId: u1, cityName: "mia", claimHeight: ${types.uint(miningHeight)}, userId: ${types.uint(1)}}`;
+    expectedPrintMsg = `{cityId: u1, cityName: "mia", claimHeight: ${types.uint(miningHeight)}, event: "mining-claim", userId: ${types.uint(1)}}`;
     miningClaimBlock.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
     // Check stx transfer events
     miningBlock.receipts[0].events.expectSTXTransferEvent(10, user1.address, `${sender.address}.${miaTreasuryName}`);
@@ -129,9 +128,6 @@ Clarinet.test({
       winner: types.bool(true),
     };
     assertEquals(ccd006CityMining.isBlockWinner(miaCityId, user1.address, miningHeight).result.expectSome().expectTuple(), expected);
-    // TODO MJC: is-block-winner calculates the winning status of given user.
-    // get-block-winner reads it from the map which is written by claim-mining-reward.
-    // so user1 is not returned by the following even though previous lines indicate they won.
     ccd006CityMining.getBlockWinner(miaCityId, miningHeight).result.expectSome().expectUint(1);
   },
 });
@@ -175,14 +171,6 @@ const twoMinersMine = (user1: Account, user2: Account, ccd006CityMining: CCD006C
     return 3;
   }
   return { miningBlock, miningClaimBlock, claimHeight, winner, coinbase };
-  /**
-  console.log("miningBlock receipts[0].result : " + miningBlock.receipts[0].result)
-  console.log("miningBlock receipts[1].result : " + miningBlock.receipts[1].result)
-  console.log("miningClaimBlock receipts[0].result : " + miningClaimBlock.receipts[0].result)
-  console.log("miningClaimBlock receipts[1].result : " + miningClaimBlock.receipts[1].result)
-  console.log(miningBlock.receipts[0].events[1].contract_event.value)
-  console.log("claimHeight : " + claimHeight)
-   */
 };
 
 Clarinet.test({
@@ -226,9 +214,6 @@ Clarinet.test({
         winner2++;
       }
     }
-    //console.log("winner1 = " + winner1);
-    //console.log("winner2 = " + winner2);
-
     gt.getBalance(user1.address).result.expectOk().expectUint(count1);
     gt.getBalance(user2.address).result.expectOk().expectUint(count2);
     // ensure that each wins within 10% of half the time

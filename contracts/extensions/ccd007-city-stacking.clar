@@ -79,16 +79,16 @@
     (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 amount)))
     (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 amount)))
     (print {
-      action: "stacking",
-      userId: userId,
-      cityName: cityName,
-      cityId: cityId,
-      cityTreasury: cityTreasury,
+      event: "stacking",
       amountStacked: amount,
-      lockPeriod: lockPeriod,
+      cityId: cityId,
+      cityName: cityName,
+      cityTreasury: cityTreasury,
       currentCycle: currentCycle,
       firstCycle: targetCycle,
-      lastCycle: (- (+ targetCycle lockPeriod) u1)
+      lastCycle: (- (+ targetCycle lockPeriod) u1),
+      lockPeriod: lockPeriod,
+      userId: userId
     })
     (ok true)
   )
@@ -116,13 +116,13 @@
     (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-stx amount)))
     (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-stx amount)))
     (print {
-      action: "stacking-reward-payout",
-      cityName: cityName,
+      event: "stacking-reward-payout",
+      amount: amount,
       cityId: cityId,
+      cityName: cityName,
       cityTreasury: cityTreasury,
       currentCycle: currentCycle,
       targetCycle: targetCycle,
-      amount: amount,
     })
     (ok (map-set StackingStatsAtCycle
       { cityId: cityId, cycle: targetCycle }
@@ -157,6 +157,15 @@
         (and (> claimable u0) (try! (as-contract (contract-call? .ccd002-treasury-nyc-stacking withdraw-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 claimable user))))
       )
     )
+    (print {
+      event: "stacking-claim",
+      cityId: cityId,
+      cityName: cityName,
+      claimable: claimable,
+      reward: reward,
+      targetCycle: targetCycle,
+      userId: userId
+    })
     (ok (map-set StackerAtCycle
       { cityId: cityId, cycle: targetCycle, userId: userId }
       { stacked: u0, claimable: u0 }
