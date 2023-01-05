@@ -8,53 +8,49 @@ CityCoins give communities the power to improve and program their cities.
 
 ### Tests
 
-In order to be able to fully unit test the functionality within the mining and stacking contracts
-the tests run in one of two modes;
-
-- local
-- default
-
-The default way to run the tests is to copy Clarinet.default.toml to Clarinet.toml.
-
-This will run the tests against the two deployed contracts;
+To be able to fully unit test the functionality contracts with external references (to deployed mainnet contracts)
+are copied to a test folder - `tests/contracts/extensions` and the external references replaced by internal testable
+target contracts (or stubs). The copy / filter task is automated by running the script here;
 
 ```bash
-contracts/extensions/ccd006-city-mining.clar
-contracts/extensions/ccd007-city-stacking.clar
+bash scripts/copy-contracts.sh
 ```
 
-By copying Clarinet.local.toml to Clarinet.toml the test will be run against;
-
-```bash
-tests/contracts/extensions/ccd006-city-mining.clar
-tests/contracts/extensions/ccd007-city-stacking.clar
-```
-
-The two sets of contracts differ only in that references to mainnet contracts in the former have been
-replaced with references to local sip-010 test contracts.
-
-The extra tests, only applicable to `local` mode, are found in a separate test directory;
-
-```bash
-tests/contracts/extensions/local/
-```
-
-They will need to filtered/removed from the unit test run when running in default mode.
-
-#### Automation of Above
-
-To automate the above strategy;
-
-```bash
-scripts/copy-contracts.sh
-```
-
-To copy and filter the mining and stacking contracts and copies the `clarinet.local.toml` file to
-`clarinet.toml`. To make the script executable in your environment run
+NB If you are unable to execute the script, run the following command to update the permissions then try again:
 
 ```bash
 chmod 755 scripts/copy-contracts.sh
 ```
+
+The difference between running the tests with the local, filtered contracts is just the following changes
+in Clarinet.toml;
+
+```bash
+[contracts.ccd006-city-mining]
+path = "tests/contracts/extensions/ccd006-city-mining.clar"
+
+[contracts.ccd007-city-stacking]
+path = "tests/contracts/extensions/ccd007-city-stacking.clar"
+```
+
+would be replaced by the lines;
+
+```bash
+[contracts.ccd006-city-mining]
+path = "contracts/extensions/ccd006-city-mining.clar"
+
+[contracts.ccd007-city-stacking]
+path = "contracts/extensions/ccd007-city-stacking.clar"
+```
+
+other contracts would follow the same pattern but these are the only two effected at time of writing. The additional tests
+which test the local functionality reside in ditrectory;
+
+```bash
+tests/extensions/local
+```
+
+and these tests would be expected to fail if the Clarinet.toml was switched back to the default.
 
 ### Code Formatting
 
