@@ -1,9 +1,10 @@
 #!/bin/bash -e
 #
 ############################################################
-
-export SERVICE=$1
-
+# Copies clarity contracts to test directory and filters
+# out references to mainet contracts
+# must be run before > clarinet test
+############################################################
 infile=contracts/extensions/ccd006-city-mining.clar
 outfile=tests/contracts/extensions/ccd006-city-mining.clar
 m1In="'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2"
@@ -24,10 +25,6 @@ outfile=tests/contracts/extensions/ccd007-city-stacking.clar
 printf "Copying and replacing: $infile to $outfile\n"
 
 sed 's/'$m2In'/'$m2Out'/g;s/'$m3In'/'$m3Out'/g;' $infile > $outfile
-
-printf "\nCopying Clarinet.local.toml to Clarinet.toml:\n\n"
-
-cp Clarinet.local.toml Clarinet.toml
 
 printf "Finished!"
 
