@@ -16,13 +16,13 @@ target contracts (or stubs). The copy / filter task is automated by running the 
 bash scripts/copy-contracts.sh
 ```
 
-NB If you are unable to execute the script, run the following command to update the permissions then try again:
+If you are unable to execute the script, run the following command to update the permissions then try again:
 
 ```bash
 chmod 755 scripts/copy-contracts.sh
 ```
 
-The difference between running the tests with the local, filtered contracts is just the following changes
+The difference between running the tests with the local, filtered contracts is the following changes
 in Clarinet.toml;
 
 ```bash
@@ -44,13 +44,13 @@ path = "contracts/extensions/ccd007-city-stacking.clar"
 ```
 
 other contracts would follow the same pattern but these are the only two effected at time of writing. The additional tests
-which test the local functionality reside in ditrectory;
+which test the local functionality reside in directory;
 
 ```bash
 tests/extensions/local
 ```
 
-and these tests would be expected to fail if the Clarinet.toml was switched back to the default.
+and these tests would be expected to fail if the Clarinet.toml was switched to point to the original, unfiltered, contracts.
 
 ### Code Formatting
 
