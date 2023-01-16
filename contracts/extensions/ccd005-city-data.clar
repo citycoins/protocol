@@ -1,6 +1,6 @@
 ;; Title: CCD005 City Data
 ;; Version: 1.0.0
-;; Synopsis: A datastore for city information in the CityCoins protocol.
+;; Summary: A datastore for city information in the CityCoins protocol.
 ;; Description: An extension contract that uses the city ID as the key for storing city information. This contract is used by other CityCoins extensions to store and retrieve city information.
 
 ;; TRAITS
