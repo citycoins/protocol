@@ -1,5 +1,5 @@
 ;; Title: CityCoins base DAO contract
-;; Synopsis: An opinionated ExecutorDAO implementation inspired by the one DAO to rule them all.
+;; Summary: An ExecutorDAO implementation for CityCoins inspired by the one DAO to rule them all.
 
 ;; TRAITS
 
