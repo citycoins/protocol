@@ -1,6 +1,6 @@
 ;; Title: CCD009 Auth V2 Adapter
 ;; Version: 1.0.0
-;; Synopsis: This extension connects to the auth v2 contract in the CityCoins protocol as an approver.
+;; Summary: Connects to the auth v2 contract in the CityCoins protocol as an approver.
 ;; Description: This allows the DAO to access protected contract functions in the old protocol as part of CCIP-010.
 
 ;; TRAITS
