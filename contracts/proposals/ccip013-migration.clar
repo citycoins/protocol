@@ -9,20 +9,30 @@
       (miaId (try! (contract-call? .ccd004-city-registry get-or-create-city-id "mia")))
       (nycId (try! (contract-call? .ccd004-city-registry get-or-create-city-id "nyc")))
       ;; get activation block
-      (miaActivationBlock (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2 get-activation-block)))
-      (nycActivationBlock (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2 get-activation-block)))
+      ;; MAINNET: (miaActivationBlock (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2 get-activation-block)))
+      (miaActivationBlock (try! (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-core-v2 get-activation-block)))
+      ;; MAINNET: (nycActivationBlock (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2 get-activation-block)))
+      (nycActivationBlock (try! (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-core-v2 get-activation-block)))
       ;; get activation delay
-      (miaActivationDelay (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2 get-activation-delay))
-      (nycActivationDelay (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2 get-activation-delay))
+      ;; MAINNET: (miaActivationDelay (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2 get-activation-delay))
+      (miaActivationDelay (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-core-v2 get-activation-delay))
+      ;; MAINNET: (nycActivationDelay (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2 get-activation-delay))
+      (nycActivationDelay (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-core-v2 get-activation-delay))
       ;; get activation threshold
-      (miaActivationThreshold (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2 get-activation-threshold))
-      (nycActivationThreshold (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2 get-activation-threshold))
+      ;; MAINNET: (miaActivationThreshold (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2 get-activation-threshold))
+      (miaActivationThreshold (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-core-v2 get-activation-threshold))
+      ;; MAINNET: (nycActivationThreshold (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2 get-activation-threshold))
+      (nycActivationThreshold (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-core-v2 get-activation-threshold))
       ;; get coinbase thresholds
-      (miaThresholds (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 get-coinbase-thresholds)))
-      (nycThresholds (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 get-coinbase-thresholds)))
+      ;; MAINNET: (miaThresholds (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 get-coinbase-thresholds)))
+      (miaThresholds (try! (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2 get-coinbase-thresholds)))
+      ;; MAINNET: (nycThresholds (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 get-coinbase-thresholds)))
+      (nycThresholds (try! (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2 get-coinbase-thresholds)))
       ;; get coinbase amounts
-      (miaAmounts (unwrap! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 get-coinbase-amounts) ERR_PANIC))
-      (nycAmounts (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 get-coinbase-amounts) ERR_PANIC))
+      ;; MAINNET: (miaAmounts (unwrap! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 get-coinbase-amounts) ERR_PANIC))
+      (miaAmounts (unwrap! (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2 get-coinbase-amounts) ERR_PANIC))
+      ;; MAINNET: (nycAmounts (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 get-coinbase-amounts) ERR_PANIC))
+      (nycAmounts (unwrap! (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2 get-coinbase-amounts) ERR_PANIC))
     )
     ;; set city activation status
     (try! (contract-call? .ccd005-city-data set-city-activation-status miaId true))
@@ -46,9 +56,11 @@
     (try! (contract-call? .ccd005-city-data add-city-treasury nycId .ccd002-treasury-nyc-mining "mining"))
     (try! (contract-call? .ccd005-city-data add-city-treasury nycId .ccd002-treasury-nyc-stacking "stacking"))
     ;; set city token contracts
-    (try! (contract-call? .ccd005-city-data add-city-token-contract miaId 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2))
+    ;; MAINNET: (try! (contract-call? .ccd005-city-data add-city-token-contract miaId 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2))
+    (try! (contract-call? .ccd005-city-data add-city-token-contract miaId 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2))
     (try! (contract-call? .ccd005-city-data set-active-city-token-contract miaId u1))
-    (try! (contract-call? .ccd005-city-data add-city-token-contract nycId 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2))
+    ;; MAINNET: (try! (contract-call? .ccd005-city-data add-city-token-contract nycId 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2))
+    (try! (contract-call? .ccd005-city-data add-city-token-contract nycId 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2))
     (try! (contract-call? .ccd005-city-data set-active-city-token-contract nycId u1))
     ;; set city coinbase thresholds
     (try! (contract-call? .ccd005-city-data set-city-coinbase-thresholds miaId 
@@ -86,14 +98,8 @@
     ))
     ;; set city coinbase details
     ;; same as TOKEN_BONUS_PERIOD and TOKEN_EPOCH_LENGTH in token contracts
-    (try! (contract-call? .ccd005-city-data set-city-coinbase-details miaId {
-      bonusPeriod: u10000,
-      epochLength: u35000
-    }))
-    (try! (contract-call? .ccd005-city-data set-city-coinbase-details nycId {
-      bonusPeriod: u10000,
-      epochLength: u35000
-    }))
+    (try! (contract-call? .ccd005-city-data set-city-coinbase-details miaId u10000 u25000))
+    (try! (contract-call? .ccd005-city-data set-city-coinbase-details nycId u10000 u25000))
     ;; end
     (ok true)
   )

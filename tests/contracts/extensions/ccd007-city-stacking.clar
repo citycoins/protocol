@@ -27,7 +27,8 @@
 ;; DATA VARS
 
 (define-data-var rewardCycleLength uint u2100)
-(define-data-var poolOperator principal 'SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M)
+;; MAINNET: (define-data-var poolOperator principal 'SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M)
+(define-data-var poolOperator principal 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6)
 
 ;; DATA MAPS
 

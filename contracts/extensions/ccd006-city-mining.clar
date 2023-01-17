@@ -6,8 +6,8 @@
 ;; TRAITS
 
 (impl-trait .extension-trait.extension-trait)
-(impl-trait 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2)
-(impl-trait 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2)
+;; MAINNET: (impl-trait 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2)
+(impl-trait 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-core-v2-trait.citycoin-core-v2)
 
 ;; CONSTANTS
 
@@ -138,8 +138,10 @@
 (define-public (activate-core-contracts (activationHeight uint))
   (begin
     (try! (is-dao-or-extension))
-    (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
-    (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    ;; MAINNET: (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    (try! (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    ;; MAINNET: (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    (try! (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
     (ok true)
   )
 )
@@ -183,7 +185,8 @@
       (blockStats (get-mining-stats-at-block cityId claimHeight))
       (minerStats (get-miner-at-block cityId claimHeight userId))
       (maturityHeight (+ (get-reward-delay) claimHeight))
-      (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-rnd maturityHeight) none))
+      ;; MAINNET: (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-rnd maturityHeight) none))
+      (vrfSample (unwrap! (contract-call? 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-vrf-v2 get-rnd maturityHeight) none))
       (commitTotal (get-high-value cityId claimHeight))
       (winningValue (mod vrfSample commitTotal))
     )
@@ -271,7 +274,8 @@
       (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))
       (blockStats (get-mining-stats-at-block cityId claimHeight))
       (minerStats (get-miner-at-block cityId claimHeight userId))
-      (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_VRF_SEED_NOT_FOUND))
+      ;; MAINNET: (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_VRF_SEED_NOT_FOUND))
+      (vrfSample (unwrap! (contract-call? 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_VRF_SEED_NOT_FOUND))
       (commitTotal (get-high-value cityId claimHeight))
       (commitValid (asserts! (> commitTotal u0) ERR_MINER_DATA_NOT_FOUND))
       (winningValue (mod vrfSample commitTotal))
@@ -308,8 +312,10 @@
     ((amount (get-coinbase-amount cityId blockHeight)))
     (asserts! (> amount u0) ERR_NOTHING_TO_MINT)
     ;; contract addresses hardcoded for this version
-    (and (is-eq cityName "mia") (try! (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 mint amount recipient))))
-    (and (is-eq cityName "nyc") (try! (as-contract (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 mint amount recipient))))
+    ;; MAINNET: (and (is-eq cityName "mia") (try! (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 mint amount recipient))))
+    (and (is-eq cityName "mia") (try! (as-contract (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2 mint amount recipient))))
+    ;; MAINNET: (and (is-eq cityName "nyc") (try! (as-contract (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 mint amount recipient))))
+    (and (is-eq cityName "nyc") (try! (as-contract (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2 mint amount recipient))))
     (ok true)
   )
 )
