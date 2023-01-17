@@ -81,7 +81,8 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
-    ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal("SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M");
+    // MAINNET: ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal("SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M");
+    ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal("ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6");
 
     // act
     const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
@@ -113,7 +114,8 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
-    ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal("SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M");
+    // MAINNET: ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal("SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M");
+    ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal("ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6");
 
     // act
     const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_002);
@@ -130,7 +132,8 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
-    ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal("SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M");
+    // MAINNET: ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal("SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M");
+    ccd007CityStacking.getPoolOperator().result.expectSome().expectPrincipal("ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6");
 
     // act
     const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_011);
