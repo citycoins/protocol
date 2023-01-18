@@ -148,8 +148,10 @@
       event: "stack-stx",
       amount: amount,
       caller: contract-caller,
-      recipient: to,
-      sender: tx-sender
+      delegate: to,
+      pox-addr: { version: poxVer, hashbytes: poxHash},
+      sender: tx-sender,
+      until: until
     })
     ;; MAINNET: (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox delegate-stx amount to until pox-addr))
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox delegate-stx amount to until (some { version: poxVer, hashbytes: poxHash})))
