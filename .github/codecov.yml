@@ -39,4 +39,5 @@ comment:
   require_head: true
 
 ignore:
-  - "**/test-*"
+  - "**/tests/contracts/external/*"
+  - "**/tests/contracts/proposals/*"
