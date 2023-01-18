@@ -141,8 +141,7 @@
   )
 )
 
-(define-public (stack-stx (amount uint) (to principal) (until (optional uint))
-               (pox-addr (optional { version: (buff 1), hashbytes: (buff 20) })))
+(define-public (stack-stx (amount uint) (to principal) (poxVer (buff 1)) (poxHash (buff 20)) (until (optional uint)))
   (begin
     (try! (is-dao-or-extension))
     (print {
@@ -153,7 +152,7 @@
       sender: tx-sender
     })
     ;; MAINNET: (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox delegate-stx amount to until pox-addr))
-    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox delegate-stx amount to until pox-addr))
+    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox delegate-stx amount to until (some { version: poxVer, hashbytes: poxHash})))
       success (ok success)
       err (err (to-uint err))
     )

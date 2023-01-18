@@ -14,6 +14,11 @@ interface AllowedList {
   enabled: boolean;
 }
 
+export interface PoxAddress {
+  version: string;
+  hashbytes: string;
+}
+
 // General treasury model
 
 export class CCD002Treasury {
@@ -84,6 +89,37 @@ export class CCD002Treasury {
 
   withdrawNft(sender: Account, assetContract: string, id: number, recipient: string) {
     return Tx.contractCall(this.name, "withdraw-nft", [types.principal(assetContract), types.uint(id), types.principal(recipient)], sender.address);
+  }
+
+  // Stacking functions
+
+  stackStx(sender: Account, amount: number, delegateTo: string, poxVer: string, poxHash: string, until?: number) {
+    console.log(`senderAddress: ${sender.address}`);
+    console.log(`amount: ${amount}`);
+    console.log(`delegateTo: ${delegateTo}`);
+    console.log(`poxVer: ${poxVer}`);
+    console.log(`poxHash: ${poxHash}`);
+    console.log(`until: ${until}`);
+    return Tx.contractCall(
+      this.name,
+      "stack-stx",
+      [
+        types.uint(amount),
+        types.principal(delegateTo),
+        types.some(
+          types.tuple({
+            version: types.buff(poxVer),
+            hashbytes: types.buff(poxHash),
+          })
+        ),
+        until ? types.some(types.uint(until)) : types.none,
+      ],
+      sender.address
+    );
+  }
+
+  unstackStx(sender: Account) {
+    return Tx.contractCall(this.name, "unstack-stx", [], sender.address);
   }
 
   // Read only functions
