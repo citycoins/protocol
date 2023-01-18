@@ -1,6 +1,6 @@
 ;; Title: CCD006 City Mining
 ;; Version: 1.0.0
-;; Synopsis: A central city mining contract for the CityCoins protocol.
+;; Summary: A central city mining contract for the CityCoins protocol.
 ;; Description: An extension that provides a mining interface per city, in which each mining participant spends STX per block for a weighted chance to mint new CityCoins per the issuance schedule.
 
 ;; TRAITS

@@ -107,7 +107,7 @@
         lastBlock: (- (+ block-height (len amounts)) u1),
         totalAmount: totalAmount,
         totalBlocks: (len amounts),
-        userId: userId,
+        userId: userId
       })                
       (stx-transfer? totalAmount tx-sender cityTreasury)
     )

@@ -1,5 +1,7 @@
 #!/bin/bash -e
 #
+# TODO: update to account for testnet/mainnet values in contract
+#
 ############################################################
 # Copies clarity contracts to test directory and filters
 # out references to mainet contracts
