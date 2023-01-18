@@ -26,6 +26,7 @@ export const EXTENSIONS = {
 
 export const PROPOSALS = {
   CCIP_012: ADDRESS.concat(".ccip012-bootstrap"),
+  CCIP_013: ADDRESS.concat(".ccip013-migration"),
   TEST_CCD001_DIRECT_EXECUTE_001: ADDRESS.concat(".test-ccd001-direct-execute-001"),
   TEST_CCD001_DIRECT_EXECUTE_002: ADDRESS.concat(".test-ccd001-direct-execute-002"),
   TEST_CCD001_DIRECT_EXECUTE_003: ADDRESS.concat(".test-ccd001-direct-execute-003"),
