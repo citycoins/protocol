@@ -11,6 +11,9 @@ path = ".requirements"
 # MAINNET REQUIREMENTS
 
 [[project.requirements]]
+contract_id = "SP000000000000000000002Q6VF78.pox"
+
+[[project.requirements]]
 contract_id = "SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard"
 
 [[project.requirements]]
@@ -41,6 +44,9 @@ contract_id = "SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2"
 contract_id = "SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2"
 
 # TESTNET REQUIREMENTS
+
+[[project.requirements]]
+contract_id = "ST000000000000000000002AMW42H.pox"
 
 [[project.requirements]]
 contract_id = "ST1NXBK3K5YYMD6FD41MVNP3JS1GABZ8TRVX023PT.sip-010-trait-ft-standard"

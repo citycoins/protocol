@@ -100,22 +100,7 @@ export class CCD002Treasury {
     console.log(`poxVer: ${poxVer}`);
     console.log(`poxHash: ${poxHash}`);
     console.log(`until: ${until}`);
-    return Tx.contractCall(
-      this.name,
-      "stack-stx",
-      [
-        types.uint(amount),
-        types.principal(delegateTo),
-        types.some(
-          types.tuple({
-            version: types.buff(poxVer),
-            hashbytes: types.buff(poxHash),
-          })
-        ),
-        until ? types.some(types.uint(until)) : types.none,
-      ],
-      sender.address
-    );
+    return Tx.contractCall(this.name, "stack-stx", [types.uint(amount), types.principal(delegateTo), types.buff(poxVer), types.buff(poxHash), types.none], sender.address);
   }
 
   unstackStx(sender: Account) {
