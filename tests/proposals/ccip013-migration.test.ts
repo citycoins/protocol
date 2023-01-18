@@ -18,8 +18,16 @@ Clarinet.test({
     // TODO: fails because CCIP-013 requires an
     // activated legacy protocol (see arrange above)
     // ERROR: (err u1005) ERR_CONTRACT_NOT_ACTIVATED
-    // receipts[2].result.expectOk().expectUint(3);
+    receipts[2].result.expectOk().expectUint(3);
     // TODO: check data from each call in CCIP-013
+    // set-city-activation-status
+    // set-city-activation-details
+    // add-city-treasury (x4)
+    // add-city-token-contract
+    // set-active-city-token-contract
+    // set-city-coinbase-thresholds
+    // set-city-coinbase-amounts
+    // set-city-coinbase-details
   },
 });
 
@@ -46,6 +54,9 @@ function setupLegacyProtocol(chain: Chain, accounts: Map<string, Account>) {
   // stack tokens for 3 users
   // fast-forward to next stacking cycle
   // mine tokens for 3 users
+
+  // use v1->v2 legacy migration as example of flow
+  // https://github.com/citycoins/contracts/blob/develop/tests/cities/mia/upgrade/miamicoin-core-v1-v2.test.ts
 }
 
 // UPGRADE TESTING
@@ -55,5 +66,5 @@ function setupLegacyProtocol(chain: Chain, accounts: Map<string, Account>) {
 
 // GOAL: stack one cycle before, during, and after upgrade
 // GOAL: mine before, during, and after upgrade
-// GOAL: claim mining rewards after upgrade
-// GOAL: claim stacking rewards after upgrade
+// GOAL: claim mining rewards from legacy/current after upgrade
+// GOAL: claim stacking rewards from legacy/current after upgrade
