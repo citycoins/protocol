@@ -6,6 +6,7 @@
 ;; TRAITS
 
 (impl-trait .extension-trait.extension-trait)
+(impl-trait .stacking-trait.stacking-trait)
 ;; MAINNET: (use-trait nft-trait 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait)
 (use-trait nft-trait 'ST1NXBK3K5YYMD6FD41MVNP3JS1GABZ8TRVX023PT.nft-trait.nft-trait)
 ;; MAINNET: (use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
@@ -137,6 +138,41 @@
       tokenId: id
     })
     (as-contract (contract-call? nft transfer id TREASURY recipient))
+  )
+)
+
+(define-public (stack-stx (amount uint) (to principal) (until (optional uint))
+               (pox-addr (optional { version: (buff 1), hashbytes: (buff 20) })))
+  (begin
+    (try! (is-dao-or-extension))
+    (print {
+      event: "stack-stx",
+      amount: amount,
+      caller: contract-caller,
+      recipient: to,
+      sender: tx-sender
+    })
+    ;; MAINNET: (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox delegate-stx amount to until pox-addr))
+    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox delegate-stx amount to until pox-addr))
+      success (ok success)
+      err (err (to-uint err))
+    )
+  )
+)
+
+(define-public (unstack-stx)
+  (begin
+    (try! (is-dao-or-extension))
+    (print {
+      event: "unstack-stx",
+      caller: contract-caller,
+      sender: tx-sender
+    })
+    ;; MAINNET: (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox revoke-delegate-stx))
+    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox revoke-delegate-stx))
+      success (ok success)
+      err (err (to-uint err))
+    )
   )
 )
 
