@@ -42,23 +42,6 @@
   principal
 )
 
-(define-map CityTokenContractNonce uint uint)
-
-(define-map CityTokenContracts
-  { cityId: uint, tokenId: uint }
-  principal
-)
-
-(define-map CityTokenContractIds
-  { cityId: uint, tokenAddress: principal }
-  uint
-)
-
-(define-map ActiveCityTokenContract
-  uint
-  { tokenId: uint, tokenAddress: principal }
-)
-
 (define-map CityCoinbaseThresholds
   uint
   {
@@ -135,29 +118,6 @@
       (map-insert CityTreasuryAddress { cityId: cityId, treasuryId: nonce } address)
       (ok nonce)
     )
-  )
-)
-
-(define-public (add-city-token-contract (cityId uint) (address principal))
-  (let
-    ((nonce (+ u1 (get-city-token-contract-nonce cityId))))
-    (try! (is-dao-or-extension))
-    (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
-    (map-set CityTokenContractNonce cityId nonce)
-    (map-insert CityTokenContractIds { cityId: cityId, tokenAddress: address } nonce)
-    (map-insert CityTokenContracts { cityId: cityId, tokenId: nonce } address)
-    (ok nonce)
-  )
-)
-
-(define-public (set-active-city-token-contract (cityId uint) (tokenId uint))
-  (begin
-    (try! (is-dao-or-extension))
-    (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
-    (ok (map-set ActiveCityTokenContract cityId {
-      tokenId: tokenId,
-      tokenAddress: (unwrap! (get-city-token-contract-address cityId tokenId) ERR_UNAUTHORIZED)
-    }))
   )
 )
 
@@ -244,22 +204,6 @@
     ((treasuryId (unwrap! (map-get? CityTreasuryIds { cityId: cityId, treasuryName: treasuryName }) none)))
     (map-get? CityTreasuryAddress { cityId: cityId, treasuryId: treasuryId })
   )
-)
-
-(define-read-only (get-city-token-contract-nonce (cityId uint))
-  (default-to u0 (map-get? CityTokenContractNonce cityId))
-)
-
-(define-read-only (get-city-token-contract-id (cityId uint) (tokenAddress principal))
-  (map-get? CityTokenContractIds { cityId: cityId, tokenAddress: tokenAddress })
-)
-
-(define-read-only (get-city-token-contract-address (cityId uint) (tokenId uint))
-  (map-get? CityTokenContracts { cityId: cityId, tokenId: tokenId })
-)
-
-(define-read-only (get-active-city-token-contract (cityId uint))
-  (map-get? ActiveCityTokenContract cityId)
 )
 
 (define-read-only (get-city-coinbase-info (cityId uint))

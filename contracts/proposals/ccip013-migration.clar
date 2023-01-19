@@ -57,11 +57,11 @@
     (try! (contract-call? .ccd005-city-data add-city-treasury nycId .ccd002-treasury-nyc-stacking "stacking"))
     ;; set city token contracts
     ;; MAINNET: (try! (contract-call? .ccd005-city-data add-city-token-contract miaId 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2))
-    (try! (contract-call? .ccd005-city-data add-city-token-contract miaId 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2))
-    (try! (contract-call? .ccd005-city-data set-active-city-token-contract miaId u1))
+    ;; (try! (contract-call? .ccd005-city-data add-city-token-contract miaId 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2))
+    ;; (try! (contract-call? .ccd005-city-data set-active-city-token-contract miaId u1))
     ;; MAINNET: (try! (contract-call? .ccd005-city-data add-city-token-contract nycId 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2))
-    (try! (contract-call? .ccd005-city-data add-city-token-contract nycId 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2))
-    (try! (contract-call? .ccd005-city-data set-active-city-token-contract nycId u1))
+    ;; (try! (contract-call? .ccd005-city-data add-city-token-contract nycId 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2))
+    ;; (try! (contract-call? .ccd005-city-data set-active-city-token-contract nycId u1))
     ;; set city coinbase thresholds
     (try! (contract-call? .ccd005-city-data set-city-coinbase-thresholds miaId 
       (get coinbaseThreshold1 miaThresholds)

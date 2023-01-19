@@ -615,6 +615,8 @@ Clarinet.test({
 // 4. CITY TOKEN CONTRACTS TESTS
 // =============================
 
+/*
+
 Clarinet.test({
   name: "ccd005-city-data: add-city-token-contract() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
@@ -808,3 +810,5 @@ Clarinet.test({
     assertEquals(ccd005CityData.getActiveCityTokenContract(miaCityId).result.expectSome().expectTuple(), expectedStats);
   },
 });
+
+*/
