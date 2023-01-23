@@ -15,7 +15,6 @@ import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts
 // INTERNAL DATA / FUNCTIONS
 // =============================
 const lockingPeriod = 32;
-const rewardCycleLength = 100;
 const miaCityName = "mia";
 const nycCityName = "nyc";
 const miaCityId = 1;
@@ -93,6 +92,8 @@ Clarinet.test({
   },
 });
 
+/* disabled - function removed from ccd007
+
 Clarinet.test({
   name: "ccd007-city-stacking: set-reward-cycle-length() fails if called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
@@ -143,6 +144,8 @@ Clarinet.test({
   },
 });
 
+*/
+
 // =============================
 // 2. stack
 // =============================
@@ -169,6 +172,9 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -196,6 +202,9 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -223,6 +232,9 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -250,6 +262,9 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -293,6 +308,9 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -306,12 +324,16 @@ Clarinet.test({
   },
 });
 
+/* disabled - error removed from ccd007
 Clarinet.test({
   name: "ccd007-city-stacking: stack() fails if stacking is unavailable",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -323,6 +345,7 @@ Clarinet.test({
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_STACKING_NOT_AVAILABLE);
   },
 });
+*/
 
 // =============================
 // 2. send-stacking-reward
@@ -359,12 +382,16 @@ Clarinet.test({
   },
 });
 
+/* disabled - error removed from ccd007
 Clarinet.test({
   name: "ccd007-city-stacking: send-stacking-reward() fails if stacking is unavailable",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -376,6 +403,7 @@ Clarinet.test({
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_STACKING_NOT_AVAILABLE);
   },
 });
+*/
 
 Clarinet.test({
   name: "ccd007-city-stacking: send-stacking-reward() fails if not called by pool operator",
@@ -384,6 +412,9 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     //const operator = accounts.get("wallet_1")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -405,6 +436,9 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const operator = accounts.get("wallet_2")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -434,7 +468,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
-    chain.mineEmptyBlock(rewardCycleLength);
+    chain.mineEmptyBlock(CCD007CityStacking.REWARD_CYCLE_LENGTH);
 
     const block = chain.mineBlock([ccd007CityStacking.sendStackingReward(operator, miaCityName, 1, 50000)]);
 
@@ -449,8 +483,12 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const operator = accounts.get("wallet_2")!;
+    const targetCycle = 10;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -458,9 +496,10 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_002);
+    // add mia stacking treasury
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
-    // could change this to rewardCycleLength * (targetCycle + 1) + 1
-    chain.mineEmptyBlock(rewardCycleLength * 11 + 10);
+    // fast forward past the target cycle
+    chain.mineEmptyBlock(CCD007CityStacking.REWARD_CYCLE_LENGTH * (targetCycle + 1) + 1);
 
     const block = chain.mineBlock([ccd007CityStacking.sendStackingReward(operator, miaCityName, 10, 50000)]);
 
@@ -476,8 +515,12 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const operator = accounts.get("wallet_2")!;
+    const targetCycle = 10;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-nyc-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -486,8 +529,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_008);
-    // could change this to rewardCycleLength * (targetCycle + 1) + 1
-    chain.mineEmptyBlock(rewardCycleLength * 11 + 10);
+    chain.mineEmptyBlock(CCD007CityStacking.REWARD_CYCLE_LENGTH * (targetCycle + 1) + 1);
 
     const block = chain.mineBlock([ccd007CityStacking.sendStackingReward(operator, nycCityName, 10, 50000)]);
 
@@ -522,6 +564,9 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
 
@@ -536,6 +581,9 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
 
@@ -564,6 +612,7 @@ Clarinet.test({
   },
 });
 
+/* disabled - error removed from ccd007
 Clarinet.test({
   name: "ccd007-city-stacking: claim-stacking-reward() fails if stacking is unavailable",
   fn(chain: Chain, accounts: Map<string, Account>) {
@@ -571,6 +620,9 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
@@ -583,7 +635,9 @@ Clarinet.test({
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_STACKING_NOT_AVAILABLE);
   },
 });
+*/
 
+/* disabled - error removed from ccd007
 Clarinet.test({
   name: "ccd007-city-stacking: claim-stacking-reward() fails if stacking is unavailable",
   fn(chain: Chain, accounts: Map<string, Account>) {
@@ -592,6 +646,9 @@ Clarinet.test({
     const user = accounts.get("wallet_1")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
     //const ccd003UserRegistry = new CCD003UserRegistry(chain, sender, "ccd003-user-registry");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
@@ -604,6 +661,7 @@ Clarinet.test({
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_STACKING_NOT_AVAILABLE);
   },
 });
+*/
 
 Clarinet.test({
   name: "ccd007-city-stacking: claim-stacking-reward() fails if user has nothing to claim",
@@ -614,6 +672,9 @@ Clarinet.test({
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
     //const ccd003UserRegistry = new CCD003UserRegistry(chain, sender, "ccd003-user-registry");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);

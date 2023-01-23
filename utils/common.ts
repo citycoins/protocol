@@ -98,8 +98,10 @@ export const passProposal = (chain: Chain, accounts: Map<string, Account>, propo
   const approver1 = accounts.get("wallet_1")!;
   const approver2 = accounts.get("wallet_2")!;
   const approver3 = accounts.get("wallet_3")!;
-  const { receipts } = chain.mineBlock([ccd001DirectExecute.directExecute(approver1, proposal), ccd001DirectExecute.directExecute(approver2, proposal), ccd001DirectExecute.directExecute(approver3, proposal)]);
-  return receipts;
+  const block = chain.mineBlock([ccd001DirectExecute.directExecute(approver1, proposal), ccd001DirectExecute.directExecute(approver2, proposal), ccd001DirectExecute.directExecute(approver3, proposal)]);
+  // console.log(`passProposal at height: ${block.height}`);
+  // console.log(`block JSON:\n${JSON.stringify(block, null, 2)}`);
+  return block.receipts;
 };
 
 export const constructAndPassProposal = (chain: Chain, accounts: Map<string, Account>, proposal: string): any => {
