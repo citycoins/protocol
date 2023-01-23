@@ -2,6 +2,9 @@
 
 (define-constant ERR_PANIC (err u500))
 
+(define-data-var miaJobId uint u0)
+(define-data-var nycJobId uint u0)
+
 (define-public (execute (sender principal))
   (let
     (
@@ -92,28 +95,33 @@
     (try! (contract-call? .ccd005-city-data set-city-coinbase-details nycId u10000 u25000))
     
     ;; setup core contract upgrade using ccd009 adapter
-    (let
-      (
-        ;; IDEA: store as variables with getters for next one
-        ;; MAINNET: (try! (contract-call? .ccd009-auth-v2-adapter create-job-mia "upgrade to DAO protocol" 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2))
-        (miaJobId (try! (contract-call? .ccd009-auth-v2-adapter create-job-mia "upgrade to DAO protocol" 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2)))
-        ;; MAINNET: (try! (contract-call? .ccd009-auth-v2-adapter create-job-mia "upgrade to DAO protocol" 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2))
-        (nycJobId (try! (contract-call? .ccd009-auth-v2-adapter create-job-nyc "upgrade to DAO protocol" 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2)))
-      )
-      
-      ;; MAINNET: (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia miaJobId "oldContract" 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2))
-      (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia miaJobId "oldContract" 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-core-v2))
-      (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia miaJobId "newContract" .ccd009-auth-v2-adapter))
-      ;; MAINNET: (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia miaJobId "oldContract" 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2))
-      (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-nyc nycJobId "oldContract" 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-core-v2))
-      (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-nyc nycJobId "newContract" .ccd009-auth-v2-adapter))
-      (try! (contract-call? .ccd009-auth-v2-adapter activate-job-mia miaJobId))
-      (try! (contract-call? .ccd009-auth-v2-adapter approve-job-mia miaJobId))
-      (try! (contract-call? .ccd009-auth-v2-adapter activate-job-nyc nycJobId))
-      (try! (contract-call? .ccd009-auth-v2-adapter approve-job-nyc nycJobId))
 
-      ;; end
-      (ok true)
-    )
+    ;; MAINNET: (try! (contract-call? .ccd009-auth-v2-adapter create-job-mia "upgrade to DAO protocol" 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2))
+    (var-set miaJobId (try! (contract-call? .ccd009-auth-v2-adapter create-job-mia "upgrade to DAO protocol" 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2)))
+    ;; MAINNET: (try! (contract-call? .ccd009-auth-v2-adapter create-job-mia "upgrade to DAO protocol" 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2))
+    (var-set nycJobId (try! (contract-call? .ccd009-auth-v2-adapter create-job-nyc "upgrade to DAO protocol" 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2)))
+    ;; MAINNET: (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia miaJobId "oldContract" 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2))
+    (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia (var-get miaJobId) "oldContract" 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-core-v2))
+    (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia (var-get miaJobId) "newContract" .ccd009-auth-v2-adapter))
+    ;; MAINNET: (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia miaJobId "oldContract" 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2))
+    (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-nyc (var-get nycJobId) "oldContract" 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-core-v2))
+    (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-nyc (var-get nycJobId) "newContract" .ccd009-auth-v2-adapter))
+    (try! (contract-call? .ccd009-auth-v2-adapter activate-job-mia (var-get miaJobId)))
+    (try! (contract-call? .ccd009-auth-v2-adapter approve-job-mia (var-get miaJobId)))
+    (try! (contract-call? .ccd009-auth-v2-adapter activate-job-nyc (var-get nycJobId)))
+    (try! (contract-call? .ccd009-auth-v2-adapter approve-job-nyc (var-get nycJobId)))
+
+    ;; end
+    (ok true)
+  )
+)
+
+(define-read-only (get-job-ids)
+  (if (or (is-eq (var-get miaJobId) u0) (is-eq (var-get nycJobId) u0))
+    none
+    (some {
+      miaJobId: (var-get miaJobId),
+      nycJobId: (var-get nycJobId)
+    })
   )
 )
