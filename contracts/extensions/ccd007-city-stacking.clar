@@ -22,11 +22,13 @@
 (define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7010))
 (define-constant SCALE_FACTOR (pow u10 u16))
 (define-constant MAX_REWARD_CYCLES u32)
+(define-constant REWARD_CYCLE_LENGTH u2100)
+;; MAINNET: (define-constant FIRST_STACKING_BLOCK u666050)
+(define-constant FIRST_STACKING_BLOCK u2000000)
 (define-constant REWARD_CYCLE_INDEXES (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29 u30 u31))
 
 ;; DATA VARS
 
-(define-data-var rewardCycleLength uint u2100)
 ;; MAINNET: (define-data-var poolOperator principal 'SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M)
 (define-data-var poolOperator principal 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6)
 
@@ -54,14 +56,6 @@
   (ok true)
 )
 
-(define-public (set-reward-cycle-length (length uint))
-  (begin
-    (try! (is-dao-or-extension))
-    (asserts! (> length u0) ERR_INVALID_CYCLE_LENGTH)
-    (ok (var-set rewardCycleLength length))
-  )
-)
-
 (define-public (stack (cityName (string-ascii 10)) (amount uint) (lockPeriod uint))
   (let
     (
@@ -69,7 +63,7 @@
       (user tx-sender)
       (userId (try! (as-contract (contract-call? .ccd003-user-registry get-or-create-user-id user))))
       (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
-      (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
+      (currentCycle (unwrap! (get-reward-cycle burn-block-height) ERR_STACKING_NOT_AVAILABLE))
       (targetCycle (+ u1 currentCycle))
       (stackingInfo { cityId: cityId, userId: userId, amount: amount, first: targetCycle, last: (+ targetCycle lockPeriod)})
     )
@@ -109,7 +103,7 @@
     (
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
       (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
-      (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
+      (currentCycle (unwrap! (get-reward-cycle burn-block-height) ERR_STACKING_NOT_AVAILABLE))
       (stackingStatsAtCycle (get-stacking-stats-at-cycle cityId targetCycle))
     )
     (asserts! (is-eq tx-sender (var-get poolOperator)) ERR_UNAUTHORIZED)
@@ -140,7 +134,7 @@
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
       (user tx-sender)
       (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))
-      (currentCycle (unwrap! (get-reward-cycle cityId block-height) ERR_STACKING_NOT_AVAILABLE))
+      (currentCycle (unwrap! (get-reward-cycle burn-block-height) ERR_STACKING_NOT_AVAILABLE))
       (stackerAtCycle (get-stacker-at-cycle cityId targetCycle userId))
       (reward (unwrap! (get-stacking-reward cityId userId targetCycle) ERR_NOTHING_TO_CLAIM))
       (claimable (get claimable stackerAtCycle))
@@ -181,7 +175,7 @@
 ;; READ ONLY FUNCTIONS
 
 (define-read-only (get-reward-cycle-length)
-  (var-get rewardCycleLength)
+  REWARD_CYCLE_LENGTH
 )
 
 (define-read-only (get-stacking-stats-at-cycle (cityId uint) (cycle uint))
@@ -196,23 +190,16 @@
   )
 )
 
-(define-read-only (get-reward-cycle (cityId uint) (blockHeight uint))
-  (let
-    (
-      (activationDetails (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) none))
-      (activationBlock (get activated activationDetails))
-    )
-    (if (>= blockHeight activationBlock)
-      (some (/ (- blockHeight activationBlock) (get-reward-cycle-length)))
-      none)
-  )
+(define-read-only (get-current-reward-cycle)
+  (get-reward-cycle burn-block-height)
 )
 
-(define-read-only (get-first-block-in-reward-cycle (cityId uint) (cycle uint))
-  (let
-    ((activationDetails (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) none)))
-    (some (+ (get activated activationDetails) (* cycle (get-reward-cycle-length))))
-  )
+(define-read-only (get-reward-cycle (burnHeight uint))
+  (/ (- burnHeight FIRST_STACKING_BLOCK) REWARD_CYCLE_LENGTH)
+)
+
+(define-read-only (get-first-block-in-reward-cycle (cycle uint))
+  (+ FIRST_STACKING_BLOCK (* cycle REWARD_CYCLE_LENGTH))
 )
 
 (define-read-only (is-stacking-active (cityId uint) (cycle uint))
@@ -233,7 +220,7 @@
       (stackerAtCycle (get-stacker-at-cycle cityId cycle userId))
       (userStacked (get stacked stackerAtCycle))
     )
-    (if (or (<= (unwrap! (get-reward-cycle cityId block-height) none) cycle) (is-eq userStacked u0))
+    (if (or (<= (unwrap! (get-reward-cycle burn-block-height) none) cycle) (is-eq userStacked u0))
       none
       (some (/ (* (unwrap! (get reward rewardCycleStats) none) userStacked) (get total rewardCycleStats)))
     )
