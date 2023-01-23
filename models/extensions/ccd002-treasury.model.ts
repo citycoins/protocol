@@ -93,18 +93,12 @@ export class CCD002Treasury {
 
   // Stacking functions
 
-  stackStx(sender: Account, amount: number, delegateTo: string, poxVer: string, poxHash: string, until?: number) {
-    console.log(`senderAddress: ${sender.address}`);
-    console.log(`amount: ${amount}`);
-    console.log(`delegateTo: ${delegateTo}`);
-    console.log(`poxVer: ${poxVer}`);
-    console.log(`poxHash: ${poxHash}`);
-    console.log(`until: ${until}`);
-    return Tx.contractCall(this.name, "stack-stx", [types.uint(amount), types.principal(delegateTo), types.buff(poxVer), types.buff(poxHash), types.none], sender.address);
+  delegateStx(sender: Account, amount: number, delegateTo: string) {
+    return Tx.contractCall(this.name, "delegate-stx", [types.uint(amount), types.principal(delegateTo)], sender.address);
   }
 
-  unstackStx(sender: Account) {
-    return Tx.contractCall(this.name, "unstack-stx", [], sender.address);
+  revokeDelegateStx(sender: Account) {
+    return Tx.contractCall(this.name, "revoke-delegate-stx", [], sender.address);
   }
 
   // Read only functions

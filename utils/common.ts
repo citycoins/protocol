@@ -40,6 +40,8 @@ export const PROPOSALS = {
   TEST_CCD002_TREASURY_008: ADDRESS.concat(".test-ccd002-treasury-008"),
   TEST_CCD002_TREASURY_009: ADDRESS.concat(".test-ccd002-treasury-009"),
   TEST_CCD002_TREASURY_010: ADDRESS.concat(".test-ccd002-treasury-010"),
+  TEST_CCD002_TREASURY_011: ADDRESS.concat(".test-ccd002-treasury-011"),
+  TEST_CCD002_TREASURY_012: ADDRESS.concat(".test-ccd002-treasury-012"),
   TEST_CCD003_USER_REGISTRY_001: ADDRESS.concat(".test-ccd003-user-registry-001"),
   TEST_CCD003_USER_REGISTRY_002: ADDRESS.concat(".test-ccd003-user-registry-002"),
   TEST_CCD003_USER_REGISTRY_003: ADDRESS.concat(".test-ccd003-user-registry-003"),

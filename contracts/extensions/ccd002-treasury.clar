@@ -141,31 +141,29 @@
   )
 )
 
-(define-public (stack-stx (amount uint) (to principal) (poxVer (buff 1)) (poxHash (buff 20)) (until (optional uint)))
+(define-public (delegate-stx (maxAmount uint) (to principal))
   (begin
     (try! (is-dao-or-extension))
     (print {
-      event: "stack-stx",
-      amount: amount,
+      event: "delegate-stx",
+      amount: maxAmount,
       caller: contract-caller,
       delegate: to,
-      pox-addr: { version: poxVer, hashbytes: poxHash},
-      sender: tx-sender,
-      until: until
+      sender: tx-sender
     })
-    ;; MAINNET: (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox delegate-stx amount to until pox-addr))
-    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox delegate-stx amount to until (some { version: poxVer, hashbytes: poxHash})))
+    ;; MAINNET: (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox delegate-stx maxAmount to none none))
+    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox delegate-stx maxAmount to none none))
       success (ok success)
       err (err (to-uint err))
     )
   )
 )
 
-(define-public (unstack-stx)
+(define-public (revoke-delegate-stx)
   (begin
     (try! (is-dao-or-extension))
     (print {
-      event: "unstack-stx",
+      event: "revoke-delegate-stx",
       caller: contract-caller,
       sender: tx-sender
     })
