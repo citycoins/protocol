@@ -125,6 +125,9 @@ path = "contracts/proposals/ccip012-bootstrap.clar"
 [contracts.ccip013-migration]
 path = "contracts/proposals/ccip013-migration.clar"
 
+[contracts.ccip013-activation]
+path = "contracts/proposals/ccip013-activation.clar"
+
 # CITYCOINS PROTOCOL TRAITS
 
 [contracts.extension-trait]

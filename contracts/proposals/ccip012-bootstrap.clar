@@ -20,7 +20,7 @@
       )
     ))
 
-    ;; set 3-of-5 signers and signals required
+    ;; set 3-of-5 signers
     ;; MAINNET: (try! (contract-call? .ccd001-direct-execute set-approver 'SP372JVX6EWE2M0XPA84MWZYRRG2M6CAC4VVC12V1 true))
     (try! (contract-call? .ccd001-direct-execute set-approver 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5 true))
     ;; MAINNET: (try! (contract-call? .ccd001-direct-execute set-approver 'SP2R0DQYR7XHD161SH2GK49QRP1YSV7HE9JSG7W6G true))
@@ -32,7 +32,14 @@
     ;; MAINNET: (try! (contract-call? .ccd001-direct-execute set-approver 'SP7DGES13508FHRWS1FB0J3SZA326FP6QRMB6JDE true))
     (try! (contract-call? .ccd001-direct-execute set-approver 'ST2REHHS5J3CERCRBEPMGH7921Q6PYKAADT7JP2VB true))
 
+    ;; set signals required
     (try! (contract-call? .ccd001-direct-execute set-signals-required u3))
+
+    ;; delegate stacking for the treasuries (up to 50M STX each)
+    ;; MAINNET: (try! (contract-call? .ccd002-treasury-mia-stacking delegate-stx u50000000000000 'SP700C57YJFD5RGHK0GN46478WBAM2KG3A4MN2QJ))
+    (try! (contract-call? .ccd002-treasury-mia-stacking delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
+    ;; MAINNET: (try! (contract-call? .ccd002-treasury-nyc-stacking delegate-stx u50000000000000 'SP700C57YJFD5RGHK0GN46478WBAM2KG3A4MN2QJ))
+    (try! (contract-call? .ccd002-treasury-nyc-stacking delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
 
     (print "CityCoins DAO has risen! Our mission is to empower people to take ownership in their city by transforming citizens into stakeholders with the ability to fund, build, and vote on meaningful upgrades to their communities.")
 

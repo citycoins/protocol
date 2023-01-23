@@ -21,6 +21,7 @@
 (define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7009))
 (define-constant SCALE_FACTOR (pow u10 u16))
 (define-constant MAX_REWARD_CYCLES u32)
+;; TESTNET: (define-constant REWARD_CYCLE_LENGTH u1050)
 (define-constant REWARD_CYCLE_LENGTH u2100)
 ;; MAINNET: (define-constant FIRST_STACKING_BLOCK u666050)
 ;; TESTNET: (define-constant FIRST_STACKING_BLOCK u2000000)

@@ -34,9 +34,6 @@
       ;; MAINNET: (nycAmounts (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 get-coinbase-amounts) ERR_PANIC))
       (nycAmounts (unwrap! (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2 get-coinbase-amounts) ERR_PANIC))
     )
-    ;; set city activation status
-    (try! (contract-call? .ccd005-city-data set-city-activation-status miaId true))
-    (try! (contract-call? .ccd005-city-data set-city-activation-status nycId true))
     ;; set city activation details
     (try! (contract-call? .ccd005-city-data set-city-activation-details miaId
       (- miaActivationBlock miaActivationDelay)
@@ -55,13 +52,6 @@
     (try! (contract-call? .ccd005-city-data add-city-treasury miaId .ccd002-treasury-mia-stacking "stacking"))
     (try! (contract-call? .ccd005-city-data add-city-treasury nycId .ccd002-treasury-nyc-mining "mining"))
     (try! (contract-call? .ccd005-city-data add-city-treasury nycId .ccd002-treasury-nyc-stacking "stacking"))
-    ;; set city token contracts
-    ;; MAINNET: (try! (contract-call? .ccd005-city-data add-city-token-contract miaId 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2))
-    ;; (try! (contract-call? .ccd005-city-data add-city-token-contract miaId 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2))
-    ;; (try! (contract-call? .ccd005-city-data set-active-city-token-contract miaId u1))
-    ;; MAINNET: (try! (contract-call? .ccd005-city-data add-city-token-contract nycId 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2))
-    ;; (try! (contract-call? .ccd005-city-data add-city-token-contract nycId 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2))
-    ;; (try! (contract-call? .ccd005-city-data set-active-city-token-contract nycId u1))
     ;; set city coinbase thresholds
     (try! (contract-call? .ccd005-city-data set-city-coinbase-thresholds miaId 
       (get coinbaseThreshold1 miaThresholds)
@@ -100,7 +90,30 @@
     ;; same as TOKEN_BONUS_PERIOD and TOKEN_EPOCH_LENGTH in token contracts
     (try! (contract-call? .ccd005-city-data set-city-coinbase-details miaId u10000 u25000))
     (try! (contract-call? .ccd005-city-data set-city-coinbase-details nycId u10000 u25000))
-    ;; end
-    (ok true)
+    
+    ;; setup core contract upgrade using ccd009 adapter
+    (let
+      (
+        ;; IDEA: store as variables with getters for next one
+        ;; MAINNET: (try! (contract-call? .ccd009-auth-v2-adapter create-job-mia "upgrade to DAO protocol" 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2))
+        (miaJobId (try! (contract-call? .ccd009-auth-v2-adapter create-job-mia "upgrade to DAO protocol" 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2)))
+        ;; MAINNET: (try! (contract-call? .ccd009-auth-v2-adapter create-job-mia "upgrade to DAO protocol" 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2))
+        (nycJobId (try! (contract-call? .ccd009-auth-v2-adapter create-job-nyc "upgrade to DAO protocol" 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2)))
+      )
+      
+      ;; MAINNET: (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia miaJobId "oldContract" 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2))
+      (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia miaJobId "oldContract" 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-core-v2))
+      (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia miaJobId "newContract" .ccd009-auth-v2-adapter))
+      ;; MAINNET: (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia miaJobId "oldContract" 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2))
+      (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-nyc nycJobId "oldContract" 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-core-v2))
+      (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-nyc nycJobId "newContract" .ccd009-auth-v2-adapter))
+      (try! (contract-call? .ccd009-auth-v2-adapter activate-job-mia miaJobId))
+      (try! (contract-call? .ccd009-auth-v2-adapter approve-job-mia miaJobId))
+      (try! (contract-call? .ccd009-auth-v2-adapter activate-job-nyc nycJobId))
+      (try! (contract-call? .ccd009-auth-v2-adapter approve-job-nyc nycJobId))
+
+      ;; end
+      (ok true)
+    )
   )
 )
