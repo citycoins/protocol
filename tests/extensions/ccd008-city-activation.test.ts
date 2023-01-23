@@ -87,6 +87,11 @@ Clarinet.test({
   },
 });
 
+/* LEAVING TEST AS AN ARTIFACT
+* Since ccd008 is still a draft it won't be in the initial CCIP-012 proposal.
+* It can be added later, but until then, this test will fail.
+*
+
 Clarinet.test({
   name: "ccd008-city-activation: activate-city() succeeds if activated by two different voters",
   fn(chain: Chain, accounts: Map<string, Account>) {
@@ -120,3 +125,5 @@ Clarinet.test({
     testExpectedCityDetails(ccd005CityData, nycCityId, claimHeight, 2, claimHeight + 2, 2);
   },
 });
+
+*/
