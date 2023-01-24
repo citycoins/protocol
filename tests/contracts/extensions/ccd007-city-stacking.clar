@@ -56,7 +56,6 @@
   (ok true)
 )
 
-;; TODO: cityTreasury needed here?
 (define-public (stack (cityName (string-ascii 10)) (amount uint) (lockPeriod uint))
   (let
     (
@@ -195,7 +194,6 @@
   (get-reward-cycle burn-block-height)
 )
 
-;; test: CityCoins reward cycles match PoX reward cycles
 (define-read-only (get-reward-cycle (burnHeight uint))
   (/ (- burnHeight FIRST_STACKING_BLOCK) REWARD_CYCLE_LENGTH)
 )
@@ -204,20 +202,14 @@
   (+ FIRST_STACKING_BLOCK (* cycle REWARD_CYCLE_LENGTH))
 )
 
-;; TODO: need this? used for? how to rewrite?
 (define-read-only (is-stacking-active (cityId uint) (cycle uint))
   (is-some (map-get? StackingStatsAtCycle { cityId: cityId, cycle: cycle }))
 )
 
-;; TODO: inline map get?
 (define-read-only (is-cycle-paid (cityId uint) (cycle uint))
-  (let
-    ((rewardCycleStats (get-stacking-stats-at-cycle cityId cycle)))
-    (is-some (get reward rewardCycleStats))
-  )
+    (is-some (get reward (get-stacking-stats-at-cycle cityId cycle)))
 )
 
-;; TODO: shorten rewardCycleStats -> cycleStats
 (define-read-only (get-stacking-reward (cityId uint) (userId uint) (cycle uint))
   (let
     (

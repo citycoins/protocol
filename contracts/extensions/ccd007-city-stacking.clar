@@ -21,11 +21,10 @@
 (define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7009))
 (define-constant SCALE_FACTOR (pow u10 u16))
 (define-constant MAX_REWARD_CYCLES u32)
-;; TESTNET: (define-constant REWARD_CYCLE_LENGTH u1050)
-(define-constant REWARD_CYCLE_LENGTH u2100)
+;; MAINNET: (define-constant REWARD_CYCLE_LENGTH u2100)
+(define-constant REWARD_CYCLE_LENGTH u1050)
 ;; MAINNET: (define-constant FIRST_STACKING_BLOCK u666050)
-;; TESTNET: (define-constant FIRST_STACKING_BLOCK u2000000)
-(define-constant FIRST_STACKING_BLOCK u50)
+(define-constant FIRST_STACKING_BLOCK u2000000)
 (define-constant REWARD_CYCLE_INDEXES (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29 u30 u31))
 
 ;; DATA VARS
@@ -57,7 +56,6 @@
   (ok true)
 )
 
-;; TODO: cityTreasury needed here?
 (define-public (stack (cityName (string-ascii 10)) (amount uint) (lockPeriod uint))
   (let
     (
@@ -196,7 +194,6 @@
   (get-reward-cycle burn-block-height)
 )
 
-;; test: CityCoins reward cycles match PoX reward cycles
 (define-read-only (get-reward-cycle (burnHeight uint))
   (/ (- burnHeight FIRST_STACKING_BLOCK) REWARD_CYCLE_LENGTH)
 )
@@ -205,20 +202,14 @@
   (+ FIRST_STACKING_BLOCK (* cycle REWARD_CYCLE_LENGTH))
 )
 
-;; TODO: need this? used for? how to rewrite?
 (define-read-only (is-stacking-active (cityId uint) (cycle uint))
   (is-some (map-get? StackingStatsAtCycle { cityId: cityId, cycle: cycle }))
 )
 
-;; TODO: inline map get?
 (define-read-only (is-cycle-paid (cityId uint) (cycle uint))
-  (let
-    ((rewardCycleStats (get-stacking-stats-at-cycle cityId cycle)))
-    (is-some (get reward rewardCycleStats))
-  )
+    (is-some (get reward (get-stacking-stats-at-cycle cityId cycle)))
 )
 
-;; TODO: shorten rewardCycleStats -> cycleStats
 (define-read-only (get-stacking-reward (cityId uint) (userId uint) (cycle uint))
   (let
     (
@@ -226,7 +217,7 @@
       (stackerAtCycle (get-stacker-at-cycle cityId cycle userId))
       (userStacked (get stacked stackerAtCycle))
     )
-    (if (or (<= (unwrap! (get-reward-cycle burn-block-height) none) cycle) (is-eq userStacked u0))
+    (if (or (<= (get-reward-cycle burn-block-height) cycle) (is-eq userStacked u0))
       none
       (some (/ (* (unwrap! (get reward rewardCycleStats) none) userStacked) (get total rewardCycleStats)))
     )
