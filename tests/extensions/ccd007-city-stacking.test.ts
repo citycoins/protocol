@@ -446,10 +446,11 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
-    const block = chain.mineBlock([ccd007CityStacking.sendStackingReward(operator, miaCityName, 5000, 0)]);
+    chain.mineEmptyBlock(CCD007CityStacking.REWARD_CYCLE_LENGTH * 2);
+    const block = chain.mineBlock([ccd007CityStacking.sendStackingReward(operator, miaCityName, 1, 0)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_STACKING_PAYOUT);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_STACKING_PAYOUT_INVALID);
   },
 });
 
@@ -669,6 +670,7 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
+    const poolOperator = accounts.get("wallet_2")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
     //const ccd003UserRegistry = new CCD003UserRegistry(chain, sender, "ccd003-user-registry");
@@ -682,6 +684,11 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
+    // set pool operator to wallet_2
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
+    // fast forward past the first stacking cycle
+    chain.mineEmptyBlock(CCD007CityStacking.REWARD_CYCLE_LENGTH * 2);
+
     const block = chain.mineBlock([ccd007CityStacking.claimStackingReward(user, miaCityName, 1)]);
 
     // assert

@@ -78,6 +78,7 @@ export const PROPOSALS = {
   TEST_CCD007_CITY_STACKING_009: ADDRESS.concat(".test-ccd007-city-stacking-009"),
   TEST_CCD007_CITY_STACKING_010: ADDRESS.concat(".test-ccd007-city-stacking-010"),
   TEST_CCD007_CITY_STACKING_011: ADDRESS.concat(".test-ccd007-city-stacking-011"),
+  TEST_CCD007_CITY_STACKING_012: ADDRESS.concat(".test-ccd007-city-stacking-012"),
 };
 
 export const EXTERNAL = {
@@ -93,6 +94,7 @@ export const CITYCOINS = {
 };
 
 export const passProposal = (chain: Chain, accounts: Map<string, Account>, proposal: string): any => {
+  // console.log(`proposal: ${proposal}`);
   const sender = accounts.get("deployer")!;
   const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
   const approver1 = accounts.get("wallet_1")!;
