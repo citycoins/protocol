@@ -64,8 +64,7 @@
       (user tx-sender)
       (userId (try! (as-contract (contract-call? .ccd003-user-registry get-or-create-user-id user))))
       (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
-      (currentCycle (get-reward-cycle burn-block-height))
-      (targetCycle (+ u1 currentCycle))
+      (targetCycle (+ u1 (get-reward-cycle burn-block-height)))
       (stackingInfo { cityId: cityId, userId: userId, amount: amount, first: targetCycle, last: (+ targetCycle lockPeriod)})
     )
     (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
@@ -82,7 +81,6 @@
       cityId: cityId,
       cityName: cityName,
       cityTreasury: cityTreasury,
-      currentCycle: currentCycle,
       firstCycle: targetCycle,
       lastCycle: (- (+ targetCycle lockPeriod) u1),
       lockPeriod: lockPeriod,
@@ -104,12 +102,11 @@
     (
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
       (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
-      (currentCycle (get-reward-cycle burn-block-height))
       (stackingStats (get-stacking-stats-at-cycle cityId targetCycle))
     )
     (asserts! (is-eq tx-sender (var-get poolOperator)) ERR_UNAUTHORIZED)
     (asserts! (is-none (get reward stackingStats)) ERR_STACKING_PAYOUT_COMPLETE)
-    (asserts! (< targetCycle currentCycle) ERR_REWARD_CYCLE_NOT_COMPLETE)
+    (asserts! (< targetCycle (get-reward-cycle burn-block-height)) ERR_REWARD_CYCLE_NOT_COMPLETE)
     (asserts! (> amount u0) ERR_STACKING_PAYOUT_INVALID)
     ;; contract addresses hardcoded for this version
     (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-stx amount)))
@@ -120,7 +117,6 @@
       cityId: cityId,
       cityName: cityName,
       cityTreasury: cityTreasury,
-      currentCycle: currentCycle,
       targetCycle: targetCycle,
     })
     (ok (map-set StackingStatsAtCycle
@@ -136,12 +132,11 @@
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
       (user tx-sender)
       (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))
-      (currentCycle (get-reward-cycle burn-block-height))
       (stackerAtCycle (get-stacker-at-cycle cityId targetCycle userId))
       (reward (unwrap! (get-stacking-reward cityId userId targetCycle) ERR_NOTHING_TO_CLAIM))
       (claimable (get claimable stackerAtCycle))
     )
-    (asserts! (> currentCycle targetCycle) ERR_REWARD_CYCLE_NOT_COMPLETE)
+    (asserts! (> (get-reward-cycle burn-block-height) targetCycle) ERR_REWARD_CYCLE_NOT_COMPLETE)
     (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
     ;; contract addresses hardcoded for this version
     (and (is-eq cityName "mia")
