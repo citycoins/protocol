@@ -136,7 +136,7 @@
       (reward (unwrap! (get-stacking-reward cityId userId targetCycle) ERR_NOTHING_TO_CLAIM))
       (claimable (get claimable stacker))
     )
-    (asserts! (> (get-reward-cycle burn-block-height) targetCycle) ERR_REWARD_CYCLE_NOT_COMPLETE)
+    (asserts! (< targetCycle (get-reward-cycle burn-block-height)) ERR_REWARD_CYCLE_NOT_COMPLETE)
     (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
     ;; contract addresses hardcoded for this version
     (and (is-eq cityName "mia")
