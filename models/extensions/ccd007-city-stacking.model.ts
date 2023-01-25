@@ -60,11 +60,11 @@ export class CCD007CityStacking {
   getRewardCycleLength(): ReadOnlyFn {
     return this.callReadOnlyFn("get-reward-cycle-length", []);
   }
-  getStackingStatsAtCycle(cityId: number, cycle: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-stacking-stats-at-cycle", [types.uint(cityId), types.uint(cycle)]);
+  getStackingStats(cityId: number, cycle: number): ReadOnlyFn {
+    return this.callReadOnlyFn("get-stacking-stats", [types.uint(cityId), types.uint(cycle)]);
   }
-  getStackerAtCycle(cityId: number, cycle: number, userId: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-stacker-at-cycle", [types.uint(cityId), types.uint(cycle), types.uint(userId)]);
+  getStacker(cityId: number, cycle: number, userId: number): ReadOnlyFn {
+    return this.callReadOnlyFn("get-stacker", [types.uint(cityId), types.uint(cycle), types.uint(userId)]);
   }
   getCurrentRewardCycle(): ReadOnlyFn {
     return this.callReadOnlyFn("get-current-reward-cycle", []);

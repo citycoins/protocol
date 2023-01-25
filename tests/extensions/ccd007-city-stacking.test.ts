@@ -593,7 +593,7 @@ Clarinet.test({
       stacked: types.uint(0),
       claimable: types.uint(0),
     };
-    assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 1, 1).result.expectTuple(), expectedStats);
+    assertEquals(ccd007CityStacking.getStacker(miaCityId, 1, 1).result.expectTuple(), expectedStats);
   },
 });
 

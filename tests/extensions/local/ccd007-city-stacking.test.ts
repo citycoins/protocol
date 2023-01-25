@@ -260,7 +260,7 @@ Clarinet.test({
       claimable: types.uint(0),
       stacked: types.uint(0),
     };
-    assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 0, 1).result.expectTuple(), expected);
+    assertEquals(ccd007CityStacking.getStacker(miaCityId, 0, 1).result.expectTuple(), expected);
     // confirm stacked and return amounts in cycle 1
     expected = {
       claimable: types.uint(amountStacked),
@@ -323,19 +323,19 @@ Clarinet.test({
       claimable: types.uint(0),
       stacked: types.uint(0),
     };
-    assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 0, 1).result.expectTuple(), expected);
+    assertEquals(ccd007CityStacking.getStacker(miaCityId, 0, 1).result.expectTuple(), expected);
     // confirm stacked and return amounts in cycle 1 for the user
     expected = {
       claimable: types.uint(amountStacked),
       stacked: types.uint(amountStacked),
     };
-    assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 1, 1).result.expectTuple(), expected);
+    assertEquals(ccd007CityStacking.getStacker(miaCityId, 1, 1).result.expectTuple(), expected);
     // confirm reward amount is not set in overall cycle 1 data
     expected = {
       reward: types.none(),
       total: types.uint(amountStacked),
     };
-    assertEquals(ccd007CityStacking.getStackingStatsAtCycle(miaCityId, 1).result.expectTuple(), expected);
+    assertEquals(ccd007CityStacking.getStackingStats(miaCityId, 1).result.expectTuple(), expected);
     ccd007CityStacking.getStackingReward(miaCityId, 1, 0).result.expectNone();
   },
 });
@@ -398,7 +398,7 @@ Clarinet.test({
       claimable: types.uint(500),
       stacked: types.uint(500),
     };
-    assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 1, 1).result.expectTuple(), expected1);
+    assertEquals(ccd007CityStacking.getStacker(miaCityId, 1, 1).result.expectTuple(), expected1);
 
     // confirm stacking reward is correct for the user and attempt to claim
     ccd007CityStacking.getStackingReward(miaCityId, 1, 1).result.expectSome().expectUint(150000);
@@ -420,13 +420,13 @@ Clarinet.test({
       claimable: types.uint(0),
       stacked: types.uint(0),
     };
-    assertEquals(ccd007CityStacking.getStackerAtCycle(miaCityId, 1, 1).result.expectTuple(), expected1);
+    assertEquals(ccd007CityStacking.getStacker(miaCityId, 1, 1).result.expectTuple(), expected1);
     // confirm reward amount is set in overall cycle 1 data
     const expected = {
       reward: types.some(types.uint(150000)),
       total: types.uint(amountStacked),
     };
-    assertEquals(ccd007CityStacking.getStackingStatsAtCycle(miaCityId, 1).result.expectTuple(), expected);
+    assertEquals(ccd007CityStacking.getStackingStats(miaCityId, 1).result.expectTuple(), expected);
 
     // end point check of the stx/mia token balances
     ccd002Treasury.getBalanceStx().result.expectUint(0);

@@ -35,12 +35,12 @@
 
 ;; DATA MAPS
 
-(define-map StackingStatsAtCycle
+(define-map StackingStats
   { cityId: uint, cycle: uint }
   { total: uint, reward: (optional uint) }
 )
 
-(define-map StackerAtCycle
+(define-map Stacker
   { cityId: uint, cycle: uint, userId: uint }
   { stacked: uint, claimable: uint }
 )
@@ -102,10 +102,10 @@
     (
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
       (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
-      (stackingStats (get-stacking-stats-at-cycle cityId targetCycle))
+      (cycleStats (get-stacking-stats cityId targetCycle))
     )
     (asserts! (is-eq tx-sender (var-get poolOperator)) ERR_UNAUTHORIZED)
-    (asserts! (is-none (get reward stackingStats)) ERR_STACKING_PAYOUT_COMPLETE)
+    (asserts! (is-none (get reward cycleStats)) ERR_STACKING_PAYOUT_COMPLETE)
     (asserts! (< targetCycle (get-reward-cycle burn-block-height)) ERR_REWARD_CYCLE_NOT_COMPLETE)
     (asserts! (> amount u0) ERR_STACKING_PAYOUT_INVALID)
     ;; contract addresses hardcoded for this version
@@ -119,9 +119,9 @@
       cityTreasury: cityTreasury,
       targetCycle: targetCycle,
     })
-    (ok (map-set StackingStatsAtCycle
+    (ok (map-set StackingStats
       { cityId: cityId, cycle: targetCycle }
-      (merge stackingStats { reward: (some amount) })
+      (merge cycleStats { reward: (some amount) })
     ))
   )
 )
@@ -132,9 +132,9 @@
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
       (user tx-sender)
       (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))
-      (stackerAtCycle (get-stacker-at-cycle cityId targetCycle userId))
+      (stacker (get-stacker cityId targetCycle userId))
       (reward (unwrap! (get-stacking-reward cityId userId targetCycle) ERR_NOTHING_TO_CLAIM))
-      (claimable (get claimable stackerAtCycle))
+      (claimable (get claimable stacker))
     )
     (asserts! (> (get-reward-cycle burn-block-height) targetCycle) ERR_REWARD_CYCLE_NOT_COMPLETE)
     (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
@@ -162,7 +162,7 @@
       targetCycle: targetCycle,
       userId: userId
     })
-    (ok (map-set StackerAtCycle
+    (ok (map-set Stacker
       { cityId: cityId, cycle: targetCycle, userId: userId }
       { stacked: u0, claimable: u0 }
     ))
@@ -175,15 +175,15 @@
   REWARD_CYCLE_LENGTH
 )
 
-(define-read-only (get-stacking-stats-at-cycle (cityId uint) (cycle uint))
+(define-read-only (get-stacking-stats (cityId uint) (cycle uint))
   (default-to { total: u0, reward: none }
-    (map-get? StackingStatsAtCycle { cityId: cityId, cycle: cycle })
+    (map-get? StackingStats { cityId: cityId, cycle: cycle })
   )
 )
 
-(define-read-only (get-stacker-at-cycle (cityId uint) (cycle uint) (userId uint))
+(define-read-only (get-stacker (cityId uint) (cycle uint) (userId uint))
   (default-to { stacked: u0, claimable: u0 }
-    (map-get? StackerAtCycle { cityId: cityId, cycle: cycle, userId: userId })
+    (map-get? Stacker { cityId: cityId, cycle: cycle, userId: userId })
   )
 )
 
@@ -200,23 +200,23 @@
 )
 
 (define-read-only (is-stacking-active (cityId uint) (cycle uint))
-  (is-some (map-get? StackingStatsAtCycle { cityId: cityId, cycle: cycle }))
+  (is-some (map-get? StackingStats { cityId: cityId, cycle: cycle }))
 )
 
 (define-read-only (is-cycle-paid (cityId uint) (cycle uint))
-    (is-some (get reward (get-stacking-stats-at-cycle cityId cycle)))
+    (is-some (get reward (get-stacking-stats cityId cycle)))
 )
 
 (define-read-only (get-stacking-reward (cityId uint) (userId uint) (cycle uint))
   (let
     (
-      (rewardCycleStats (get-stacking-stats-at-cycle cityId cycle))
-      (stackerAtCycle (get-stacker-at-cycle cityId cycle userId))
-      (userStacked (get stacked stackerAtCycle))
+      (cycleStats (get-stacking-stats cityId cycle))
+      (stacker (get-stacker cityId cycle userId))
+      (userStacked (get stacked stacker))
     )
     (if (or (<= (get-reward-cycle burn-block-height) cycle) (is-eq userStacked u0))
       none
-      (some (/ (* (unwrap! (get reward rewardCycleStats) none) userStacked) (get total rewardCycleStats)))
+      (some (/ (* (unwrap! (get reward cycleStats) none) userStacked) (get total cycleStats)))
     )
   )
 )
@@ -240,21 +240,21 @@
       (userId (get userId okReturn))
       (amountStacked (get amount okReturn))
       (lastCycle (get last okReturn))
-      (rewardCycleStats (get-stacking-stats-at-cycle cityId targetCycle))
-      (stackerAtCycle (get-stacker-at-cycle cityId targetCycle userId))
+      (cycleStats (get-stacking-stats cityId targetCycle))
+      (stacker (get-stacker cityId targetCycle userId))
     )
     (and (>= targetCycle (get first okReturn)) (< targetCycle lastCycle)
-      (map-set StackingStatsAtCycle
+      (map-set StackingStats
         { cityId: cityId, cycle: targetCycle }
-        (merge rewardCycleStats { total: (+ amountStacked (get total rewardCycleStats)) })
+        (merge cycleStats { total: (+ amountStacked (get total cycleStats)) })
       )
-      (map-set StackerAtCycle
+      (map-set Stacker
         { cityId: cityId, cycle: targetCycle, userId: userId }
-        (merge stackerAtCycle {
-          stacked: (+ amountStacked (get stacked stackerAtCycle)),
+        (merge stacker {
+          stacked: (+ amountStacked (get stacked stacker)),
           claimable: (if (is-eq targetCycle (- lastCycle u1))
-            (+ amountStacked (get claimable stackerAtCycle))
-            (get claimable stackerAtCycle)
+            (+ amountStacked (get claimable stacker))
+            (get claimable stacker)
         )})
       )
     )
