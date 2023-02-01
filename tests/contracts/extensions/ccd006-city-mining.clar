@@ -1,13 +1,13 @@
 ;; Title: CCD006 City Mining
 ;; Version: 1.0.0
-;; Synopsis: A central city mining contract for the CityCoins protocol.
+;; Summary: A central city mining contract for the CityCoins protocol.
 ;; Description: An extension that provides a mining interface per city, in which each mining participant spends STX per block for a weighted chance to mint new CityCoins per the issuance schedule.
 
 ;; TRAITS
 
 (impl-trait .extension-trait.extension-trait)
-(impl-trait 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2)
-(impl-trait 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2)
+;; MAINNET: (impl-trait 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2)
+(impl-trait 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-core-v2-trait.citycoin-core-v2)
 
 ;; CONSTANTS
 
@@ -138,8 +138,10 @@
 (define-public (activate-core-contracts (activationHeight uint))
   (begin
     (try! (is-dao-or-extension))
-    (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
-    (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    ;; MAINNET: (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    (try! (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    ;; MAINNET: (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    (try! (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
     (ok true)
   )
 )

@@ -14,6 +14,11 @@ interface AllowedList {
   enabled: boolean;
 }
 
+export interface PoxAddress {
+  version: string;
+  hashbytes: string;
+}
+
 // General treasury model
 
 export class CCD002Treasury {
@@ -84,6 +89,16 @@ export class CCD002Treasury {
 
   withdrawNft(sender: Account, assetContract: string, id: number, recipient: string) {
     return Tx.contractCall(this.name, "withdraw-nft", [types.principal(assetContract), types.uint(id), types.principal(recipient)], sender.address);
+  }
+
+  // Stacking functions
+
+  delegateStx(sender: Account, amount: number, delegateTo: string) {
+    return Tx.contractCall(this.name, "delegate-stx", [types.uint(amount), types.principal(delegateTo)], sender.address);
+  }
+
+  revokeDelegateStx(sender: Account) {
+    return Tx.contractCall(this.name, "revoke-delegate-stx", [], sender.address);
   }
 
   // Read only functions

@@ -41,6 +41,7 @@ export class CCD005CityData {
     return Tx.contractCall(this.name, "add-city-treasury", [types.uint(cityId), types.principal(address), types.ascii(name)], sender.address);
   }
 
+  /*
   addCityTokenContract(sender: Account, cityId: number, address: string) {
     return Tx.contractCall(this.name, "add-city-token-contract", [types.uint(cityId), types.principal(address)], sender.address);
   }
@@ -48,6 +49,7 @@ export class CCD005CityData {
   setActiveCityTokenContract(sender: Account, cityId: number, tokenId: number) {
     return Tx.contractCall(this.name, "set-active-city-token-contract", [types.uint(cityId), types.uint(tokenId)], sender.address);
   }
+  */
 
   setCityCoinbaseThresholds(sender: Account, cityId: number, threshold1: number, threshold2: number, threshold3: number, threshold4: number, threshold5: number) {
     return Tx.contractCall(this.name, "set-city-coinbase-thresholds", [types.uint(cityId), types.uint(threshold1), types.uint(threshold2), types.uint(threshold3), types.uint(threshold4), types.uint(threshold5)], sender.address);

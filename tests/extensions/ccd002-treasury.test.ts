@@ -1,6 +1,6 @@
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
 import { constructAndPassProposal, passProposal, EXTENSIONS, EXTERNAL, PROPOSALS } from "../../utils/common.ts";
-import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
+import { CCD002Treasury, PoxAddress } from "../../models/extensions/ccd002-treasury.model.ts";
 import { CCEXTGovernanceToken } from "../../models/external/test-ccext-governance-token.model.ts";
 import { CCEXTNft } from "../../models/external/test-ccext-nft.model.ts";
 
@@ -547,6 +547,76 @@ Clarinet.test({
     assertEquals(receipts.length, 3);
     receipts[2].events.expectNonFungibleTokenTransferEvent("u1", EXTENSIONS.CCD002_TREASURY_NYC_MINING, recipient.address, EXTERNAL.NFT_NYC, "nyc");
     receipts[2].events.expectPrintEvent(EXTENSIONS.CCD002_TREASURY_NYC_MINING, event);
+  },
+});
+
+Clarinet.test({
+  name: "ccd002-treasury: delegate-stx() fails when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
+    const amount = 1000000000; // 1,000 STX
+    const delegateStx = accounts.get("wallet_1")!;
+
+    // act
+    const block = chain.mineBlock([ccd002Treasury.delegateStx(sender, amount, delegateStx.address)]);
+
+    // assert
+    block.receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_UNAUTHORIZED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd002-treasury: delegate-stx() succeeds and delegates STX when called by a proposal",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+
+    // act
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_011);
+
+    // assert
+    assertEquals(receipts.length, 4);
+    receipts[0].result.expectOk().expectBool(true);
+    receipts[1].result.expectOk().expectUint(1);
+    receipts[2].result.expectOk().expectUint(2);
+    receipts[3].result.expectOk().expectUint(3);
+    // TODO: match print event
+    // TODO: add get-stacker-info from pox?
+  },
+});
+
+Clarinet.test({
+  name: "ccd002-treasury: revoke-delegate-stx() fails when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")! as Account;
+    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
+
+    // act
+    const block = chain.mineBlock([ccd002Treasury.revokeDelegateStx(sender)]);
+
+    // assert
+    block.receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_UNAUTHORIZED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd002-treasury: revoke-delegate-stx() succeeds and revokes delegatation when called by a proposal",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+
+    // act
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_012);
+
+    // assert
+    assertEquals(receipts.length, 4);
+    receipts[0].result.expectOk().expectBool(true);
+    receipts[1].result.expectOk().expectUint(1);
+    receipts[2].result.expectOk().expectUint(2);
+    receipts[3].result.expectOk().expectUint(3);
+    // TODO: match print event
+    // TODO: add get-stacker-info from pox?
   },
 });
 

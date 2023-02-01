@@ -26,6 +26,7 @@ export const EXTENSIONS = {
 
 export const PROPOSALS = {
   CCIP_012: ADDRESS.concat(".ccip012-bootstrap"),
+  CCIP_013: ADDRESS.concat(".ccip013-migration"),
   TEST_CCD001_DIRECT_EXECUTE_001: ADDRESS.concat(".test-ccd001-direct-execute-001"),
   TEST_CCD001_DIRECT_EXECUTE_002: ADDRESS.concat(".test-ccd001-direct-execute-002"),
   TEST_CCD001_DIRECT_EXECUTE_003: ADDRESS.concat(".test-ccd001-direct-execute-003"),
@@ -39,6 +40,8 @@ export const PROPOSALS = {
   TEST_CCD002_TREASURY_008: ADDRESS.concat(".test-ccd002-treasury-008"),
   TEST_CCD002_TREASURY_009: ADDRESS.concat(".test-ccd002-treasury-009"),
   TEST_CCD002_TREASURY_010: ADDRESS.concat(".test-ccd002-treasury-010"),
+  TEST_CCD002_TREASURY_011: ADDRESS.concat(".test-ccd002-treasury-011"),
+  TEST_CCD002_TREASURY_012: ADDRESS.concat(".test-ccd002-treasury-012"),
   TEST_CCD003_USER_REGISTRY_001: ADDRESS.concat(".test-ccd003-user-registry-001"),
   TEST_CCD003_USER_REGISTRY_002: ADDRESS.concat(".test-ccd003-user-registry-002"),
   TEST_CCD003_USER_REGISTRY_003: ADDRESS.concat(".test-ccd003-user-registry-003"),
@@ -75,6 +78,7 @@ export const PROPOSALS = {
   TEST_CCD007_CITY_STACKING_009: ADDRESS.concat(".test-ccd007-city-stacking-009"),
   TEST_CCD007_CITY_STACKING_010: ADDRESS.concat(".test-ccd007-city-stacking-010"),
   TEST_CCD007_CITY_STACKING_011: ADDRESS.concat(".test-ccd007-city-stacking-011"),
+  TEST_CCD007_CITY_STACKING_012: ADDRESS.concat(".test-ccd007-city-stacking-012"),
 };
 
 export const EXTERNAL = {
@@ -90,13 +94,16 @@ export const CITYCOINS = {
 };
 
 export const passProposal = (chain: Chain, accounts: Map<string, Account>, proposal: string): any => {
+  // console.log(`proposal: ${proposal}`);
   const sender = accounts.get("deployer")!;
   const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
   const approver1 = accounts.get("wallet_1")!;
   const approver2 = accounts.get("wallet_2")!;
   const approver3 = accounts.get("wallet_3")!;
-  const { receipts } = chain.mineBlock([ccd001DirectExecute.directExecute(approver1, proposal), ccd001DirectExecute.directExecute(approver2, proposal), ccd001DirectExecute.directExecute(approver3, proposal)]);
-  return receipts;
+  const block = chain.mineBlock([ccd001DirectExecute.directExecute(approver1, proposal), ccd001DirectExecute.directExecute(approver2, proposal), ccd001DirectExecute.directExecute(approver3, proposal)]);
+  // console.log(`passProposal at height: ${block.height}`);
+  // console.log(`block JSON:\n${JSON.stringify(block, null, 2)}`);
+  return block.receipts;
 };
 
 export const constructAndPassProposal = (chain: Chain, accounts: Map<string, Account>, proposal: string): any => {

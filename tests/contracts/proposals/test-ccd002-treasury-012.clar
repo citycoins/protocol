@@ -2,13 +2,13 @@
 ;; Version: 1.0.0
 ;; Synopsis: Test proposal for clarinet layer
 ;; Description:
+;; ccd002-treasury: revoke-delegate-stx() succeeds and revokes stacking delegation
 
 (impl-trait .proposal-trait.proposal-trait)
 
 (define-public (execute (sender principal))
 	(begin
-		;; disabled - function removed from ccd007
-		;; (try! (contract-call? .ccd007-city-stacking set-reward-cycle-length u100))
+		(try! (contract-call? .ccd002-treasury-mia-mining revoke-delegate-stx))
 		(ok true)
 	)
 )

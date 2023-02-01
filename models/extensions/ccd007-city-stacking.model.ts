@@ -4,10 +4,10 @@ export enum ErrCode {
   ERR_UNAUTHORIZED = 7000,
   ERR_INVALID_CYCLE_LENGTH,
   ERR_INVALID_STACKING_PARAMS,
-  ERR_STACKING_NOT_AVAILABLE,
   ERR_REWARD_CYCLE_NOT_COMPLETE,
   ERR_NOTHING_TO_CLAIM,
-  ERR_INVALID_STACKING_PAYOUT,
+  ERR_STACKING_PAYOUT_INVALID,
+  ERR_STACKING_PAYOUT_COMPLETE,
   ERR_USER_ID_NOT_FOUND,
   ERR_CITY_ID_NOT_FOUND,
   ERR_CITY_NOT_ACTIVATED,
@@ -17,6 +17,9 @@ export enum ErrCode {
 export class CCD007CityStacking {
   name: string;
   static readonly ErrCode = ErrCode;
+  static readonly MAX_REWARD_CYCLES = 32;
+  static readonly REWARD_CYCLE_LENGTH = 2100; // TESTNET: 1050
+  static readonly FIRST_STACKING_BLOCK = 50; // MAINNET: 666050, TESTNET: 2000000
   chain: Chain;
   deployer: Account;
 
@@ -46,26 +49,31 @@ export class CCD007CityStacking {
   stack(sender: Account, cityName: string, amount: number, lockPeriod: number) {
     return Tx.contractCall(this.name, "stack", [types.ascii(cityName), types.uint(amount), types.uint(lockPeriod)], sender.address);
   }
+  /* disabled - function removed from ccd007
   setRewardCycleLength(sender: Account, length: number) {
     return Tx.contractCall(this.name, "set-reward-cycle-length", [types.uint(length)], sender.address);
   }
+  */
 
   // Read only functions
 
   getRewardCycleLength(): ReadOnlyFn {
     return this.callReadOnlyFn("get-reward-cycle-length", []);
   }
-  getStackingStatsAtCycle(cityId: number, cycle: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-stacking-stats-at-cycle", [types.uint(cityId), types.uint(cycle)]);
+  getStackingStats(cityId: number, cycle: number): ReadOnlyFn {
+    return this.callReadOnlyFn("get-stacking-stats", [types.uint(cityId), types.uint(cycle)]);
   }
-  getStackerAtCycle(cityId: number, cycle: number, userId: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-stacker-at-cycle", [types.uint(cityId), types.uint(cycle), types.uint(userId)]);
+  getStacker(cityId: number, cycle: number, userId: number): ReadOnlyFn {
+    return this.callReadOnlyFn("get-stacker", [types.uint(cityId), types.uint(cycle), types.uint(userId)]);
   }
-  getRewardCycle(cityId: number, blockHeight: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-reward-cycle", [types.uint(cityId), types.uint(blockHeight)]);
+  getCurrentRewardCycle(): ReadOnlyFn {
+    return this.callReadOnlyFn("get-current-reward-cycle", []);
   }
-  getFirstBlockInRewardCycle(cityId: number, cycle: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-first-block-in-reward-cycle", [types.uint(cityId), types.uint(cycle)]);
+  getRewardCycle(blockHeight: number): ReadOnlyFn {
+    return this.callReadOnlyFn("get-reward-cycle", [types.uint(blockHeight)]);
+  }
+  getFirstBlockInRewardCycle(cycle: number): ReadOnlyFn {
+    return this.callReadOnlyFn("get-first-block-in-reward-cycle", [types.uint(cycle)]);
   }
   isStackingActive(cityId: number, cycle: number): ReadOnlyFn {
     return this.callReadOnlyFn("is-stacking-active", [types.uint(cityId), types.uint(cycle)]);
@@ -76,7 +84,6 @@ export class CCD007CityStacking {
   getStackingReward(cityId: number, userId: number, cycle: number): ReadOnlyFn {
     return this.callReadOnlyFn("get-stacking-reward", [types.uint(cityId), types.uint(userId), types.uint(cycle)]);
   }
-
   getPoolOperator(): ReadOnlyFn {
     return this.callReadOnlyFn("get-pool-operator", []);
   }
@@ -86,6 +93,8 @@ export class CCD007CityStacking {
   callback(sender: Account, memo: string) {
     return Tx.contractCall(this.name, "callback", [types.principal(sender.address), types.buff(memo)], sender.address);
   }
+
+  // Utility functions
 
   private callReadOnlyFn(method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
     const result = this.chain.callReadOnlyFn(this.name, method, args, sender?.address);

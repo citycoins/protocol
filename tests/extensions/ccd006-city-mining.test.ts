@@ -682,7 +682,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     const claimHeight = 7;
-    chain.mineEmptyBlock(rewardDelay);
+    chain.mineEmptyBlock(rewardDelay - 1);
     const block = chain.mineBlock([ccd006CityMining.claimMiningBlock(sender, miaCityName, claimHeight)]);
 
     // assert
