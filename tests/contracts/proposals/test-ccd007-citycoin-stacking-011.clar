@@ -7,7 +7,8 @@
 
 (define-public (execute (sender principal))
 	(begin
-		(try! (contract-call? .ccd007-city-stacking stack "mia" u5000 u32))
+	  ;; disabled - function removed from ccd007
+		;; (try! (contract-call? .ccd007-citycoin-stacking set-reward-cycle-length u0))
 		(ok true)
 	)
 )
