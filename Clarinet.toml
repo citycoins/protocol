@@ -107,11 +107,11 @@ path = "contracts/extensions/ccd004-city-registry.clar"
 [contracts.ccd005-city-data]
 path = "contracts/extensions/ccd005-city-data.clar"
 
-[contracts.ccd006-city-mining]
-path = "tests/contracts/extensions/ccd006-city-mining.clar"
+[contracts.ccd006-citycoin-mining]
+path = "tests/contracts/extensions/ccd006-citycoin-mining.clar"
 
-[contracts.ccd007-city-stacking]
-path = "tests/contracts/extensions/ccd007-city-stacking.clar"
+[contracts.ccd007-citycoin-stacking]
+path = "tests/contracts/extensions/ccd007-citycoin-stacking.clar"
 
 [contracts.ccd008-city-activation]
 path = "contracts/extensions/ccd008-city-activation.clar"
@@ -275,53 +275,53 @@ path = "tests/contracts/proposals/test-ccd005-city-data-018.clar"
 [contracts.test-ccd005-city-data-019]
 path = "tests/contracts/proposals/test-ccd005-city-data-019.clar"
 
-[contracts.test-ccd006-city-mining-001]
-path = "tests/contracts/proposals/test-ccd006-city-mining-001.clar"
+[contracts.test-ccd006-citycoin-mining-001]
+path = "tests/contracts/proposals/test-ccd006-citycoin-mining-001.clar"
 
-[contracts.test-ccd006-city-mining-002]
-path = "tests/contracts/proposals/test-ccd006-city-mining-002.clar"
+[contracts.test-ccd006-citycoin-mining-002]
+path = "tests/contracts/proposals/test-ccd006-citycoin-mining-002.clar"
 
-[contracts.test-ccd006-city-mining-003]
-path = "tests/contracts/proposals/test-ccd006-city-mining-003.clar"
+[contracts.test-ccd006-citycoin-mining-003]
+path = "tests/contracts/proposals/test-ccd006-citycoin-mining-003.clar"
 
-[contracts.test-ccd006-city-mining-004]
-path = "tests/contracts/proposals/test-ccd006-city-mining-004.clar"
+[contracts.test-ccd006-citycoin-mining-004]
+path = "tests/contracts/proposals/test-ccd006-citycoin-mining-004.clar"
 
-[contracts.test-ccd007-city-stacking-001]
-path = "tests/contracts/proposals/test-ccd007-city-stacking-001.clar"
+[contracts.test-ccd007-citycoin-stacking-001]
+path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-001.clar"
 
-[contracts.test-ccd007-city-stacking-002]
-path = "tests/contracts/proposals/test-ccd007-city-stacking-002.clar"
+[contracts.test-ccd007-citycoin-stacking-002]
+path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-002.clar"
 
-[contracts.test-ccd007-city-stacking-003]
-path = "tests/contracts/proposals/test-ccd007-city-stacking-003.clar"
+[contracts.test-ccd007-citycoin-stacking-003]
+path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-003.clar"
 
-[contracts.test-ccd007-city-stacking-004]
-path = "tests/contracts/proposals/test-ccd007-city-stacking-004.clar"
+[contracts.test-ccd007-citycoin-stacking-004]
+path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-004.clar"
 
-[contracts.test-ccd007-city-stacking-005]
-path = "tests/contracts/proposals/test-ccd007-city-stacking-005.clar"
+[contracts.test-ccd007-citycoin-stacking-005]
+path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-005.clar"
 
-[contracts.test-ccd007-city-stacking-006]
-path = "tests/contracts/proposals/test-ccd007-city-stacking-006.clar"
+[contracts.test-ccd007-citycoin-stacking-006]
+path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-006.clar"
 
-[contracts.test-ccd007-city-stacking-007]
-path = "tests/contracts/proposals/test-ccd007-city-stacking-007.clar"
+[contracts.test-ccd007-citycoin-stacking-007]
+path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-007.clar"
 
-[contracts.test-ccd007-city-stacking-008]
-path = "tests/contracts/proposals/test-ccd007-city-stacking-008.clar"
+[contracts.test-ccd007-citycoin-stacking-008]
+path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-008.clar"
 
-[contracts.test-ccd007-city-stacking-009]
-path = "tests/contracts/proposals/test-ccd007-city-stacking-009.clar"
+[contracts.test-ccd007-citycoin-stacking-009]
+path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-009.clar"
 
-[contracts.test-ccd007-city-stacking-010]
-path = "tests/contracts/proposals/test-ccd007-city-stacking-010.clar"
+[contracts.test-ccd007-citycoin-stacking-010]
+path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-010.clar"
 
-[contracts.test-ccd007-city-stacking-011]
-path = "tests/contracts/proposals/test-ccd007-city-stacking-011.clar"
+[contracts.test-ccd007-citycoin-stacking-011]
+path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-011.clar"
 
-[contracts.test-ccd007-city-stacking-012]
-path = "tests/contracts/proposals/test-ccd007-city-stacking-012.clar"
+[contracts.test-ccd007-citycoin-stacking-012]
+path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-012.clar"
 
 [repl]
 costs_version = 2

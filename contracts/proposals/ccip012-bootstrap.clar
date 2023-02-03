@@ -13,8 +13,8 @@
         {extension: .ccd003-user-registry, enabled: true}
         {extension: .ccd004-city-registry, enabled: true}
         {extension: .ccd005-city-data, enabled: true}
-        {extension: .ccd006-city-mining, enabled: true}
-        {extension: .ccd007-city-stacking, enabled: true}
+        {extension: .ccd006-citycoin-mining, enabled: true}
+        {extension: .ccd007-citycoin-stacking, enabled: true}
         ;; {extension: .ccd008-city-activation, enabled: true}
         {extension: .ccd009-auth-v2-adapter, enabled: true}
       )

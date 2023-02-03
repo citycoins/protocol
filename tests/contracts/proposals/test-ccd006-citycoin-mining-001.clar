@@ -7,7 +7,8 @@
 
 (define-public (execute (sender principal))
 	(begin
-		(try! (contract-call? .ccd007-city-stacking set-pool-operator 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG))
+		(try! (contract-call? .ccd005-city-data add-city-treasury u1 .mia-treasury "mining"))
+		(try! (contract-call? .base-dao set-extension .ccd006-citycoin-mining false))
 		(ok true)
 	)
 )

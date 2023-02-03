@@ -9,7 +9,7 @@
  */
 import { types, Account, assertEquals, Clarinet, Chain } from "../../../utils/deps.ts";
 import { constructAndPassProposal, passProposal, PROPOSALS, EXTENSIONS } from "../../../utils/common.ts";
-import { CCD007CityStacking } from "../../../models/extensions/ccd007-city-stacking.model.ts";
+import { CCD007CityStacking } from "../../../models/extensions/ccd007-citycoin-stacking.model.ts";
 import { CCD002Treasury } from "../../../models/extensions/ccd002-treasury.model.ts";
 import { CCEXTGovernanceToken } from "../../../models/external/test-ccext-governance-token.model.ts";
 
@@ -23,11 +23,11 @@ const miaCityId = 1;
 const nycCityId = 2;
 
 Clarinet.test({
-  name: "ccd007-city-stacking: stack() fails if the token contract is unknown to the treasury",
+  name: "ccd007-citycoin-stacking: stack() fails if the token contract is unknown to the treasury",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
     const user1 = accounts.get("wallet_1")!;
     gt.getBalance(user1.address).result.expectOk().expectUint(0);
@@ -53,11 +53,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd007-city-stacking: stack() succeeds and stacks for 1 cycle",
+  name: "ccd007-citycoin-stacking: stack() succeeds and stacks for 1 cycle",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
     const user1 = accounts.get("wallet_1")!;
     const amountStacked = 500;
@@ -88,16 +88,16 @@ Clarinet.test({
     gt.getBalance(user1.address).result.expectOk().expectUint(amountStacked);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(amountStacked);
     const expected = `{amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "stacking", firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
-    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-city-stacking`, expected);
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-citycoin-stacking`, expected);
   },
 });
 
 Clarinet.test({
-  name: "ccd007-city-stacking: stack() succeeds and stacks for 16 cycles",
+  name: "ccd007-citycoin-stacking: stack() succeeds and stacks for 16 cycles",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
     const user1 = accounts.get("wallet_1")!;
     const amountStacked = 500;
@@ -128,16 +128,16 @@ Clarinet.test({
     gt.getBalance(user1.address).result.expectOk().expectUint(amountStacked);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(amountStacked);
     const expected = `{amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "stacking", firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
-    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-city-stacking`, expected);
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-citycoin-stacking`, expected);
   },
 });
 
 Clarinet.test({
-  name: "ccd007-city-stacking: stack() succeeds and stacks for 32 cycles",
+  name: "ccd007-citycoin-stacking: stack() succeeds and stacks for 32 cycles",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
     const user1 = accounts.get("wallet_1")!;
     const amountStacked = 500;
@@ -169,17 +169,17 @@ Clarinet.test({
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(amountStacked);
     //console.log(block.receipts[0].events[2].contract_event.value)
     const expected = `{amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "stacking", firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
-    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-city-stacking`, expected);
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-citycoin-stacking`, expected);
   },
 });
 
 Clarinet.test({
-  name: "ccd007-city-stacking: claim-stacking-reward() fails with ERR_NOTHING_TO_CLAIM if there is nothing to claim",
+  name: "ccd007-citycoin-stacking: claim-stacking-reward() fails with ERR_NOTHING_TO_CLAIM if there is nothing to claim",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
-    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
     const amountStacked = 500;
     // progress the chain to avoid underflow in
@@ -205,14 +205,14 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd007-city-stacking: claim-stacking-reward() fails if reward cycle is incomplete",
+  name: "ccd007-citycoin-stacking: claim-stacking-reward() fails if reward cycle is incomplete",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
     const operator = accounts.get("wallet_2")!;
     const amountStacked = 500;
-    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
     // progress the chain to avoid underflow in
     // stacking reward cycle calculation
@@ -270,13 +270,13 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd007-city-stacking: claim-stacking-reward() fails if stacking payout is incomplete",
+  name: "ccd007-citycoin-stacking: claim-stacking-reward() fails if stacking payout is incomplete",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
     const amountStacked = 500;
-    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
     // progress the chain to avoid underflow in
     // stacking reward cycle calculation
@@ -341,7 +341,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd007-city-stacking: claim-stacking-reward() succeeds if cycle has passed and stacking payout is complete",
+  name: "ccd007-citycoin-stacking: claim-stacking-reward() succeeds if cycle has passed and stacking payout is complete",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -349,7 +349,7 @@ Clarinet.test({
     const operator = accounts.get("wallet_2")!;
     const userId = 1;
     const amountStacked = 500;
-    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
     const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-stacking");
@@ -407,7 +407,7 @@ Clarinet.test({
 
     // assert
     const expectedPrintMsg = `{cityId: u1, cityName: "mia", claimable: ${types.uint(500)}, event: "stacking-claim", reward: ${types.uint(150000)}, targetCycle: ${types.uint(1)}, userId: ${types.uint(userId)}}`;
-    block2.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-city-stacking`, expectedPrintMsg);
+    block2.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-citycoin-stacking`, expectedPrintMsg);
 
     // confirm reward cycle 2 is active
     ccd007CityStacking.getRewardCycle(block2.height).result.expectUint(2);
@@ -436,11 +436,11 @@ Clarinet.test({
 
 /* removed - ccd007 now aligned with Stacks cycles
 Clarinet.test({
-  name: "ccd007-city-stacking: get-first-block-in-reward-cycle() returns none if city activation details are not set",
+  name: "ccd007-citycoin-stacking: get-first-block-in-reward-cycle() returns none if city activation details are not set",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
 
     // act
@@ -452,11 +452,11 @@ Clarinet.test({
 */
 
 Clarinet.test({
-  name: "ccd007-city-stacking: get-first-block-in-reward-cycle() returns correct block for multiple cycles",
+  name: "ccd007-citycoin-stacking: get-first-block-in-reward-cycle() returns correct block for multiple cycles",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-city-stacking");
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
 
     // act

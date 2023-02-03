@@ -8,7 +8,7 @@
  */
 import { Account, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
 import { constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
-import { CCD006CityMining } from "../../models/extensions/ccd006-city-mining.model.ts";
+import { CCD006CityMining } from "../../models/extensions/ccd006-citycoin-mining.model.ts";
 import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
 import { CCD003UserRegistry } from "../../models/extensions/ccd003-user-registry.model.ts";
 import { CCD005CityData } from "../../models/extensions/ccd005-city-data.model.ts";
@@ -55,11 +55,11 @@ const checkMiningData = (ccd006CityMining: any, cityId: number, height: number, 
 // =============================
 
 Clarinet.test({
-  name: "ccd006-city-mining: is-dao-or-extension() fails when called directly",
+  name: "ccd006-citycoin-mining: is-dao-or-extension() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
 
@@ -71,11 +71,11 @@ Clarinet.test({
 // Extension callback
 
 Clarinet.test({
-  name: "ccd006-city-mining: callback() succeeds when called directly",
+  name: "ccd006-citycoin-mining: callback() succeeds when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.callback(sender, "test")]);
@@ -91,11 +91,11 @@ Clarinet.test({
 // =============================
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() fails if city is not registered",
+  name: "ccd006-citycoin-mining: mine() fails if city is not registered",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries = [10, 10];
@@ -108,11 +108,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() fails if city is not active",
+  name: "ccd006-citycoin-mining: mine() fails if city is not active",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries = [10, 10];
@@ -130,11 +130,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() fails if city details are not set",
+  name: "ccd006-citycoin-mining: mine() fails if city details are not set",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries = [10, 10];
@@ -149,11 +149,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() fails if city treasury is not set",
+  name: "ccd006-citycoin-mining: mine() fails if city treasury is not set",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries = [10, 10];
@@ -168,12 +168,12 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() fails if mining contract is not a valid dao extension",
+  name: "ccd006-citycoin-mining: mine() fails if mining contract is not a valid dao extension",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries = [10, 10];
@@ -192,11 +192,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() fails if user has insufficient balance",
+  name: "ccd006-citycoin-mining: mine() fails if user has insufficient balance",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries = [100000000000001];
@@ -212,12 +212,12 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() succeeds if user's cumulative commit uses their exact balance",
+  name: "ccd006-citycoin-mining: mine() succeeds if user's cumulative commit uses their exact balance",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries = [50000000000000, 50000000000000];
@@ -234,12 +234,12 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() fails if user's cumulative commit leaves insufficient balance",
+  name: "ccd006-citycoin-mining: mine() fails if user's cumulative commit leaves insufficient balance",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries = [50000000000000, 50000000000000, 1];
@@ -256,12 +256,12 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() fails if city has been de-activated",
+  name: "ccd006-citycoin-mining: mine() fails if city has been de-activated",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries = [10, 10];
@@ -281,12 +281,12 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() fails if called with no commit amounts",
+  name: "ccd006-citycoin-mining: mine() fails if called with no commit amounts",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries: number[] = [];
@@ -305,12 +305,12 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() fails if a commit amount in the list is zero",
+  name: "ccd006-citycoin-mining: mine() fails if a commit amount in the list is zero",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries: number[] = [10, 10, 10, 0, 10];
@@ -327,13 +327,13 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() succeeds and mines 1 block for 1 user",
+  name: "ccd006-citycoin-mining: mine() succeeds and mines 1 block for 1 user",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries: number[] = [10];
@@ -374,19 +374,19 @@ Clarinet.test({
     assertEquals(ccd006CityMining.getMiningStatsAtBlock(miaCityId, firstBlock).result.expectTuple(), expectedStats);
     ccd006CityMining.getBlockWinner(miaCityId, firstBlock).result.expectNone();
 
-    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-citycoin-mining`, expectedPrintMsg);
     block.receipts[0].result.expectOk().expectBool(true);
   },
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() succeeds and mines 200 blocks for 1 user",
+  name: "ccd006-citycoin-mining: mine() succeeds and mines 200 blocks for 1 user",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
     const userId = 1;
     const commitAmount = 10;
     const numberOfBlocks = 200;
@@ -432,19 +432,19 @@ Clarinet.test({
 
     ccd006CityMining.getBlockWinner(miaCityId, firstBlock).result.expectNone();
     const expectedPrintMsg = `{cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "mining", firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
-    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-citycoin-mining`, expectedPrintMsg);
     block.receipts[0].result.expectOk().expectBool(true);
   },
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() successfully mines 100 blocks for 3 users",
+  name: "ccd006-citycoin-mining: mine() successfully mines 100 blocks for 3 users",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const users = [accounts.get("wallet_1")!, accounts.get("wallet_2")!, accounts.get("wallet_3")!];
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
     const userIds = [1, 2, 3];
     const commitAmount = 100;
     const numberOfBlocks = 100;
@@ -500,20 +500,20 @@ Clarinet.test({
     // check the print message for each user
     for (let i = 0; i < userIds.length; i++) {
       const expectedPrintMsg = `{cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "mining", firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalCommit)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userIds[i])}}`;
-      block.receipts[i].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+      block.receipts[i].events.expectPrintEvent(`${sender.address}.ccd006-citycoin-mining`, expectedPrintMsg);
       block.receipts[i].result.expectOk().expectBool(true);
     }
   },
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() fails if user has already mined",
+  name: "ccd006-citycoin-mining: mine() fails if user has already mined",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
     const totalAmount = 30;
     const totalBlocks = 3;
     const userId = 1;
@@ -539,7 +539,7 @@ Clarinet.test({
 
     const expectedPrintMsg = `{cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "mining", firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
 
-    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-citycoin-mining`, expectedPrintMsg);
 
     // Expecting ERR_ALREADY_MINED if same user tried mine twice at same height ?
     block.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_MINED);
@@ -549,7 +549,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: mine() keeps track of mining stats for 4 users mining 3 blocks concurrently",
+  name: "ccd006-citycoin-mining: mine() keeps track of mining stats for 4 users mining 3 blocks concurrently",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -557,7 +557,7 @@ Clarinet.test({
 
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
     const ccd003UserRegistry = new CCD003UserRegistry(chain, sender, "ccd003-user-registry");
 
     const totalAmount = 120;
@@ -588,7 +588,7 @@ Clarinet.test({
       block.receipts[idx].events.expectSTXTransferEvent(30, users[idx].address, `${sender.address}.${miaTreasuryName}`);
 
       const expectedPrintMsg = `{cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "mining", firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount / 4)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(idx + 1)}}`;
-      block.receipts[idx].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+      block.receipts[idx].events.expectPrintEvent(`${sender.address}.ccd006-citycoin-mining`, expectedPrintMsg);
     }
 
     for (let idx1 = 0; idx1 < entries.length; idx1++) {
@@ -616,11 +616,11 @@ Clarinet.test({
 // =============================
 
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() is not possible for an unknown city",
+  name: "ccd006-citycoin-mining: claim-mining-reward() is not possible for an unknown city",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.claimMiningBlock(sender, miaCityName, 50)]);
@@ -632,11 +632,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() is not possible for an inactive city",
+  name: "ccd006-citycoin-mining: claim-mining-reward() is not possible for an inactive city",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -652,11 +652,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() is not possible if current tip height is less than maturity height ",
+  name: "ccd006-citycoin-mining: claim-mining-reward() is not possible if current tip height is less than maturity height ",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -671,11 +671,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() is not possible if current tip height is equal to maturity height ",
+  name: "ccd006-citycoin-mining: claim-mining-reward() is not possible if current tip height is equal to maturity height ",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -692,11 +692,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() is not possible if user is not registered",
+  name: "ccd006-citycoin-mining: claim-mining-reward() is not possible if user is not registered",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -713,12 +713,12 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() returns sensible values if called without having mined",
+  name: "ccd006-citycoin-mining: claim-mining-reward() returns sensible values if called without having mined",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -736,13 +736,13 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() fails if a user tries claiming another users rewards",
+  name: "ccd006-citycoin-mining: claim-mining-reward() fails if a user tries claiming another users rewards",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries: number[] = [10];
@@ -763,13 +763,13 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() fails if there is nothing to mint at the given claim height",
+  name: "ccd006-citycoin-mining: claim-mining-reward() fails if there is nothing to mint at the given claim height",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries: number[] = [10];
@@ -790,13 +790,13 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() fails if the coinbase amounts have not been set for the given city",
+  name: "ccd006-citycoin-mining: claim-mining-reward() fails if the coinbase amounts have not been set for the given city",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries: number[] = [10];
@@ -815,7 +815,7 @@ Clarinet.test({
     const userId = 1;
     block.receipts[0].events.expectSTXTransferEvent(10, user.address, `${sender.address}.${miaTreasuryName}`);
     const expectedPrintMsg = `{cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "mining", firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
-    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-citycoin-mining`, expectedPrintMsg);
 
     //const miningStatsAt = { amount: 10, claimed: false, miners: 1 };
     //const minerAt = { commit: 10, high: 11, low: 0, winner: false };
@@ -833,13 +833,13 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() returns sensible values if called at the wrong claim height",
+  name: "ccd006-citycoin-mining: claim-mining-reward() returns sensible values if called at the wrong claim height",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries: number[] = [10];
@@ -859,7 +859,7 @@ Clarinet.test({
     const userId = 1;
     block.receipts[0].events.expectSTXTransferEvent(10, user.address, `${sender.address}.${miaTreasuryName}`);
     const expectedPrintMsg = `{cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "mining", firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
-    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-citycoin-mining`, expectedPrintMsg);
 
     //const miningStatsAt = { amount: 10, claimed: false, miners: 1 };
     //const minerAt = { commit: 10, high: 11, low: 0, winner: false };
@@ -878,13 +878,13 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() succeeds and allows user to mint rewards",
+  name: "ccd006-citycoin-mining: claim-mining-reward() succeeds and allows user to mint rewards",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const entries: number[] = [10];
@@ -904,7 +904,7 @@ Clarinet.test({
     const userId = 1;
     block.receipts[0].events.expectSTXTransferEvent(10, user.address, `${sender.address}.${miaTreasuryName}`);
     const expectedPrintMsg = `{cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "mining", firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
-    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-citycoin-mining`, expectedPrintMsg);
 
     //const miningStatsAt = { amount: 10, claimed: false, miners: 1 };
     //const minerAt = { commit: 10, high: 11, low: 0, winner: false };
@@ -921,14 +921,14 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() fails if user is not the winner or if there is nothing to mint",
+  name: "ccd006-citycoin-mining: claim-mining-reward() fails if user is not the winner or if there is nothing to mint",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
     const user2 = accounts.get("wallet_2")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
     const totalAmount = 10;
     const totalBlocks = 1;
     const entries: number[] = [10];
@@ -967,9 +967,9 @@ Clarinet.test({
     block1.receipts[1].events.expectSTXTransferEvent(10, user2.address, `${sender.address}.${miaTreasuryName}`);
 
     let expectedPrintMsg = `{cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "mining", firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(1)}}`;
-    block1.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    block1.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-citycoin-mining`, expectedPrintMsg);
     expectedPrintMsg = `{cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "mining", firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(2)}}`;
-    block1.receipts[1].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    block1.receipts[1].events.expectPrintEvent(`${sender.address}.ccd006-citycoin-mining`, expectedPrintMsg);
 
     //dumpMiningData(ccd006CityMining, miaCityId, (firstBlock), (1), miningStatsAt, minerAt);
     ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
@@ -980,14 +980,14 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: claim-mining-reward() user makes successful claim",
+  name: "ccd006-citycoin-mining: claim-mining-reward() user makes successful claim",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
     const user2 = accounts.get("wallet_2")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
     const totalAmount = 10;
     const totalBlocks = 1;
     const entries: number[] = [10];
@@ -1057,9 +1057,9 @@ Clarinet.test({
     // {cityId: u1, cityName: \"mia\", cityTreasury: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd002-treasury-mia-mining, event: \"mining\", firstBlock: u10, lastBlock: u10, totalAmount: u10, totalBlocks: u1, userId: u1}"}
     let expectedPrintMsg = `{cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "mining", firstBlock: ${types.uint(claimHeight)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(1)}}`;
     // console.log(JSON.stringify(miningBlock.receipts[0].events), null, 2);
-    miningBlock.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    miningBlock.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-citycoin-mining`, expectedPrintMsg);
     expectedPrintMsg = `{cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "mining", firstBlock: ${types.uint(claimHeight)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(2)}}`;
-    miningBlock.receipts[1].events.expectPrintEvent(`${sender.address}.ccd006-city-mining`, expectedPrintMsg);
+    miningBlock.receipts[1].events.expectPrintEvent(`${sender.address}.ccd006-citycoin-mining`, expectedPrintMsg);
 
     //dumpMiningData(ccd006CityMining, miaCityId, (firstBlock), (1), miningStatsAt, minerAt);
     ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
@@ -1074,11 +1074,11 @@ Clarinet.test({
 // =============================
 
 Clarinet.test({
-  name: "ccd006-city-mining: set-reward-delay() can only be called by the dao",
+  name: "ccd006-citycoin-mining: set-reward-delay() can only be called by the dao",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.setRewardDelay(sender, 50)]);
@@ -1090,11 +1090,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: set-reward-delay() cannot set a zero block delay",
+  name: "ccd006-citycoin-mining: set-reward-delay() cannot set a zero block delay",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_004);
@@ -1106,11 +1106,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining: set-reward-delay() successfully changes the reward delay when called by the dao",
+  name: "ccd006-citycoin-mining: set-reward-delay() successfully changes the reward delay when called by the dao",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
     ccd006CityMining.getRewardDelay().result.expectUint(100);
 
     // act
@@ -1128,11 +1128,11 @@ Clarinet.test({
 // =============================
 
 Clarinet.test({
-  name: "ccd006-city-mining (legacy): register-user() is disabled",
+  name: "ccd006-citycoin-mining (legacy): register-user() is disabled",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.registerUser(sender, "mia", 1)]);
@@ -1143,11 +1143,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining (legacy): mine-tokens() is disabled",
+  name: "ccd006-citycoin-mining (legacy): mine-tokens() is disabled",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.mineTokens(sender, 1, "mia")]);
@@ -1158,11 +1158,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining (legacy): mine-many() is disabled",
+  name: "ccd006-citycoin-mining (legacy): mine-many() is disabled",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.mineMany(sender, [1, 1, 1])]);
@@ -1173,11 +1173,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining (legacy): claim-mining-reward() is disabled",
+  name: "ccd006-citycoin-mining (legacy): claim-mining-reward() is disabled",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, 1)]);
@@ -1188,11 +1188,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining (legacy): stack-tokens() is disabled",
+  name: "ccd006-citycoin-mining (legacy): stack-tokens() is disabled",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.stackTokens(sender, 1, 1)]);
@@ -1203,11 +1203,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining (legacy): claim-stacking-reward() is disabled",
+  name: "ccd006-citycoin-mining (legacy): claim-stacking-reward() is disabled",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.claimStackingReward(sender, 1)]);
@@ -1218,11 +1218,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining (legacy): set-city-wallet() succeeds and returns (ok true)",
+  name: "ccd006-citycoin-mining (legacy): set-city-wallet() succeeds and returns (ok true)",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.setCityWallet(sender, sender.address)]);
@@ -1233,11 +1233,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining (legacy): update-coinbase-thresholds() succeeds and returns (ok true)",
+  name: "ccd006-citycoin-mining (legacy): update-coinbase-thresholds() succeeds and returns (ok true)",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.updateCoinbaseThresholds(sender, 1, 1)]);
@@ -1248,11 +1248,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining (legacy): update-coinbase-amounts() succeeds and returns (ok true)",
+  name: "ccd006-citycoin-mining (legacy): update-coinbase-amounts() succeeds and returns (ok true)",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.updateCoinbaseAmounts(sender, 1, 1)]);
@@ -1263,11 +1263,11 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-city-mining (legacy): shutdown-contract() is disabled",
+  name: "ccd006-citycoin-mining (legacy): shutdown-contract() is disabled",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-city-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.shutdownContract(sender, 100)]);

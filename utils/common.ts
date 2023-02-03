@@ -20,8 +20,8 @@ export const EXTENSIONS = {
   CCD003_USER_REGISTRY: ADDRESS.concat(".ccd003-user-registry"),
   CCD004_CITY_REGISTRY: ADDRESS.concat(".ccd004-city-registry"),
   CCD005_CITY_DATA: ADDRESS.concat(".ccd005-city-data"),
-  CCD006_CITY_MINING: ADDRESS.concat(".ccd006-city-mining"),
-  CCD007_CITY_STACKING: ADDRESS.concat(".ccd007-city-stacking"),
+  CCD006_CITY_MINING: ADDRESS.concat(".ccd006-citycoin-mining"),
+  CCD007_CITY_STACKING: ADDRESS.concat(".ccd007-citycoin-stacking"),
 };
 
 export const PROPOSALS = {
@@ -66,19 +66,19 @@ export const PROPOSALS = {
   TEST_CCD005_CITY_DATA_017: ADDRESS.concat(".test-ccd005-city-data-017"),
   TEST_CCD005_CITY_DATA_018: ADDRESS.concat(".test-ccd005-city-data-018"),
   TEST_CCD005_CITY_DATA_019: ADDRESS.concat(".test-ccd005-city-data-019"),
-  TEST_CCD006_CITY_MINING_001: ADDRESS.concat(".test-ccd006-city-mining-001"),
-  TEST_CCD006_CITY_MINING_002: ADDRESS.concat(".test-ccd006-city-mining-002"),
-  TEST_CCD006_CITY_MINING_003: ADDRESS.concat(".test-ccd006-city-mining-003"),
-  TEST_CCD006_CITY_MINING_004: ADDRESS.concat(".test-ccd006-city-mining-004"),
-  TEST_CCD007_CITY_STACKING_001: ADDRESS.concat(".test-ccd007-city-stacking-001"),
-  TEST_CCD007_CITY_STACKING_002: ADDRESS.concat(".test-ccd007-city-stacking-002"),
-  TEST_CCD007_CITY_STACKING_003: ADDRESS.concat(".test-ccd007-city-stacking-003"),
-  TEST_CCD007_CITY_STACKING_007: ADDRESS.concat(".test-ccd007-city-stacking-007"),
-  TEST_CCD007_CITY_STACKING_008: ADDRESS.concat(".test-ccd007-city-stacking-008"),
-  TEST_CCD007_CITY_STACKING_009: ADDRESS.concat(".test-ccd007-city-stacking-009"),
-  TEST_CCD007_CITY_STACKING_010: ADDRESS.concat(".test-ccd007-city-stacking-010"),
-  TEST_CCD007_CITY_STACKING_011: ADDRESS.concat(".test-ccd007-city-stacking-011"),
-  TEST_CCD007_CITY_STACKING_012: ADDRESS.concat(".test-ccd007-city-stacking-012"),
+  TEST_CCD006_CITY_MINING_001: ADDRESS.concat(".test-ccd006-citycoin-mining-001"),
+  TEST_CCD006_CITY_MINING_002: ADDRESS.concat(".test-ccd006-citycoin-mining-002"),
+  TEST_CCD006_CITY_MINING_003: ADDRESS.concat(".test-ccd006-citycoin-mining-003"),
+  TEST_CCD006_CITY_MINING_004: ADDRESS.concat(".test-ccd006-citycoin-mining-004"),
+  TEST_CCD007_CITY_STACKING_001: ADDRESS.concat(".test-ccd007-citycoin-stacking-001"),
+  TEST_CCD007_CITY_STACKING_002: ADDRESS.concat(".test-ccd007-citycoin-stacking-002"),
+  TEST_CCD007_CITY_STACKING_003: ADDRESS.concat(".test-ccd007-citycoin-stacking-003"),
+  TEST_CCD007_CITY_STACKING_007: ADDRESS.concat(".test-ccd007-citycoin-stacking-007"),
+  TEST_CCD007_CITY_STACKING_008: ADDRESS.concat(".test-ccd007-citycoin-stacking-008"),
+  TEST_CCD007_CITY_STACKING_009: ADDRESS.concat(".test-ccd007-citycoin-stacking-009"),
+  TEST_CCD007_CITY_STACKING_010: ADDRESS.concat(".test-ccd007-citycoin-stacking-010"),
+  TEST_CCD007_CITY_STACKING_011: ADDRESS.concat(".test-ccd007-citycoin-stacking-011"),
+  TEST_CCD007_CITY_STACKING_012: ADDRESS.concat(".test-ccd007-citycoin-stacking-012"),
 };
 
 export const EXTERNAL = {

@@ -6,19 +6,21 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     constructAndPassProposal(chain, accounts, PROPOSALS.CCIP_012);
-    // setupLegacyProtocol(chain, accounts);
+    // TODO: setupLegacyProtocol(chain, accounts);
 
     // act
     const receipts = passProposal(chain, accounts, PROPOSALS.CCIP_013);
-    console.log(JSON.stringify(receipts, null, 2));
+    // console.log(JSON.stringify(receipts, null, 2));
 
     // assert
     receipts[0].result.expectOk().expectUint(1);
     receipts[1].result.expectOk().expectUint(2);
+    // ERROR: (err u1005) ERR_CONTRACT_NOT_ACTIVATED
+    receipts[2].result.expectErr().expectUint(1005);
+
     // TODO: fails because CCIP-013 requires an
     // activated legacy protocol (see arrange above)
-    // ERROR: (err u1005) ERR_CONTRACT_NOT_ACTIVATED
-    // receipts[2].result.expectOk().expectUint(3);
+
     // TODO: check data from each call in CCIP-013
     // set-city-activation-status
     // set-city-activation-details

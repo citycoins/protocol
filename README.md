@@ -26,21 +26,21 @@ The difference between running the tests with the local, filtered contracts is t
 in Clarinet.toml;
 
 ```bash
-[contracts.ccd006-city-mining]
-path = "tests/contracts/extensions/ccd006-city-mining.clar"
+[contracts.ccd006-citycoin-mining]
+path = "tests/contracts/extensions/ccd006-citycoin-mining.clar"
 
-[contracts.ccd007-city-stacking]
-path = "tests/contracts/extensions/ccd007-city-stacking.clar"
+[contracts.ccd007-citycoin-stacking]
+path = "tests/contracts/extensions/ccd007-citycoin-stacking.clar"
 ```
 
 would be replaced by the lines;
 
 ```bash
-[contracts.ccd006-city-mining]
-path = "contracts/extensions/ccd006-city-mining.clar"
+[contracts.ccd006-citycoin-mining]
+path = "contracts/extensions/ccd006-citycoin-mining.clar"
 
-[contracts.ccd007-city-stacking]
-path = "contracts/extensions/ccd007-city-stacking.clar"
+[contracts.ccd007-citycoin-stacking]
+path = "contracts/extensions/ccd007-citycoin-stacking.clar"
 ```
 
 other contracts would follow the same pattern but these are the only two effected at time of writing. The additional tests

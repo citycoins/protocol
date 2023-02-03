@@ -7,7 +7,7 @@
 
 (define-public (execute (sender principal))
 	(begin
-		(try! (contract-call? .ccd006-city-mining set-reward-delay u50))
+		(try! (contract-call? .ccd007-citycoin-stacking stack "mia" u5000 u0))
 		(ok true)
 	)
 )

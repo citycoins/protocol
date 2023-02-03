@@ -3,7 +3,7 @@
 ;; Synopsis: Test proposal for clarinet layer
 ;; Description:
 ;; ccd003-user-registry: get-or-create-user-id() creates an entry for id=1
-;; ccd006-city-mining: mine() successfully mines 100 blocks for 3 users
+;; ccd006-citycoin-mining: mine() successfully mines 100 blocks for 3 users
 
 (impl-trait .proposal-trait.proposal-trait)
 
