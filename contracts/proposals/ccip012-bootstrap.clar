@@ -40,11 +40,11 @@
     ;; set signals required to pass proposals
     (try! (contract-call? .ccd001-direct-execute set-signals-required u3))
 
-    ;; delegate stacking for the treasuries (up to 50M STX each)
-    ;; MAINNET: (try! (contract-call? .ccd002-treasury-mia-stacking delegate-stx u50000000000000 'SP700C57YJFD5RGHK0GN46478WBAM2KG3A4MN2QJ))
-    ;; MAINNET: (try! (contract-call? .ccd002-treasury-nyc-stacking delegate-stx u50000000000000 'SP700C57YJFD5RGHK0GN46478WBAM2KG3A4MN2QJ))
-    (try! (contract-call? .ccd002-treasury-mia-stacking delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
-    (try! (contract-call? .ccd002-treasury-nyc-stacking delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
+    ;; delegate stack the STX in the mining treasuries (up to 50M STX each)
+    ;; MAINNET: (try! (contract-call? .ccd002-treasury-mia-mining delegate-stx u50000000000000 'SP700C57YJFD5RGHK0GN46478WBAM2KG3A4MN2QJ))
+    ;; MAINNET: (try! (contract-call? .ccd002-treasury-nyc-mining delegate-stx u50000000000000 'SP700C57YJFD5RGHK0GN46478WBAM2KG3A4MN2QJ))
+    (try! (contract-call? .ccd002-treasury-mia-mining delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
+    (try! (contract-call? .ccd002-treasury-nyc-mining delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
 
     (print "CityCoins DAO has risen! Our mission is to empower people to take ownership in their city by transforming citizens into stakeholders with the ability to fund, build, and vote on meaningful upgrades to their communities.")
 
