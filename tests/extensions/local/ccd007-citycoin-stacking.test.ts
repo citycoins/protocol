@@ -61,8 +61,9 @@ Clarinet.test({
     const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
     const user1 = accounts.get("wallet_1")!;
     const amountStacked = 500;
-    const currentCycle = 0;
     const targetCycle = 1;
+    const cityId = 1;
+    const userId = 1;
     gt.getBalance(user1.address).result.expectOk().expectUint(0);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(0);
     // progress the chain to avoid underflow in
@@ -89,6 +90,7 @@ Clarinet.test({
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(amountStacked);
     const expected = `{amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "stacking", firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
     block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-citycoin-stacking`, expected);
+    assertEquals(ccd007CityStacking.getStacker(cityId, targetCycle, userId).result.expectTuple(), { claimable: types.uint(amountStacked), stacked: types.uint(amountStacked) });
   },
 });
 
@@ -104,6 +106,8 @@ Clarinet.test({
     const currentCycle = 0;
     const targetCycle = 1;
     const lockPeriod = 16;
+    const cityId = 1;
+    const userId = 1;
     gt.getBalance(user1.address).result.expectOk().expectUint(0);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(0);
     // progress the chain to avoid underflow in
@@ -129,6 +133,11 @@ Clarinet.test({
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(amountStacked);
     const expected = `{amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "stacking", firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
     block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-citycoin-stacking`, expected);
+    for (let i = 0; i < lockPeriod; i++) {
+      console.log(`i: ${i}`);
+      const stacker = ccd007CityStacking.getStacker(cityId, targetCycle + i, userId).result;
+      assertEquals(stacker.expectTuple(), { claimable: types.uint(i === lockPeriod - 1 ? amountStacked : 0), stacked: types.uint(amountStacked) });
+    }
   },
 });
 
@@ -144,6 +153,8 @@ Clarinet.test({
     const currentCycle = 0;
     const targetCycle = 1;
     const lockPeriod = 32;
+    const cityId = 1;
+    const userId = 1;
     gt.getBalance(user1.address).result.expectOk().expectUint(0);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(0);
     // progress the chain to avoid underflow in
@@ -170,6 +181,11 @@ Clarinet.test({
     //console.log(block.receipts[0].events[2].contract_event.value)
     const expected = `{amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "stacking", firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
     block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-citycoin-stacking`, expected);
+    for (let i = 0; i < lockPeriod; i++) {
+      console.log(`i: ${i}`);
+      const stacker = ccd007CityStacking.getStacker(cityId, targetCycle + i, userId).result;
+      assertEquals(stacker.expectTuple(), { claimable: types.uint(i === lockPeriod - 1 ? amountStacked : 0), stacked: types.uint(amountStacked) });
+    }
   },
 });
 
