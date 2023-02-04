@@ -91,26 +91,24 @@
     (asserts! (get activatedAt cityInfo) ERR_CITY_NOT_ACTIVATED)
     (asserts! (>= (stx-get-balance tx-sender) totalAmount) ERR_INSUFFICIENT_BALANCE)
     (asserts! (> (len amounts) u0) ERR_INVALID_COMMIT_AMOUNTS)
-    (begin
-      (try! (fold mine-block amounts (ok {
-        cityId: cityId,
-        userId: userId,
-        height: block-height,
-        totalAmount: u0,
-      })))
-      (print {
-        event: "mining",
-        cityId: cityId,
-        cityName: cityName,
-        cityTreasury: cityTreasury,
-        firstBlock: block-height,  
-        lastBlock: (- (+ block-height (len amounts)) u1),
-        totalAmount: totalAmount,
-        totalBlocks: (len amounts),
-        userId: userId
-      })                
-      (stx-transfer? totalAmount tx-sender cityTreasury)
-    )
+    (try! (fold mine-block amounts (ok {
+      cityId: cityId,
+      userId: userId,
+      height: block-height,
+      totalAmount: u0,
+    })))
+    (print {
+      event: "mining",
+      cityId: cityId,
+      cityName: cityName,
+      cityTreasury: cityTreasury,
+      firstBlock: block-height,  
+      lastBlock: (- (+ block-height (len amounts)) u1),
+      totalAmount: totalAmount,
+      totalBlocks: (len amounts),
+      userId: userId
+    })                
+    (stx-transfer? totalAmount tx-sender cityTreasury)
   )
 )
 
