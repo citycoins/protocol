@@ -182,7 +182,7 @@
       (userId (default-to u0 (contract-call? .ccd003-user-registry get-user-id user)))
       (blockStats (get-mining-stats-at-block cityId claimHeight))
       (minerStats (get-miner-at-block cityId claimHeight userId))
-      ;; MAINNET: (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-rnd maturityHeight) none))
+      ;; MAINNET: (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-rnd (+ (get-reward-delay) claimHeight))) none))
       (vrfSample (unwrap! (contract-call? 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-vrf-v2 get-rnd (+ (get-reward-delay) claimHeight)) none))
       (commitTotal (get-high-value cityId claimHeight))
       (winningValue (mod vrfSample commitTotal))
