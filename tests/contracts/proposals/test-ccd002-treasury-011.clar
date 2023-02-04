@@ -8,7 +8,8 @@
 
 (define-public (execute (sender principal))
 	(begin
-		(try! (contract-call? .ccd002-treasury-mia-mining delegate-stx u1000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
+		(try! (contract-call? .ccd002-treasury-mia-stacking delegate-stx u1000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
+		(try! (contract-call? .ccd002-treasury-nyc-stacking delegate-stx u1000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
 		(ok true)
 	)
 )
