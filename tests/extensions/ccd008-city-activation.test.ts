@@ -10,11 +10,11 @@ import { CCD008CityActivation } from "../../models/extensions/ccd008-city-activa
 const miaCityId = 1;
 const nycCityId = 2;
 
-const testExpectedCityDetails = (ccd005CityData: any, cityId: number, succeeded: number, delay: number, activated: number, threshold: number) => {
+const testExpectedCityDetails = (ccd005CityData: any, cityId: number, succeededAt: number, delay: number, activatedAt: number, threshold: number) => {
   const expectedStats = {
-    succeeded: types.uint(succeeded),
+    succeededAt: types.uint(succeededAt),
     delay: types.uint(delay),
-    activated: types.uint(activated),
+    activatedAt: types.uint(activatedAt),
     threshold: types.uint(threshold),
   };
   assertEquals(ccd005CityData.getCityActivationDetails(cityId).result.expectSome().expectTuple(), expectedStats);

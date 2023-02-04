@@ -22,7 +22,7 @@
 
 (define-map CityActivationDetails
   uint
-  { succeeded: uint, delay: uint, activated: uint, threshold: uint }
+  { succeededAt: uint, delay: uint, activatedAt: uint, threshold: uint }
 )
 
 (define-map CityTreasuryNonce uint uint)
@@ -92,14 +92,14 @@
   )
 )
 
-(define-public (set-city-activation-details (cityId uint) (succeeded uint) (delay uint) (activated uint) (threshold uint))
+(define-public (set-city-activation-details (cityId uint) (succeededAt uint) (delay uint) (activatedAt uint) (threshold uint))
   (begin
     (try! (is-dao-or-extension))
     (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
     (ok (map-set CityActivationDetails cityId {
-      succeeded: succeeded,
+      succeededAt: succeededAt,
       delay: delay,
-      activated: activated,
+      activatedAt: activatedAt,
       threshold: threshold
     }))
   )
@@ -169,7 +169,7 @@
 
 (define-read-only (get-city-info (cityId uint) (treasuryName (string-ascii 10)))
   {
-    activated: (is-city-activated cityId),
+    activatedAt: (is-city-activated cityId),
     details: (get-city-activation-details cityId),
     treasury: (get-city-treasury-by-name cityId treasuryName),
   }
