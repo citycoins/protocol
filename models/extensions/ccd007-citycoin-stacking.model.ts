@@ -2,7 +2,6 @@ import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 export enum ErrCode {
   ERR_UNAUTHORIZED = 7000,
-  ERR_INVALID_CYCLE_LENGTH,
   ERR_INVALID_STACKING_PARAMS,
   ERR_REWARD_CYCLE_NOT_COMPLETE,
   ERR_NOTHING_TO_CLAIM,
