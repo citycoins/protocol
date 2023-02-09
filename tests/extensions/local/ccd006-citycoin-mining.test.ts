@@ -121,7 +121,7 @@ Clarinet.test({
     // Check stx transfer events
     miningBlock.receipts[0].events.expectSTXTransferEvent(10, user1.address, `${sender.address}.${miaTreasuryName}`);
     // check mia token balances
-    gt.getBalance(user1.address).result.expectOk().expectUint(10000000);
+    gt.getBalance(user1.address).result.expectOk().expectUint(10);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_MINING).result.expectOk().expectUint(0);
     const expected = {
       claimed: types.bool(true),

@@ -141,7 +141,7 @@ Clarinet.test({
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
     const succeededAt = 1;
     const delay = 1;
-    const activatedAt = 1;
+    const activatedAt = 5;
     const threshold = 1;
 
     // act
@@ -204,7 +204,7 @@ Clarinet.test({
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(true); //.expectOk().expectSome().expectBool(true);
-    testExpectedCityDetails(ccd005CityData, miaCityId, 1, 1, 1, 1);
+    testExpectedCityDetails(ccd005CityData, miaCityId, 1, 1, 5, 1);
   },
 });
 
@@ -265,7 +265,7 @@ Clarinet.test({
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
-    testExpectedCoinbaseThresholds(ccd005CityData, miaCityId, 6, 7, 8, 9, 10);
+    testExpectedCoinbaseThresholds(ccd005CityData, miaCityId, 50, 60, 70, 80, 90);
   },
 });
 
@@ -284,7 +284,7 @@ Clarinet.test({
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(true);
-    testExpectedCoinbaseThresholds(ccd005CityData, miaCityId, 6, 7, 8, 9, 10);
+    testExpectedCoinbaseThresholds(ccd005CityData, miaCityId, 50, 60, 70, 80, 90);
   },
 });
 

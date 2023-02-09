@@ -134,7 +134,7 @@ Clarinet.test({
     const expected = `{amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "stacking", firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
     block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-citycoin-stacking`, expected);
     for (let i = 0; i < lockPeriod; i++) {
-      console.log(`i: ${i}`);
+      // console.log(`i: ${i}`);
       const stacker = ccd007CityStacking.getStacker(cityId, targetCycle + i, userId).result;
       assertEquals(stacker.expectTuple(), { claimable: types.uint(i === lockPeriod - 1 ? amountStacked : 0), stacked: types.uint(amountStacked) });
     }
@@ -182,7 +182,7 @@ Clarinet.test({
     const expected = `{amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "stacking", firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
     block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-citycoin-stacking`, expected);
     for (let i = 0; i < lockPeriod; i++) {
-      console.log(`i: ${i}`);
+      // console.log(`i: ${i}`);
       const stacker = ccd007CityStacking.getStacker(cityId, targetCycle + i, userId).result;
       assertEquals(stacker.expectTuple(), { claimable: types.uint(i === lockPeriod - 1 ? amountStacked : 0), stacked: types.uint(amountStacked) });
     }
