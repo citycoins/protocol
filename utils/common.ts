@@ -94,7 +94,6 @@ export const CITYCOINS = {
 };
 
 export const passProposal = (chain: Chain, accounts: Map<string, Account>, proposal: string): any => {
-  // console.log(`proposal: ${proposal}`);
   const sender = accounts.get("deployer")!;
   const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
   const approver1 = accounts.get("wallet_1")!;
@@ -102,7 +101,8 @@ export const passProposal = (chain: Chain, accounts: Map<string, Account>, propo
   const approver3 = accounts.get("wallet_3")!;
   const block = chain.mineBlock([ccd001DirectExecute.directExecute(approver1, proposal), ccd001DirectExecute.directExecute(approver2, proposal), ccd001DirectExecute.directExecute(approver3, proposal)]);
   // console.log(`passProposal at height: ${block.height}`);
-  // console.log(`block JSON:\n${JSON.stringify(block, null, 2)}`);
+  // console.log(`proposal: ${proposal}`);
+  // console.log(`block:\n${JSON.stringify(block, null, 2)}`);
   return block.receipts;
 };
 
@@ -113,6 +113,9 @@ export const constructAndPassProposal = (chain: Chain, accounts: Map<string, Acc
   const approver1 = accounts.get("wallet_1")!;
   const approver2 = accounts.get("wallet_2")!;
   const approver3 = accounts.get("wallet_3")!;
-  const { receipts } = chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012), ccd001DirectExecute.directExecute(approver1, proposal), ccd001DirectExecute.directExecute(approver2, proposal), ccd001DirectExecute.directExecute(approver3, proposal)]);
-  return receipts;
+  const block = chain.mineBlock([baseDao.construct(sender, PROPOSALS.CCIP_012), ccd001DirectExecute.directExecute(approver1, proposal), ccd001DirectExecute.directExecute(approver2, proposal), ccd001DirectExecute.directExecute(approver3, proposal)]);
+  // console.log(`constructAndPassProposal at height: ${block.height}`);
+  // console.log(`proposal: ${proposal}`);
+  // console.log(`block:\n${JSON.stringify(block, null, 2)}`);
+  return block.receipts;
 };
