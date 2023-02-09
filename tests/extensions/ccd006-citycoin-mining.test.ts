@@ -5,6 +5,7 @@
  * 2. claim-mining-reward
  * 3. reward-delay
  * 4. disabled functions (old protocol)
+ * 5. read-only functions
  */
 import { Account, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
 import { constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/common.ts";
@@ -1026,11 +1027,11 @@ Clarinet.test({
     assertEquals(coinbaseInfo.amounts.expectSome().expectTuple(), expectedAmounts);
     // verify coinbase thresholds
     const expectedThresholds = {
-      coinbaseThreshold1: types.uint(6),
-      coinbaseThreshold2: types.uint(7),
-      coinbaseThreshold3: types.uint(8),
-      coinbaseThreshold4: types.uint(9),
-      coinbaseThreshold5: types.uint(10),
+      coinbaseThreshold1: types.uint(50),
+      coinbaseThreshold2: types.uint(60),
+      coinbaseThreshold3: types.uint(70),
+      coinbaseThreshold4: types.uint(80),
+      coinbaseThreshold5: types.uint(90),
     };
     assertEquals(coinbaseInfo.thresholds.expectSome().expectTuple(), expectedThresholds);
 
@@ -1274,5 +1275,150 @@ Clarinet.test({
 
     // assert
     receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_FUNCTION_DISABLED);
+  },
+});
+
+// =============================
+// 3. READ-ONLY FUNCTIONS
+// =============================
+
+Clarinet.test({
+  name: "ccd006-citycoin-mining: get-coinbase-amount() returns u0 if coinbase info isn't set",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+
+    // act
+    const { result } = ccd006CityMining.getCoinbaseAmount(miaCityId, 100);
+
+    // assert
+    result.expectUint(0);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-citycoin-mining: get-coinbase-amount() returns u0 if the city activation details do not exist",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    // get MIA/NYC city IDs
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    // set city status to activated
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    // set city activation details
+    // passProposal(PROPOSALS.TEST_CCD005_CITY_DATA_004);
+    // set city coinbase amounts
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_009);
+    // set city coinbase thresholds
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
+    // set city coinbase details
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
+
+    // act
+    const { result } = ccd006CityMining.getCoinbaseAmount(miaCityId, 100);
+
+    // assert
+    result.expectUint(0);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-citycoin-mining: get-coinbase-amount() returns u0 if the block height is before the city's activation height",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    // get MIA/NYC city IDs
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    // set city status to activated
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    // set city activation details
+    // activation block = 10
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_004);
+    // set city coinbase amounts
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_009);
+    // set city coinbase thresholds
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
+    // set city coinbase details
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
+
+    // act
+    const { result } = ccd006CityMining.getCoinbaseAmount(miaCityId, 5);
+
+    // assert
+    result.expectUint(0);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-citycoin-mining: get-coinbase-amount() returns the expected amounts",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    // get MIA/NYC city IDs
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    // set city activation details
+    // activation block = 5
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    // set city status to activated
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    // set city coinbase amounts
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_009);
+    // set city coinbase thresholds
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
+    // set city coinbase details
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
+
+    // act
+    const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
+    // verify coinbase amounts
+    const expectedAmounts = {
+      coinbaseAmountBonus: types.uint(10),
+      coinbaseAmount1: types.uint(100),
+      coinbaseAmount2: types.uint(1000),
+      coinbaseAmount3: types.uint(10000),
+      coinbaseAmount4: types.uint(100000),
+      coinbaseAmount5: types.uint(1000000),
+      coinbaseAmountDefault: types.uint(10000000),
+    };
+
+    // verify coinbase thresholds
+    const expectedThresholds = {
+      coinbaseThreshold1: types.uint(50),
+      coinbaseThreshold2: types.uint(60),
+      coinbaseThreshold3: types.uint(70),
+      coinbaseThreshold4: types.uint(80),
+      coinbaseThreshold5: types.uint(90),
+    };
+
+    // verify coinbase details
+    const expectedDetails = {
+      coinbaseBonusPeriod: types.uint(20),
+      coinbaseEpochLength: types.uint(1),
+    };
+
+    // assert
+
+    // const activation = ccd005CityData.getCityActivationDetails(miaCityId).result.expectSome().expectTuple();
+    // console.log(`activation: ${JSON.stringify(activation)}`);
+
+    // verify coinbase details
+    assertEquals(coinbaseInfo.amounts.expectSome().expectTuple(), expectedAmounts);
+    assertEquals(coinbaseInfo.thresholds.expectSome().expectTuple(), expectedThresholds);
+    assertEquals(coinbaseInfo.details.expectSome().expectTuple(), expectedDetails);
+
+    // get coinbase amount based on thresholds
+    const thresholds = [25, 50, 60, 70, 80, 90];
+    let counter = 0;
+    for (const threshold of thresholds) {
+      const { result } = ccd006CityMining.getCoinbaseAmount(miaCityId, threshold);
+      // console.log(`result for ${threshold}[${counter}]: ${result}`);
+      assertEquals(result, expectedAmounts[Object.keys(expectedAmounts)[counter]]);
+      counter++;
+    }
   },
 });
