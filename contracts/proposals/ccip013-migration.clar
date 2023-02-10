@@ -39,13 +39,13 @@
     )
     ;; set city activation details
     (try! (contract-call? .ccd005-city-data set-city-activation-details miaId
-      (- miaActivationBlock miaActivationDelay)
+      block-height
       miaActivationDelay
       miaActivationBlock
       miaActivationThreshold
     ))
     (try! (contract-call? .ccd005-city-data set-city-activation-details nycId 
-      (- nycActivationBlock nycActivationDelay)
+      block-height
       nycActivationDelay
       nycActivationBlock
       nycActivationThreshold

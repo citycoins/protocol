@@ -42,6 +42,10 @@
   (begin
     (try! (is-dao-or-extension))
     (asserts! (> height block-height) ERR_SUNSET_IN_PAST)
+    (print {
+      event: "set-sunset-block-height",
+      height: height
+    })
     (ok (var-set sunsetBlockHeight height))
   )
 )
@@ -49,14 +53,23 @@
 (define-public (set-approver (who principal) (status bool))
   (begin
     (try! (is-dao-or-extension))
+    (print {
+      event: "set-approver",
+      who: who,
+      status: status
+    })
     (ok (map-set Approvers who status))
   )
 )
 
-(define-public (set-signals-required (newRequirement uint))
+(define-public (set-signals-required (signals uint))
   (begin
     (try! (is-dao-or-extension))
-    (ok (var-set signalsRequired newRequirement))
+    (print {
+      event: "set-signals-required",
+      signals: signals
+    })
+    (ok (var-set signalsRequired signals))
   )
 )
 

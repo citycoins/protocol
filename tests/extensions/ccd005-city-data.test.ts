@@ -28,11 +28,11 @@ const miaTokenContract1Address = "mia-token-contract-1";
 const miaTokenContract2Address = "mia-token-contract-2";
 const miaTokenContract3Address = "mia-token-contract-3";
 
-const testExpectedCityDetails = (ccd005CityData: any, cityId: number, succeeded: number, delay: number, activated: number, threshold: number) => {
+const testExpectedCityDetails = (ccd005CityData: any, cityId: number, succeededAt: number, delay: number, activatedAt: number, threshold: number) => {
   const expectedStats = {
-    succeeded: types.uint(succeeded),
+    succeededAt: types.uint(succeededAt),
     delay: types.uint(delay),
-    activated: types.uint(activated),
+    activatedAt: types.uint(activatedAt),
     threshold: types.uint(threshold),
   };
   assertEquals(ccd005CityData.getCityActivationDetails(cityId).result.expectSome().expectTuple(), expectedStats);
@@ -139,9 +139,9 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const succeeded = 1;
+    const succeededAt = 1;
     const delay = 1;
-    const activated = 1;
+    const activatedAt = 5;
     const threshold = 1;
 
     // act
@@ -152,7 +152,7 @@ Clarinet.test({
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(true); //.expectOk().expectSome().expectBool(true);
-    testExpectedCityDetails(ccd005CityData, miaCityId, succeeded, delay, activated, threshold);
+    testExpectedCityDetails(ccd005CityData, miaCityId, succeededAt, delay, activatedAt, threshold);
   },
 });
 
@@ -204,7 +204,7 @@ Clarinet.test({
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(true); //.expectOk().expectSome().expectBool(true);
-    testExpectedCityDetails(ccd005CityData, miaCityId, 1, 1, 1, 1);
+    testExpectedCityDetails(ccd005CityData, miaCityId, 1, 1, 5, 1);
   },
 });
 
@@ -265,7 +265,7 @@ Clarinet.test({
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(false);
-    testExpectedCoinbaseThresholds(ccd005CityData, miaCityId, 6, 7, 8, 9, 10);
+    testExpectedCoinbaseThresholds(ccd005CityData, miaCityId, 50, 60, 70, 80, 90);
   },
 });
 
@@ -284,7 +284,7 @@ Clarinet.test({
 
     // assert
     ccd005CityData.isCityActivated(miaCityId).result.expectBool(true);
-    testExpectedCoinbaseThresholds(ccd005CityData, miaCityId, 6, 7, 8, 9, 10);
+    testExpectedCoinbaseThresholds(ccd005CityData, miaCityId, 50, 60, 70, 80, 90);
   },
 });
 
