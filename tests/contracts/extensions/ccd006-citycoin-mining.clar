@@ -29,7 +29,6 @@
 (define-constant ERR_CITY_NOT_ACTIVATED (err u6016))
 (define-constant ERR_CITY_DETAILS_NOT_FOUND (err u6017))
 (define-constant ERR_CITY_TREASURY_NOT_FOUND (err u6018))
-(define-constant ERR_FUNCTION_DISABLED (err u6019))
 
 ;; DATA VARS
 

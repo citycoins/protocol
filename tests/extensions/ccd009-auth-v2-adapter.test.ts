@@ -245,7 +245,7 @@ Clarinet.test({
     const ccd009AuthV2Adapter = new CCD009AuthV2Adapter(chain, sender, "ccd009-auth-v2-adapter");
 
     // act
-    const { receipts } = chain.mineBlock([ccd009AuthV2Adapter.executeUpgradeCoreContractJobMia(sender, 1, EXTENSIONS.CCD006_CITY_MINING, EXTENSIONS.CCD006_CITY_MINING)]);
+    const { receipts } = chain.mineBlock([ccd009AuthV2Adapter.executeUpgradeCoreContractJobMia(sender, 1, EXTENSIONS.CCD010_CORE_V2_ADAPTER, EXTENSIONS.CCD010_CORE_V2_ADAPTER)]);
 
     // assert
     assertEquals(receipts.length, 1);
@@ -261,7 +261,7 @@ Clarinet.test({
     const ccd009AuthV2Adapter = new CCD009AuthV2Adapter(chain, sender, "ccd009-auth-v2-adapter");
 
     // act
-    const { receipts } = chain.mineBlock([ccd009AuthV2Adapter.executeUpgradeCoreContractJobNyc(sender, 1, EXTENSIONS.CCD006_CITY_MINING, EXTENSIONS.CCD006_CITY_MINING)]);
+    const { receipts } = chain.mineBlock([ccd009AuthV2Adapter.executeUpgradeCoreContractJobNyc(sender, 1, EXTENSIONS.CCD010_CORE_V2_ADAPTER, EXTENSIONS.CCD010_CORE_V2_ADAPTER)]);
 
     // assert
     assertEquals(receipts.length, 1);
@@ -277,7 +277,7 @@ Clarinet.test({
     const ccd009AuthV2Adapter = new CCD009AuthV2Adapter(chain, sender, "ccd009-auth-v2-adapter");
 
     // act
-    const { receipts } = chain.mineBlock([ccd009AuthV2Adapter.executeUpdateCoinbaseThresholdsJobMia(sender, 1, EXTENSIONS.CCD006_CITY_MINING, CITYCOINS.MIA_TOKEN)]);
+    const { receipts } = chain.mineBlock([ccd009AuthV2Adapter.executeUpdateCoinbaseThresholdsJobMia(sender, 1, EXTENSIONS.CCD010_CORE_V2_ADAPTER, CITYCOINS.MIA_TOKEN)]);
 
     // assert
     assertEquals(receipts.length, 1);
@@ -293,7 +293,7 @@ Clarinet.test({
     const ccd009AuthV2Adapter = new CCD009AuthV2Adapter(chain, sender, "ccd009-auth-v2-adapter");
 
     // act
-    const { receipts } = chain.mineBlock([ccd009AuthV2Adapter.executeUpdateCoinbaseThresholdsJobNyc(sender, 1, EXTENSIONS.CCD006_CITY_MINING, CITYCOINS.NYC_TOKEN)]);
+    const { receipts } = chain.mineBlock([ccd009AuthV2Adapter.executeUpdateCoinbaseThresholdsJobNyc(sender, 1, EXTENSIONS.CCD010_CORE_V2_ADAPTER, CITYCOINS.NYC_TOKEN)]);
 
     // assert
     assertEquals(receipts.length, 1);
@@ -309,7 +309,7 @@ Clarinet.test({
     const ccd009AuthV2Adapter = new CCD009AuthV2Adapter(chain, sender, "ccd009-auth-v2-adapter");
 
     // act
-    const { receipts } = chain.mineBlock([ccd009AuthV2Adapter.executeUpdateCoinbaseAmountsJobMia(sender, 1, EXTENSIONS.CCD006_CITY_MINING, CITYCOINS.MIA_TOKEN)]);
+    const { receipts } = chain.mineBlock([ccd009AuthV2Adapter.executeUpdateCoinbaseAmountsJobMia(sender, 1, EXTENSIONS.CCD010_CORE_V2_ADAPTER, CITYCOINS.MIA_TOKEN)]);
 
     // assert
     assertEquals(receipts.length, 1);
@@ -325,7 +325,7 @@ Clarinet.test({
     const ccd009AuthV2Adapter = new CCD009AuthV2Adapter(chain, sender, "ccd009-auth-v2-adapter");
 
     // act
-    const { receipts } = chain.mineBlock([ccd009AuthV2Adapter.executeUpdateCoinbaseAmountsJobNyc(sender, 1, EXTENSIONS.CCD006_CITY_MINING, CITYCOINS.NYC_TOKEN)]);
+    const { receipts } = chain.mineBlock([ccd009AuthV2Adapter.executeUpdateCoinbaseAmountsJobNyc(sender, 1, EXTENSIONS.CCD010_CORE_V2_ADAPTER, CITYCOINS.NYC_TOKEN)]);
 
     // assert
     assertEquals(receipts.length, 1);

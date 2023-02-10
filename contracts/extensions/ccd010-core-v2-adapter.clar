@@ -12,9 +12,9 @@
 
 ;; CONSTANTS
 
-(define-constant ERR_UNAUTHORIZED (err u9000))
-(define-constant ERR_FUNCTION_DISABLED (err u9001))
-(define-constant ERR_NOTHING_TO_MINT (err u9002))
+(define-constant ERR_UNAUTHORIZED (err u10000))
+(define-constant ERR_FUNCTION_DISABLED (err u10001))
+(define-constant ERR_NOTHING_TO_MINT (err u10002))
 
 ;; PUBLIC FUNCTIONS
 
@@ -41,7 +41,6 @@
 (define-public (set-city-wallet (newCityWallet principal)) (ok true))
 (define-public (update-coinbase-thresholds) (ok true))
 (define-public (update-coinbase-amounts) (ok true))
-
 (define-public (activate-core-contracts (activationHeight uint))
   (begin
     (try! (is-extension))

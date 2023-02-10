@@ -20,8 +20,11 @@ export const EXTENSIONS = {
   CCD003_USER_REGISTRY: ADDRESS.concat(".ccd003-user-registry"),
   CCD004_CITY_REGISTRY: ADDRESS.concat(".ccd004-city-registry"),
   CCD005_CITY_DATA: ADDRESS.concat(".ccd005-city-data"),
-  CCD006_CITY_MINING: ADDRESS.concat(".ccd006-citycoin-mining"),
-  CCD007_CITY_STACKING: ADDRESS.concat(".ccd007-citycoin-stacking"),
+  CCD006_CITYCOIN_MINING: ADDRESS.concat(".ccd006-citycoin-mining"),
+  CCD007_CITYCOIN_STACKING: ADDRESS.concat(".ccd007-citycoin-stacking"),
+  CCD008_CITY_ACTIVATION: ADDRESS.concat(".ccd008-city-activation"),
+  CCD009_AUTH_V2_ADAPTER: ADDRESS.concat(".ccd009-auth-v2-adapter"),
+  CCD010_CORE_V2_ADAPTER: ADDRESS.concat(".ccd010-core-v2-adapter"),
 };
 
 export const PROPOSALS = {
