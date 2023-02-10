@@ -119,6 +119,9 @@ path = "contracts/extensions/ccd008-city-activation.clar"
 [contracts.ccd009-auth-v2-adapter]
 path = "contracts/extensions/ccd009-auth-v2-adapter.clar"
 
+[contracts.ccd010-core-v2-adapter]
+path = "contracts/extensions/ccd010-core-v2-adapter.clar"
+
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
 

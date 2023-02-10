@@ -17,6 +17,7 @@
         {extension: .ccd007-citycoin-stacking, enabled: true}
         ;; {extension: .ccd008-city-activation, enabled: true}
         {extension: .ccd009-auth-v2-adapter, enabled: true}
+        {extension: .ccd010-core-v2-adapter, enabled: true}
       )
     ))
 
