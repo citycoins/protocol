@@ -29,7 +29,6 @@
 (define-constant ERR_CITY_NOT_ACTIVATED (err u6016))
 (define-constant ERR_CITY_DETAILS_NOT_FOUND (err u6017))
 (define-constant ERR_CITY_TREASURY_NOT_FOUND (err u6018))
-(define-constant ERR_FUNCTION_DISABLED (err u6019))
 
 ;; DATA VARS
 
@@ -112,35 +111,44 @@
   )
 )
 
-(define-public (claim-mining-block (cityName (string-ascii 10)) (claimHeight uint))
+(define-public (claim-mining-reward (cityName (string-ascii 10)) (claimHeight uint))
   (let
-    ((cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND)))
-    (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
-    (claim-mining-reward-at-block cityName cityId tx-sender block-height claimHeight)
-  )
-)
-
-;; CITYCOINS PROTOCOL V2 FUNCTIONS
-;; disabled functions
-(define-public (register-user (memo (optional (string-utf8 50)))) ERR_FUNCTION_DISABLED)
-(define-public (mine-tokens (amount uint) (memo (optional (buff 34)))) ERR_FUNCTION_DISABLED)
-(define-public (mine-many (amounts (list 200 uint))) ERR_FUNCTION_DISABLED)
-(define-public (claim-mining-reward (minerBlockHeight uint)) ERR_FUNCTION_DISABLED)
-(define-public (stack-tokens (amountTokens uint) (lockPeriod uint)) ERR_FUNCTION_DISABLED)
-(define-public (claim-stacking-reward (targetCycle uint)) ERR_FUNCTION_DISABLED)
-(define-public (shutdown-contract (stacksHeight uint)) ERR_FUNCTION_DISABLED)
-;; backwards-compatibility
-(define-public (set-city-wallet (newCityWallet principal)) (ok true))
-(define-public (update-coinbase-thresholds) (ok true))
-(define-public (update-coinbase-amounts) (ok true))
-(define-public (activate-core-contracts (activationHeight uint))
-  (begin
-    (try! (is-dao-or-extension))
-    ;; MAINNET: (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
-    (try! (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
-    ;; MAINNET: (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
-    (try! (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
-    (ok true)
+    (
+      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
+      (maturityHeight (+ (get-reward-delay) claimHeight))
+      (isMature (asserts! (> block-height maturityHeight) ERR_REWARD_NOT_MATURE))
+      (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id tx-sender) ERR_USER_ID_NOT_FOUND))
+      (blockStats (get-mining-stats-at-block cityId claimHeight))
+      (minerStats (get-miner-at-block cityId claimHeight userId))
+      (vrfSample (unwrap! (contract-call? .citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_VRF_SEED_NOT_FOUND))
+      (commitTotal (get-high-value cityId claimHeight))
+      (commitValid (asserts! (> commitTotal u0) ERR_MINER_DATA_NOT_FOUND))
+      (winningValue (mod vrfSample commitTotal))
+    )
+    (asserts! (has-mined-at-block cityId claimHeight userId) ERR_DID_NOT_MINE)
+    (asserts! (and (> (get miners blockStats) u0) (> (get commit minerStats) u0)) ERR_MINER_DATA_NOT_FOUND)
+    (asserts! (not (get claimed blockStats)) ERR_ALREADY_CLAIMED)
+    (asserts! (and (>= winningValue (get low minerStats)) (<= winningValue (get high minerStats))) ERR_MINER_NOT_WINNER)
+    (map-set MiningStatsAtBlock
+      { cityId: cityId, height: claimHeight }
+      (merge blockStats { claimed: true })
+    )
+    (map-set MinerAtBlock
+      { cityId: cityId, height: claimHeight, userId: userId }
+      (merge minerStats { winner: true })
+    )
+    (map-set WinnerAtBlock
+      { cityId: cityId, height: claimHeight }
+      userId
+    )
+    (print {
+      event: "mining-claim",
+      cityId: cityId,
+      cityName: cityName,
+      claimHeight: claimHeight,
+      userId: userId
+    })
+    (contract-call? .ccd010-core-v2-adapter mint-coinbase cityName tx-sender (get-coinbase-amount cityId claimHeight))
   )
 )
 
@@ -260,59 +268,5 @@
     (ok (merge okReturn
       { height: (+ height u1), totalAmount: (+ (get totalAmount okReturn) amount) }
     ))
-  )
-)
-
-(define-private (claim-mining-reward-at-block (cityName (string-ascii 10)) (cityId uint) (user principal) (stacksHeight uint) (claimHeight uint))
-  (let
-    (
-      (maturityHeight (+ (get-reward-delay) claimHeight))
-      (isMature (asserts! (> stacksHeight maturityHeight) ERR_REWARD_NOT_MATURE))
-      (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))
-      (blockStats (get-mining-stats-at-block cityId claimHeight))
-      (minerStats (get-miner-at-block cityId claimHeight userId))
-      ;; MAINNET: (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_VRF_SEED_NOT_FOUND))
-      (vrfSample (unwrap! (contract-call? 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_VRF_SEED_NOT_FOUND))
-      (commitTotal (get-high-value cityId claimHeight))
-      (commitValid (asserts! (> commitTotal u0) ERR_MINER_DATA_NOT_FOUND))
-      (winningValue (mod vrfSample commitTotal))
-    )
-    (asserts! (has-mined-at-block cityId claimHeight userId) ERR_DID_NOT_MINE)
-    (asserts! (and (> (get miners blockStats) u0) (> (get commit minerStats) u0)) ERR_MINER_DATA_NOT_FOUND)
-    (asserts! (not (get claimed blockStats)) ERR_ALREADY_CLAIMED)
-    (asserts! (and (>= winningValue (get low minerStats)) (<= winningValue (get high minerStats))) ERR_MINER_NOT_WINNER)
-    (map-set MiningStatsAtBlock
-      { cityId: cityId, height: claimHeight }
-      (merge blockStats { claimed: true })
-    )
-    (map-set MinerAtBlock
-      { cityId: cityId, height: claimHeight, userId: userId }
-      (merge minerStats { winner: true })
-    )
-    (map-set WinnerAtBlock
-      { cityId: cityId, height: claimHeight }
-      userId
-    )
-    (print {
-      event: "mining-claim",
-      cityId: cityId,
-      cityName: cityName,
-      claimHeight: claimHeight,
-      userId: userId
-    })
-    (mint-coinbase cityName cityId user claimHeight)
-  )
-)
-
-(define-private (mint-coinbase (cityName (string-ascii 10)) (cityId uint) (recipient principal) (blockHeight uint))
-  (let
-    ((amount (get-coinbase-amount cityId blockHeight)))
-    (asserts! (> amount u0) ERR_NOTHING_TO_MINT)
-    ;; contract addresses hardcoded for this version
-    ;; MAINNET: (and (is-eq cityName "mia") (try! (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 mint amount recipient))))
-    (and (is-eq cityName "mia") (try! (as-contract (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2 mint amount recipient))))
-    ;; MAINNET: (and (is-eq cityName "nyc") (try! (as-contract (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 mint amount recipient))))
-    (and (is-eq cityName "nyc") (try! (as-contract (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2 mint amount recipient))))
-    (ok true)
   )
 )
