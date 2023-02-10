@@ -34,6 +34,10 @@ export class CCD007CityStacking {
     return this.callReadOnlyFn("is-dao-or-extension");
   }
 
+  isExtension(): ReadOnlyFn {
+    return this.callReadOnlyFn("is-extension");
+  }
+
   // Internal DAO functions
 
   claimStackingReward(sender: Account, cityName: string, targetCycle: number) {
@@ -41,9 +45,6 @@ export class CCD007CityStacking {
   }
   sendStackingReward(sender: Account, cityName: string, targetCycle: number, amount: number) {
     return Tx.contractCall(this.name, "send-stacking-reward", [types.ascii(cityName), types.uint(targetCycle), types.uint(amount)], sender.address);
-  }
-  setPoolOperator(sender: Account, operator: string) {
-    return Tx.contractCall(this.name, "set-pool-operator", [types.principal(operator)], sender.address);
   }
   stack(sender: Account, cityName: string, amount: number, lockPeriod: number) {
     return Tx.contractCall(this.name, "stack", [types.ascii(cityName), types.uint(amount), types.uint(lockPeriod)], sender.address);
@@ -82,9 +83,6 @@ export class CCD007CityStacking {
   }
   getStackingReward(cityId: number, userId: number, cycle: number): ReadOnlyFn {
     return this.callReadOnlyFn("get-stacking-reward", [types.uint(cityId), types.uint(userId), types.uint(cycle)]);
-  }
-  getPoolOperator(): ReadOnlyFn {
-    return this.callReadOnlyFn("get-pool-operator", []);
   }
 
   // Extension callback

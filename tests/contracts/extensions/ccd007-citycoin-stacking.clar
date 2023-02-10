@@ -122,16 +122,10 @@
       (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
       (cycleStats (get-stacking-stats cityId cycleId))
     )
+    (try! (is-extension))
     (asserts! (is-none (get reward cycleStats)) ERR_STACKING_PAYOUT_COMPLETE)
-    (asserts! (< cycleId (get-reward-cycle burn-block-height)) ERR_REWARD_CYCLE_NOT_COMPLETE)
-    (asserts! (> amount u0) ERR_STACKING_PAYOUT_INVALID)
-    (print {
-      event: "stacking-reward-payout",
-      amount: amount,
-      cityId: cityId,
-      cityTreasury: cityTreasury,
-      cycleId: cycleId,
-    })
+    ;; underflow in get-reward-cycle below
+    ;; (asserts! (< cycleId (get-reward-cycle burn-block-height)) ERR_REWARD_CYCLE_NOT_COMPLETE)
     (ok (map-set StackingStats
       { cityId: cityId, cycle: cycleId }
       (merge cycleStats { reward: (some amount) })

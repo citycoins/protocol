@@ -9,8 +9,9 @@
 
 ;; CONSTANTS
 
-(define-constant ERR_UNAUTHORIZED (err u1100))
-(define-constant ERR_CITY_ID_NOT_FOUND (err u1101))
+(define-constant ERR_UNAUTHORIZED (err u11000))
+(define-constant ERR_CITY_ID_NOT_FOUND (err u11001))
+(define-constant ERR_STACKING_PAYOUT_INVALID (err u11002))
 
 ;; DATA VARS
 
@@ -40,17 +41,31 @@
   (let
     ((cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id "mia") ERR_CITY_ID_NOT_FOUND)))
     (asserts! (is-eq tx-sender (var-get poolOperator)) ERR_UNAUTHORIZED)
-    (try! (contract-call? .ccd002-treasury-mia-stacking deposit-stx amount))
-    (contract-call? .ccd007-citycoin-stacking set-stacking-reward cityId cycleId amount)
+    (asserts! (> amount u0) ERR_STACKING_PAYOUT_INVALID)
+    (try! (contract-call? .ccd007-citycoin-stacking set-stacking-reward cityId cycleId amount))
+    (print {
+      event: "stacking-reward-payout",
+      amount: amount,
+      cityId: cityId,
+      cityName: "mia",
+    })
+    (contract-call? .ccd002-treasury-mia-stacking deposit-stx amount)
   )
 )
 
 (define-public (send-stacking-reward-nyc (cycleId uint) (amount uint))
   (let
-    ((cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id "mia") ERR_CITY_ID_NOT_FOUND)))
+    ((cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_CITY_ID_NOT_FOUND)))
     (asserts! (is-eq tx-sender (var-get poolOperator)) ERR_UNAUTHORIZED)
-    (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-stx amount))
-    (contract-call? .ccd007-citycoin-stacking set-stacking-reward cityId cycleId amount)
+    (asserts! (> amount u0) ERR_STACKING_PAYOUT_INVALID)
+    (try! (contract-call? .ccd007-citycoin-stacking set-stacking-reward cityId cycleId amount))
+    (print {
+      event: "stacking-reward-payout",
+      amount: amount,
+      cityId: cityId,
+      cityName: "nyc",
+    })
+    (contract-call? .ccd002-treasury-nyc-stacking deposit-stx amount)
   )
 )
 

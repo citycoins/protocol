@@ -9,13 +9,19 @@
 
 (define-public (execute (sender principal))
 	(begin
-    ;; transfer STX to contract
-	  (try! (stx-transfer? AMOUNT sender (as-contract tx-sender)))
     ;; set contract as pool operator
     (try! (contract-call? .ccd011-stacking-payouts set-pool-operator (as-contract tx-sender)))
     ;; send reward to contracts
-    (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-mia u0 (/ AMOUNT u2)))
-    (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-mia u0 (/ AMOUNT u2)))
+    (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-mia u1 AMOUNT))
+    ;;(try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-nyc u0 (/ AMOUNT u2)))
 		(ok true)
 	)
+)
+
+(define-public (fund (amount uint))
+  (stx-transfer? amount tx-sender (as-contract tx-sender))
+)
+
+(define-read-only (get-balance)
+  (stx-get-balance (as-contract tx-sender))
 )

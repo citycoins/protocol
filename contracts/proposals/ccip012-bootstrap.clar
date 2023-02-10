@@ -18,6 +18,7 @@
         ;; {extension: .ccd008-city-activation, enabled: true}
         {extension: .ccd009-auth-v2-adapter, enabled: true}
         {extension: .ccd010-core-v2-adapter, enabled: true}
+        {extension: .ccd011-stacking-payouts, enabled: true}
       )
     ))
 
