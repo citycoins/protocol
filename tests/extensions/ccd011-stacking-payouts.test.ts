@@ -3,7 +3,6 @@ import { constructAndPassProposal, passProposal, PROPOSALS } from "../../utils/c
 import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
 import { CCD007CityStacking } from "../../models/extensions/ccd007-citycoin-stacking.model.ts";
 import { CCD011StackingPayouts } from "../../models/extensions/ccd011-stacking-payouts.model.ts";
-import { TESTCCD011StackingPayouts001 } from "../../models/tests/test-ccd011-stacking-payouts-001.model.ts";
 
 // =============================
 // INTERNAL DATA / FUNCTIONS
@@ -91,17 +90,19 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const amount = 1000000000;
-    const testccd011StackingPayouts001 = new TESTCCD011StackingPayouts001(chain, sender, "test-ccd011-stacking-payouts-001");
+    const ccd011StackingPayouts = new CCD011StackingPayouts(chain, sender, "ccd011-stacking-payouts");
 
     // act
-    testccd011StackingPayouts001.getBalance().result.expectUint(0);
-    chain.mineBlock([testccd011StackingPayouts001.fund(sender, amount)]);
-    testccd011StackingPayouts001.getBalance().result.expectUint(amount);
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    const receipts = passProposal(chain, accounts, PROPOSALS.TEST_CCD011_STACKING_PAYOUTS_001);
-
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
+    // passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
+    const block = chain.mineBlock([ccd011StackingPayouts.sendStackingRewardMia(sender, 1, amount)]);
     // assert
-    receipts[2].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_CITY_TREASURY_NOT_FOUND);
+    console.log(`pool operator: ${ccd011StackingPayouts.getPoolOperator().result}`);
+    console.log(`block:\n${JSON.stringify(block, null, 2)}}`);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_CITY_TREASURY_NOT_FOUND);
   },
 });
 
@@ -109,7 +110,8 @@ Clarinet.test({
   name: "ccd011-stacking-payouts: send-stacking-reward() fails if not called by pool operator",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
-    const sender = accounts.get("deployer")!;
+    const sender = accounts.get("wallet_1")!;
+    const amount = 1000000000;
     //const operator = accounts.get("wallet_1")!;
     const ccd011StackingPayouts = new CCD011StackingPayouts(chain, sender, "ccd011-stacking-payouts");
     // progress the chain to avoid underflow in
@@ -120,10 +122,10 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
+    // passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
-    const block = chain.mineBlock([ccd011StackingPayouts.sendStackingRewardMia(sender, 5000, lockingPeriod)]);
 
+    const block = chain.mineBlock([ccd011StackingPayouts.sendStackingRewardMia(sender, 1, amount)]);
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD011StackingPayouts.ErrCode.ERR_UNAUTHORIZED);
   },
@@ -151,7 +153,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd011StackingPayouts.sendStackingRewardMia(operator, 1, 0)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_STACKING_PAYOUT_INVALID);
+    block.receipts[0].result.expectErr().expectUint(CCD011StackingPayouts.ErrCode.ERR_STACKING_PAYOUT_INVALID);
   },
 });
 

@@ -12,8 +12,8 @@
     ;; set contract as pool operator
     (try! (contract-call? .ccd011-stacking-payouts set-pool-operator (as-contract tx-sender)))
     ;; send reward to contracts
-    (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-mia u1 AMOUNT))
-    ;;(try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-nyc u0 (/ AMOUNT u2)))
+    (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-mia u0 AMOUNT))
+    ;; (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-nyc u0 (/ AMOUNT u2)))
 		(ok true)
 	)
 )
