@@ -953,22 +953,22 @@ Clarinet.test({
     const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
     // verify coinbase amounts
     const expectedAmounts = {
-      coinbaseAmountBonus: types.uint(10),
-      coinbaseAmount1: types.uint(100),
-      coinbaseAmount2: types.uint(1000),
-      coinbaseAmount3: types.uint(10000),
-      coinbaseAmount4: types.uint(100000),
-      coinbaseAmount5: types.uint(1000000),
-      coinbaseAmountDefault: types.uint(10000000),
+      cbaBonus: types.uint(10),
+      cba1: types.uint(100),
+      cba2: types.uint(1000),
+      cba3: types.uint(10000),
+      cba4: types.uint(100000),
+      cba5: types.uint(1000000),
+      cbaDefault: types.uint(10000000),
     };
     assertEquals(coinbaseInfo.amounts.expectSome().expectTuple(), expectedAmounts);
     // verify coinbase thresholds
     const expectedThresholds = {
-      coinbaseThreshold1: types.uint(50),
-      coinbaseThreshold2: types.uint(60),
-      coinbaseThreshold3: types.uint(70),
-      coinbaseThreshold4: types.uint(80),
-      coinbaseThreshold5: types.uint(90),
+      cbt1: types.uint(50),
+      cbt2: types.uint(60),
+      cbt3: types.uint(70),
+      cbt4: types.uint(80),
+      cbt5: types.uint(90),
     };
     assertEquals(coinbaseInfo.thresholds.expectSome().expectTuple(), expectedThresholds);
 
@@ -1160,28 +1160,28 @@ Clarinet.test({
     const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
     // verify coinbase amounts
     const expectedAmounts = {
-      coinbaseAmountBonus: types.uint(10),
-      coinbaseAmount1: types.uint(100),
-      coinbaseAmount2: types.uint(1000),
-      coinbaseAmount3: types.uint(10000),
-      coinbaseAmount4: types.uint(100000),
-      coinbaseAmount5: types.uint(1000000),
-      coinbaseAmountDefault: types.uint(10000000),
+      cbaBonus: types.uint(10),
+      cba1: types.uint(100),
+      cba2: types.uint(1000),
+      cba3: types.uint(10000),
+      cba4: types.uint(100000),
+      cba5: types.uint(1000000),
+      cbaDefault: types.uint(10000000),
     };
 
     // verify coinbase thresholds
     const expectedThresholds = {
-      coinbaseThreshold1: types.uint(50),
-      coinbaseThreshold2: types.uint(60),
-      coinbaseThreshold3: types.uint(70),
-      coinbaseThreshold4: types.uint(80),
-      coinbaseThreshold5: types.uint(90),
+      cbt1: types.uint(50),
+      cbt2: types.uint(60),
+      cbt3: types.uint(70),
+      cbt4: types.uint(80),
+      cbt5: types.uint(90),
     };
 
     // verify coinbase details
     const expectedDetails = {
-      coinbaseBonusPeriod: types.uint(20),
-      coinbaseEpochLength: types.uint(1),
+      bonus: types.uint(20),
+      epoch: types.uint(1),
     };
 
     // assert

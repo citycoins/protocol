@@ -38,27 +38,27 @@ const testExpectedCityDetails = (ccd005CityData: any, cityId: number, succeededA
   assertEquals(ccd005CityData.getCityActivationDetails(cityId).result.expectSome().expectTuple(), expectedStats);
 };
 
-const testExpectedCoinbaseAmount = (ccd005CityData: any, cityId: number, coinbaseAmountBonus: number, coinbaseAmount1: number, coinbaseAmount2: number, coinbaseAmount3: number, coinbaseAmount4: number, coinbaseAmount5: number, coinbaseAmountDefault: number) => {
+const testExpectedCoinbaseAmount = (ccd005CityData: any, cityId: number, cbaBonus: number, cba1: number, cba2: number, cba3: number, cba4: number, cba5: number, cbaDefault: number) => {
   const expectedStats = {
-    coinbaseAmountBonus: types.uint(coinbaseAmountBonus),
-    coinbaseAmount1: types.uint(coinbaseAmount1),
-    coinbaseAmount2: types.uint(coinbaseAmount2),
-    coinbaseAmount3: types.uint(coinbaseAmount3),
-    coinbaseAmount4: types.uint(coinbaseAmount4),
-    coinbaseAmount5: types.uint(coinbaseAmount5),
-    coinbaseAmountDefault: types.uint(coinbaseAmountDefault),
+    cbaBonus: types.uint(cbaBonus),
+    cba1: types.uint(cba1),
+    cba2: types.uint(cba2),
+    cba3: types.uint(cba3),
+    cba4: types.uint(cba4),
+    cba5: types.uint(cba5),
+    cbaDefault: types.uint(cbaDefault),
   };
   const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(cityId).result.expectTuple();
   assertEquals(coinbaseInfo.amounts.expectSome().expectTuple(), expectedStats);
 };
 
-const testExpectedCoinbaseThresholds = (ccd005CityData: any, cityId: number, coinbaseThreshold1: number, coinbaseThreshold2: number, coinbaseThreshold3: number, coinbaseThreshold4: number, coinbaseThreshold5: number) => {
+const testExpectedCoinbaseThresholds = (ccd005CityData: any, cityId: number, cbt1: number, cbt2: number, cbt3: number, cbt4: number, cbt5: number) => {
   const expectedStats = {
-    coinbaseThreshold1: types.uint(coinbaseThreshold1),
-    coinbaseThreshold2: types.uint(coinbaseThreshold2),
-    coinbaseThreshold3: types.uint(coinbaseThreshold3),
-    coinbaseThreshold4: types.uint(coinbaseThreshold4),
-    coinbaseThreshold5: types.uint(coinbaseThreshold5),
+    cbt1: types.uint(cbt1),
+    cbt2: types.uint(cbt2),
+    cbt3: types.uint(cbt3),
+    cbt4: types.uint(cbt4),
+    cbt5: types.uint(cbt5),
   };
   const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(cityId).result.expectTuple();
   assertEquals(coinbaseInfo.thresholds.expectSome().expectTuple(), expectedStats);
@@ -453,7 +453,7 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
     // assert
     const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
-    const expected = { coinbaseBonusPeriod: types.uint(20), coinbaseEpochLength: types.uint(1) };
+    const expected = { bonus: types.uint(20), epoch: types.uint(1) };
     assertEquals(coinbaseInfo.details.expectSome().expectTuple(), expected);
   },
 });

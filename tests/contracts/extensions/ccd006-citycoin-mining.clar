@@ -208,7 +208,7 @@
       (thresholds (unwrap! (get thresholds coinbaseInfo) u0))
       (amounts (unwrap! (get amounts coinbaseInfo) u0))
       (details (unwrap! (get details coinbaseInfo) u0))
-      (bonusPeriod (get coinbaseBonusPeriod details))
+      (bonusPeriod (get bonus details))
       (cityDetails (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) u0))
     )
     (asserts! (>= blockHeight (get activatedAt cityDetails)) u0)
