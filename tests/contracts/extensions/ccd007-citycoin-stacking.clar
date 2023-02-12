@@ -124,7 +124,6 @@
     (print { sender: tx-sender, caller: contract-caller })
     (try! (is-extension))
     (asserts! (is-none (get reward cycleStats)) ERR_STACKING_PAYOUT_COMPLETE)
-    ;; underflow in get-reward-cycle below
     (asserts! (< cycleId (get-reward-cycle burn-block-height)) ERR_REWARD_CYCLE_NOT_COMPLETE)
     (ok (map-set StackingStats
       { cityId: cityId, cycle: cycleId }

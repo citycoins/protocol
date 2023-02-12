@@ -162,11 +162,12 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd011-stacking-payouts: send-stacking-reward() fails if given payout cycle is earlier than current cycle",
+  name: "ccd011-stacking-payouts: send-stacking-reward() fails if sent during the current cycle",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const operator = accounts.get("wallet_2")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     const ccd011StackingPayouts = new CCD011StackingPayouts(chain, sender, "ccd011-stacking-payouts");
 
     // act
@@ -179,13 +180,52 @@ Clarinet.test({
     // set pool operator to wallet_2
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
     // add mia stacking treasury
-    //console.log(JSON.stringify(passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007), null, 2));
-    chain.mineEmptyBlock(CCD007CityStacking.REWARD_CYCLE_LENGTH * 2);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
+    // progress the chain
+    chain.mineEmptyBlock(CCD007CityStacking.REWARD_CYCLE_LENGTH * 5);
 
-    const block = chain.mineBlock([ccd011StackingPayouts.sendStackingRewardMia(operator, 1, 50000)]);
+    const currentCycle = ccd007CityStacking.getCurrentRewardCycle().result;
+    //console.log(`currentCycle: ${currentCycle}`);
+    // forgive the hackiness here
+    const currentCycleNum = +currentCycle.replace("u", "");
+    //console.log(`currentCycleNum: ${currentCycleNum}`);
+    const block = chain.mineBlock([ccd011StackingPayouts.sendStackingRewardMia(operator, currentCycleNum, 50000)]);
+    //console.log(`block\n${JSON.stringify(block, null, 2)}`);
+    // assert
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_REWARD_CYCLE_NOT_COMPLETE);
+  },
+});
 
-    //console.log(`BLOCK:\n${JSON.stringify(block, null, 2)}`);
+Clarinet.test({
+  name: "ccd011-stacking-payouts: send-stacking-reward() fails if sent for a future cycle",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const operator = accounts.get("wallet_2")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    const ccd011StackingPayouts = new CCD011StackingPayouts(chain, sender, "ccd011-stacking-payouts");
 
+    // act
+    // register MIA/NYC
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    // set activation details
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    // set activation status: true
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    // set pool operator to wallet_2
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
+    // add mia stacking treasury
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
+    // progress the chain
+    chain.mineEmptyBlock(CCD007CityStacking.REWARD_CYCLE_LENGTH * 5);
+
+    const currentCycle = ccd007CityStacking.getCurrentRewardCycle().result;
+    //console.log(`currentCycle: ${currentCycle}`);
+    // forgive the hackiness here
+    const currentCycleNum = +currentCycle.replace("u", "");
+    //console.log(`currentCycleNum: ${currentCycleNum}`);
+    const block = chain.mineBlock([ccd011StackingPayouts.sendStackingRewardMia(operator, currentCycleNum + 1, 50000)]);
+    //console.log(`block\n${JSON.stringify(block, null, 2)}`);
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_REWARD_CYCLE_NOT_COMPLETE);
   },

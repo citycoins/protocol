@@ -41,7 +41,6 @@
   (let
     ((cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id "mia") ERR_CITY_ID_NOT_FOUND)))
     (asserts! (is-eq tx-sender (var-get poolOperator)) ERR_UNAUTHORIZED)
-    (print { sender: tx-sender, caller: contract-caller, operator: (var-get poolOperator) })
     (asserts! (> amount u0) ERR_STACKING_PAYOUT_INVALID)
     (try! (contract-call? .ccd007-citycoin-stacking set-stacking-reward cityId cycleId amount))
     (print {
