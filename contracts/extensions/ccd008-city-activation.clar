@@ -1,6 +1,6 @@
 ;; Title: CCD008 City Activation
 ;; Version: 1.0.0
-;; Summary: This extension allows anyone to vote on activating a city once it's been added to CCD005 City Data.
+;; Summary: Allows anyone to vote on activating a city once it's been added to CCD005 City Data.
 ;; Description: An extension contract that handles the voting process for activating a city and setting the related data.
 
 ;; TRAITS

@@ -1,7 +1,7 @@
 ;; Title: CCD011 Stacking Payouts
 ;; Version: 1.0.0
-;; Summary: A central stacking payout extension hardcoded to look up and transfer to city treasuries.
-;; Description: An extension that provides a the ability to pay out the stacking rewards for a given city to the city treasury.
+;; Summary: A central stacking payout extension that closes the cycle and pays out to the city treasury.
+;; Description: An extension that provides a the ability to pay out the stacking rewards for a given city to the city treasury by a pool operator, and updates the ccd007 cycle information for claims.
 
 ;; TRAITS
 

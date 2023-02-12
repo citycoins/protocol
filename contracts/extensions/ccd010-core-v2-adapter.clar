@@ -1,7 +1,7 @@
 ;; Title: CCD010 Core V2 Adapter
 ;; Version: 1.0.0
 ;; Summary: Simulates a core v2 contract in the CityCoins legacy protocol to mint CityCoins won by miners.
-;; Description: An extension contract that allows the DAO to mint tokens in the legacy protocol through mining.
+;; Description: An extension contract that allows the DAO to mint tokens in the legacy protocol.
 
 ;; TRAITS
 
