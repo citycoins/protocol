@@ -121,34 +121,34 @@
   )
 )
 
-(define-public (set-city-coinbase-thresholds (cityId uint) (threshold1 uint) (threshold2 uint) (threshold3 uint) (threshold4 uint) (threshold5 uint))
+(define-public (set-city-coinbase-thresholds (cityId uint) (cbt1 uint) (cbt2 uint) (cbt3 uint) (cbt4 uint) (cbt5 uint))
   (begin
     (try! (is-dao-or-extension))
     (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
-    (asserts! (and (> threshold1 u0) (> threshold2 threshold1) (> threshold3 threshold2) (> threshold4 threshold3) (> threshold5 threshold4)) ERR_INVALID_THRESHOLDS)
+    (asserts! (and (> cbt1 u0) (> cbt2 cbt1) (> cbt3 cbt2) (> cbt4 cbt3) (> cbt5 cbt4)) ERR_INVALID_THRESHOLDS)
     (ok (map-set CoinbaseThresholds cityId {
-      cbt1: threshold1,
-      cbt2: threshold2,
-      cbt3: threshold3,
-      cbt4: threshold4,
-      cbt5: threshold5
+      cbt1: cbt1,
+      cbt2: cbt2,
+      cbt3: cbt3,
+      cbt4: cbt4,
+      cbt5: cbt5
     }))
   )
 )
 
-(define-public (set-city-coinbase-amounts (cityId uint) (amountBonus uint) (amount1 uint) (amount2 uint) (amount3 uint) (amount4 uint) (amount5 uint) (amountDefault uint))
+(define-public (set-city-coinbase-amounts (cityId uint) (cbaBonus uint) (cba1 uint) (cba2 uint) (cba3 uint) (cba4 uint) (cba5 uint) (cbaDefault uint))
   (begin
     (try! (is-dao-or-extension))
     (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
-    (asserts! (and (> amountBonus u0) (> amount1 u0) (> amount2 u0) (> amount3 u0) (> amount4 u0) (> amount5 u0) (> amountDefault u0)) ERR_INVALID_AMOUNTS)
+    (asserts! (and (> cbaBonus u0) (> cba1 u0) (> cba2 u0) (> cba3 u0) (> cba4 u0) (> cba5 u0) (> cbaDefault u0)) ERR_INVALID_AMOUNTS)
     (ok (map-set CoinbaseAmounts cityId {
-      cbaBonus: amountBonus,
-      cba1: amount1,
-      cba2: amount2,
-      cba3: amount3,
-      cba4: amount4,
-      cba5: amount5,
-      cbaDefault: amountDefault
+      cbaBonus: cbaBonus,
+      cba1: cba1,
+      cba2: cba2,
+      cba3: cba3,
+      cba4: cba4,
+      cba5: cba5,
+      cbaDefault: cbaDefault
     }))
   )
 )
