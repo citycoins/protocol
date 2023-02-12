@@ -68,7 +68,7 @@
 
 (define-map CoinbaseDetails
   uint
-  { coinbaseBonusPeriod: uint, coinbaseEpochLength: uint }
+  { bonus: uint, epoch: uint }
 )
 
 ;; PUBLIC FUNCTIONS
@@ -159,8 +159,8 @@
     (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
     (asserts! (and (> bonusPeriod u0) (> epochLength u0)) ERR_INVALID_DETAILS)
     (ok (map-set CoinbaseDetails cityId {
-      coinbaseBonusPeriod: bonusPeriod,
-      coinbaseEpochLength: epochLength
+      bonus: bonusPeriod,
+      epoch: epochLength
     }))
   )
 )
