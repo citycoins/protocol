@@ -49,6 +49,7 @@
       amount: amount,
       cityId: cityId,
       cityName: "mia",
+      cycleId: cycleId
     })
     (contract-call? .ccd002-treasury-mia-stacking deposit-stx amount)
   )
@@ -65,6 +66,7 @@
       amount: amount,
       cityId: cityId,
       cityName: "nyc",
+      cycleId: cycleId
     })
     (contract-call? .ccd002-treasury-nyc-stacking deposit-stx amount)
   )
