@@ -10,14 +10,14 @@
 ;; CONSTANTS
 
 (define-constant ERR_UNAUTHORIZED (err u7000))
-(define-constant ERR_INVALID_STACKING_PARAMS (err u7001))
-(define-constant ERR_REWARD_CYCLE_NOT_COMPLETE (err u7002))
-(define-constant ERR_NOTHING_TO_CLAIM (err u7003))
-(define-constant ERR_STACKING_PAYOUT_COMPLETE (err u7004))
-(define-constant ERR_USER_ID_NOT_FOUND (err u7005))
-(define-constant ERR_CITY_ID_NOT_FOUND (err u7006))
-(define-constant ERR_CITY_NOT_ACTIVATED (err u7007))
-(define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7008))
+(define-constant ERR_INVALID_CITY (err u7001))
+(define-constant ERR_INVALID_PARAMS (err u7002))
+(define-constant ERR_INACTIVE_CITY (err u7003))
+(define-constant ERR_INVALID_USER (err u7004))
+(define-constant ERR_INVALID_TREASURY (err u7005))
+(define-constant ERR_INCOMPLETE_CYCLE (err u7006))
+(define-constant ERR_NOTHING_TO_CLAIM (err u7007))
+(define-constant ERR_PAYOUT_COMPLETE (err u7008))
 (define-constant MAX_REWARD_CYCLES u32)
 (define-constant REWARD_CYCLE_LENGTH u2100)
 ;; MAINNET: (define-constant FIRST_STACKING_BLOCK u666050)
@@ -55,14 +55,14 @@
 (define-public (stack (cityName (string-ascii 10)) (amount uint) (lockPeriod uint))
   (let
     (
-      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
+      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_CITY))
       (user tx-sender)
       (userId (try! (as-contract (contract-call? .ccd003-user-registry get-or-create-user-id user))))
-      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
+      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
       (targetCycle (+ u1 (get-reward-cycle burn-block-height)))
     )
-    (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
-    (asserts! (and (> amount u0) (> lockPeriod u0) (<= lockPeriod MAX_REWARD_CYCLES)) ERR_INVALID_STACKING_PARAMS)
+    (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_INACTIVE_CITY)
+    (asserts! (and (> amount u0) (> lockPeriod u0) (<= lockPeriod MAX_REWARD_CYCLES)) ERR_INVALID_PARAMS)
     (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) targetCycle)
     (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u1))
     (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u2))
@@ -118,13 +118,13 @@
 (define-public (set-stacking-reward (cityId uint) (cycleId uint) (amount uint))
   (let
     (
-      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
+      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
       (cycleStats (get-stacking-stats cityId cycleId))
     )
     (print { sender: tx-sender, caller: contract-caller })
     (try! (is-extension))
-    (asserts! (is-none (get reward cycleStats)) ERR_STACKING_PAYOUT_COMPLETE)
-    (asserts! (< cycleId (get-reward-cycle burn-block-height)) ERR_REWARD_CYCLE_NOT_COMPLETE)
+    (asserts! (is-none (get reward cycleStats)) ERR_PAYOUT_COMPLETE)
+    (asserts! (< cycleId (get-reward-cycle burn-block-height)) ERR_INCOMPLETE_CYCLE)
     (ok (map-set StackingStats
       { cityId: cityId, cycle: cycleId }
       (merge cycleStats { reward: (some amount) })
@@ -135,14 +135,14 @@
 (define-public (claim-stacking-reward (cityName (string-ascii 10)) (targetCycle uint))
   (let
     (
-      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
+      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_CITY))
       (user tx-sender)
-      (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))
+      (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_USER))
       (stacker (get-stacker cityId targetCycle userId))
       (reward (unwrap! (get-stacking-reward cityId userId targetCycle) ERR_NOTHING_TO_CLAIM))
       (claimable (get claimable stacker))
     )
-    (asserts! (< targetCycle (get-reward-cycle burn-block-height)) ERR_REWARD_CYCLE_NOT_COMPLETE)
+    (asserts! (< targetCycle (get-reward-cycle burn-block-height)) ERR_INCOMPLETE_CYCLE)
     (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
     ;; contract addresses hardcoded for this version
     (and (is-eq cityName "mia")

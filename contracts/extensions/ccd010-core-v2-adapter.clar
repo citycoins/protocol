@@ -13,7 +13,7 @@
 ;; CONSTANTS
 
 (define-constant ERR_UNAUTHORIZED (err u10000))
-(define-constant ERR_FUNCTION_DISABLED (err u10001))
+(define-constant ERR_DISABLED (err u10001))
 (define-constant ERR_NOTHING_TO_MINT (err u10002))
 
 ;; PUBLIC FUNCTIONS
@@ -29,13 +29,13 @@
 ;; CITYCOINS PROTOCOL V2 FUNCTIONS
 
 ;; disabled functions
-(define-public (register-user (memo (optional (string-utf8 50)))) ERR_FUNCTION_DISABLED)
-(define-public (mine-tokens (amount uint) (memo (optional (buff 34)))) ERR_FUNCTION_DISABLED)
-(define-public (mine-many (amounts (list 200 uint))) ERR_FUNCTION_DISABLED)
-(define-public (claim-mining-reward (minerBlockHeight uint)) ERR_FUNCTION_DISABLED)
-(define-public (stack-tokens (amountTokens uint) (lockPeriod uint)) ERR_FUNCTION_DISABLED)
-(define-public (claim-stacking-reward (targetCycle uint)) ERR_FUNCTION_DISABLED)
-(define-public (shutdown-contract (stacksHeight uint)) ERR_FUNCTION_DISABLED)
+(define-public (register-user (memo (optional (string-utf8 50)))) ERR_DISABLED)
+(define-public (mine-tokens (amount uint) (memo (optional (buff 34)))) ERR_DISABLED)
+(define-public (mine-many (amounts (list 200 uint))) ERR_DISABLED)
+(define-public (claim-mining-reward (minerBlockHeight uint)) ERR_DISABLED)
+(define-public (stack-tokens (amountTokens uint) (lockPeriod uint)) ERR_DISABLED)
+(define-public (claim-stacking-reward (targetCycle uint)) ERR_DISABLED)
+(define-public (shutdown-contract (stacksHeight uint)) ERR_DISABLED)
 
 ;; backwards-compatibility
 (define-public (set-city-wallet (newCityWallet principal)) (ok true))

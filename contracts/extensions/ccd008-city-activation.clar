@@ -10,8 +10,8 @@
 ;; CONSTANTS
 
 (define-constant ERR_UNAUTHORIZED (err u8000))
-(define-constant ERR_ACTIVATION_DETAILS_NOT_FOUND (err u8001))
-(define-constant ERR_CITY_ALREADY_ACTIVE (err u8002))
+(define-constant ERR_NO_ACTIVATION_DETAILS (err u8001))
+(define-constant ERR_ACTIVE_CITY (err u8002))
 (define-constant ERR_ALREADY_VOTED (err u8003))
 
 ;; DATA MAPS
@@ -38,10 +38,10 @@
 (define-public (activate-city (cityId uint) (memo (optional (string-ascii 100))))
   (let
     (
-      (details (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_ACTIVATION_DETAILS_NOT_FOUND))
+      (details (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_NO_ACTIVATION_DETAILS))
       (signals (+ (get-city-activation-signals cityId) u1))
     )
-    (asserts! (not (contract-call? .ccd005-city-data is-city-activated cityId)) ERR_CITY_ALREADY_ACTIVE)
+    (asserts! (not (contract-call? .ccd005-city-data is-city-activated cityId)) ERR_ACTIVE_CITY)
     (map-set CityActivationSignals cityId signals)
     (asserts! (map-insert CityActivationVoters
       { cityId: cityId, signaler: tx-sender } true)

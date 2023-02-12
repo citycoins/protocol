@@ -10,11 +10,11 @@
 ;; CONSTANTS
 
 (define-constant ERR_UNAUTHORIZED (err u5000))
-(define-constant ERR_TREASURY_ALREADY_EXISTS (err u5001))
+(define-constant ERR_INVALID_CITY (err u5001))
 (define-constant ERR_INVALID_THRESHOLDS (err u5002))
 (define-constant ERR_INVALID_AMOUNTS (err u5003))
 (define-constant ERR_INVALID_DETAILS (err u5004))
-(define-constant ERR_INVALID_CITY (err u5005))
+(define-constant ERR_TREASURY_EXISTS (err u5005))
 
 ;; DATA MAPS
 
@@ -111,7 +111,7 @@
       ((nonce (+ u1 (get-city-treasury-nonce cityId))))
       (try! (is-dao-or-extension))
       (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
-      (asserts! (is-none (map-get? TreasuryIds { cityId: cityId, treasuryName: name })) ERR_TREASURY_ALREADY_EXISTS)
+      (asserts! (is-none (map-get? TreasuryIds { cityId: cityId, treasuryName: name })) ERR_TREASURY_EXISTS)
       (map-set TreasuryNonce cityId nonce)
       (map-insert TreasuryIds { cityId: cityId, treasuryName: name } nonce)
       (map-insert TreasuryNames { cityId: cityId, treasuryId: nonce } name)

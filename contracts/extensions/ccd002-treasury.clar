@@ -15,7 +15,7 @@
 ;; CONSTANTS
 
 (define-constant ERR_UNAUTHORIZED (err u2000))
-(define-constant ERR_ASSET_NOT_ALLOWED (err u2001))
+(define-constant ERR_UNKNOWN_ASSSET (err u2001))
 (define-constant TREASURY (as-contract tx-sender))
 
 ;; DATA MAPS
@@ -68,7 +68,7 @@
 
 (define-public (deposit-ft (ft <ft-trait>) (amount uint))
   (begin
-    (asserts! (is-allowed (contract-of ft)) ERR_ASSET_NOT_ALLOWED)
+    (asserts! (is-allowed (contract-of ft)) ERR_UNKNOWN_ASSSET)
     (print {
       event: "deposit-ft",
       amount: amount,
@@ -83,7 +83,7 @@
 
 (define-public (deposit-nft (nft <nft-trait>) (id uint))
   (begin
-    (asserts! (is-allowed (contract-of nft)) ERR_ASSET_NOT_ALLOWED)
+    (asserts! (is-allowed (contract-of nft)) ERR_UNKNOWN_ASSSET)
     (print {
       event: "deposit-nft",
       assetContract: (contract-of nft),
@@ -113,7 +113,7 @@
 (define-public (withdraw-ft (ft <ft-trait>) (amount uint) (recipient principal))
   (begin
     (try! (is-dao-or-extension))
-    (asserts! (is-allowed (contract-of ft)) ERR_ASSET_NOT_ALLOWED)
+    (asserts! (is-allowed (contract-of ft)) ERR_UNKNOWN_ASSSET)
     (print {
       event: "withdraw-ft",
       assetContract: (contract-of ft),
@@ -128,7 +128,7 @@
 (define-public (withdraw-nft (nft <nft-trait>) (id uint) (recipient principal))
   (begin
     (try! (is-dao-or-extension))
-    (asserts! (is-allowed (contract-of nft)) ERR_ASSET_NOT_ALLOWED)
+    (asserts! (is-allowed (contract-of nft)) ERR_UNKNOWN_ASSSET)
     (print {
       event: "withdraw-nft",
       assetContract: (contract-of nft),
