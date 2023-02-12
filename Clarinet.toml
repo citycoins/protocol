@@ -122,6 +122,9 @@ path = "contracts/extensions/ccd009-auth-v2-adapter.clar"
 [contracts.ccd010-core-v2-adapter]
 path = "contracts/extensions/ccd010-core-v2-adapter.clar"
 
+[contracts.ccd011-stacking-payouts]
+path = "contracts/extensions/ccd011-stacking-payouts.clar"
+
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
 
@@ -323,8 +326,8 @@ path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-010.clar"
 [contracts.test-ccd007-citycoin-stacking-011]
 path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-011.clar"
 
-[contracts.test-ccd007-citycoin-stacking-012]
-path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-012.clar"
+[contracts.test-ccd011-stacking-payouts-001]
+path = "tests/contracts/proposals/test-ccd011-stacking-payouts-001.clar"
 
 [repl]
 costs_version = 2

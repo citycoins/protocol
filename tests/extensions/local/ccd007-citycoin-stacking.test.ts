@@ -9,8 +9,9 @@
  */
 import { types, Account, assertEquals, Clarinet, Chain } from "../../../utils/deps.ts";
 import { constructAndPassProposal, passProposal, PROPOSALS, EXTENSIONS } from "../../../utils/common.ts";
-import { CCD007CityStacking } from "../../../models/extensions/ccd007-citycoin-stacking.model.ts";
 import { CCD002Treasury } from "../../../models/extensions/ccd002-treasury.model.ts";
+import { CCD007CityStacking } from "../../../models/extensions/ccd007-citycoin-stacking.model.ts";
+import { CCD011StackingPayouts } from "../../../models/extensions/ccd011-stacking-payouts.model.ts";
 import { CCEXTGovernanceToken } from "../../../models/external/test-ccext-governance-token.model.ts";
 
 // =============================
@@ -366,6 +367,7 @@ Clarinet.test({
     const userId = 1;
     const amountStacked = 500;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    const ccd011StackingPayouts = new CCD011StackingPayouts(chain, sender, "ccd011-stacking-payouts");
     ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
     const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-stacking");
@@ -407,7 +409,7 @@ Clarinet.test({
     // simulate pool operator sending stacking rewards for cycle 1
     // after progressing past cycle 1
     chain.mineEmptyBlock(CCD007CityStacking.REWARD_CYCLE_LENGTH * 2 + 10);
-    const block1 = chain.mineBlock([ccd007CityStacking.sendStackingReward(operator, miaCityName, 1, 150000)]);
+    const block1 = chain.mineBlock([ccd011StackingPayouts.sendStackingRewardMia(operator, 1, 150000)]);
 
     // mid point check of the stx/mia token balances
     let expected1 = {
