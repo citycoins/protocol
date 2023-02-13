@@ -34,11 +34,11 @@ export class CCD008CityActivation {
   // Read only functions
 
   getCityActivationSignals(cityId: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-city-activation-signals", [types.uint(cityId)]);
+    return this.callReadOnlyFn("get-activation-signals", [types.uint(cityId)]);
   }
 
   getCityActivationVoter(cityId: number, signaler: string): ReadOnlyFn {
-    return this.callReadOnlyFn("get-city-activation-voter", [types.uint(cityId), types.principal(signaler)]);
+    return this.callReadOnlyFn("get-activation-voter", [types.uint(cityId), types.principal(signaler)]);
   }
 
   // Extension callback
