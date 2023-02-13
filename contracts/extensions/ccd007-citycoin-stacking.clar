@@ -10,15 +10,14 @@
 ;; CONSTANTS
 
 (define-constant ERR_UNAUTHORIZED (err u7000))
-(define-constant ERR_INVALID_STACKING_PARAMS (err u7001))
-(define-constant ERR_REWARD_CYCLE_NOT_COMPLETE (err u7002))
-(define-constant ERR_NOTHING_TO_CLAIM (err u7003))
-(define-constant ERR_STACKING_PAYOUT_INVALID (err u7004))
-(define-constant ERR_STACKING_PAYOUT_COMPLETE (err u7005))
-(define-constant ERR_USER_ID_NOT_FOUND (err u7006))
-(define-constant ERR_CITY_ID_NOT_FOUND (err u7007))
-(define-constant ERR_CITY_NOT_ACTIVATED (err u7008))
-(define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7009))
+(define-constant ERR_INVALID_CITY (err u7001))
+(define-constant ERR_INVALID_PARAMS (err u7002))
+(define-constant ERR_INACTIVE_CITY (err u7003))
+(define-constant ERR_INVALID_USER (err u7004))
+(define-constant ERR_INVALID_TREASURY (err u7005))
+(define-constant ERR_INCOMPLETE_CYCLE (err u7006))
+(define-constant ERR_NOTHING_TO_CLAIM (err u7007))
+(define-constant ERR_PAYOUT_COMPLETE (err u7008))
 (define-constant MAX_REWARD_CYCLES u32)
 ;; MAINNET: (define-constant REWARD_CYCLE_LENGTH u2100)
 (define-constant REWARD_CYCLE_LENGTH u1050)
@@ -50,6 +49,10 @@
   ))
 )
 
+(define-public (is-extension)
+  (ok (asserts! (contract-call? .base-dao is-extension contract-caller) ERR_UNAUTHORIZED))
+)
+
 (define-public (callback (sender principal) (memo (buff 34)))
   (ok true)
 )
@@ -57,14 +60,14 @@
 (define-public (stack (cityName (string-ascii 10)) (amount uint) (lockPeriod uint))
   (let
     (
-      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
+      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_CITY))
       (user tx-sender)
       (userId (try! (as-contract (contract-call? .ccd003-user-registry get-or-create-user-id user))))
-      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
+      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
       (targetCycle (+ u1 (get-reward-cycle burn-block-height)))
     )
-    (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
-    (asserts! (and (> amount u0) (> lockPeriod u0) (<= lockPeriod MAX_REWARD_CYCLES)) ERR_INVALID_STACKING_PARAMS)
+    (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_INACTIVE_CITY)
+    (asserts! (and (> amount u0) (> lockPeriod u0) (<= lockPeriod MAX_REWARD_CYCLES)) ERR_INVALID_PARAMS)
     (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) targetCycle)
     (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u1))
     (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u2))
@@ -117,37 +120,18 @@
   )
 )
 
-(define-public (set-pool-operator (operator principal))
-  (begin
-    (try! (is-dao-or-extension))
-    (ok (var-set poolOperator operator))
-  )
-)
-
-(define-public (send-stacking-reward (cityName (string-ascii 10)) (targetCycle uint) (amount uint))
+(define-public (set-stacking-reward (cityId uint) (cycleId uint) (amount uint))
   (let
     (
-      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
-      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
-      (cycleStats (get-stacking-stats cityId targetCycle))
+      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
+      (cycleStats (get-stacking-stats cityId cycleId))
     )
-    (asserts! (is-eq tx-sender (var-get poolOperator)) ERR_UNAUTHORIZED)
-    (asserts! (is-none (get reward cycleStats)) ERR_STACKING_PAYOUT_COMPLETE)
-    (asserts! (< targetCycle (get-reward-cycle burn-block-height)) ERR_REWARD_CYCLE_NOT_COMPLETE)
-    (asserts! (> amount u0) ERR_STACKING_PAYOUT_INVALID)
-    ;; contract addresses hardcoded for this version
-    (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-stx amount)))
-    (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-stx amount)))
-    (print {
-      event: "stacking-reward-payout",
-      amount: amount,
-      cityId: cityId,
-      cityName: cityName,
-      cityTreasury: cityTreasury,
-      targetCycle: targetCycle,
-    })
+    (print { sender: tx-sender, caller: contract-caller })
+    (try! (is-extension))
+    (asserts! (is-none (get reward cycleStats)) ERR_PAYOUT_COMPLETE)
+    (asserts! (< cycleId (get-reward-cycle burn-block-height)) ERR_INCOMPLETE_CYCLE)
     (ok (map-set StackingStats
-      { cityId: cityId, cycle: targetCycle }
+      { cityId: cityId, cycle: cycleId }
       (merge cycleStats { reward: (some amount) })
     ))
   )
@@ -156,14 +140,14 @@
 (define-public (claim-stacking-reward (cityName (string-ascii 10)) (targetCycle uint))
   (let
     (
-      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
+      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_CITY))
       (user tx-sender)
-      (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))
+      (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_USER))
       (stacker (get-stacker cityId targetCycle userId))
       (reward (unwrap! (get-stacking-reward cityId userId targetCycle) ERR_NOTHING_TO_CLAIM))
       (claimable (get claimable stacker))
     )
-    (asserts! (< targetCycle (get-reward-cycle burn-block-height)) ERR_REWARD_CYCLE_NOT_COMPLETE)
+    (asserts! (< targetCycle (get-reward-cycle burn-block-height)) ERR_INCOMPLETE_CYCLE)
     (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
     ;; contract addresses hardcoded for this version
     (and (is-eq cityName "mia")
@@ -246,10 +230,6 @@
       (some (/ (* (unwrap! (get reward cycleStats) none) userStacked) (get total cycleStats)))
     )
   )
-)
-
-(define-read-only (get-pool-operator)
-  (some (var-get poolOperator))
 )
 
 ;; PRIVATE FUNCTIONS

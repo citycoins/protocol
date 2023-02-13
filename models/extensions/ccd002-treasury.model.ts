@@ -1,7 +1,7 @@
 import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 enum ErrCode {
-  ERR_INSUFFICIENT_BALANCE = 1,
+  ERR_NOT_ENOUGH_FUNDS = 1,
   ERR_UNAUTHORIZED = 2000,
   ERR_UNKNOWN_ASSET,
 }

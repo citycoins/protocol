@@ -6,8 +6,6 @@
 ;; TRAITS
 
 (impl-trait .extension-trait.extension-trait)
-;; MAINNET: (impl-trait 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2)
-;; (impl-trait 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-core-v2-trait.citycoin-core-v2)
 
 ;; CONSTANTS
 
@@ -268,5 +266,3 @@
     ))
   )
 )
-
-

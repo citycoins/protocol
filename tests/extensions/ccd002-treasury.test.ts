@@ -419,7 +419,7 @@ Clarinet.test({
     gt.getBalance(recipient.address).result.expectOk().expectUint(500);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_MINING).result.expectOk().expectUint(1500);
     assertEquals(receipts.length, 3);
-    receipts[2].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_INSUFFICIENT_BALANCE);
+    receipts[2].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_NOT_ENOUGH_FUNDS);
   },
 });
 
