@@ -424,7 +424,7 @@ Clarinet.test({
     const block2 = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, miaCityName, 1)]);
 
     // assert
-    const expectedPrintMsg = `{cityId: u1, cityName: "mia", claimable: ${types.uint(500)}, event: "stacking-claim", reward: ${types.uint(150000)}, targetCycle: ${types.uint(1)}, userId: ${types.uint(userId)}}`;
+    const expectedPrintMsg = `{cityId: u1, cityName: "mia", claimable: ${types.uint(500)}, cycleId: ${types.uint(1)}, event: "stacking-claim", reward: ${types.uint(150000)}, userId: ${types.uint(userId)}}`;
     block2.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-citycoin-stacking`, expectedPrintMsg);
 
     // confirm reward cycle 2 is active

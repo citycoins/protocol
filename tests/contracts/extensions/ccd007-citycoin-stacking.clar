@@ -59,42 +59,42 @@
       (user tx-sender)
       (userId (try! (as-contract (contract-call? .ccd003-user-registry get-or-create-user-id user))))
       (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
-      (targetCycle (+ u1 (get-reward-cycle burn-block-height)))
+      (cycleId (+ u1 (get-reward-cycle burn-block-height)))
     )
     (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_INACTIVE_CITY)
     (asserts! (and (> amount u0) (> lockPeriod u0) (<= lockPeriod MAX_REWARD_CYCLES)) ERR_INVALID_PARAMS)
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) targetCycle)
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u1))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u2))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u3))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u4))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u5))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u6))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u7))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u8))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u9))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u10))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u11))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u12))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u13))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u14))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u15))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u16))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u17))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u18))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u19))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u20))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u21))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u22))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u23))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u24))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u25))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u26))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u27))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u28))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u29))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u30))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u31))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) cycleId)
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u1))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u2))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u3))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u4))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u5))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u6))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u7))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u8))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u9))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u10))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u11))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u12))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u13))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u14))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u15))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u16))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u17))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u18))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u19))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u20))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u21))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u22))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u23))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u24))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u25))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u26))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u27))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u28))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u29))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u30))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u31))
     ;; contract addresses hardcoded for this version
     ;; MAINNET: (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 amount)))
     (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-ft .test-ccext-governance-token-mia amount)))
@@ -106,8 +106,8 @@
       cityId: cityId,
       cityName: cityName,
       cityTreasury: cityTreasury,
-      firstCycle: targetCycle,
-      lastCycle: (- (+ targetCycle lockPeriod) u1),
+      firstCycle: cycleId,
+      lastCycle: (- (+ cycleId lockPeriod) u1),
       lockPeriod: lockPeriod,
       userId: userId
     })
@@ -132,17 +132,17 @@
   )
 )
 
-(define-public (claim-stacking-reward (cityName (string-ascii 10)) (targetCycle uint))
+(define-public (claim-stacking-reward (cityName (string-ascii 10)) (cycleId uint))
   (let
     (
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_CITY))
       (user tx-sender)
       (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_USER))
-      (stacker (get-stacker cityId targetCycle userId))
-      (reward (unwrap! (get-stacking-reward cityId userId targetCycle) ERR_NOTHING_TO_CLAIM))
+      (stacker (get-stacker cityId cycleId userId))
+      (reward (unwrap! (get-stacking-reward cityId userId cycleId) ERR_NOTHING_TO_CLAIM))
       (claimable (get claimable stacker))
     )
-    (asserts! (< targetCycle (get-reward-cycle burn-block-height)) ERR_INCOMPLETE_CYCLE)
+    (asserts! (< cycleId (get-reward-cycle burn-block-height)) ERR_INCOMPLETE_CYCLE)
     (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
     ;; contract addresses hardcoded for this version
     (and (is-eq cityName "mia")
@@ -165,11 +165,11 @@
       cityName: cityName,
       claimable: claimable,
       reward: reward,
-      targetCycle: targetCycle,
+      cycleId: cycleId,
       userId: userId
     })
     (ok (map-set Stacker
-      { cityId: cityId, cycle: targetCycle, userId: userId }
+      { cityId: cityId, cycle: cycleId, userId: userId }
       { stacked: u0, claimable: u0 }
     ))
   )
