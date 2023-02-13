@@ -117,8 +117,9 @@
       (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id tx-sender) ERR_INVALID_USER))
       (blockStats (get-mining-stats cityId claimHeight))
       (minerStats (get-miner cityId claimHeight userId))
-      ;; MAINNET: (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_NO_VRF_SEED))
-      (vrfSample (unwrap! (contract-call? 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_NO_VRF_SEED))
+      ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2
+      ;; TESTNET: 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-vrf-v2
+      (vrfSample (unwrap! (contract-call? .citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_NO_VRF_SEED))
       (commitTotal (get-high-value cityId claimHeight))
       (commitValid (asserts! (> commitTotal u0) ERR_NO_MINER_DATA))
       (winningValue (mod vrfSample commitTotal))
@@ -188,8 +189,9 @@
       (userId (default-to u0 (contract-call? .ccd003-user-registry get-user-id user)))
       (blockStats (get-mining-stats cityId claimHeight))
       (minerStats (get-miner cityId claimHeight userId))
-      ;; MAINNET: (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-rnd (+ (get-reward-delay) claimHeight))) none))
-      (vrfSample (unwrap! (contract-call? 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-vrf-v2 get-rnd (+ (get-reward-delay) claimHeight)) none))
+      ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2
+      ;; TESTNET: 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-vrf-v2
+      (vrfSample (unwrap! (contract-call? .citycoin-vrf-v2 get-rnd (+ (get-reward-delay) claimHeight)) none))
       (commitTotal (get-high-value cityId claimHeight))
       (winningValue (mod vrfSample commitTotal))
     )

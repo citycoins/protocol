@@ -44,9 +44,9 @@
 (define-public (activate-core-contracts (activationHeight uint))
   (begin
     (try! (is-extension))
-    ;; MAINNET: (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
     (try! (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
-    ;; MAINNET: (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
     (try! (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
     (ok true)
   )

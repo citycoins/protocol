@@ -8,9 +8,9 @@
 (impl-trait .extension-trait.extension-trait)
 (impl-trait .stacking-trait.stacking-trait)
 (impl-trait .ccd002-treasury-trait.ccd002-treasury-trait)
-;; MAINNET: (use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
+;; MAINNET: 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait
 (use-trait ft-trait 'ST1NXBK3K5YYMD6FD41MVNP3JS1GABZ8TRVX023PT.sip-010-trait-ft-standard.sip-010-trait)
-;; MAINNET: (use-trait nft-trait 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait)
+;; MAINNET: 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait
 (use-trait nft-trait 'ST1NXBK3K5YYMD6FD41MVNP3JS1GABZ8TRVX023PT.nft-trait.nft-trait)
 
 ;; CONSTANTS
@@ -152,7 +152,7 @@
       delegate: to,
       sender: tx-sender
     })
-    ;; MAINNET: (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox delegate-stx maxAmount to none none))
+    ;; MAINNET: 'SP000000000000000000002Q6VF78.pox
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox delegate-stx maxAmount to none none))
       success (ok success)
       err (err (to-uint err))
@@ -168,7 +168,7 @@
       caller: contract-caller,
       sender: tx-sender
     })
-    ;; MAINNET: (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox revoke-delegate-stx))
+    ;; MAINNET: 'SP000000000000000000002Q6VF78.pox
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox revoke-delegate-stx))
       success (ok success)
       err (err (to-uint err))
