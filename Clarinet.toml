@@ -145,6 +145,15 @@ path = "contracts/traits/proposal-trait.clar"
 [contracts.stacking-trait]
 path = "contracts/traits/stacking-trait.clar"
 
+[contracts.ccd002-treasury-trait]
+path = "contracts/traits/ccd002-treasury-trait.clar"
+
+[contracts.ccd006-citycoin-mining-trait]
+path = "contracts/traits/ccd006-citycoin-mining-trait.clar"
+
+[contracts.ccd007-citycoin-stacking-trait]
+path = "contracts/traits/ccd007-citycoin-stacking-trait.clar"
+
 # CITYCOINS EXTERNAL CONTRACTS
 
 [contracts.citycoin-vrf-v2]
