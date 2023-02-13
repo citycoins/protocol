@@ -16,9 +16,9 @@
 
 ;; DATA MAPS
 
-(define-map CityActivationSignals uint uint)
+(define-map ActivationSignals uint uint)
 
-(define-map CityActivationVoters
+(define-map ActivationVoters
   { cityId: uint, signaler: principal }
   bool
 )
@@ -39,11 +39,11 @@
   (let
     (
       (details (unwrap! (contract-call? .ccd005-city-data get-activation-details cityId) ERR_NO_ACTIVATION_DETAILS))
-      (signals (+ (get-city-activation-signals cityId) u1))
+      (signals (+ (get-activation-signals cityId) u1))
     )
     (asserts! (not (contract-call? .ccd005-city-data is-city-activated cityId)) ERR_ACTIVE_CITY)
-    (map-set CityActivationSignals cityId signals)
-    (asserts! (map-insert CityActivationVoters
+    (map-set ActivationSignals cityId signals)
+    (asserts! (map-insert ActivationVoters
       { cityId: cityId, signaler: tx-sender } true)
       ERR_ALREADY_VOTED)
     (and (is-eq signals (get threshold details))
@@ -62,11 +62,11 @@
 
 ;; READ ONLY FUNCTIONS
 
-(define-read-only (get-city-activation-signals (cityId uint))
-  (default-to u0 (map-get? CityActivationSignals cityId))
+(define-read-only (get-activation-signals (cityId uint))
+  (default-to u0 (map-get? ActivationSignals cityId))
 )
 
-(define-read-only (get-city-activation-voter (cityId uint) (voter principal))
-  (default-to false (map-get? CityActivationVoters { cityId: cityId, signaler: voter }))
+(define-read-only (get-activation-voter (cityId uint) (voter principal))
+  (default-to false (map-get? ActivationVoters { cityId: cityId, signaler: voter }))
 )
 
