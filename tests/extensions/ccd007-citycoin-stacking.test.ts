@@ -82,7 +82,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd007CityStacking.stack(sender, miaCityName, 200, lockingPeriod)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_CITY_ID_NOT_FOUND);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_CITY);
   },
 });
 
@@ -112,7 +112,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, 200, lockingPeriod)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_CITY_NOT_ACTIVATED);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INACTIVE_CITY);
   },
 });
 
@@ -142,7 +142,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, 5000, 0)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_STACKING_PARAMS);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_PARAMS);
   },
 });
 
@@ -172,7 +172,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, 5000, 33)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_STACKING_PARAMS);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_PARAMS);
   },
 });
 
@@ -202,7 +202,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, 0, lockingPeriod)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_STACKING_PARAMS);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_PARAMS);
   },
 });
 
@@ -219,7 +219,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd007CityStacking.stack(sender, miaCityName, 5000, lockingPeriod)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_CITY_TREASURY_NOT_FOUND);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_TREASURY);
   },
 });
 
@@ -241,7 +241,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd007CityStacking.stack(sender, miaCityName, 5000, lockingPeriod)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+    block.receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_UNKNOWN_ASSET);
   },
 });
 
@@ -260,7 +260,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd007CityStacking.claimStackingReward(sender, miaCityName, 1)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_CITY_ID_NOT_FOUND);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_CITY);
   },
 });
 
@@ -314,7 +314,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd007CityStacking.claimStackingReward(sender, miaCityName, 1)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_USER_ID_NOT_FOUND);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_USER);
   },
 });
 

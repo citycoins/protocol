@@ -104,7 +104,7 @@ Clarinet.test({
 
     // assert
     assertEquals(receipts.length, 1);
-    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_CITY_ID_NOT_FOUND);
+    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_INVALID_CITY);
   },
 });
 
@@ -126,7 +126,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_CITY_NOT_ACTIVATED);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_INACTIVE_CITY);
   },
 });
 
@@ -145,7 +145,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_CITY_DETAILS_NOT_FOUND);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_NO_ACTIVATION_DETAILS);
   },
 });
 
@@ -164,7 +164,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_CITY_TREASURY_NOT_FOUND);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_INVALID_TREASURY);
   },
 });
 
@@ -208,7 +208,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_INSUFFICIENT_BALANCE);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_NOT_ENOUGH_FUNDS);
   },
 });
 
@@ -252,7 +252,7 @@ Clarinet.test({
 
     // assert
     ccd002Treasury.getBalanceStx().result.expectUint(0);
-    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_INSUFFICIENT_BALANCE);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_NOT_ENOUGH_FUNDS);
   },
 });
 
@@ -277,7 +277,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_CITY_NOT_ACTIVATED);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_INACTIVE_CITY);
   },
 });
 
@@ -301,7 +301,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_INVALID_COMMIT_AMOUNTS);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_INVALID_COMMITS);
   },
 });
 
@@ -628,7 +628,7 @@ Clarinet.test({
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(100);
-    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_CITY_ID_NOT_FOUND);
+    receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_INVALID_CITY);
   },
 });
 
@@ -647,7 +647,7 @@ Clarinet.test({
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(100);
-    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_REWARD_NOT_MATURE);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_REWARD_IMMATURE);
   },
 });
 
@@ -668,7 +668,7 @@ Clarinet.test({
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
-    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_REWARD_NOT_MATURE);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_REWARD_IMMATURE);
   },
 });
 
@@ -689,12 +689,12 @@ Clarinet.test({
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
-    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_USER_ID_NOT_FOUND);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_INVALID_USER);
   },
 });
 
 Clarinet.test({
-  name: "ccd006-citycoin-mining: claim-mining-reward() returns ERR_MINER_DATA_NOT_FOUND if user did not mine in that block",
+  name: "ccd006-citycoin-mining: claim-mining-reward() returns ERR_NO_MINER_DATA if user did not mine in that block",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -712,7 +712,7 @@ Clarinet.test({
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
-    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_DATA_NOT_FOUND);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_NO_MINER_DATA);
   },
 });
 
@@ -739,7 +739,7 @@ Clarinet.test({
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(rewardDelay);
-    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_USER_ID_NOT_FOUND);
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_INVALID_USER);
   },
 });
 

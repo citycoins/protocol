@@ -2,11 +2,11 @@ import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 export enum ErrCode {
   ERR_UNAUTHORIZED = 5000,
-  ERR_TREASURY_ALREADY_EXISTS,
+  ERR_INVALID_CITY,
   ERR_INVALID_THRESHOLDS,
   ERR_INVALID_AMOUNTS,
   ERR_INVALID_DETAILS,
-  ERR_INVALID_CITY,
+  ERR_TREASURY_EXISTS,
 }
 
 export class CCD005CityData {

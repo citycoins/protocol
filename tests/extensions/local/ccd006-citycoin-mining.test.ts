@@ -252,7 +252,7 @@ Clarinet.test({
 
     // assert
     miningClaimBlock.receipts[2].result.expectOk().expectBool(true);
-    miningClaimBlock.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_DATA_NOT_FOUND);
-    miningClaimBlock.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_DATA_NOT_FOUND);
+    miningClaimBlock.receipts[1].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_NO_MINER_DATA);
+    miningClaimBlock.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_NO_MINER_DATA);
   },
 });

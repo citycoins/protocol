@@ -2,7 +2,7 @@ import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 export enum ErrCode {
   ERR_UNAUTHORIZED = 10000,
-  ERR_FUNCTION_DISABLED,
+  ERR_DISABLED,
   ERR_NOTHING_TO_MINT,
 }
 

@@ -17,7 +17,7 @@ Clarinet.test({
     const { receipts } = chain.mineBlock([ccd010CoreV2Adapter.registerUser(sender, "mia", 1)]);
 
     // assert
-    receipts[0].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_FUNCTION_DISABLED);
+    receipts[0].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_DISABLED);
   },
 });
 
@@ -32,7 +32,7 @@ Clarinet.test({
     const { receipts } = chain.mineBlock([ccd010CoreV2Adapter.mineTokens(sender, 1, "mia")]);
 
     // assert
-    receipts[0].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_FUNCTION_DISABLED);
+    receipts[0].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_DISABLED);
   },
 });
 
@@ -47,7 +47,7 @@ Clarinet.test({
     const { receipts } = chain.mineBlock([ccd010CoreV2Adapter.mineMany(sender, [1, 1, 1])]);
 
     // assert
-    receipts[0].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_FUNCTION_DISABLED);
+    receipts[0].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_DISABLED);
   },
 });
 
@@ -62,7 +62,7 @@ Clarinet.test({
     const { receipts } = chain.mineBlock([ccd010CoreV2Adapter.claimMiningReward(sender, 1)]);
 
     // assert
-    receipts[0].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_FUNCTION_DISABLED);
+    receipts[0].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_DISABLED);
   },
 });
 
@@ -77,7 +77,7 @@ Clarinet.test({
     const { receipts } = chain.mineBlock([ccd010CoreV2Adapter.stackTokens(sender, 1, 1)]);
 
     // assert
-    receipts[0].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_FUNCTION_DISABLED);
+    receipts[0].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_DISABLED);
   },
 });
 
@@ -92,7 +92,7 @@ Clarinet.test({
     const { receipts } = chain.mineBlock([ccd010CoreV2Adapter.claimStackingReward(sender, 1)]);
 
     // assert
-    receipts[0].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_FUNCTION_DISABLED);
+    receipts[0].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_DISABLED);
   },
 });
 
@@ -152,6 +152,6 @@ Clarinet.test({
     const { receipts } = chain.mineBlock([ccd010CoreV2Adapter.shutdownContract(sender, 100)]);
 
     // assert
-    receipts[0].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_FUNCTION_DISABLED);
+    receipts[0].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_DISABLED);
   },
 });

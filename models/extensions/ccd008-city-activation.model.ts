@@ -2,8 +2,8 @@ import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 export enum ErrCode {
   ERR_UNAUTHORIZED = 8000,
-  ERR_ACTIVATION_DETAILS_NOT_FOUND,
-  ERR_CITY_ALREADY_ACTIVE,
+  ERR_NO_ACITVATION_DETAILS,
+  ERR_ACTIVE_CITY,
   ERR_ALREADY_VOTED,
 }
 
