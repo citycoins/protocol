@@ -8,7 +8,7 @@
 
 (define-public (execute (sender principal))
 	(begin
-  	(try! (contract-call? .ccd005-city-data add-city-treasury u1 .mia-test "mia-test"))
+  	(try! (contract-call? .ccd005-city-data add-treasury u1 .mia-test "mia-test"))
 		(ok true)
 	)
 )

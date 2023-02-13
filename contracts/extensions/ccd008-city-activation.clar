@@ -38,7 +38,7 @@
 (define-public (activate-city (cityId uint) (memo (optional (string-ascii 100))))
   (let
     (
-      (details (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) ERR_NO_ACTIVATION_DETAILS))
+      (details (unwrap! (contract-call? .ccd005-city-data get-activation-details cityId) ERR_NO_ACTIVATION_DETAILS))
       (signals (+ (get-city-activation-signals cityId) u1))
     )
     (asserts! (not (contract-call? .ccd005-city-data is-city-activated cityId)) ERR_ACTIVE_CITY)
@@ -49,10 +49,10 @@
     (and (is-eq signals (get threshold details))
       (begin
         (try! (as-contract
-          (contract-call? .ccd005-city-data set-city-activation-status cityId true)
+          (contract-call? .ccd005-city-data set-activation-status cityId true)
         ))
         (try! (as-contract
-          (contract-call? .ccd005-city-data set-city-activation-details cityId block-height (get delay details) (+ block-height (get delay details)) (get threshold details))
+          (contract-call? .ccd005-city-data set-activation-details cityId block-height (get delay details) (+ block-height (get delay details)) (get threshold details))
         ))
       )
     )

@@ -58,7 +58,7 @@
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_CITY))
       (user tx-sender)
       (userId (try! (as-contract (contract-call? .ccd003-user-registry get-or-create-user-id user))))
-      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
+      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
       (targetCycle (+ u1 (get-reward-cycle burn-block-height)))
     )
     (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_INACTIVE_CITY)
@@ -118,7 +118,7 @@
 (define-public (set-stacking-reward (cityId uint) (cycleId uint) (amount uint))
   (let
     (
-      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
+      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
       (cycleStats (get-stacking-stats cityId cycleId))
     )
     (print { sender: tx-sender, caller: contract-caller })

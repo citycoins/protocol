@@ -83,7 +83,7 @@
   (ok true)
 )
 
-(define-public (set-city-activation-status (cityId uint) (status bool))
+(define-public (set-activation-status (cityId uint) (status bool))
   (begin
     (try! (is-dao-or-extension))
     (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
@@ -92,7 +92,7 @@
   )
 )
 
-(define-public (set-city-activation-details (cityId uint) (succeededAt uint) (delay uint) (activatedAt uint) (threshold uint))
+(define-public (set-activation-details (cityId uint) (succeededAt uint) (delay uint) (activatedAt uint) (threshold uint))
   (begin
     (try! (is-dao-or-extension))
     (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
@@ -105,10 +105,10 @@
   )
 )
 
-(define-public (add-city-treasury (cityId uint) (address principal) (name (string-ascii 10)))
+(define-public (add-treasury (cityId uint) (address principal) (name (string-ascii 10)))
   (begin
     (let
-      ((nonce (+ u1 (get-city-treasury-nonce cityId))))
+      ((nonce (+ u1 (get-treasury-nonce cityId))))
       (try! (is-dao-or-extension))
       (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
       (asserts! (is-none (map-get? TreasuryIds { cityId: cityId, treasuryName: name })) ERR_TREASURY_EXISTS)
@@ -121,7 +121,7 @@
   )
 )
 
-(define-public (set-city-coinbase-thresholds (cityId uint) (cbt1 uint) (cbt2 uint) (cbt3 uint) (cbt4 uint) (cbt5 uint))
+(define-public (set-coinbase-thresholds (cityId uint) (cbt1 uint) (cbt2 uint) (cbt3 uint) (cbt4 uint) (cbt5 uint))
   (begin
     (try! (is-dao-or-extension))
     (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
@@ -136,7 +136,7 @@
   )
 )
 
-(define-public (set-city-coinbase-amounts (cityId uint) (cbaBonus uint) (cba1 uint) (cba2 uint) (cba3 uint) (cba4 uint) (cba5 uint) (cbaDefault uint))
+(define-public (set-coinbase-amounts (cityId uint) (cbaBonus uint) (cba1 uint) (cba2 uint) (cba3 uint) (cba4 uint) (cba5 uint) (cbaDefault uint))
   (begin
     (try! (is-dao-or-extension))
     (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
@@ -153,7 +153,7 @@
   )
 )
 
-(define-public (set-city-coinbase-details (cityId uint) (bonusPeriod uint) (epochLength uint))
+(define-public (set-coinbase-details (cityId uint) (bonusPeriod uint) (epochLength uint))
   (begin
     (try! (is-dao-or-extension))
     (unwrap! (contract-call? .ccd004-city-registry get-city-name cityId) ERR_INVALID_CITY)
@@ -170,8 +170,8 @@
 (define-read-only (get-city-info (cityId uint) (treasuryName (string-ascii 10)))
   {
     activatedAt: (is-city-activated cityId),
-    details: (get-city-activation-details cityId),
-    treasury: (get-city-treasury-by-name cityId treasuryName),
+    details: (get-activation-details cityId),
+    treasury: (get-treasury-by-name cityId treasuryName),
   }
 )
 
@@ -179,34 +179,34 @@
   (default-to false (map-get? AcitvationStatus cityId))
 )
 
-(define-read-only (get-city-activation-details (cityId uint))
+(define-read-only (get-activation-details (cityId uint))
   (map-get? ActivationDetails cityId)
 )
 
-(define-read-only (get-city-treasury-nonce (cityId uint))
+(define-read-only (get-treasury-nonce (cityId uint))
   (default-to u0 (map-get? TreasuryNonce cityId))
 )
 
-(define-read-only (get-city-treasury-id (cityId uint) (treasuryName (string-ascii 10)))
+(define-read-only (get-treasury-id (cityId uint) (treasuryName (string-ascii 10)))
   (map-get? TreasuryIds { cityId: cityId, treasuryName: treasuryName })
 )
 
-(define-read-only (get-city-treasury-name (cityId uint) (treasuryId uint))
+(define-read-only (get-treasury-name (cityId uint) (treasuryId uint))
   (map-get? TreasuryNames { cityId: cityId, treasuryId: treasuryId })
 )
 
-(define-read-only (get-city-treasury-address (cityId uint) (treasuryId uint))
+(define-read-only (get-treasury-address (cityId uint) (treasuryId uint))
   (map-get? TreasuryAddress { cityId: cityId, treasuryId: treasuryId })
 )
 
-(define-read-only (get-city-treasury-by-name (cityId uint) (treasuryName (string-ascii 10)))
+(define-read-only (get-treasury-by-name (cityId uint) (treasuryName (string-ascii 10)))
   (let
     ((treasuryId (unwrap! (map-get? TreasuryIds { cityId: cityId, treasuryName: treasuryName }) none)))
     (map-get? TreasuryAddress { cityId: cityId, treasuryId: treasuryId })
   )
 )
 
-(define-read-only (get-city-coinbase-info (cityId uint))
+(define-read-only (get-coinbase-info (cityId uint))
   {
     thresholds: (map-get? CoinbaseThresholds cityId),
     amounts: (map-get? CoinbaseAmounts cityId),

@@ -9,7 +9,7 @@
 (define-public (execute (sender principal))
 	(begin
 		;; tests failure to be able to set sunset height less than current block height
-		(try! (contract-call? .ccd001-direct-execute set-sunset-block-height u1))
+		(try! (contract-call? .ccd001-direct-execute set-sunset-block u1))
 		(ok true)
 	)
 )

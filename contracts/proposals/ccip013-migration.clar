@@ -38,32 +38,32 @@
       (nycAmounts (unwrap! (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2 get-coinbase-amounts) ERR_PANIC))
     )
     ;; set city activation details
-    (try! (contract-call? .ccd005-city-data set-city-activation-details miaId
+    (try! (contract-call? .ccd005-city-data set-activation-details miaId
       block-height
       miaActivationDelay
       miaActivationBlock
       miaActivationThreshold
     ))
-    (try! (contract-call? .ccd005-city-data set-city-activation-details nycId 
+    (try! (contract-call? .ccd005-city-data set-activation-details nycId 
       block-height
       nycActivationDelay
       nycActivationBlock
       nycActivationThreshold
     ))
     ;; set city treasury details
-    (try! (contract-call? .ccd005-city-data add-city-treasury miaId .ccd002-treasury-mia-mining "mining"))
-    (try! (contract-call? .ccd005-city-data add-city-treasury miaId .ccd002-treasury-mia-stacking "stacking"))
-    (try! (contract-call? .ccd005-city-data add-city-treasury nycId .ccd002-treasury-nyc-mining "mining"))
-    (try! (contract-call? .ccd005-city-data add-city-treasury nycId .ccd002-treasury-nyc-stacking "stacking"))
+    (try! (contract-call? .ccd005-city-data add-treasury miaId .ccd002-treasury-mia-mining "mining"))
+    (try! (contract-call? .ccd005-city-data add-treasury miaId .ccd002-treasury-mia-stacking "stacking"))
+    (try! (contract-call? .ccd005-city-data add-treasury nycId .ccd002-treasury-nyc-mining "mining"))
+    (try! (contract-call? .ccd005-city-data add-treasury nycId .ccd002-treasury-nyc-stacking "stacking"))
     ;; set city coinbase thresholds
-    (try! (contract-call? .ccd005-city-data set-city-coinbase-thresholds miaId 
+    (try! (contract-call? .ccd005-city-data set-coinbase-thresholds miaId 
       (get coinbaseThreshold1 miaThresholds)
       (get coinbaseThreshold2 miaThresholds)
       (get coinbaseThreshold3 miaThresholds)
       (get coinbaseThreshold4 miaThresholds)
       (get coinbaseThreshold5 miaThresholds)
     ))
-    (try! (contract-call? .ccd005-city-data set-city-coinbase-thresholds nycId 
+    (try! (contract-call? .ccd005-city-data set-coinbase-thresholds nycId 
       (get coinbaseThreshold1 nycThresholds)
       (get coinbaseThreshold2 nycThresholds)
       (get coinbaseThreshold3 nycThresholds)
@@ -71,7 +71,7 @@
       (get coinbaseThreshold5 nycThresholds)
     ))
     ;; set city coinbase amounts
-    (try! (contract-call? .ccd005-city-data set-city-coinbase-amounts miaId 
+    (try! (contract-call? .ccd005-city-data set-coinbase-amounts miaId 
       (get coinbaseAmountBonus miaAmounts)
       (get coinbaseAmount1 miaAmounts)
       (get coinbaseAmount2 miaAmounts)
@@ -80,7 +80,7 @@
       (get coinbaseAmount5 miaAmounts)
       (get coinbaseAmountDefault miaAmounts)
     ))
-    (try! (contract-call? .ccd005-city-data set-city-coinbase-amounts nycId 
+    (try! (contract-call? .ccd005-city-data set-coinbase-amounts nycId 
       (get coinbaseAmountBonus nycAmounts)
       (get coinbaseAmount1 nycAmounts)
       (get coinbaseAmount2 nycAmounts)
@@ -91,8 +91,8 @@
     ))
     ;; set city coinbase details
     ;; same as TOKEN_BONUS_PERIOD and TOKEN_EPOCH_LENGTH in token contracts
-    (try! (contract-call? .ccd005-city-data set-city-coinbase-details miaId u10000 u25000))
-    (try! (contract-call? .ccd005-city-data set-city-coinbase-details nycId u10000 u25000))
+    (try! (contract-call? .ccd005-city-data set-coinbase-details miaId u10000 u25000))
+    (try! (contract-call? .ccd005-city-data set-coinbase-details nycId u10000 u25000))
     
     ;; setup core contract upgrade using ccd009 adapter
 

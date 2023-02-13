@@ -41,7 +41,7 @@ Clarinet.test({
     const ccd001DirectExecute = new CCD001DirectExecute(chain, sender);
 
     // act
-    const { receipts } = chain.mineBlock([ccd001DirectExecute.setSunsetBlockHeight(sender, 100)]);
+    const { receipts } = chain.mineBlock([ccd001DirectExecute.setSunsetBlock(sender, 100)]);
 
     // assert
     assertEquals(receipts.length, 1);
