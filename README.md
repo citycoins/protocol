@@ -4,66 +4,59 @@
 
 CityCoins give communities the power to improve and program their cities.
 
+## Purpose
+
+This repository contains the base contract for the CityCoins DAO and the related extensions required to implement [CCIP-012](https://github.com/citycoins/governance/blob/main/ccips/ccip-012/ccip-012-stabilize-emissions-and-treasuries.md) and [CCIP-013](https://github.com/citycoins/governance/blob/main/ccips/ccip-013/ccip-013-stabilize-protocol-and-simplify-contracts.md).
+
+[More information can be found in the documentation.](https://docs.citycoins.co)
+
+After the implementation of both CCIPs this repository will supersede the protocol contracts in [citycoins/contracts](https://github.com/citycoins/contracts).
+
 ## Code Management
 
-### Tests
+### Prerequisites
 
-To be able to fully unit test the functionality contracts with external references (to deployed mainnet contracts)
-are copied to a test folder - `tests/contracts/extensions` and the external references replaced by internal testable
-target contracts (or stubs). The copy / filter task is automated by running the script here;
+- [clarinet](https://github.com/hirosystems/clarinet): for checking and testing Clarity contracts
+- [lcov](https://github.com/linux-test-project/lcov) (opt): provides access to `genhtml` to view local code coverage reports
+- [deno](https://deno.land/manual@v1.30.3/getting_started/installation) (opt): provides support for Clarinet testing structure
 
-```bash
-bash scripts/copy-contracts.sh
+### Testing
+
+All tests can be run with `clarinet --test`
+
+Specific tests can be run as well:
+
+```
+clarinet --test tests/proposals/*
+clarinet --test tests/extensions/ccd006-citycoin-mining.test.ts
 ```
 
-If you are unable to execute the script, run the following command to update the permissions then try again:
+### Continuous Integration
 
-```bash
-chmod 755 scripts/copy-contracts.sh
-```
+Any pull requests opened against the `main` or `develop` branch will trigger the CI, which:
 
-The difference between running the tests with the local, filtered contracts is the following changes
-in Clarinet.toml;
-
-```bash
-[contracts.ccd006-citycoin-mining]
-path = "tests/contracts/extensions/ccd006-citycoin-mining.clar"
-
-[contracts.ccd007-citycoin-stacking]
-path = "tests/contracts/extensions/ccd007-citycoin-stacking.clar"
-```
-
-would be replaced by the lines;
-
-```bash
-[contracts.ccd006-citycoin-mining]
-path = "contracts/extensions/ccd006-citycoin-mining.clar"
-
-[contracts.ccd007-citycoin-stacking]
-path = "contracts/extensions/ccd007-citycoin-stacking.clar"
-```
-
-other contracts would follow the same pattern but these are the only two effected at time of writing. The additional tests
-which test the local functionality reside in directory;
-
-```bash
-tests/extensions/local
-```
-
-and these tests would be expected to fail if the Clarinet.toml was switched to point to the original, unfiltered, contracts.
+- checks contract syntax with `clarinet --check`
+- runs all contract tests with `clarinet test --coverage`
+- uploads code coverage to [codecov](https://app.codecov.io/gh/citycoins/protocol)
 
 ### Code Formatting
 
-The following will report and fix formatting issues;
+A `.pretterignore` and `.prettierrc` configuration exist within the repo.
+
+If you do not have prettier installed, it can be run via `npm`:
 
 ```bash
 npx prettier -c .
 npx prettier --write .
 ```
 
-### Test Code Coverage
+The first command checks the directory and reports any files that will be changed.
 
-Generate code coverage report;
+The second command writes the changes.
+
+### Code Coverage
+
+To generate a code coverage report:
 
 ```bash
 clarinet test --coverage
@@ -73,16 +66,27 @@ open coverage_report/index.html
 
 The generated files are not committed to the repository (coverage_report is git ignored).
 
-## Purpose
+### Cost Testing
 
-This repository contains the base contract for the DAO and any related extensions.
+To view the costs for all tested functions:
 
-The base DAO and DAO extensions will first be used to deploy a smart contract treasury per city with stacking capabilities following a successful vote on the changes [in CCIP-012](https://github.com/citycoins/governance/blob/main/ccips/ccip-012/ccip-012-stabilize-emissions-and-treasuries.md).
+```bash
+clarinet test --costs
+```
 
-Additional DAO extensions will be added for each part of the protocol (registration, mining, stacking) following a successful vote on the changes [in CCIP-013](https://github.com/citycoins/governance/blob/main/ccips/ccip-013/ccip-013-stabilize-protocol-and-simplify-contracts.md).
+The table output is the same format as the entries saved in the `costs/` folder.
 
-Upon completion of both CCIPs this repository will supersede the protocol contracts in [citycoins/contracts](https://github.com/citycoins/contracts).
+A manual diff is possible but requires some tweaking:
+
+1. Run `clarinet test --costs > costs/name_of_baseline`
+2. Remove everything above the line `Contract calls cost synthesis`
+3. Make any changes as part of the PR
+4. Run `clarinet test --costs > costs/name_of_change`
+5. Remove everything above the line `Contract calls cost synthesis`
+6. Run `git diff --no-index costs/name_of_baseline costs/name_of_change`
+
+This will show the results side-by-side, and is much more readable with a diff tool like [delta](https://github.com/dandavison/delta) and the results stretched across two monitors.
 
 ## Contributions
 
-All are welcome! Please get in touch via the [CityCoins Discord](https://chat.citycoins.co) or jump right in and submit a pull request.
+All are welcome! Feel free to [submit an issue](https://github.com/citycoins/protocol/issues) or [open a pull request](https://github.com/citycoins/protocol/pulls).
