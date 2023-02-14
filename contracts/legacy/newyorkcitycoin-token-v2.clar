@@ -78,7 +78,7 @@
 (define-public (activate-token (coreContract principal) (stacksHeight uint))
   (let
     (
-      (coreContractMap (try! (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 get-core-contract-info coreContract)))
+      (coreContractMap (try! (contract-call? .newyorkcitycoin-auth-v2 get-core-contract-info coreContract)))
       (threshold1 (+ stacksHeight TOKEN_BONUS_PERIOD TOKEN_EPOCH_LENGTH))         ;; 35,000 blocks
       (threshold2 (+ stacksHeight TOKEN_BONUS_PERIOD (* u3 TOKEN_EPOCH_LENGTH)))  ;; 85,000 blocks
       (threshold3 (+ stacksHeight TOKEN_BONUS_PERIOD (* u7 TOKEN_EPOCH_LENGTH)))  ;; 185,000 blocks
@@ -232,7 +232,7 @@
 (define-public (mint (amount uint) (recipient principal))
   (let
     (
-      (coreContract (try! (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 get-core-contract-info contract-caller)))
+      (coreContract (try! (contract-call? .newyorkcitycoin-auth-v2 get-core-contract-info contract-caller)))
     )
     (ft-mint? newyorkcitycoin amount recipient)
   )
@@ -248,7 +248,7 @@
 
 ;; checks if caller is Auth contract
 (define-private (is-authorized-auth)
-  (is-eq contract-caller 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2)
+  (is-eq contract-caller .newyorkcitycoin-auth-v2)
 )
 
 ;; SEND-MANY
