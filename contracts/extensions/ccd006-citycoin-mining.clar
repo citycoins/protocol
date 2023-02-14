@@ -6,7 +6,7 @@
 ;; TRAITS
 
 (impl-trait .extension-trait.extension-trait)
-(impl-trait .ccd006-citycoin-mining-trait.ccd006-citycoin-mining-trait)
+(impl-trait .ccd006-trait.ccd006-citycoin-mining-trait)
 
 ;; CONSTANTS
 

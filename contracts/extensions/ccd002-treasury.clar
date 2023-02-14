@@ -7,7 +7,7 @@
 
 (impl-trait .extension-trait.extension-trait)
 (impl-trait .stacking-trait.stacking-trait)
-(impl-trait .ccd002-treasury-trait.ccd002-treasury-trait)
+(impl-trait .ccd002-trait.ccd002-treasury-trait)
 ;; MAINNET: 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait
 (use-trait ft-trait 'ST1NXBK3K5YYMD6FD41MVNP3JS1GABZ8TRVX023PT.sip-010-trait-ft-standard.sip-010-trait)
 ;; MAINNET: 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait

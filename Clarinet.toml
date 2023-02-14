@@ -145,14 +145,14 @@ path = "contracts/traits/proposal-trait.clar"
 [contracts.stacking-trait]
 path = "contracts/traits/stacking-trait.clar"
 
-[contracts.ccd002-treasury-trait]
-path = "contracts/traits/ccd002-treasury-trait.clar"
+[contracts.ccd002-trait]
+path = "contracts/traits/ccd002-trait.clar"
 
-[contracts.ccd006-citycoin-mining-trait]
-path = "contracts/traits/ccd006-citycoin-mining-trait.clar"
+[contracts.ccd006-trait]
+path = "contracts/traits/ccd006-trait.clar"
 
-[contracts.ccd007-citycoin-stacking-trait]
-path = "contracts/traits/ccd007-citycoin-stacking-trait.clar"
+[contracts.ccd007-trait]
+path = "contracts/traits/ccd007-trait.clar"
 
 # CITYCOINS EXTERNAL CONTRACTS
 
