@@ -3,7 +3,7 @@
 
 ;; GENERAL CONFIGURATION
 
-(impl-trait 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-core-v2-trait.citycoin-core-v2)
+(impl-trait .citycoin-core-v2-trait.citycoin-core-v2)
 (define-constant CONTRACT_OWNER tx-sender)
 
 ;; ERROR CODES

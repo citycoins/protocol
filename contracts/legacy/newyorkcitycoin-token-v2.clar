@@ -3,7 +3,7 @@
 
 ;; TRAIT DEFINITIONS
 
-(impl-trait 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-token-v2-trait.citycoin-token-v2)
+(impl-trait .citycoin-token-v2-trait.citycoin-token-v2)
 
 ;; ERROR CODES
 

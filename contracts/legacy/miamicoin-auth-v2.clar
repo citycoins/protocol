@@ -5,8 +5,8 @@
 
 ;; TRAIT DEFINITIONS
 
-(use-trait coreTraitV2 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-core-v2-trait.citycoin-core-v2)
-(use-trait tokenTraitV2 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-token-v2-trait.citycoin-token-v2)
+(use-trait coreTraitV2 .citycoin-core-v2-trait.citycoin-core-v2)
+(use-trait tokenTraitV2 .citycoin-token-v2-trait.citycoin-token-v2)
 
 ;; ERRORS
 
