@@ -2,24 +2,21 @@ import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 export enum ErrCode {
   ERR_UNAUTHORIZED = 6000,
+  ERR_INVALID_CITY,
+  ERR_NO_ACTIVATION_DETAILS,
+  ERR_INACTIVE_CITY,
+  ERR_INVALID_USER,
+  ERR_INVALID_TREASURY,
   ERR_INVALID_DELAY,
-  ERR_INVALID_COMMIT_AMOUNTS,
-  ERR_INSUFFICIENT_BALANCE,
+  ERR_INVALID_COMMITS,
+  ERR_NOT_ENOUGH_FUNDS,
   ERR_ALREADY_MINED,
-  ERR_INSUFFICIENT_COMMIT,
-  ERR_REWARD_NOT_MATURE,
-  ERR_VRF_SEED_NOT_FOUND,
+  ERR_REWARD_IMMATURE,
+  ERR_NO_VRF_SEED,
   ERR_DID_NOT_MINE,
-  ERR_MINER_DATA_NOT_FOUND,
+  ERR_NO_MINER_DATA,
   ERR_ALREADY_CLAIMED,
   ERR_MINER_NOT_WINNER,
-  ERR_NOTHING_TO_MINT,
-  ERR_USER_ID_NOT_FOUND,
-  ERR_CITY_ID_NOT_FOUND,
-  ERR_CITY_NAME_NOT_FOUND,
-  ERR_CITY_NOT_ACTIVATED,
-  ERR_CITY_DETAILS_NOT_FOUND,
-  ERR_CITY_TREASURY_NOT_FOUND,
 }
 
 export class CCD006CityMining {
@@ -69,7 +66,7 @@ export class CCD006CityMining {
   }
 
   getMinerAtBlock(cityId: number, blockHeight: number, userId: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-miner-at-block", [types.uint(cityId), types.uint(blockHeight), types.uint(userId)]);
+    return this.callReadOnlyFn("get-miner", [types.uint(cityId), types.uint(blockHeight), types.uint(userId)]);
   }
 
   hasMinedAtBlock(cityId: number, blockHeight: number, userId: number): ReadOnlyFn {
@@ -77,7 +74,7 @@ export class CCD006CityMining {
   }
 
   getMiningStatsAtBlock(cityId: number, blockHeight: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-mining-stats-at-block", [types.uint(cityId), types.uint(blockHeight)]);
+    return this.callReadOnlyFn("get-mining-stats", [types.uint(cityId), types.uint(blockHeight)]);
   }
 
   getCoinbaseAmount(cityId: number, blockHeight: number): ReadOnlyFn {

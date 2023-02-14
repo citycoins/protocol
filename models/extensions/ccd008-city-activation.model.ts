@@ -2,8 +2,8 @@ import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 export enum ErrCode {
   ERR_UNAUTHORIZED = 8000,
-  ERR_ACTIVATION_DETAILS_NOT_FOUND,
-  ERR_CITY_ALREADY_ACTIVE,
+  ERR_NO_ACITVATION_DETAILS,
+  ERR_ACTIVE_CITY,
   ERR_ALREADY_VOTED,
 }
 
@@ -34,11 +34,11 @@ export class CCD008CityActivation {
   // Read only functions
 
   getCityActivationSignals(cityId: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-city-activation-signals", [types.uint(cityId)]);
+    return this.callReadOnlyFn("get-activation-signals", [types.uint(cityId)]);
   }
 
   getCityActivationVoter(cityId: number, signaler: string): ReadOnlyFn {
-    return this.callReadOnlyFn("get-city-activation-voter", [types.uint(cityId), types.principal(signaler)]);
+    return this.callReadOnlyFn("get-activation-voter", [types.uint(cityId), types.principal(signaler)]);
   }
 
   // Extension callback

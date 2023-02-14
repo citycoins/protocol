@@ -1,7 +1,7 @@
 ;; Title: CCD001 Direct Execute
 ;; Version: 1.0.0
 ;; Summary: Allows a small number of very trusted principals to immediately execute a proposal once a super majority is reached. 
-;; Description: An extension meant for the bootstrapping period of a DAO. It temporarily gives trusted principals the ability to perform a "direct execution"; meaning, they can immediately execute a proposal with the required signals. The Direct Execute extension is set with a sunset period of ~6 months from deployment. Approvers, the parameters, and sunset period may be changed by means of a future proposal.
+;; Description: An extension contract for the bootstrapping period of a DAO. It temporarily gives trusted principals the ability to perform a "direct execution"; meaning, they can immediately execute a proposal with the required signals. The Direct Execute extension is set with a sunset period of ~6 months from deployment. Approvers, the parameters, and sunset period may be changed by means of a future proposal.
 
 ;; TRAITS
 
@@ -17,7 +17,7 @@
 
 ;; DATA VARS
 
-(define-data-var sunsetBlockHeight uint (+ block-height u25920))
+(define-data-var sunsetBlock uint (+ block-height u25920))
 (define-data-var signalsRequired uint u1)
 
 ;; DATA MAPS
@@ -38,15 +38,15 @@
   (ok true)
 )
 
-(define-public (set-sunset-block-height (height uint))
+(define-public (set-sunset-block (height uint))
   (begin
     (try! (is-dao-or-extension))
     (asserts! (> height block-height) ERR_SUNSET_IN_PAST)
     (print {
-      event: "set-sunset-block-height",
+      event: "set-sunset-block",
       height: height
     })
-    (ok (var-set sunsetBlockHeight height))
+    (ok (var-set sunsetBlock height))
   )
 )
 
@@ -80,7 +80,7 @@
       (signals (+ (get-signals proposalPrincipal) (if (has-signalled proposalPrincipal tx-sender) u0 u1)))
     )
     (asserts! (is-approver tx-sender) ERR_NOT_APPROVER)
-    (asserts! (< block-height (var-get sunsetBlockHeight)) ERR_SUNSET_REACHED)
+    (asserts! (< block-height (var-get sunsetBlock)) ERR_SUNSET_REACHED)
     (and (>= signals (var-get signalsRequired))
       (try! (contract-call? .base-dao execute proposal tx-sender))
     )

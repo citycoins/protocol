@@ -1,7 +1,7 @@
 ;; Title: CCD010 Core V2 Adapter
 ;; Version: 1.0.0
 ;; Summary: Simulates a core v2 contract in the CityCoins legacy protocol to mint CityCoins won by miners.
-;; Description: An extension contract that allows the DAO to mint tokens in the legacy protocol through mining.
+;; Description: An extension contract that allows the DAO to mint tokens in the legacy protocol.
 
 ;; TRAITS
 
@@ -13,7 +13,7 @@
 ;; CONSTANTS
 
 (define-constant ERR_UNAUTHORIZED (err u10000))
-(define-constant ERR_FUNCTION_DISABLED (err u10001))
+(define-constant ERR_DISABLED (err u10001))
 (define-constant ERR_NOTHING_TO_MINT (err u10002))
 
 ;; PUBLIC FUNCTIONS
@@ -29,13 +29,13 @@
 ;; CITYCOINS PROTOCOL V2 FUNCTIONS
 
 ;; disabled functions
-(define-public (register-user (memo (optional (string-utf8 50)))) ERR_FUNCTION_DISABLED)
-(define-public (mine-tokens (amount uint) (memo (optional (buff 34)))) ERR_FUNCTION_DISABLED)
-(define-public (mine-many (amounts (list 200 uint))) ERR_FUNCTION_DISABLED)
-(define-public (claim-mining-reward (minerBlockHeight uint)) ERR_FUNCTION_DISABLED)
-(define-public (stack-tokens (amountTokens uint) (lockPeriod uint)) ERR_FUNCTION_DISABLED)
-(define-public (claim-stacking-reward (targetCycle uint)) ERR_FUNCTION_DISABLED)
-(define-public (shutdown-contract (stacksHeight uint)) ERR_FUNCTION_DISABLED)
+(define-public (register-user (memo (optional (string-utf8 50)))) ERR_DISABLED)
+(define-public (mine-tokens (amount uint) (memo (optional (buff 34)))) ERR_DISABLED)
+(define-public (mine-many (amounts (list 200 uint))) ERR_DISABLED)
+(define-public (claim-mining-reward (minerBlockHeight uint)) ERR_DISABLED)
+(define-public (stack-tokens (amountTokens uint) (lockPeriod uint)) ERR_DISABLED)
+(define-public (claim-stacking-reward (targetCycle uint)) ERR_DISABLED)
+(define-public (shutdown-contract (stacksHeight uint)) ERR_DISABLED)
 
 ;; backwards-compatibility
 (define-public (set-city-wallet (newCityWallet principal)) (ok true))
@@ -44,9 +44,9 @@
 (define-public (activate-core-contracts (activationHeight uint))
   (begin
     (try! (is-extension))
-    ;; MAINNET: (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
     (try! (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
-    ;; MAINNET: (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
     (try! (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
     (ok true)
   )

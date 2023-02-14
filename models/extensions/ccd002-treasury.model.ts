@@ -1,12 +1,9 @@
 import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 enum ErrCode {
-  ERR_INSUFFICIENT_BALANCE = 1,
+  ERR_NOT_ENOUGH_FUNDS = 1,
   ERR_UNAUTHORIZED = 2000,
-  ERR_ASSET_NOT_ALLOWED,
-  ERR_FAILED_TO_TRANSFER_STX,
-  ERR_FAILED_TO_TRANSFER_FT,
-  ERR_FAILED_TO_TRANSFER_NFT,
+  ERR_UNKNOWN_ASSET,
 }
 
 interface AllowedList {

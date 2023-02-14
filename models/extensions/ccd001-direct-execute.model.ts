@@ -28,8 +28,8 @@ export class CCD001DirectExecute {
 
   // Internal DAO functions
 
-  setSunsetBlockHeight(sender: Account, sunsetBlockHeight: number) {
-    return Tx.contractCall(this.name, "set-sunset-block-height", [types.uint(sunsetBlockHeight)], sender.address);
+  setSunsetBlock(sender: Account, height: number) {
+    return Tx.contractCall(this.name, "set-sunset-block", [types.uint(height)], sender.address);
   }
 
   setApprover(sender: Account, approver: string, status: boolean) {

@@ -6,29 +6,26 @@
 ;; TRAITS
 
 (impl-trait .extension-trait.extension-trait)
+(impl-trait .ccd007-citycoin-stacking-trait.ccd007-citycoin-stacking-trait)
 
 ;; CONSTANTS
 
 (define-constant ERR_UNAUTHORIZED (err u7000))
-(define-constant ERR_INVALID_STACKING_PARAMS (err u7001))
-(define-constant ERR_REWARD_CYCLE_NOT_COMPLETE (err u7002))
-(define-constant ERR_NOTHING_TO_CLAIM (err u7003))
-(define-constant ERR_STACKING_PAYOUT_INVALID (err u7004))
-(define-constant ERR_STACKING_PAYOUT_COMPLETE (err u7005))
-(define-constant ERR_USER_ID_NOT_FOUND (err u7006))
-(define-constant ERR_CITY_ID_NOT_FOUND (err u7007))
-(define-constant ERR_CITY_NOT_ACTIVATED (err u7008))
-(define-constant ERR_CITY_TREASURY_NOT_FOUND (err u7009))
+(define-constant ERR_INVALID_CITY (err u7001))
+(define-constant ERR_INVALID_PARAMS (err u7002))
+(define-constant ERR_INACTIVE_CITY (err u7003))
+(define-constant ERR_INVALID_USER (err u7004))
+(define-constant ERR_INVALID_TREASURY (err u7005))
+(define-constant ERR_INCOMPLETE_CYCLE (err u7006))
+(define-constant ERR_NOTHING_TO_CLAIM (err u7007))
+(define-constant ERR_PAYOUT_COMPLETE (err u7008))
 (define-constant MAX_REWARD_CYCLES u32)
-;; MAINNET: (define-constant REWARD_CYCLE_LENGTH u2100)
-(define-constant REWARD_CYCLE_LENGTH u1050)
-;; MAINNET: (define-constant FIRST_STACKING_BLOCK u666050)
-(define-constant FIRST_STACKING_BLOCK u2000000)
-
-;; DATA VARS
-
-;; MAINNET: (define-data-var poolOperator principal 'SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M)
-(define-data-var poolOperator principal 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6)
+;; MAINNET: u2100
+;; TESTNET: u1050
+(define-constant REWARD_CYCLE_LENGTH u2100)
+;; MAINNET: u666050
+;; TESTNET: u2000000
+(define-constant FIRST_STACKING_BLOCK u50)
 
 ;; DATA MAPS
 
@@ -50,6 +47,10 @@
   ))
 )
 
+(define-public (is-extension)
+  (ok (asserts! (contract-call? .base-dao is-extension contract-caller) ERR_UNAUTHORIZED))
+)
+
 (define-public (callback (sender principal) (memo (buff 34)))
   (ok true)
 )
@@ -57,59 +58,61 @@
 (define-public (stack (cityName (string-ascii 10)) (amount uint) (lockPeriod uint))
   (let
     (
-      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
+      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_CITY))
       (user tx-sender)
       (userId (try! (as-contract (contract-call? .ccd003-user-registry get-or-create-user-id user))))
-      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
-      (targetCycle (+ u1 (get-reward-cycle burn-block-height)))
+      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
+      (cycleId (+ u1 (get-reward-cycle burn-block-height)))
     )
-    (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_CITY_NOT_ACTIVATED)
-    (asserts! (and (> amount u0) (> lockPeriod u0) (<= lockPeriod MAX_REWARD_CYCLES)) ERR_INVALID_STACKING_PARAMS)
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) targetCycle)
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u1))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u2))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u3))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u4))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u5))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u6))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u7))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u8))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u9))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u10))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u11))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u12))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u13))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u14))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u15))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u16))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u17))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u18))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u19))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u20))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u21))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u22))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u23))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u24))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u25))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u26))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u27))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u28))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u29))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u30))
-    (stack-at-cycle cityId userId amount targetCycle (+ targetCycle lockPeriod) (+ targetCycle u31))
+    (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_INACTIVE_CITY)
+    (asserts! (and (> amount u0) (> lockPeriod u0) (<= lockPeriod MAX_REWARD_CYCLES)) ERR_INVALID_PARAMS)
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) cycleId)
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u1))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u2))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u3))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u4))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u5))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u6))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u7))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u8))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u9))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u10))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u11))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u12))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u13))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u14))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u15))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u16))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u17))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u18))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u19))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u20))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u21))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u22))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u23))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u24))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u25))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u26))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u27))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u28))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u29))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u30))
+    (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u31))
     ;; contract addresses hardcoded for this version
-    ;; MAINNET: (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 amount)))
-    (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-ft 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2 amount)))
-    ;; MAINNET: (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 amount)))
-    (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-ft 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2 amount)))
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
+    ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2
+    (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-ft .test-ccext-governance-token-mia amount)))
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
+    ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2
+    (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-ft .test-ccext-governance-token-nyc amount)))
     (print {
       event: "stacking",
       amountStacked: amount,
       cityId: cityId,
       cityName: cityName,
       cityTreasury: cityTreasury,
-      firstCycle: targetCycle,
-      lastCycle: (- (+ targetCycle lockPeriod) u1),
+      firstCycle: cycleId,
+      lastCycle: (- (+ cycleId lockPeriod) u1),
       lockPeriod: lockPeriod,
       userId: userId
     })
@@ -117,67 +120,50 @@
   )
 )
 
-(define-public (set-pool-operator (operator principal))
-  (begin
-    (try! (is-dao-or-extension))
-    (ok (var-set poolOperator operator))
-  )
-)
-
-(define-public (send-stacking-reward (cityName (string-ascii 10)) (targetCycle uint) (amount uint))
+(define-public (set-stacking-reward (cityId uint) (cycleId uint) (amount uint))
   (let
     (
-      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
-      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-city-treasury-by-name cityId "stacking") ERR_CITY_TREASURY_NOT_FOUND))
-      (cycleStats (get-stacking-stats cityId targetCycle))
+      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
+      (cycleStats (get-stacking-stats cityId cycleId))
     )
-    (asserts! (is-eq tx-sender (var-get poolOperator)) ERR_UNAUTHORIZED)
-    (asserts! (is-none (get reward cycleStats)) ERR_STACKING_PAYOUT_COMPLETE)
-    (asserts! (< targetCycle (get-reward-cycle burn-block-height)) ERR_REWARD_CYCLE_NOT_COMPLETE)
-    (asserts! (> amount u0) ERR_STACKING_PAYOUT_INVALID)
-    ;; contract addresses hardcoded for this version
-    (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-stx amount)))
-    (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-stx amount)))
-    (print {
-      event: "stacking-reward-payout",
-      amount: amount,
-      cityId: cityId,
-      cityName: cityName,
-      cityTreasury: cityTreasury,
-      targetCycle: targetCycle,
-    })
+    (print { sender: tx-sender, caller: contract-caller })
+    (try! (is-extension))
+    (asserts! (is-none (get reward cycleStats)) ERR_PAYOUT_COMPLETE)
+    (asserts! (< cycleId (get-reward-cycle burn-block-height)) ERR_INCOMPLETE_CYCLE)
     (ok (map-set StackingStats
-      { cityId: cityId, cycle: targetCycle }
+      { cityId: cityId, cycle: cycleId }
       (merge cycleStats { reward: (some amount) })
     ))
   )
 )
 
-(define-public (claim-stacking-reward (cityName (string-ascii 10)) (targetCycle uint))
+(define-public (claim-stacking-reward (cityName (string-ascii 10)) (cycleId uint))
   (let
     (
-      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
+      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_CITY))
       (user tx-sender)
-      (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_USER_ID_NOT_FOUND))
-      (stacker (get-stacker cityId targetCycle userId))
-      (reward (unwrap! (get-stacking-reward cityId userId targetCycle) ERR_NOTHING_TO_CLAIM))
+      (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_USER))
+      (stacker (get-stacker cityId cycleId userId))
+      (reward (unwrap! (get-stacking-reward cityId userId cycleId) ERR_NOTHING_TO_CLAIM))
       (claimable (get claimable stacker))
     )
-    (asserts! (< targetCycle (get-reward-cycle burn-block-height)) ERR_REWARD_CYCLE_NOT_COMPLETE)
+    (asserts! (< cycleId (get-reward-cycle burn-block-height)) ERR_INCOMPLETE_CYCLE)
     (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
     ;; contract addresses hardcoded for this version
     (and (is-eq cityName "mia")
       (begin
         (and (> reward u0) (try! (as-contract (contract-call? .ccd002-treasury-mia-stacking withdraw-stx reward user))))
-        ;; MAINNET: (and (> claimable u0) (try! (as-contract (contract-call? .ccd002-treasury-mia-stacking withdraw-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 claimable user))))
-        (and (> claimable u0) (try! (as-contract (contract-call? .ccd002-treasury-mia-stacking withdraw-ft 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2 claimable user))))
+        ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
+        ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2
+        (and (> claimable u0) (try! (as-contract (contract-call? .ccd002-treasury-mia-stacking withdraw-ft .test-ccext-governance-token-mia claimable user))))
       )
     )
     (and (is-eq cityName "nyc")
       (begin
         (and (> reward u0) (try! (as-contract (contract-call? .ccd002-treasury-nyc-stacking withdraw-stx reward user))))
-        ;; MAINNET: (and (> claimable u0) (try! (as-contract (contract-call? .ccd002-treasury-nyc-stacking withdraw-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 claimable user))))
-        (and (> claimable u0) (try! (as-contract (contract-call? .ccd002-treasury-nyc-stacking withdraw-ft 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2 claimable user))))
+        ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
+        ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2
+        (and (> claimable u0) (try! (as-contract (contract-call? .ccd002-treasury-nyc-stacking withdraw-ft .test-ccext-governance-token-nyc claimable user))))
       )
     )
     (print {
@@ -186,11 +172,11 @@
       cityName: cityName,
       claimable: claimable,
       reward: reward,
-      targetCycle: targetCycle,
+      cycleId: cycleId,
       userId: userId
     })
     (ok (map-set Stacker
-      { cityId: cityId, cycle: targetCycle, userId: userId }
+      { cityId: cityId, cycle: cycleId, userId: userId }
       { stacked: u0, claimable: u0 }
     ))
   )
@@ -246,10 +232,6 @@
       (some (/ (* (unwrap! (get reward cycleStats) none) userStacked) (get total cycleStats)))
     )
   )
-)
-
-(define-read-only (get-pool-operator)
-  (some (var-get poolOperator))
 )
 
 ;; PRIVATE FUNCTIONS

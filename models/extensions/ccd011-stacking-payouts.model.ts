@@ -2,8 +2,8 @@ import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 export enum ErrCode {
   ERR_UNAUTHORIZED = 11000,
-  ERR_CITY_ID_NOT_FOUND,
-  ERR_STACKING_PAYOUT_INVALID,
+  ERR_INVALID_CITY,
+  ERR_INVALID_PAYOUT,
 }
 
 export class CCD011StackingPayouts {

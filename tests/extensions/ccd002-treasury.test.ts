@@ -179,7 +179,7 @@ Clarinet.test({
 
     // assert
     assertEquals(receipts.length, 1);
-    receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+    receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_UNKNOWN_ASSET);
   },
 });
 
@@ -198,7 +198,7 @@ Clarinet.test({
 
     // assert
     assertEquals(block.receipts.length, 1);
-    block.receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+    block.receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_UNKNOWN_ASSET);
   },
 });
 
@@ -245,7 +245,7 @@ Clarinet.test({
 
     // assert
     assertEquals(block.receipts.length, 1);
-    block.receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+    block.receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_UNKNOWN_ASSET);
   },
 });
 
@@ -264,7 +264,7 @@ Clarinet.test({
 
     // assert
     assertEquals(block.receipts.length, 1);
-    block.receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+    block.receipts[0].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_UNKNOWN_ASSET);
   },
 });
 
@@ -371,7 +371,7 @@ Clarinet.test({
 
     // assert
     assertEquals(receipts.length, 4);
-    receipts[3].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+    receipts[3].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_UNKNOWN_ASSET);
   },
 });
 
@@ -390,7 +390,7 @@ Clarinet.test({
 
     // assert
     assertEquals(receipts.length, 3);
-    receipts[2].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+    receipts[2].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_UNKNOWN_ASSET);
   },
 });
 
@@ -419,7 +419,7 @@ Clarinet.test({
     gt.getBalance(recipient.address).result.expectOk().expectUint(500);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_MINING).result.expectOk().expectUint(1500);
     assertEquals(receipts.length, 3);
-    receipts[2].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_INSUFFICIENT_BALANCE);
+    receipts[2].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_NOT_ENOUGH_FUNDS);
   },
 });
 
@@ -488,7 +488,7 @@ Clarinet.test({
     // Demonstrate ownership of asset is unchanged
     nft.getOwner(tokenId).result.expectOk().expectSome().expectPrincipal(EXTENSIONS.CCD002_TREASURY_NYC_MINING);
     assertEquals(receipts.length, 4);
-    receipts[3].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+    receipts[3].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_UNKNOWN_ASSET);
   },
 });
 
@@ -515,7 +515,7 @@ Clarinet.test({
     // Demonstrate ownership of asset is unchanged
     nft.getOwner(tokenId).result.expectOk().expectSome().expectPrincipal(EXTENSIONS.CCD002_TREASURY_NYC_MINING);
     assertEquals(receipts.length, 3);
-    receipts[2].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_ASSET_NOT_ALLOWED);
+    receipts[2].result.expectErr().expectUint(CCD002Treasury.ErrCode.ERR_UNKNOWN_ASSET);
   },
 });
 

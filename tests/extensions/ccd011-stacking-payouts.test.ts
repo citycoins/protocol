@@ -80,7 +80,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd011StackingPayouts.sendStackingRewardMia(sender, 2, 5000)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD011StackingPayouts.ErrCode.ERR_CITY_ID_NOT_FOUND);
+    block.receipts[0].result.expectErr().expectUint(CCD011StackingPayouts.ErrCode.ERR_INVALID_CITY);
   },
 });
 
@@ -106,7 +106,7 @@ Clarinet.test({
     // assert
     //console.log(`pool operator: ${ccd011StackingPayouts.getPoolOperator().result}`);
     //console.log(`block:\n${JSON.stringify(block, null, 2)}}`);
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_CITY_TREASURY_NOT_FOUND);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_TREASURY);
   },
 });
 
@@ -157,7 +157,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd011StackingPayouts.sendStackingRewardMia(operator, 1, 0)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD011StackingPayouts.ErrCode.ERR_STACKING_PAYOUT_INVALID);
+    block.receipts[0].result.expectErr().expectUint(CCD011StackingPayouts.ErrCode.ERR_INVALID_PAYOUT);
   },
 });
 
@@ -192,7 +192,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd011StackingPayouts.sendStackingRewardMia(operator, currentCycleNum, 50000)]);
     //console.log(`block\n${JSON.stringify(block, null, 2)}`);
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_REWARD_CYCLE_NOT_COMPLETE);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INCOMPLETE_CYCLE);
   },
 });
 
@@ -227,7 +227,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd011StackingPayouts.sendStackingRewardMia(operator, currentCycleNum + 1, 50000)]);
     //console.log(`block\n${JSON.stringify(block, null, 2)}`);
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_REWARD_CYCLE_NOT_COMPLETE);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INCOMPLETE_CYCLE);
   },
 });
 

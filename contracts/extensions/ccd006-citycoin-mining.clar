@@ -6,29 +6,26 @@
 ;; TRAITS
 
 (impl-trait .extension-trait.extension-trait)
-;; MAINNET: (impl-trait 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2)
-(impl-trait 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-core-v2-trait.citycoin-core-v2)
+(impl-trait .ccd006-citycoin-mining-trait.ccd006-citycoin-mining-trait)
 
 ;; CONSTANTS
 
 (define-constant ERR_UNAUTHORIZED (err u6000))
-(define-constant ERR_INVALID_DELAY (err u6001))
-(define-constant ERR_INVALID_COMMIT_AMOUNTS (err u6002))
-(define-constant ERR_INSUFFICIENT_BALANCE (err u6003))
-(define-constant ERR_ALREADY_MINED (err u6004))
-(define-constant ERR_INSUFFICIENT_COMMIT (err u6005))
-(define-constant ERR_REWARD_NOT_MATURE (err u6006))
-(define-constant ERR_VRF_SEED_NOT_FOUND (err u6007))
-(define-constant ERR_DID_NOT_MINE (err u6008))
-(define-constant ERR_MINER_DATA_NOT_FOUND (err u6009))
-(define-constant ERR_ALREADY_CLAIMED (err u6010))
-(define-constant ERR_MINER_NOT_WINNER (err u6011))
-(define-constant ERR_NOTHING_TO_MINT (err u6012))
-(define-constant ERR_USER_ID_NOT_FOUND (err u6013))
-(define-constant ERR_CITY_ID_NOT_FOUND (err u6014))
-(define-constant ERR_CITY_NOT_ACTIVATED (err u6016))
-(define-constant ERR_CITY_DETAILS_NOT_FOUND (err u6017))
-(define-constant ERR_CITY_TREASURY_NOT_FOUND (err u6018))
+(define-constant ERR_INVALID_CITY (err u6001))
+(define-constant ERR_NO_ACTIVATION_DETAILS (err u6002))
+(define-constant ERR_INACTIVE_CITY (err u6003))
+(define-constant ERR_INVALID_USER (err u6004))
+(define-constant ERR_INVALID_TREASURY (err u6005))
+(define-constant ERR_INVALID_DELAY (err u6006))
+(define-constant ERR_INVALID_COMMITS (err u6007))
+(define-constant ERR_NOT_ENOUGH_FUNDS (err u6008))
+(define-constant ERR_ALREADY_MINED (err u6009))
+(define-constant ERR_REWARD_IMMATURE (err u6010))
+(define-constant ERR_NO_VRF_SEED (err u6011))
+(define-constant ERR_DID_NOT_MINE (err u6012))
+(define-constant ERR_NO_MINER_DATA (err u6013))
+(define-constant ERR_ALREADY_CLAIMED (err u6014))
+(define-constant ERR_MINER_NOT_WINNER (err u6015))
 
 ;; DATA VARS
 
@@ -36,22 +33,22 @@
 
 ;; DATA MAPS
 
-(define-map MiningStatsAtBlock
+(define-map MiningStats
   { cityId: uint, height: uint }
   { miners: uint, amount: uint, claimed: bool }
 )
 
-(define-map MinerAtBlock
+(define-map Miners
   { cityId: uint, height: uint, userId: uint }
   { commit: uint, low: uint, high: uint, winner: bool }
 )
 
-(define-map HighValueAtBlock
+(define-map HighValues
   { cityId: uint, height: uint }
   uint
 )
 
-(define-map WinnerAtBlock
+(define-map Winners
   { cityId: uint, height: uint }
   uint
 )
@@ -79,17 +76,17 @@
 (define-public (mine (cityName (string-ascii 10)) (amounts (list 200 uint)))
   (let
     (
-      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
+      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_CITY))
       (cityInfo (contract-call? .ccd005-city-data get-city-info cityId "mining"))
-      (cityDetails (unwrap! (get details cityInfo) ERR_CITY_DETAILS_NOT_FOUND))
-      (cityTreasury (unwrap! (get treasury cityInfo) ERR_CITY_TREASURY_NOT_FOUND))
+      (cityDetails (unwrap! (get details cityInfo) ERR_NO_ACTIVATION_DETAILS))
+      (cityTreasury (unwrap! (get treasury cityInfo) ERR_INVALID_TREASURY))
       (user tx-sender)
       (userId (try! (as-contract (contract-call? .ccd003-user-registry get-or-create-user-id user))))
       (totalAmount (fold + amounts u0))
     )
-    (asserts! (get activatedAt cityInfo) ERR_CITY_NOT_ACTIVATED)
-    (asserts! (>= (stx-get-balance tx-sender) totalAmount) ERR_INSUFFICIENT_BALANCE)
-    (asserts! (> (len amounts) u0) ERR_INVALID_COMMIT_AMOUNTS)
+    (asserts! (get activatedAt cityInfo) ERR_INACTIVE_CITY)
+    (asserts! (>= (stx-get-balance tx-sender) totalAmount) ERR_NOT_ENOUGH_FUNDS)
+    (asserts! (> (len amounts) u0) ERR_INVALID_COMMITS)
     (try! (fold mine-block amounts (ok {
       cityId: cityId,
       userId: userId,
@@ -114,30 +111,32 @@
 (define-public (claim-mining-reward (cityName (string-ascii 10)) (claimHeight uint))
   (let
     (
-      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_CITY_ID_NOT_FOUND))
+      (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_CITY))
       (maturityHeight (+ (get-reward-delay) claimHeight))
-      (isMature (asserts! (> block-height maturityHeight) ERR_REWARD_NOT_MATURE))
-      (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id tx-sender) ERR_USER_ID_NOT_FOUND))
-      (blockStats (get-mining-stats-at-block cityId claimHeight))
-      (minerStats (get-miner-at-block cityId claimHeight userId))
-      (vrfSample (unwrap! (contract-call? .citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_VRF_SEED_NOT_FOUND))
+      (isMature (asserts! (> block-height maturityHeight) ERR_REWARD_IMMATURE))
+      (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id tx-sender) ERR_INVALID_USER))
+      (blockStats (get-mining-stats cityId claimHeight))
+      (minerStats (get-miner cityId claimHeight userId))
+      ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2
+      ;; TESTNET: 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-vrf-v2
+      (vrfSample (unwrap! (contract-call? .citycoin-vrf-v2 get-save-rnd maturityHeight) ERR_NO_VRF_SEED))
       (commitTotal (get-high-value cityId claimHeight))
-      (commitValid (asserts! (> commitTotal u0) ERR_MINER_DATA_NOT_FOUND))
+      (commitValid (asserts! (> commitTotal u0) ERR_NO_MINER_DATA))
       (winningValue (mod vrfSample commitTotal))
     )
     (asserts! (has-mined-at-block cityId claimHeight userId) ERR_DID_NOT_MINE)
-    (asserts! (and (> (get miners blockStats) u0) (> (get commit minerStats) u0)) ERR_MINER_DATA_NOT_FOUND)
+    (asserts! (and (> (get miners blockStats) u0) (> (get commit minerStats) u0)) ERR_NO_MINER_DATA)
     (asserts! (not (get claimed blockStats)) ERR_ALREADY_CLAIMED)
     (asserts! (and (>= winningValue (get low minerStats)) (<= winningValue (get high minerStats))) ERR_MINER_NOT_WINNER)
-    (map-set MiningStatsAtBlock
+    (map-set MiningStats
       { cityId: cityId, height: claimHeight }
       (merge blockStats { claimed: true })
     )
-    (map-set MinerAtBlock
+    (map-set Miners
       { cityId: cityId, height: claimHeight, userId: userId }
       (merge minerStats { winner: true })
     )
-    (map-set WinnerAtBlock
+    (map-set Winners
       { cityId: cityId, height: claimHeight }
       userId
     )
@@ -158,40 +157,41 @@
   (var-get rewardDelay)
 )
 
-(define-read-only (get-mining-stats-at-block (cityId uint) (height uint))
+(define-read-only (get-mining-stats (cityId uint) (height uint))
   (default-to { miners: u0, amount: u0, claimed: false }
-    (map-get? MiningStatsAtBlock { cityId: cityId, height: height })
+    (map-get? MiningStats { cityId: cityId, height: height })
   )
 )
 
 (define-read-only (has-mined-at-block (cityId uint) (height uint) (userId uint))
-  (is-some (map-get? MinerAtBlock { cityId: cityId, height: height, userId: userId }))
+  (is-some (map-get? Miners { cityId: cityId, height: height, userId: userId }))
 )
 
-(define-read-only (get-miner-at-block (cityId uint) (height uint) (userId uint))
+(define-read-only (get-miner (cityId uint) (height uint) (userId uint))
   (default-to { commit: u0, low: u0, high: u0 }
-    (map-get? MinerAtBlock { cityId: cityId, height: height, userId: userId })
+    (map-get? Miners { cityId: cityId, height: height, userId: userId })
   )
 )
 
 (define-read-only (get-high-value (cityId uint) (height uint))
   (default-to u0
-    (map-get? HighValueAtBlock { cityId: cityId, height: height })
+    (map-get? HighValues { cityId: cityId, height: height })
   )
 )
 
 (define-read-only (get-block-winner (cityId uint) (height uint))
-  (map-get? WinnerAtBlock { cityId: cityId, height: height })
+  (map-get? Winners { cityId: cityId, height: height })
 )
 
 (define-read-only (is-block-winner (cityId uint) (user principal) (claimHeight uint))
   (let
     (
       (userId (default-to u0 (contract-call? .ccd003-user-registry get-user-id user)))
-      (blockStats (get-mining-stats-at-block cityId claimHeight))
-      (minerStats (get-miner-at-block cityId claimHeight userId))
-      ;; MAINNET: (vrfSample (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2 get-rnd (+ (get-reward-delay) claimHeight))) none))
-      (vrfSample (unwrap! (contract-call? 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-vrf-v2 get-rnd (+ (get-reward-delay) claimHeight)) none))
+      (blockStats (get-mining-stats cityId claimHeight))
+      (minerStats (get-miner cityId claimHeight userId))
+      ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-vrf-v2
+      ;; TESTNET: 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-vrf-v2
+      (vrfSample (unwrap! (contract-call? .citycoin-vrf-v2 get-rnd (+ (get-reward-delay) claimHeight)) none))
       (commitTotal (get-high-value cityId claimHeight))
       (winningValue (mod vrfSample commitTotal))
     )
@@ -202,28 +202,28 @@
   )
 )
 
-(define-read-only (get-coinbase-amount (cityId uint) (blockHeight uint))
+(define-read-only (get-coinbase-amount (cityId uint) (height uint))
   (let
     (
-      (coinbaseInfo (contract-call? .ccd005-city-data get-city-coinbase-info cityId))
+      (coinbaseInfo (contract-call? .ccd005-city-data get-coinbase-info cityId))
       (thresholds (unwrap! (get thresholds coinbaseInfo) u0))
       (amounts (unwrap! (get amounts coinbaseInfo) u0))
       (details (unwrap! (get details coinbaseInfo) u0))
-      (bonusPeriod (get coinbaseBonusPeriod details))
-      (cityDetails (unwrap! (contract-call? .ccd005-city-data get-city-activation-details cityId) u0))
+      (bonusPeriod (get bonus details))
+      (cityDetails (unwrap! (contract-call? .ccd005-city-data get-activation-details cityId) u0))
     )
-    (asserts! (>= blockHeight (get activatedAt cityDetails)) u0)
-    (asserts! (> blockHeight (get coinbaseThreshold1 thresholds))
-      (if (<= (- blockHeight (get activatedAt cityDetails)) bonusPeriod)
-        (get coinbaseAmountBonus amounts)
-        (get coinbaseAmount1 amounts)
+    (asserts! (>= height (get activatedAt cityDetails)) u0)
+    (asserts! (> height (get cbt1 thresholds))
+      (if (<= (- height (get activatedAt cityDetails)) bonusPeriod)
+        (get cbaBonus amounts)
+        (get cba1 amounts)
       )
     )
-    (asserts! (> blockHeight (get coinbaseThreshold2 thresholds)) (get coinbaseAmount2 amounts))
-    (asserts! (> blockHeight (get coinbaseThreshold3 thresholds)) (get coinbaseAmount3 amounts))
-    (asserts! (> blockHeight (get coinbaseThreshold4 thresholds)) (get coinbaseAmount4 amounts))
-    (asserts! (> blockHeight (get coinbaseThreshold5 thresholds)) (get coinbaseAmount5 amounts))
-    (get coinbaseAmountDefault amounts)
+    (asserts! (> height (get cbt2 thresholds)) (get cba2 amounts))
+    (asserts! (> height (get cbt3 thresholds)) (get cba3 amounts))
+    (asserts! (> height (get cbt4 thresholds)) (get cba4 amounts))
+    (asserts! (> height (get cbt5 thresholds)) (get cba5 amounts))
+    (get cbaDefault amounts)
   )
 )
 
@@ -241,17 +241,17 @@
       (userId (get userId okReturn))
       (height (get height okReturn))
     )
-    (asserts! (> amount u0) ERR_INSUFFICIENT_COMMIT)
+    (asserts! (> amount u0) ERR_INVALID_COMMITS)
     (let
       (
-        (blockStats (get-mining-stats-at-block cityId height))
+        (blockStats (get-mining-stats cityId height))
         (vrfLowVal (get-high-value cityId height))
       )
-      (map-set MiningStatsAtBlock
+      (map-set MiningStats
         { cityId: cityId, height: height }
         { miners: (+ (get miners blockStats) u1), amount: (+ (get amount blockStats) amount), claimed: false }
       )
-      (asserts! (map-insert MinerAtBlock
+      (asserts! (map-insert Miners
         { cityId: cityId, height: height, userId: userId }
         {
           commit: amount,
@@ -260,7 +260,7 @@
           winner: false
         }
       ) ERR_ALREADY_MINED)
-      (map-set HighValueAtBlock
+      (map-set HighValues
         { cityId: cityId, height: height }
         (+ vrfLowVal amount)
       )

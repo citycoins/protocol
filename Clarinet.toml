@@ -108,10 +108,10 @@ path = "contracts/extensions/ccd004-city-registry.clar"
 path = "contracts/extensions/ccd005-city-data.clar"
 
 [contracts.ccd006-citycoin-mining]
-path = "tests/contracts/extensions/ccd006-citycoin-mining.clar"
+path = "contracts/extensions/ccd006-citycoin-mining.clar"
 
 [contracts.ccd007-citycoin-stacking]
-path = "tests/contracts/extensions/ccd007-citycoin-stacking.clar"
+path = "contracts/extensions/ccd007-citycoin-stacking.clar"
 
 [contracts.ccd008-city-activation]
 path = "contracts/extensions/ccd008-city-activation.clar"
@@ -144,6 +144,15 @@ path = "contracts/traits/proposal-trait.clar"
 
 [contracts.stacking-trait]
 path = "contracts/traits/stacking-trait.clar"
+
+[contracts.ccd002-treasury-trait]
+path = "contracts/traits/ccd002-treasury-trait.clar"
+
+[contracts.ccd006-citycoin-mining-trait]
+path = "contracts/traits/ccd006-citycoin-mining-trait.clar"
+
+[contracts.ccd007-citycoin-stacking-trait]
+path = "contracts/traits/ccd007-citycoin-stacking-trait.clar"
 
 # CITYCOINS EXTERNAL CONTRACTS
 

@@ -1,7 +1,7 @@
 ;; Title: CCD011 Stacking Payouts
 ;; Version: 1.0.0
-;; Summary: A central stacking payout extension hardcoded to look up and transfer to city treasuries.
-;; Description: An extension that provides a the ability to pay out the stacking rewards for a given city to the city treasury.
+;; Summary: A central stacking payout extension that closes the cycle and pays out to the city treasury.
+;; Description: An extension that provides a the ability to pay out the stacking rewards for a given city to the city treasury by a pool operator, and updates the ccd007 cycle information for claims.
 
 ;; TRAITS
 
@@ -10,12 +10,12 @@
 ;; CONSTANTS
 
 (define-constant ERR_UNAUTHORIZED (err u11000))
-(define-constant ERR_CITY_ID_NOT_FOUND (err u11001))
-(define-constant ERR_STACKING_PAYOUT_INVALID (err u11002))
+(define-constant ERR_INVALID_CITY (err u11001))
+(define-constant ERR_INVALID_PAYOUT (err u11002))
 
 ;; DATA VARS
 
-;; MAINNET: (define-data-var poolOperator principal 'SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M)
+;; MAINNET: 'SPFP0018FJFD82X3KCKZRGJQZWRCV9793QTGE87M
 (define-data-var poolOperator principal 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6)
 
 ;; PUBLIC FUNCTIONS
@@ -39,9 +39,9 @@
 
 (define-public (send-stacking-reward-mia (cycleId uint) (amount uint))
   (let
-    ((cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id "mia") ERR_CITY_ID_NOT_FOUND)))
+    ((cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id "mia") ERR_INVALID_CITY)))
     (asserts! (is-eq tx-sender (var-get poolOperator)) ERR_UNAUTHORIZED)
-    (asserts! (> amount u0) ERR_STACKING_PAYOUT_INVALID)
+    (asserts! (> amount u0) ERR_INVALID_PAYOUT)
     (try! (contract-call? .ccd007-citycoin-stacking set-stacking-reward cityId cycleId amount))
     (print {
       event: "stacking-reward-payout",
@@ -56,9 +56,9 @@
 
 (define-public (send-stacking-reward-nyc (cycleId uint) (amount uint))
   (let
-    ((cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_CITY_ID_NOT_FOUND)))
+    ((cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_INVALID_CITY)))
     (asserts! (is-eq tx-sender (var-get poolOperator)) ERR_UNAUTHORIZED)
-    (asserts! (> amount u0) ERR_STACKING_PAYOUT_INVALID)
+    (asserts! (> amount u0) ERR_INVALID_PAYOUT)
     (try! (contract-call? .ccd007-citycoin-stacking set-stacking-reward cityId cycleId amount))
     (print {
       event: "stacking-reward-payout",

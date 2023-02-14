@@ -2,14 +2,14 @@
 ;; Version: 1.0.0
 ;; Synopsis: Test proposal for clarinet layer
 ;; Description:
-;; ccd005-city-data: set-city-activation-status() throws error if status is unchanged
-;; ccd005-city-data: set-city-activation-status() changes city status
+;; ccd005-city-data: set-activation-status() throws error if status is unchanged
+;; ccd005-city-data: set-activation-status() changes city status
 
 (impl-trait .proposal-trait.proposal-trait)
 
 (define-public (execute (sender principal))
 	(begin
-		(try! (contract-call? .ccd005-city-data set-city-activation-details u10 u10 u10 u10 u10))
+		(try! (contract-call? .ccd005-city-data set-activation-details u10 u10 u10 u10 u10))
 		(ok true)
 	)
 )

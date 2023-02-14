@@ -6,9 +6,9 @@
 ;; TRAITS
 
 (impl-trait .extension-trait.extension-trait)
-;; MAINNET: (use-trait coreTraitV2 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2)
+;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2
 (use-trait coreTraitV2 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-core-v2-trait.citycoin-core-v2)
-;; MAINNET: (use-trait tokenTraitV2 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-token-v2-trait.citycoin-token-v2)
+;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-token-v2-trait.citycoin-token-v2
 (use-trait tokenTraitV2 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-token-v2-trait.citycoin-token-v2)
 
 
@@ -32,14 +32,14 @@
 (define-public (create-job-mia (name (string-ascii 255)) (target principal))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 create-job name target))
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
     (as-contract (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 create-job name target))
   )
 )
 (define-public (create-job-nyc (name (string-ascii 255)) (target principal))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 create-job name target))
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
     (as-contract (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 create-job name target))
   )
 )
@@ -48,14 +48,14 @@
 (define-public (activate-job-mia (jobId uint))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 activate-job jobId))
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
     (as-contract (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 activate-job jobId))
   )
 )
 (define-public (activate-job-nyc (jobId uint))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 activate-job jobId))
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
     (as-contract (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 activate-job jobId))
   )
 )
@@ -64,14 +64,14 @@
 (define-public (approve-job-mia (jobId uint))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 approve-job jobId))
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
     (as-contract (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 approve-job jobId))
   )
 )
 (define-public (approve-job-nyc (jobId uint))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 approve-job jobId))
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
     (as-contract (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 approve-job jobId))
   )
 )
@@ -80,14 +80,14 @@
 (define-public (disapprove-job-mia (jobId uint))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 disapprove-job jobId))
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
     (as-contract (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 disapprove-job jobId))
   )
 )
 (define-public (disapprove-job-nyc (jobId uint))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 disapprove-job jobId))
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
     (as-contract (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 disapprove-job jobId))
   )
 )
@@ -96,14 +96,14 @@
 (define-public (add-uint-argument-mia (jobId uint) (name (string-ascii 255)) (value uint))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 add-uint-argument jobId name value))
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
     (as-contract (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 add-uint-argument jobId name value))
   )
 )
 (define-public (add-uint-argument-nyc (jobId uint) (name (string-ascii 255)) (value uint))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 add-uint-argument jobId name value))
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
     (as-contract (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 add-uint-argument jobId name value))
   )
 )
@@ -112,14 +112,14 @@
 (define-public (add-principal-argument-mia (jobId uint) (name (string-ascii 255)) (value principal))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 add-principal-argument jobId name value))
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
     (as-contract (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 add-principal-argument jobId name value))
   )
 )
 (define-public (add-principal-argument-nyc (jobId uint) (name (string-ascii 255)) (value principal))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 add-principal-argument jobId name value))
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
     (as-contract (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 add-principal-argument jobId name value))
   )
 )
@@ -131,14 +131,14 @@
 (define-public (execute-upgrade-core-contract-job-mia (jobId uint) (oldContract <coreTraitV2>) (newContract <coreTraitV2>))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 execute-upgrade-core-contract-job jobId oldContract newContract))
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
     (as-contract (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 execute-upgrade-core-contract-job jobId oldContract newContract))
   )
 )
 (define-public (execute-upgrade-core-contract-job-nyc (jobId uint) (oldContract <coreTraitV2>) (newContract <coreTraitV2>))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 execute-upgrade-core-contract-job jobId oldContract newContract))
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
     (as-contract (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 execute-upgrade-core-contract-job jobId oldContract newContract))
   )
 )
@@ -152,14 +152,14 @@
 (define-public (execute-update-coinbase-thresholds-job-mia (jobId uint) (targetCore <coreTraitV2>) (targetToken <tokenTraitV2>))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 execute-update-coinbase-thresholds-job jobId targetCore targetToken))
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
     (as-contract (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 execute-update-coinbase-thresholds-job jobId targetCore targetToken))
   )
 )
 (define-public (execute-update-coinbase-thresholds-job-nyc (jobId uint) (targetCore <coreTraitV2>) (targetToken <tokenTraitV2>))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 execute-update-coinbase-thresholds-job jobId targetCore targetToken))
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
     (as-contract (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 execute-update-coinbase-thresholds-job jobId targetCore targetToken))
   )
 )
@@ -175,14 +175,14 @@
 (define-public (execute-update-coinbase-amounts-job-mia (jobId uint) (targetCore <coreTraitV2>) (targetToken <tokenTraitV2>))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 execute-update-coinbase-amounts-job jobId targetCore targetToken))
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
     (as-contract (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 execute-update-coinbase-amounts-job jobId targetCore targetToken))
   )
 )
 (define-public (execute-update-coinbase-amounts-job-nyc (jobId uint) (targetCore <coreTraitV2>) (targetToken <tokenTraitV2>))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 execute-update-coinbase-amounts-job jobId targetCore targetToken))
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
     (as-contract (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 execute-update-coinbase-amounts-job jobId targetCore targetToken))
   )
 )
@@ -193,14 +193,14 @@
 (define-public (execute-replace-approver-job-mia (jobId uint))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2 execute-replace-approver-job jobId))
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
     (as-contract (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 execute-replace-approver-job jobId))
   )
 )
 (define-public (execute-replace-approver-job-nyc (jobId uint))
   (begin
     (try! (is-dao-or-extension))
-    ;; MAINNET: (as-contract (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2 execute-replace-approver-job jobId))
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
     (as-contract (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 execute-replace-approver-job jobId))
   )
 )
