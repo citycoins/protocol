@@ -19,6 +19,7 @@
 (define-constant ERR_INCOMPLETE_CYCLE (err u7006))
 (define-constant ERR_NOTHING_TO_CLAIM (err u7007))
 (define-constant ERR_PAYOUT_COMPLETE (err u7008))
+(define-constant ERR_STACKING_DISABLED (err u7009))
 (define-constant MAX_REWARD_CYCLES u32)
 ;; MAINNET: u2100
 ;; TESTNET: u1050
@@ -29,7 +30,7 @@
 
 ;; DATA VARS
 
-(define-data-var claimsEnabled bool false)
+(define-data-var stackingEnabled bool true)
 
 ;; DATA MAPS
 
@@ -68,6 +69,7 @@
       (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
       (cycleId (+ u1 (get-reward-cycle burn-block-height)))
     )
+    (asserts! (var-get stackingEnabled) ERR_STACKING_DISABLED)
     (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_INACTIVE_CITY)
     (asserts! (and (> amount u0) (> lockPeriod u0) (<= lockPeriod MAX_REWARD_CYCLES)) ERR_INVALID_PARAMS)
     (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) cycleId)
@@ -149,7 +151,7 @@
       (reward (unwrap! (get-stacking-reward cityId userId cycleId) ERR_NOTHING_TO_CLAIM))
       (claimable (get claimable stacker))
     )
-    (asserts! (or (var-get claimsEnabled) (< cycleId (get-reward-cycle burn-block-height))) ERR_INCOMPLETE_CYCLE)
+    (asserts! (or (not (var-get stackingEnabled)) (< cycleId (get-reward-cycle burn-block-height))) ERR_INCOMPLETE_CYCLE)
     (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
     ;; contract addresses hardcoded for this version
     (and (is-eq cityName "mia")
@@ -184,14 +186,14 @@
   )
 )
 
-(define-public (set-claim-status (status bool))
+(define-public (set-stacking-status (status bool))
   (begin
     (try! (is-dao-or-extension))
     (print {
-      event: "set-claim-status",
-      claimsEnabled: status
+      event: "set-stacking-status",
+      stackingEnabled: status
     })
-    (ok (var-set claimsEnabled status))
+    (ok (var-set stackingEnabled status))
   )
 )
 
@@ -240,15 +242,15 @@
       (stacker (get-stacker cityId cycle userId))
       (userStacked (get stacked stacker))
     )
-    (if (and (not (var-get claimsEnabled)) (or (<= (get-reward-cycle burn-block-height) cycle) (is-eq userStacked u0)))
-      none
+    (if (and (or (not (var-get stackingEnabled)) (< cycle  (get-reward-cycle burn-block-height))) (> userStacked u0))
       (some (/ (* (unwrap! (get reward cycleStats) (some u0)) userStacked) (get total cycleStats)))
+      none
     )
   )
 )
 
-(define-read-only (get-claim-status)
-  (var-get claimsEnabled)
+(define-read-only (get-stacking-status)
+  (var-get stackingEnabled)
 )
 
 ;; PRIVATE FUNCTIONS
