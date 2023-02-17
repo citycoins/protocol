@@ -3,6 +3,7 @@
  * 0. AUTHORIZATION CHECKS
  * 1. stack
  * 2. claim-stacking-reward
+ * 3. set-stacking-status
  */
 import { Account, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
 import { constructAndPassProposal, EXTENSIONS, passProposal, PROPOSALS } from "../../utils/common.ts";
@@ -931,5 +932,22 @@ Clarinet.test({
     for (let i = 0; i < 10; i++) {
       ccd007CityStacking.getFirstBlockInRewardCycle(i).result.expectUint(CCD007CityStacking.REWARD_CYCLE_LENGTH * i + CCD007CityStacking.FIRST_STACKING_BLOCK);
     }
+  },
+});
+
+// =============================
+// 3. set-stacking-status
+// =============================
+
+Clarinet.test({
+  name: "ccd007-citycoin-stacking: set-stacking-status() fails when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    // act
+    const block = chain.mineBlock([ccd007CityStacking.setStackingStatus(sender, true)]);
+    // assert
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_UNAUTHORIZED);
   },
 });

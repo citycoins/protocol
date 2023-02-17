@@ -49,14 +49,15 @@ export class CCD007CityStacking {
   stack(sender: Account, cityName: string, amount: number, lockPeriod: number) {
     return Tx.contractCall(this.name, "stack", [types.ascii(cityName), types.uint(amount), types.uint(lockPeriod)], sender.address);
   }
-  /* disabled - function removed from ccd007
-  setRewardCycleLength(sender: Account, length: number) {
-    return Tx.contractCall(this.name, "set-reward-cycle-length", [types.uint(length)], sender.address);
+  setStackingStatus(sender: Account, status: boolean) {
+    return Tx.contractCall(this.name, "set-stacking-status", [types.bool(status)], sender.address);
   }
-  */
 
   // Read only functions
 
+  getStackingStatus(): ReadOnlyFn {
+    return this.callReadOnlyFn("get-stacking-status", []);
+  }
   getRewardCycleLength(): ReadOnlyFn {
     return this.callReadOnlyFn("get-reward-cycle-length", []);
   }
