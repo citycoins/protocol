@@ -10,6 +10,7 @@ export enum ErrCode {
   ERR_INCOMPLETE_CYCLE,
   ERR_NOTHING_TO_CLAIM,
   ERR_PAYOUT_COMPLETE,
+  ERR_STACKING_DISABLED,
 }
 
 export class CCD007CityStacking {

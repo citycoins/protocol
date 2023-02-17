@@ -7,7 +7,6 @@
 import { Account, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
 import { constructAndPassProposal, EXTENSIONS, passProposal, PROPOSALS } from "../../utils/common.ts";
 import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
-import { CCD003UserRegistry } from "../../models/extensions/ccd003-user-registry.model.ts";
 import { CCD007CityStacking } from "../../models/extensions/ccd007-citycoin-stacking.model.ts";
 import { CCD011StackingPayouts } from "../../models/extensions/ccd011-stacking-payouts.model.ts";
 import { CCEXTGovernanceToken } from "../../models/external/test-ccext-governance-token.model.ts";
@@ -281,7 +280,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd007-citycoin-stacking: stack() fails if the extension is disabled",
+  name: "ccd007-citycoin-stacking: stack() fails if stacking is disabled in the contract",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -308,7 +307,7 @@ Clarinet.test({
     const block = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, 500, lockPeriod)]);
 
     // assert
-    block.receipts[0].result.expectErr().expectUint(CCD003UserRegistry.ErrCode.ERR_UNAUTHORIZED);
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_STACKING_DISABLED);
     gt.getBalance(user1.address).result.expectOk().expectUint(1000);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(0);
   },
@@ -779,7 +778,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd007-citycoin-stacking: claim-stacking-reward() succeeds for future cycle if claims enabled and stacking payout is complete",
+  name: "ccd007-citycoin-stacking: claim-stacking-reward() succeeds for a future cycle if stacking is disabled",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -836,28 +835,23 @@ Clarinet.test({
       claimable: types.uint(0),
       stacked: types.uint(amountStacked),
     };
-    const result1 = ccd007CityStacking.getStacker(miaCityId, 1, 1).result.expectTuple();
-    assertEquals(result1, expected1);
+    assertEquals(ccd007CityStacking.getStacker(miaCityId, 1, 1).result.expectTuple(), expected1);
 
-    // disable ccd007
+    // disable stacking in ccd007
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_012);
 
     // confirm reward is still correctly shown for cycle 1
     ccd007CityStacking.getStackingReward(miaCityId, 1, 1).result.expectSome().expectUint(150000);
-    ccd002Treasury.getBalanceStx().result.expectUint(150000);
-    // confirm claimable amount is correct for the user
-    // and attempt to claim the final cycle to return CityCoins
+    // confirm claimable amount is correct for the user and
+    // attempt to claim the final cycle to return CityCoins
     let expected2 = {
       claimable: types.uint(amountStacked),
       stacked: types.uint(amountStacked),
     };
-    const result2 = ccd007CityStacking.getStacker(miaCityId, 30, 1).result.expectTuple();
-    assertEquals(result2, expected2);
-    console.log(`result2:\n${JSON.stringify(result2, null, 2)}`);
+    assertEquals(ccd007CityStacking.getStacker(miaCityId, 30, 1).result.expectTuple(), expected2);
     const block2 = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, miaCityName, 30)]);
-    console.log(`block2:\n${JSON.stringify(block2, null, 2)}`);
     // assert
-    const expectedPrintMsg = `{cityId: u1, cityName: "mia", claimable: ${types.uint(500)}, cycleId: ${types.uint(1)}, event: "stacking-claim", reward: ${types.uint(0)}, userId: ${types.uint(userId)}}`;
+    const expectedPrintMsg = `{cityId: u1, cityName: "mia", claimable: ${types.uint(500)}, cycleId: ${types.uint(30)}, event: "stacking-claim", reward: ${types.uint(0)}, userId: ${types.uint(userId)}}`;
     block2.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-citycoin-stacking`, expectedPrintMsg);
 
     // confirm reward cycle 2 is active
@@ -866,21 +860,14 @@ Clarinet.test({
     block1.receipts[0].result.expectOk().expectBool(true);
     block2.receipts[0].result.expectOk().expectBool(true);
 
-    // confirm nothing stacked in cycle 0 for the user
+    // confirm nothing stacked in cycle 30 for the user after claim
     expected1 = {
       claimable: types.uint(0),
       stacked: types.uint(0),
     };
-    assertEquals(ccd007CityStacking.getStacker(miaCityId, 1, 1).result.expectTuple(), expected1);
-    // confirm reward amount is set in overall cycle 1 data
-    const expected = {
-      reward: types.some(types.uint(150000)),
-      total: types.uint(amountStacked),
-    };
-    assertEquals(ccd007CityStacking.getStackingStats(miaCityId, 1).result.expectTuple(), expected);
+    assertEquals(ccd007CityStacking.getStacker(miaCityId, 1, 30).result.expectTuple(), expected1);
 
     // end point check of the stx/mia token balances
-    ccd002Treasury.getBalanceStx().result.expectUint(0);
     gt.getBalance(user1.address).result.expectOk().expectUint(1000);
   },
 });

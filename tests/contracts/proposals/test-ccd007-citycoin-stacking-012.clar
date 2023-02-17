@@ -6,8 +6,8 @@
 
 (define-public (execute (sender principal))
 	(begin
-		(try! (contract-call? .base-dao set-extension .ccd007-citycoin-stacking false))
-		(try! (contract-call? .ccd007-citycoin-stacking set-claim-status true))
+		;; (try! (contract-call? .base-dao set-extension .ccd007-citycoin-stacking false))
+		(try! (contract-call? .ccd007-citycoin-stacking set-stacking-status false))
 		(ok true)
 	)
 )
