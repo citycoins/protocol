@@ -335,6 +335,9 @@ path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-010.clar"
 [contracts.test-ccd007-citycoin-stacking-011]
 path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-011.clar"
 
+[contracts.test-ccd007-citycoin-stacking-012]
+path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-012.clar"
+
 [contracts.test-ccd011-stacking-payouts-001]
 path = "tests/contracts/proposals/test-ccd011-stacking-payouts-001.clar"
 

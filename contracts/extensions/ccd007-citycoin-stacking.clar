@@ -242,7 +242,7 @@
     )
     (if (and (not (var-get claimsEnabled)) (or (<= (get-reward-cycle burn-block-height) cycle) (is-eq userStacked u0)))
       none
-      (some (/ (* (unwrap! (get reward cycleStats) none) userStacked) (get total cycleStats)))
+      (some (/ (* (unwrap! (get reward cycleStats) (some u0)) userStacked) (get total cycleStats)))
     )
   )
 )
