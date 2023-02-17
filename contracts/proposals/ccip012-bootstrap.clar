@@ -15,7 +15,6 @@
         {extension: .ccd005-city-data, enabled: true}
         {extension: .ccd006-citycoin-mining, enabled: true}
         {extension: .ccd007-citycoin-stacking, enabled: true}
-        ;; {extension: .ccd008-city-activation, enabled: true}
         {extension: .ccd009-auth-v2-adapter, enabled: true}
         {extension: .ccd010-core-v2-adapter, enabled: true}
         {extension: .ccd011-stacking-payouts, enabled: true}
@@ -33,11 +32,16 @@
     ;; TESTNET: 'ST113N3MMPZRMJJRZH6JTHA5CB7TBZH1EH4C22GFV
     ;; TESTNET: 'ST8YRW1THF2XT8E45XXCGYKZH2B70HYH71VC7737
     ;; TESTNET: 'STX13Q7ZJDSFVDZMQ1PWDFGT4QSBMASRMCYE4NAP
-    (try! (contract-call? .ccd001-direct-execute set-approver 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5 true))
-    (try! (contract-call? .ccd001-direct-execute set-approver 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG true))
-    (try! (contract-call? .ccd001-direct-execute set-approver 'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC true))
-    (try! (contract-call? .ccd001-direct-execute set-approver 'ST2NEB84ASENDXKYGJPQW86YXQCEFEX2ZQPG87ND true))
-    (try! (contract-call? .ccd001-direct-execute set-approver 'ST2REHHS5J3CERCRBEPMGH7921Q6PYKAADT7JP2VB true))
+    ;; LOCAL: 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+    ;; LOCAL: 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
+    ;; LOCAL: 'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC
+    ;; LOCAL: 'ST2NEB84ASENDXKYGJPQW86YXQCEFEX2ZQPG87ND
+    ;; LOCAL: 'ST2REHHS5J3CERCRBEPMGH7921Q6PYKAADT7JP2VB
+    (try! (contract-call? .ccd001-direct-execute set-approver 'ST3AY0CM7SD9183QZ4Y7S2RGBZX9GQT54MJ6XY0BN true))
+    (try! (contract-call? .ccd001-direct-execute set-approver 'ST2D06VFWWTNCWHVB2FJ9KJ3EB30HFRTHB1A4BSP3 true))
+    (try! (contract-call? .ccd001-direct-execute set-approver 'ST113N3MMPZRMJJRZH6JTHA5CB7TBZH1EH4C22GFV true))
+    (try! (contract-call? .ccd001-direct-execute set-approver 'ST8YRW1THF2XT8E45XXCGYKZH2B70HYH71VC7737 true))
+    (try! (contract-call? .ccd001-direct-execute set-approver 'STX13Q7ZJDSFVDZMQ1PWDFGT4QSBMASRMCYE4NAP true))
 
     ;; set signals required to pass proposals
     (try! (contract-call? .ccd001-direct-execute set-signals-required u3))
@@ -45,6 +49,8 @@
     ;; delegate stack the STX in the mining treasuries (up to 50M STX each)
     ;; MAINNET: 'SP700C57YJFD5RGHK0GN46478WBAM2KG3A4MN2QJ
     ;; MAINNET: 'SP700C57YJFD5RGHK0GN46478WBAM2KG3A4MN2QJ
+    ;; TESTNET: 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6
+    ;; LOCAL: 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6
     (try! (contract-call? .ccd002-treasury-mia-mining delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
     (try! (contract-call? .ccd002-treasury-nyc-mining delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
 

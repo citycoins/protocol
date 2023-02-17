@@ -6,9 +6,9 @@
 ;; TRAITS
 
 (impl-trait .extension-trait.extension-trait)
-;; MAINNET: (impl-trait 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2)
-(impl-trait 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-core-v2-trait.citycoin-core-v2)
-
+;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.citycoin-core-v2
+;; TESTNET: 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6.citycoin-core-v2-trait.citycoin-core-v2
+(impl-trait .citycoin-core-v2-trait.citycoin-core-v2)
 
 ;; CONSTANTS
 
@@ -45,9 +45,11 @@
   (begin
     (try! (is-extension))
     ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
-    (try! (contract-call? 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2
+    (try! (contract-call? .miamicoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
     ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
-    (try! (contract-call? 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
+    ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2
+    (try! (contract-call? .newyorkcitycoin-auth-v2 activate-core-contract (as-contract tx-sender) activationHeight))
     (ok true)
   )
 )
@@ -58,8 +60,14 @@
     (try! (is-extension))
     (asserts! (> amount u0) ERR_NOTHING_TO_MINT)
     ;; contract addresses hardcoded for this version
-    (and (is-eq cityName "mia") (try! (as-contract (contract-call? .test-ccext-governance-token-mia mint amount recipient))))
-    (and (is-eq cityName "nyc") (try! (as-contract (contract-call? .test-ccext-governance-token-nyc mint amount recipient))))
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
+    ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2
+    ;; DEVNET: .test-ccext-governance-token-mia
+    (and (is-eq cityName "mia") (try! (as-contract (contract-call? .miamicoin-token-v2 mint amount recipient))))
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
+    ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2
+    ;; DEVNET: .test-ccext-governance-token-nyc
+    (and (is-eq cityName "nyc") (try! (as-contract (contract-call? .newyorkcitycoin-token-v2 mint amount recipient))))
     (ok true)
   )
 )
