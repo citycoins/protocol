@@ -85,32 +85,6 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd011-stacking-payouts: send-stacking-reward() fails if treasury is not set",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("wallet_2")!;
-    const amount = 1000000000;
-    const ccd011StackingPayouts = new CCD011StackingPayouts(chain, sender, "ccd011-stacking-payouts");
-
-    // act
-    // register MIA/NYC
-    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    // set activation details
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
-    // set activation status: true
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    // set pool operator to wallet_2
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
-    // passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
-    const block = chain.mineBlock([ccd011StackingPayouts.sendStackingRewardMia(sender, 1, amount)]);
-    // assert
-    //console.log(`pool operator: ${ccd011StackingPayouts.getPoolOperator().result}`);
-    //console.log(`block:\n${JSON.stringify(block, null, 2)}}`);
-    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_INVALID_TREASURY);
-  },
-});
-
-Clarinet.test({
   name: "ccd011-stacking-payouts: send-stacking-reward() fails if not called by pool operator",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange

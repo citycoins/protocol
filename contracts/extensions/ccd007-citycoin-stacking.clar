@@ -27,6 +27,10 @@
 ;; TESTNET: u2000000
 (define-constant FIRST_STACKING_BLOCK u50)
 
+;; DATA VARS
+
+(define-data-var claimsEnabled bool false)
+
 ;; DATA MAPS
 
 (define-map StackingStats
@@ -123,10 +127,8 @@
 (define-public (set-stacking-reward (cityId uint) (cycleId uint) (amount uint))
   (let
     (
-      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
       (cycleStats (get-stacking-stats cityId cycleId))
     )
-    (print { sender: tx-sender, caller: contract-caller })
     (try! (is-extension))
     (asserts! (is-none (get reward cycleStats)) ERR_PAYOUT_COMPLETE)
     (asserts! (< cycleId (get-reward-cycle burn-block-height)) ERR_INCOMPLETE_CYCLE)
@@ -147,7 +149,7 @@
       (reward (unwrap! (get-stacking-reward cityId userId cycleId) ERR_NOTHING_TO_CLAIM))
       (claimable (get claimable stacker))
     )
-    (asserts! (< cycleId (get-reward-cycle burn-block-height)) ERR_INCOMPLETE_CYCLE)
+    (asserts! (or (var-get claimsEnabled) (< cycleId (get-reward-cycle burn-block-height))) ERR_INCOMPLETE_CYCLE)
     (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
     ;; contract addresses hardcoded for this version
     (and (is-eq cityName "mia")
@@ -179,6 +181,17 @@
       { cityId: cityId, cycle: cycleId, userId: userId }
       { stacked: u0, claimable: u0 }
     ))
+  )
+)
+
+(define-public (set-claim-status (status bool))
+  (begin
+    (try! (is-dao-or-extension))
+    (print {
+      event: "set-claim-status",
+      claimsEnabled: status
+    })
+    (ok (var-set claimsEnabled status))
   )
 )
 
@@ -227,11 +240,15 @@
       (stacker (get-stacker cityId cycle userId))
       (userStacked (get stacked stacker))
     )
-    (if (or (<= (get-reward-cycle burn-block-height) cycle) (is-eq userStacked u0))
+    (if (and (not (var-get claimsEnabled)) (or (<= (get-reward-cycle burn-block-height) cycle) (is-eq userStacked u0)))
       none
       (some (/ (* (unwrap! (get reward cycleStats) none) userStacked) (get total cycleStats)))
     )
   )
+)
+
+(define-read-only (get-claim-status)
+  (var-get claimsEnabled)
 )
 
 ;; PRIVATE FUNCTIONS
