@@ -26,9 +26,11 @@
 (define-constant ERR_NO_MINER_DATA (err u6013))
 (define-constant ERR_ALREADY_CLAIMED (err u6014))
 (define-constant ERR_MINER_NOT_WINNER (err u6015))
+(define-constant ERR_MINING_DISABLED (err u6016))
 
 ;; DATA VARS
 
+(define-data-var miningEnabled bool true)
 (define-data-var rewardDelay uint u100)
 
 ;; DATA MAPS
@@ -73,6 +75,17 @@
   )
 )
 
+(define-public (set-mining-status (status bool))
+  (begin
+    (try! (is-dao-or-extension))
+    (print {
+      event: "set-mining-status",
+      miningEnabled: status
+    })
+    (ok (var-set miningEnabled status))
+  )
+)
+
 (define-public (mine (cityName (string-ascii 10)) (amounts (list 200 uint)))
   (let
     (
@@ -84,6 +97,7 @@
       (userId (try! (as-contract (contract-call? .ccd003-user-registry get-or-create-user-id user))))
       (totalAmount (fold + amounts u0))
     )
+    (asserts! (var-get miningEnabled) ERR_MINING_DISABLED)
     (asserts! (get activatedAt cityInfo) ERR_INACTIVE_CITY)
     (asserts! (>= (stx-get-balance tx-sender) totalAmount) ERR_NOT_ENOUGH_FUNDS)
     (asserts! (> (len amounts) u0) ERR_INVALID_COMMITS)
@@ -225,6 +239,10 @@
     (asserts! (> height (get cbt5 thresholds)) (get cba5 amounts))
     (get cbaDefault amounts)
   )
+)
+
+(define-read-only (is-mining-enabled)
+  (var-get miningEnabled)
 )
 
 ;; PRIVATE FUNCTIONS

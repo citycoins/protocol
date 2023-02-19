@@ -55,8 +55,8 @@ export class CCD007CityStacking {
 
   // Read only functions
 
-  getStackingStatus(): ReadOnlyFn {
-    return this.callReadOnlyFn("get-stacking-status", []);
+  isStackingEnabled(): ReadOnlyFn {
+    return this.callReadOnlyFn("is-stacking-enabled", []);
   }
   getRewardCycleLength(): ReadOnlyFn {
     return this.callReadOnlyFn("get-reward-cycle-length", []);

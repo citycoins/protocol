@@ -249,7 +249,7 @@
   )
 )
 
-(define-read-only (get-stacking-status)
+(define-read-only (is-stacking-enabled)
   (var-get stackingEnabled)
 )
 

@@ -17,6 +17,7 @@ export enum ErrCode {
   ERR_NO_MINER_DATA,
   ERR_ALREADY_CLAIMED,
   ERR_MINER_NOT_WINNER,
+  ERR_MINING_DISABLED,
 }
 
 export class CCD006CityMining {
@@ -43,12 +44,16 @@ export class CCD006CityMining {
     return Tx.contractCall(this.name, "mine", [types.ascii(cityName), types.list(amounts.map((entry) => types.uint(entry)))], sender.address);
   }
 
+  claimMiningReward(sender: Account, cityName: string, claimHeight: number) {
+    return Tx.contractCall(this.name, "claim-mining-reward", [types.ascii(cityName), types.uint(claimHeight)], sender.address);
+  }
+
   setRewardDelay(sender: Account, delay: number) {
     return Tx.contractCall(this.name, "set-reward-delay", [types.uint(delay)], sender.address);
   }
 
-  claimMiningReward(sender: Account, cityName: string, claimHeight: number) {
-    return Tx.contractCall(this.name, "claim-mining-reward", [types.ascii(cityName), types.uint(claimHeight)], sender.address);
+  setMiningStatus(sender: Account, status: boolean) {
+    return Tx.contractCall(this.name, "set-mining-status", [types.bool(status)], sender.address);
   }
 
   // Read only functions
@@ -83,6 +88,10 @@ export class CCD006CityMining {
 
   getRewardDelay(): ReadOnlyFn {
     return this.callReadOnlyFn("get-reward-delay", []);
+  }
+
+  isMiningEnabled(): ReadOnlyFn {
+    return this.callReadOnlyFn("is-mining-enabled", []);
   }
 
   // Extension callback

@@ -4,7 +4,8 @@
  * 1. mine
  * 2. claim-mining-reward
  * 3. reward-delay
- * 4. read-only functions
+ * 4. mining status
+ * 5. read-only functions
  */
 import { Account, assert, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
 import { constructAndPassProposal, EXTENSIONS, passProposal, PROPOSALS } from "../../utils/common.ts";
@@ -1301,7 +1302,36 @@ Clarinet.test({
 });
 
 // =============================
-// 4. READ-ONLY FUNCTIONS
+// 4. MINING STATUS
+// =============================
+
+Clarinet.test({
+  name: "ccd006-citycoin-mining: set-mining-status() fails when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    // act
+    const block = chain.mineBlock([ccd006CityMining.setMiningStatus(sender, true)]);
+    // assert
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_UNAUTHORIZED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-citycoin-mining: get-mining-status() returns true after deployment",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    // act
+    // assert
+    ccd006CityMining.isMiningEnabled().result.expectBool(true);
+  },
+});
+
+// =============================
+// 5. READ-ONLY FUNCTIONS
 // =============================
 
 Clarinet.test({
