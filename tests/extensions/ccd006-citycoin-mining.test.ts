@@ -1306,6 +1306,22 @@ Clarinet.test({
 // =============================
 
 Clarinet.test({
+  name: "ccd006-citycoin-mining: mine() fails if mining is disabled in the contract",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // TODO
+    assertEquals("TODO", "a complete test");
+  },
+});
+
+Clarinet.test({
+  name: "ccd006-citycoin-mining: claim-mining-reward succeeds if mining is disabled in the contract",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // TODO
+    assertEquals("TODO", "a complete test");
+  },
+});
+
+Clarinet.test({
   name: "ccd006-citycoin-mining: set-mining-status() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
