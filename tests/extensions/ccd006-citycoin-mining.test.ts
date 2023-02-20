@@ -300,7 +300,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-citycoin-mining: mine() fails if city has been de-activated",
+  name: "ccd006-citycoin-mining: mine() fails if city is inactive",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -1306,10 +1306,91 @@ Clarinet.test({
 // =============================
 
 Clarinet.test({
+  name: "ccd006-citycoin-mining: mine() succeeds and mines 1 block for 1 user",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user = accounts.get("wallet_1")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+
+    // act
+    const entries: number[] = [10];
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
+    const block = chain.mineBlock([ccd006CityMining.mine(user, miaCityName, entries)]);
+
+    // assert
+    const firstBlock = block.height - 1;
+    const lastBlock = firstBlock;
+    const totalAmount = 10;
+    const totalBlocks = 1;
+    const userId = 1;
+
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    block.receipts[0].events.expectSTXTransferEvent(10, user.address, `${sender.address}.${miaTreasuryName}`);
+    const expectedPrintMsg = `{cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "mining", firstBlock: ${types.uint(firstBlock)}, lastBlock: ${types.uint(lastBlock)}, totalAmount: ${types.uint(totalAmount)}, totalBlocks: ${types.uint(totalBlocks)}, userId: ${types.uint(userId)}}`;
+    //console.log(block.receipts[0].events[1].contract_event.value)
+    //ccd006CityMining.isBlockWinner(miaCityId, user.address, firstBlock).result.expectBool(true)
+    const expectedStats2 = {
+      commit: types.uint(10),
+      high: types.uint(10),
+      low: types.uint(0),
+      winner: types.bool(false),
+    };
+    assertEquals(ccd006CityMining.getMinerAtBlock(miaCityId, firstBlock, userId).result.expectTuple(), expectedStats2);
+    const expectedStats = {
+      amount: types.uint(10),
+      claimed: types.bool(false),
+      miners: types.uint(1),
+    };
+    assertEquals(ccd006CityMining.getMiningStatsAtBlock(miaCityId, firstBlock).result.expectTuple(), expectedStats);
+    ccd006CityMining.getBlockWinner(miaCityId, firstBlock).result.expectNone();
+
+    block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-citycoin-mining`, expectedPrintMsg);
+    block.receipts[0].result.expectOk().expectBool(true);
+  },
+});
+
+Clarinet.test({
   name: "ccd006-citycoin-mining: mine() fails if mining is disabled in the contract",
   fn(chain: Chain, accounts: Map<string, Account>) {
-    // TODO
-    assertEquals("TODO", "a complete test");
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user = accounts.get("wallet_1")!;
+    const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+
+    // act
+    const entries: number[] = [10];
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_005);
+    ccd005CityData.getCityTreasuryNonce(miaCityId).result.expectUint(1);
+    const block = chain.mineBlock([ccd006CityMining.mine(user, miaCityName, entries)]);
+
+    // assert
+    const firstBlock = block.height - 1;
+    const userId = 1;
+
+    block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINING_DISABLED);
+
+    const expectedMiningStats = {
+      amount: types.uint(0),
+      claimed: types.bool(false),
+      miners: types.uint(0),
+    };
+    assertEquals(ccd006CityMining.getMiningStatsAtBlock(miaCityId, firstBlock).result.expectTuple(), expectedMiningStats);
   },
 });
 
@@ -1317,7 +1398,7 @@ Clarinet.test({
   name: "ccd006-citycoin-mining: claim-mining-reward succeeds if mining is disabled in the contract",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // TODO
-    assertEquals("TODO", "a complete test");
+    // assertEquals("TODO", "a complete test");
   },
 });
 

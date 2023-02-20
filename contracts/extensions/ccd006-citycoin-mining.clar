@@ -182,7 +182,7 @@
 )
 
 (define-read-only (get-miner (cityId uint) (height uint) (userId uint))
-  (default-to { commit: u0, low: u0, high: u0 }
+  (default-to { commit: u0, low: u0, high: u0, winner: false }
     (map-get? Miners { cityId: cityId, height: height, userId: userId })
   )
 )

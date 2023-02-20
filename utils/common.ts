@@ -73,6 +73,7 @@ export const PROPOSALS = {
   TEST_CCD006_CITY_MINING_002: ADDRESS.concat(".test-ccd006-citycoin-mining-002"),
   TEST_CCD006_CITY_MINING_003: ADDRESS.concat(".test-ccd006-citycoin-mining-003"),
   TEST_CCD006_CITY_MINING_004: ADDRESS.concat(".test-ccd006-citycoin-mining-004"),
+  TEST_CCD006_CITY_MINING_005: ADDRESS.concat(".test-ccd006-citycoin-mining-005"),
   TEST_CCD007_CITY_STACKING_001: ADDRESS.concat(".test-ccd007-citycoin-stacking-001"),
   TEST_CCD007_CITY_STACKING_002: ADDRESS.concat(".test-ccd007-citycoin-stacking-002"),
   TEST_CCD007_CITY_STACKING_003: ADDRESS.concat(".test-ccd007-citycoin-stacking-003"),

@@ -302,6 +302,9 @@ path = "tests/contracts/proposals/test-ccd006-citycoin-mining-003.clar"
 [contracts.test-ccd006-citycoin-mining-004]
 path = "tests/contracts/proposals/test-ccd006-citycoin-mining-004.clar"
 
+[contracts.test-ccd006-citycoin-mining-005]
+path = "tests/contracts/proposals/test-ccd006-citycoin-mining-005.clar"
+
 [contracts.test-ccd007-citycoin-stacking-001]
 path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-001.clar"
 

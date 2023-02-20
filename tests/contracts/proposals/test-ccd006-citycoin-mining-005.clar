@@ -5,8 +5,5 @@
 (impl-trait .proposal-trait.proposal-trait)
 
 (define-public (execute (sender principal))
-	(begin
-		(try! (contract-call? .ccd007-citycoin-stacking set-stacking-status false))
-		(ok true)
-	)
+  (contract-call? .ccd006-citycoin-mining set-mining-status false)
 )
