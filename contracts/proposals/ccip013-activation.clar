@@ -10,24 +10,16 @@
       (jobIds (unwrap! (contract-call? .ccip013-migration get-job-ids) ERR_PANIC))
     )
     ;; shut down old protocol contracts
-    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2
-    ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-core-v2
-    (try! (contract-call? .ccd009-auth-v2-adapter execute-upgrade-core-contract-job-mia (get miaJobId jobIds) .miamicoin-core-v2 .ccd010-core-v2-adapter))
-    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2
-    ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-core-v2
-    (try! (contract-call? .ccd009-auth-v2-adapter execute-upgrade-core-contract-job-nyc (get nycJobId jobIds) .newyorkcitycoin-core-v2 .ccd010-core-v2-adapter))
+    (try! (contract-call? .ccd009-auth-v2-adapter execute-upgrade-core-contract-job-mia (get miaJobId jobIds) 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2 .ccd010-core-v2-adapter))
+    (try! (contract-call? .ccd009-auth-v2-adapter execute-upgrade-core-contract-job-nyc (get nycJobId jobIds) 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2 .ccd010-core-v2-adapter))
     ;; activate cities in new protocol
     (try! (contract-call? .ccd005-city-data set-activation-status miaId true))
     (try! (contract-call? .ccd005-city-data set-activation-status nycId true))
     ;; sets allowed assets for treasury contracts
-    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
-    ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2
-    (try! (contract-call? .ccd002-treasury-mia-mining set-allowed .miamicoin-token-v2 true))
-    (try! (contract-call? .ccd002-treasury-mia-stacking set-allowed .miamicoin-token-v2 true))
-    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-    ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2
-    (try! (contract-call? .ccd002-treasury-nyc-mining set-allowed .newyorkcitycoin-token-v2 true))
-    (try! (contract-call? .ccd002-treasury-nyc-stacking set-allowed .newyorkcitycoin-token-v2 true))
+    (try! (contract-call? .ccd002-treasury-mia-mining set-allowed 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 true))
+    (try! (contract-call? .ccd002-treasury-mia-stacking set-allowed 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 true))
+    (try! (contract-call? .ccd002-treasury-nyc-mining set-allowed 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 true))
+    (try! (contract-call? .ccd002-treasury-nyc-stacking set-allowed 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 true))
 
     (print "Continuous effort, not strength or intelligence is the key to unlocking our potential. - Winston Churchill")
 

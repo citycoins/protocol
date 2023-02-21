@@ -12,40 +12,20 @@
       (miaId (try! (contract-call? .ccd004-city-registry get-or-create-city-id "mia")))
       (nycId (try! (contract-call? .ccd004-city-registry get-or-create-city-id "nyc")))
       ;; get activation block
-      ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2
-      ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-core-v2
-      (miaActivationBlock (try! (contract-call? .miamicoin-core-v2 get-activation-block)))
-      ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2
-      ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-core-v2
-      (nycActivationBlock (try! (contract-call? .newyorkcitycoin-core-v2 get-activation-block)))
+      (miaActivationBlock (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2 get-activation-block)))
+      (nycActivationBlock (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2 get-activation-block)))
       ;; get activation delay
-      ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2
-      ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-core-v2
-      (miaActivationDelay (contract-call? .miamicoin-core-v2 get-activation-delay))
-      ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2
-      ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-core-v2
-      (nycActivationDelay (contract-call? .newyorkcitycoin-core-v2 get-activation-delay))
+      (miaActivationDelay (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2 get-activation-delay))
+      (nycActivationDelay (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2 get-activation-delay))
       ;; get activation threshold
-      ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2
-      ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-core-v2
-      (miaActivationThreshold (contract-call? .miamicoin-core-v2 get-activation-threshold))
-      ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2
-      ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-core-v2
-      (nycActivationThreshold (contract-call? .newyorkcitycoin-core-v2 get-activation-threshold))
+      (miaActivationThreshold (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2 get-activation-threshold))
+      (nycActivationThreshold (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2 get-activation-threshold))
       ;; get coinbase thresholds
-      ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
-      ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2
-      (miaThresholds (try! (contract-call? .miamicoin-token-v2 get-coinbase-thresholds)))
-      ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-      ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2
-      (nycThresholds (try! (contract-call? .newyorkcitycoin-token-v2 get-coinbase-thresholds)))
+      (miaThresholds (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 get-coinbase-thresholds)))
+      (nycThresholds (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 get-coinbase-thresholds)))
       ;; get coinbase amounts
-      ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
-      ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2
-      (miaAmounts (unwrap! (contract-call? .miamicoin-token-v2 get-coinbase-amounts) ERR_PANIC))
-      ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-      ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2
-      (nycAmounts (unwrap! (contract-call? .newyorkcitycoin-token-v2 get-coinbase-amounts) ERR_PANIC))
+      (miaAmounts (unwrap! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 get-coinbase-amounts) ERR_PANIC))
+      (nycAmounts (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 get-coinbase-amounts) ERR_PANIC))
     )
     ;; set city activation details
     (try! (contract-call? .ccd005-city-data set-activation-details miaId
@@ -105,20 +85,11 @@
     (try! (contract-call? .ccd005-city-data set-coinbase-details nycId u10000 u25000))
     
     ;; setup core contract upgrade using ccd009 adapter
-
-    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
-    ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-auth-v2
-    (var-set miaJobId (try! (contract-call? .ccd009-auth-v2-adapter create-job-mia "upgrade to DAO protocol" .miamicoin-auth-v2)))
-    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
-    ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-auth-v2
-    (var-set nycJobId (try! (contract-call? .ccd009-auth-v2-adapter create-job-nyc "upgrade to DAO protocol" .newyorkcitycoin-auth-v2)))
-    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2
-    ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-core-v2
-    (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia (var-get miaJobId) "oldContract" .miamicoin-core-v2))
+    (var-set miaJobId (try! (contract-call? .ccd009-auth-v2-adapter create-job-mia "upgrade to DAO protocol" 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2)))
+    (var-set nycJobId (try! (contract-call? .ccd009-auth-v2-adapter create-job-nyc "upgrade to DAO protocol" 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2)))
+    (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia (var-get miaJobId) "oldContract" 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2))
     (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-mia (var-get miaJobId) "newContract" .ccd010-core-v2-adapter))
-    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2
-    ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-core-v2
-    (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-nyc (var-get nycJobId) "oldContract" .newyorkcitycoin-core-v2))
+    (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-nyc (var-get nycJobId) "oldContract" 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2))
     (try! (contract-call? .ccd009-auth-v2-adapter add-principal-argument-nyc (var-get nycJobId) "newContract" .ccd010-core-v2-adapter))
     (try! (contract-call? .ccd009-auth-v2-adapter activate-job-mia (var-get miaJobId)))
     (try! (contract-call? .ccd009-auth-v2-adapter activate-job-nyc (var-get nycJobId)))
