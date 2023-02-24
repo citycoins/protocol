@@ -815,9 +815,9 @@ Clarinet.test({
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    const claimBlock = passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    const claimHeight = 7;
+    const claimHeight = claimBlock.height;
     chain.mineEmptyBlock(rewardDelay - 1);
     const block = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, miaCityName, claimHeight)]);
 
@@ -1274,7 +1274,7 @@ Clarinet.test({
     const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_004);
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_004).receipts;
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(100);
@@ -1291,7 +1291,7 @@ Clarinet.test({
     ccd006CityMining.getRewardDelay().result.expectUint(100);
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_003);
+    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_003).receipts;
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(50);

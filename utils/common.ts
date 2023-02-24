@@ -106,7 +106,7 @@ export const passProposal = (chain: Chain, accounts: Map<string, Account>, propo
   // console.log(`passProposal at height: ${block.height}`);
   // console.log(`proposal: ${proposal}`);
   // console.log(`block:\n${JSON.stringify(block, null, 2)}`);
-  return block.receipts;
+  return block;
 };
 
 export const constructAndPassProposal = (chain: Chain, accounts: Map<string, Account>, proposal: string): any => {
@@ -120,5 +120,5 @@ export const constructAndPassProposal = (chain: Chain, accounts: Map<string, Acc
   // console.log(`constructAndPassProposal at height: ${block.height}`);
   // console.log(`proposal: ${proposal}`);
   // console.log(`block:\n${JSON.stringify(block, null, 2)}`);
-  return block.receipts;
+  return block;
 };
