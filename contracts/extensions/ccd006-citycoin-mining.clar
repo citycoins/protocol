@@ -1,4 +1,4 @@
-;; Title: CCD006 City Mining
+;; Title: CCD006 CityCoin Mining
 ;; Version: 1.0.0
 ;; Summary: A central city mining contract for the CityCoins protocol.
 ;; Description: An extension that provides a mining interface per city, in which each mining participant spends STX per block for a weighted chance to mint new CityCoins per the issuance schedule.
@@ -26,9 +26,11 @@
 (define-constant ERR_NO_MINER_DATA (err u6013))
 (define-constant ERR_ALREADY_CLAIMED (err u6014))
 (define-constant ERR_MINER_NOT_WINNER (err u6015))
+(define-constant ERR_MINING_DISABLED (err u6016))
 
 ;; DATA VARS
 
+(define-data-var miningEnabled bool true)
 (define-data-var rewardDelay uint u100)
 
 ;; DATA MAPS
@@ -68,8 +70,23 @@
 (define-public (set-reward-delay (delay uint))
   (begin 
     (try! (is-dao-or-extension))
+    (print {
+      event: "set-reward-delay",
+      rewardDelay: delay
+    })
     (asserts! (> delay u0) ERR_INVALID_DELAY)
     (ok (var-set rewardDelay delay))
+  )
+)
+
+(define-public (set-mining-enabled (status bool))
+  (begin
+    (try! (is-dao-or-extension))
+    (print {
+      event: "set-mining-enabled",
+      miningEnabled: status
+    })
+    (ok (var-set miningEnabled status))
   )
 )
 
@@ -84,6 +101,7 @@
       (userId (try! (as-contract (contract-call? .ccd003-user-registry get-or-create-user-id user))))
       (totalAmount (fold + amounts u0))
     )
+    (asserts! (var-get miningEnabled) ERR_MINING_DISABLED)
     (asserts! (get activatedAt cityInfo) ERR_INACTIVE_CITY)
     (asserts! (>= (stx-get-balance tx-sender) totalAmount) ERR_NOT_ENOUGH_FUNDS)
     (asserts! (> (len amounts) u0) ERR_INVALID_COMMITS)
@@ -168,7 +186,7 @@
 )
 
 (define-read-only (get-miner (cityId uint) (height uint) (userId uint))
-  (default-to { commit: u0, low: u0, high: u0 }
+  (default-to { commit: u0, low: u0, high: u0, winner: false }
     (map-get? Miners { cityId: cityId, height: height, userId: userId })
   )
 )
@@ -225,6 +243,10 @@
     (asserts! (> height (get cbt5 thresholds)) (get cba5 amounts))
     (get cbaDefault amounts)
   )
+)
+
+(define-read-only (is-mining-enabled)
+  (var-get miningEnabled)
 )
 
 ;; PRIVATE FUNCTIONS

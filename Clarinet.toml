@@ -171,6 +171,32 @@ path = "tests/contracts/external/test-ccext-nft-mia.clar"
 [contracts.test-ccext-nft-nyc]
 path = "tests/contracts/external/test-ccext-nft-nyc.clar"
 
+# CITYCOINS LEGACY CONTRACTS
+
+[contracts.citycoin-core-v2-trait]
+path = "contracts/legacy/citycoin-core-v2-trait.clar"
+
+[contracts.citycoin-token-v2-trait]
+path = "contracts/legacy/citycoin-token-v2-trait.clar"
+
+[contracts.miamicoin-auth-v2]
+path = "contracts/legacy/miamicoin-auth-v2.clar"
+
+[contracts.miamicoin-core-v2]
+path = "contracts/legacy/miamicoin-core-v2.clar"
+
+[contracts.miamicoin-token-v2]
+path = "contracts/legacy/miamicoin-token-v2.clar"
+
+[contracts.newyorkcitycoin-auth-v2]
+path = "contracts/legacy/newyorkcitycoin-auth-v2.clar"
+
+[contracts.newyorkcitycoin-core-v2]
+path = "contracts/legacy/newyorkcitycoin-core-v2.clar"
+
+[contracts.newyorkcitycoin-token-v2]
+path = "contracts/legacy/newyorkcitycoin-token-v2.clar"
+
 # CITYCOINS TEST PROPOSALS
 
 [contracts.test-ccd001-direct-execute-001]
@@ -302,6 +328,9 @@ path = "tests/contracts/proposals/test-ccd006-citycoin-mining-003.clar"
 [contracts.test-ccd006-citycoin-mining-004]
 path = "tests/contracts/proposals/test-ccd006-citycoin-mining-004.clar"
 
+[contracts.test-ccd006-citycoin-mining-005]
+path = "tests/contracts/proposals/test-ccd006-citycoin-mining-005.clar"
+
 [contracts.test-ccd007-citycoin-stacking-001]
 path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-001.clar"
 
@@ -334,6 +363,9 @@ path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-010.clar"
 
 [contracts.test-ccd007-citycoin-stacking-011]
 path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-011.clar"
+
+[contracts.test-ccd007-citycoin-stacking-012]
+path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-012.clar"
 
 [contracts.test-ccd011-stacking-payouts-001]
 path = "tests/contracts/proposals/test-ccd011-stacking-payouts-001.clar"

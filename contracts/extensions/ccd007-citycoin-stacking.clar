@@ -1,4 +1,4 @@
-;; Title: CCD007 City Stacking
+;; Title: CCD007 CityCoin Stacking
 ;; Version: 1.0.0
 ;; Summary: A central city stacking contract for the CityCoins protocol.
 ;; Description: An extension that provides a stacking interface per city, in which a user can lock their CityCoins for a specified number of cycles, in return for a proportion of the stacking rewards accrued by the related city wallet.
@@ -19,6 +19,7 @@
 (define-constant ERR_INCOMPLETE_CYCLE (err u7006))
 (define-constant ERR_NOTHING_TO_CLAIM (err u7007))
 (define-constant ERR_PAYOUT_COMPLETE (err u7008))
+(define-constant ERR_STACKING_DISABLED (err u7009))
 (define-constant MAX_REWARD_CYCLES u32)
 ;; MAINNET: u2100
 ;; TESTNET: u1050
@@ -26,6 +27,10 @@
 ;; MAINNET: u666050
 ;; TESTNET: u2000000
 (define-constant FIRST_STACKING_BLOCK u50)
+
+;; DATA VARS
+
+(define-data-var stackingEnabled bool true)
 
 ;; DATA MAPS
 
@@ -64,6 +69,7 @@
       (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
       (cycleId (+ u1 (get-reward-cycle burn-block-height)))
     )
+    (asserts! (var-get stackingEnabled) ERR_STACKING_DISABLED)
     (asserts! (contract-call? .ccd005-city-data is-city-activated cityId) ERR_INACTIVE_CITY)
     (asserts! (and (> amount u0) (> lockPeriod u0) (<= lockPeriod MAX_REWARD_CYCLES)) ERR_INVALID_PARAMS)
     (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) cycleId)
@@ -122,14 +128,10 @@
 
 (define-public (set-stacking-reward (cityId uint) (cycleId uint) (amount uint))
   (let
-    (
-      (cityTreasury (unwrap! (contract-call? .ccd005-city-data get-treasury-by-name cityId "stacking") ERR_INVALID_TREASURY))
-      (cycleStats (get-stacking-stats cityId cycleId))
-    )
-    (print { sender: tx-sender, caller: contract-caller })
+    ((cycleStats (get-stacking-stats cityId cycleId)))
     (try! (is-extension))
     (asserts! (is-none (get reward cycleStats)) ERR_PAYOUT_COMPLETE)
-    (asserts! (< cycleId (get-reward-cycle burn-block-height)) ERR_INCOMPLETE_CYCLE)
+    (asserts! (or (not (var-get stackingEnabled)) (< cycleId (get-reward-cycle burn-block-height))) ERR_INCOMPLETE_CYCLE)
     (ok (map-set StackingStats
       { cityId: cityId, cycle: cycleId }
       (merge cycleStats { reward: (some amount) })
@@ -147,7 +149,7 @@
       (reward (unwrap! (get-stacking-reward cityId userId cycleId) ERR_NOTHING_TO_CLAIM))
       (claimable (get claimable stacker))
     )
-    (asserts! (< cycleId (get-reward-cycle burn-block-height)) ERR_INCOMPLETE_CYCLE)
+    (asserts! (or (not (var-get stackingEnabled)) (< cycleId (get-reward-cycle burn-block-height))) ERR_INCOMPLETE_CYCLE)
     (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
     ;; contract addresses hardcoded for this version
     (and (is-eq cityName "mia")
@@ -179,6 +181,17 @@
       { cityId: cityId, cycle: cycleId, userId: userId }
       { stacked: u0, claimable: u0 }
     ))
+  )
+)
+
+(define-public (set-stacking-enabled (status bool))
+  (begin
+    (try! (is-dao-or-extension))
+    (print {
+      event: "set-stacking-enabled",
+      stackingEnabled: status
+    })
+    (ok (var-set stackingEnabled status))
   )
 )
 
@@ -217,7 +230,7 @@
 )
 
 (define-read-only (is-cycle-paid (cityId uint) (cycle uint))
-    (is-some (get reward (get-stacking-stats cityId cycle)))
+  (is-some (get reward (get-stacking-stats cityId cycle)))
 )
 
 (define-read-only (get-stacking-reward (cityId uint) (userId uint) (cycle uint))
@@ -227,11 +240,15 @@
       (stacker (get-stacker cityId cycle userId))
       (userStacked (get stacked stacker))
     )
-    (if (or (<= (get-reward-cycle burn-block-height) cycle) (is-eq userStacked u0))
+    (if (and (or (not (var-get stackingEnabled)) (< cycle  (get-reward-cycle burn-block-height))) (> userStacked u0))
+      (some (/ (* (unwrap! (get reward cycleStats) (some u0)) userStacked) (get total cycleStats)))
       none
-      (some (/ (* (unwrap! (get reward cycleStats) none) userStacked) (get total cycleStats)))
     )
   )
+)
+
+(define-read-only (is-stacking-enabled)
+  (var-get stackingEnabled)
 )
 
 ;; PRIVATE FUNCTIONS

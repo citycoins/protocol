@@ -39,5 +39,6 @@ comment:
   require_head: true
 
 ignore:
+  - "contracts/legacy"
   - "tests/contracts/external"
   - "tests/contracts/proposals"

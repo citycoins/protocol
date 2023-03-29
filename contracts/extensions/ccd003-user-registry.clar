@@ -1,4 +1,4 @@
-;; Title: CCD003 User Registration
+;; Title: CCD003 User Registry
 ;; Version: 1.0.0
 ;; Summary: A central user registry for the CityCoins protocol.
 ;; Description: An extension contract that associates an address (principal) with an ID (uint) for use in other CityCoins extensions.

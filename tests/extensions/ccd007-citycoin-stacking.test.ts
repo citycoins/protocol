@@ -3,6 +3,7 @@
  * 0. AUTHORIZATION CHECKS
  * 1. stack
  * 2. claim-stacking-reward
+ * 3. stacking-status
  */
 import { Account, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
 import { constructAndPassProposal, EXTENSIONS, passProposal, PROPOSALS } from "../../utils/common.ts";
@@ -436,44 +437,6 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd007-citycoin-stacking: get-stacking-reward() returns correct default stacking data",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
-    // progress the chain to avoid underflow in
-    // stacking reward cycle calculation
-    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
-
-    // act
-
-    // assert
-    ccd007CityStacking.getStackingReward(miaCityId, 1, 1).result.expectNone();
-  },
-});
-
-Clarinet.test({
-  name: "ccd007-citycoin-stacking: get-stacker-at-cycle() returns correct default stacking data",
-  fn(chain: Chain, accounts: Map<string, Account>) {
-    // arrange
-    const sender = accounts.get("deployer")!;
-    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
-    // progress the chain to avoid underflow in
-    // stacking reward cycle calculation
-    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
-
-    // act
-
-    // assert
-    const expectedStats = {
-      stacked: types.uint(0),
-      claimable: types.uint(0),
-    };
-    assertEquals(ccd007CityStacking.getStacker(miaCityId, 1, 1).result.expectTuple(), expectedStats);
-  },
-});
-
-Clarinet.test({
   name: "ccd007-citycoin-stacking: claim-stacking-reward() fails if user is unknown",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
@@ -718,8 +681,6 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     // set stacking pool operator
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
-    // set reward cycle length to 100 blocks
-    //passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_002);
     // add mia stacking treasury
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
     // mints mia to user1 and user2
@@ -784,6 +745,44 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "ccd007-citycoin-stacking: get-stacking-reward() returns correct default stacking data",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+
+    // act
+
+    // assert
+    ccd007CityStacking.getStackingReward(miaCityId, 1, 1).result.expectNone();
+  },
+});
+
+Clarinet.test({
+  name: "ccd007-citycoin-stacking: get-stacker-at-cycle() returns correct default stacking data",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+
+    // act
+
+    // assert
+    const expectedStats = {
+      stacked: types.uint(0),
+      claimable: types.uint(0),
+    };
+    assertEquals(ccd007CityStacking.getStacker(miaCityId, 1, 1).result.expectTuple(), expectedStats);
+  },
+});
+
+Clarinet.test({
   name: "ccd007-citycoin-stacking: get-first-block-in-reward-cycle() returns correct block for multiple cycles",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
@@ -804,5 +803,163 @@ Clarinet.test({
     for (let i = 0; i < 10; i++) {
       ccd007CityStacking.getFirstBlockInRewardCycle(i).result.expectUint(CCD007CityStacking.REWARD_CYCLE_LENGTH * i + CCD007CityStacking.FIRST_STACKING_BLOCK);
     }
+  },
+});
+
+// =============================
+// 3. stacking-status
+// =============================
+
+Clarinet.test({
+  name: "ccd007-citycoin-stacking: stack() fails if stacking is disabled in the contract",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
+    const user1 = accounts.get("wallet_1")!;
+    gt.getBalance(user1.address).result.expectOk().expectUint(0);
+    gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(0);
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+
+    // act
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
+    // 009 mints mia to user1 and user2
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_009);
+    // 010 adds the token contract to the treasury allow list
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_010);
+    // 012 disables the extension
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_012);
+    const block = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, 500, lockPeriod)]);
+
+    // assert
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_STACKING_DISABLED);
+    gt.getBalance(user1.address).result.expectOk().expectUint(1000);
+    gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(0);
+  },
+});
+
+Clarinet.test({
+  name: "ccd007-citycoin-stacking: claim-stacking-reward() succeeds for a future cycle if stacking is disabled",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
+    const operator = accounts.get("wallet_2")!;
+    const userId = 1;
+    const amountStacked = 500;
+    const lockPeriod = 30;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    const ccd011StackingPayouts = new CCD011StackingPayouts(chain, sender, "ccd011-stacking-payouts");
+    ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(false);
+    const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
+    const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-stacking");
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+
+    // act
+
+    // get or create user ID
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
+    // get or create city IDs
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    // set city activation details
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    // set city activation status
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    // set stacking pool operator
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
+    // add mia stacking treasury
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
+    // mints mia to user1 and user2
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_009);
+    // adds the token contract to the treasury allow list
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_010);
+
+    // mid point check of the stx/mia token balances
+    gt.getBalance(user1.address).result.expectOk().expectUint(1000);
+    ccd002Treasury.getBalanceStx().result.expectUint(0);
+
+    // stack during cycle 0, which starts in cycle 1
+    const block0 = chain.mineBlock([ccd007CityStacking.stack(user1, miaCityName, amountStacked, lockPeriod)]);
+    ccd007CityStacking.isStackingActive(miaCityId, 1).result.expectBool(true);
+
+    gt.getBalance(user1.address).result.expectOk().expectUint(500);
+
+    // simulate pool operator sending stacking rewards for cycle 1
+    // after progressing past cycle 1
+    chain.mineEmptyBlock(CCD007CityStacking.REWARD_CYCLE_LENGTH * 2 + 10);
+    const block1 = chain.mineBlock([ccd011StackingPayouts.sendStackingRewardMia(operator, 1, 150000)]);
+
+    // mid point check of the stx/mia token balances
+    let expected1 = {
+      claimable: types.uint(0),
+      stacked: types.uint(amountStacked),
+    };
+    assertEquals(ccd007CityStacking.getStacker(miaCityId, 1, 1).result.expectTuple(), expected1);
+
+    // disable stacking in ccd007
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_012);
+
+    // confirm reward is still correctly shown for cycle 1
+    ccd007CityStacking.getStackingReward(miaCityId, 1, 1).result.expectSome().expectUint(150000);
+    // confirm claimable amount is correct for the user and
+    // attempt to claim the final cycle to return CityCoins
+    let expected2 = {
+      claimable: types.uint(amountStacked),
+      stacked: types.uint(amountStacked),
+    };
+    assertEquals(ccd007CityStacking.getStacker(miaCityId, 30, 1).result.expectTuple(), expected2);
+    const block2 = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, miaCityName, 30)]);
+    // assert
+    const expectedPrintMsg = `{cityId: u1, cityName: "mia", claimable: ${types.uint(500)}, cycleId: ${types.uint(30)}, event: "stacking-claim", reward: ${types.uint(0)}, userId: ${types.uint(userId)}}`;
+    block2.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-citycoin-stacking`, expectedPrintMsg);
+
+    // confirm reward cycle 2 is active
+    ccd007CityStacking.getRewardCycle(block2.height).result.expectUint(2);
+    block0.receipts[0].result.expectOk().expectBool(true);
+    block1.receipts[0].result.expectOk().expectBool(true);
+    block2.receipts[0].result.expectOk().expectBool(true);
+
+    // confirm nothing stacked in cycle 30 for the user after claim
+    expected1 = {
+      claimable: types.uint(0),
+      stacked: types.uint(0),
+    };
+    assertEquals(ccd007CityStacking.getStacker(miaCityId, 1, 30).result.expectTuple(), expected1);
+
+    // end point check of the stx/mia token balances
+    gt.getBalance(user1.address).result.expectOk().expectUint(1000);
+  },
+});
+
+Clarinet.test({
+  name: "ccd007-citycoin-stacking: set-stacking-enabled() fails when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    // act
+    const block = chain.mineBlock([ccd007CityStacking.setStackingEnabled(sender, true)]);
+    // assert
+    block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_UNAUTHORIZED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd007-citycoin-stacking: get-stacking-status() returns true after deployment",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    // act
+    // assert
+    ccd007CityStacking.isStackingEnabled().result.expectBool(true);
   },
 });

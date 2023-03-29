@@ -10,6 +10,7 @@ export enum ErrCode {
   ERR_INCOMPLETE_CYCLE,
   ERR_NOTHING_TO_CLAIM,
   ERR_PAYOUT_COMPLETE,
+  ERR_STACKING_DISABLED,
 }
 
 export class CCD007CityStacking {
@@ -48,14 +49,15 @@ export class CCD007CityStacking {
   stack(sender: Account, cityName: string, amount: number, lockPeriod: number) {
     return Tx.contractCall(this.name, "stack", [types.ascii(cityName), types.uint(amount), types.uint(lockPeriod)], sender.address);
   }
-  /* disabled - function removed from ccd007
-  setRewardCycleLength(sender: Account, length: number) {
-    return Tx.contractCall(this.name, "set-reward-cycle-length", [types.uint(length)], sender.address);
+  setStackingEnabled(sender: Account, status: boolean) {
+    return Tx.contractCall(this.name, "set-stacking-enabled", [types.bool(status)], sender.address);
   }
-  */
 
   // Read only functions
 
+  isStackingEnabled(): ReadOnlyFn {
+    return this.callReadOnlyFn("is-stacking-enabled", []);
+  }
   getRewardCycleLength(): ReadOnlyFn {
     return this.callReadOnlyFn("get-reward-cycle-length", []);
   }
