@@ -58,7 +58,7 @@ Clarinet.test({
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_002);
-    const receipts = passProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
+    const { receipts } = passProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
 
     // assert
     assertEquals(receipts.length, 3);
@@ -79,7 +79,7 @@ Clarinet.test({
     const ccd003userRegistry = new CCD003UserRegistry(chain, sender, "ccd003-user-registry");
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_003);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_003);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -104,7 +104,7 @@ Clarinet.test({
     const ccd003userRegistry = new CCD003UserRegistry(chain, sender, "ccd003-user-registry");
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
 
     // assert
     assertEquals(receipts.length, 4);

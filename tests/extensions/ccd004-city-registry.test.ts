@@ -55,8 +55,8 @@ Clarinet.test({
     // arrange
 
     // act
-    let receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    receipts = passProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    let { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    ({ receipts } = passProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001));
 
     // assert
     assertEquals(receipts.length, 3);
@@ -70,8 +70,8 @@ Clarinet.test({
     // arrange
 
     // act
-    let receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    receipts = passProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_002);
+    let { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    ({ receipts } = passProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_002));
 
     // assert
     assertEquals(receipts.length, 3);
@@ -88,7 +88,7 @@ Clarinet.test({
     const ccd004CityRegistry = new CCD004CityRegistry(chain, sender, "ccd004-city-registry");
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -108,7 +108,7 @@ Clarinet.test({
     const ccd004CityRegistry = new CCD004CityRegistry(chain, sender, "ccd004-city-registry");
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
 
     // assert
     assertEquals(receipts.length, 4);

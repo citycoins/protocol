@@ -63,7 +63,7 @@ Clarinet.test({
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_001);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_001);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -108,7 +108,7 @@ Clarinet.test({
     ccd002Treasury.getAllowedAsset(EXTERNAL.FT_NYC).result.expectNone();
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_002);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_002);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -328,7 +328,7 @@ Clarinet.test({
 
     // act
     // TEST_CCD002_TREASURY_006 calls the withdraw-stx of 500 stx to wallet_6
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_006);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_006);
 
     // assert
     ccd002Treasury.getBalanceStx().result.expectUint(amount2);
@@ -367,7 +367,7 @@ Clarinet.test({
 
     // act
     // Proposal attempts to withdraw nyc coin
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_007);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_007);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -386,7 +386,7 @@ Clarinet.test({
 
     // act
     // Proposal attempts to withdraw nyc coin
-    const receipts = passProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_007);
+    const { receipts } = passProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_007);
 
     // assert
     assertEquals(receipts.length, 3);
@@ -412,7 +412,7 @@ Clarinet.test({
 
     // act
     // Prop 10 transfers 2000 mia tokens to recipient
-    const receipts = passProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_010);
+    const { receipts } = passProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_010);
 
     // assert
     // check balances have not changed
@@ -436,7 +436,7 @@ Clarinet.test({
 
     // act
     // Prop 8 allow lists MIA token, mints 2000 MIA to treasury and withdraws 500 to recipient
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_008);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_008);
     ccd002Treasury.isAllowed(EXTERNAL.FT_MIA).result.expectBool(true);
 
     // assert
@@ -482,7 +482,7 @@ Clarinet.test({
 
     // act
     // Proposal 9 attempts to withdraw nyc nft
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_009);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_009);
 
     // assert
     // Demonstrate ownership of asset is unchanged
@@ -509,7 +509,7 @@ Clarinet.test({
 
     // act
     // Proposal 9 attempts to withdraw nyc nft
-    const receipts = passProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_009);
+    const { receipts } = passProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_009);
 
     // assert
     // Demonstrate ownership of asset is unchanged
@@ -538,7 +538,7 @@ Clarinet.test({
 
     // act
     // proposal 9 transfers the nft from the treasury to recipient
-    const receipts = passProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_009);
+    const { receipts } = passProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_009);
 
     // assert
     receipts[2].result.expectOk().expectUint(3);
@@ -573,7 +573,7 @@ Clarinet.test({
     // arrange
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_011);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_011);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -607,7 +607,7 @@ Clarinet.test({
     // arrange
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_012);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_012);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -644,7 +644,7 @@ Clarinet.test({
     ccd002Treasury.isAllowed(EXTERNAL.FT_MIA).result.expectBool(false);
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_001);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_001);
 
     // assert
     assertEquals(receipts.length, 4);
@@ -676,7 +676,7 @@ Clarinet.test({
     ccd002Treasury.isAllowed(asset).result.expectBool(false);
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_001);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD002_TREASURY_001);
 
     // assert
     assertEquals(receipts.length, 4);
