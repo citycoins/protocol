@@ -1,4 +1,4 @@
-;; Title: CCD007 City Stacking
+;; Title: CCD007 CityCoin Stacking
 ;; Version: 1.0.0
 ;; Summary: A central city stacking contract for the CityCoins protocol.
 ;; Description: An extension that provides a stacking interface per city, in which a user can lock their CityCoins for a specified number of cycles, in return for a proportion of the stacking rewards accrued by the related city wallet.
