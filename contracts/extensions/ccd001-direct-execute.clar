@@ -65,6 +65,7 @@
 (define-public (set-signals-required (signals uint))
   (begin
     (try! (is-dao-or-extension))
+    (asserts! (> signals u0) ERR_UNAUTHORIZED)
     (print {
       event: "set-signals-required",
       signals: signals
