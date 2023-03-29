@@ -171,6 +171,32 @@ path = "tests/contracts/external/test-ccext-nft-mia.clar"
 [contracts.test-ccext-nft-nyc]
 path = "tests/contracts/external/test-ccext-nft-nyc.clar"
 
+# CITYCOINS LEGACY CONTRACTS
+
+[contracts.citycoin-core-v2-trait]
+path = "contracts/legacy/citycoin-core-v2-trait.clar"
+
+[contracts.citycoin-token-v2-trait]
+path = "contracts/legacy/citycoin-token-v2-trait.clar"
+
+[contracts.miamicoin-auth-v2]
+path = "contracts/legacy/miamicoin-auth-v2.clar"
+
+[contracts.miamicoin-core-v2]
+path = "contracts/legacy/miamicoin-core-v2.clar"
+
+[contracts.miamicoin-token-v2]
+path = "contracts/legacy/miamicoin-token-v2.clar"
+
+[contracts.newyorkcitycoin-auth-v2]
+path = "contracts/legacy/newyorkcitycoin-auth-v2.clar"
+
+[contracts.newyorkcitycoin-core-v2]
+path = "contracts/legacy/newyorkcitycoin-core-v2.clar"
+
+[contracts.newyorkcitycoin-token-v2]
+path = "contracts/legacy/newyorkcitycoin-token-v2.clar"
+
 # CITYCOINS TEST PROPOSALS
 
 [contracts.test-ccd001-direct-execute-001]
