@@ -21,14 +21,8 @@
 (define-constant ERR_PAYOUT_COMPLETE (err u7008))
 (define-constant ERR_STACKING_DISABLED (err u7009))
 (define-constant MAX_REWARD_CYCLES u32)
-;; MAINNET: u2100
-;; TESTNET: u1050
-;; LOCAL: u2100
-(define-constant REWARD_CYCLE_LENGTH u1050)
-;; MAINNET: u666050
-;; TESTNET: u2000000
-;; LOCAL: u50
-(define-constant FIRST_STACKING_BLOCK u2000000)
+(define-constant REWARD_CYCLE_LENGTH u2100)
+(define-constant FIRST_STACKING_BLOCK u666050)
 
 ;; DATA VARS
 
@@ -107,14 +101,8 @@
     (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u30))
     (stack-at-cycle cityId userId amount cycleId (+ cycleId lockPeriod) (+ cycleId u31))
     ;; contract addresses hardcoded for this version
-    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
-    ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2
-    ;; LOCAL: .test-ccext-governance-token-mia
-    (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-ft .miamicoin-token-v2 amount)))
-    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-    ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2
-    ;; LOCAL: .test-ccext-governance-token-nyc
-    (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-ft .newyorkcitycoin-token-v2 amount)))
+    (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 amount)))
+    (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 amount)))
     (print {
       event: "stacking",
       amountStacked: amount,
@@ -159,19 +147,13 @@
     (and (is-eq cityName "mia")
       (begin
         (and (> reward u0) (try! (as-contract (contract-call? .ccd002-treasury-mia-stacking withdraw-stx reward user))))
-        ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
-        ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2
-        ;; LOCAL: .test-ccext-governance-token-mia
-        (and (> claimable u0) (try! (as-contract (contract-call? .ccd002-treasury-mia-stacking withdraw-ft .miamicoin-token-v2 claimable user))))
+        (and (> claimable u0) (try! (as-contract (contract-call? .ccd002-treasury-mia-stacking withdraw-ft 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 claimable user))))
       )
     )
     (and (is-eq cityName "nyc")
       (begin
         (and (> reward u0) (try! (as-contract (contract-call? .ccd002-treasury-nyc-stacking withdraw-stx reward user))))
-        ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-        ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2
-        ;; LOCAL: .test-ccext-governance-token-nyc
-        (and (> claimable u0) (try! (as-contract (contract-call? .ccd002-treasury-nyc-stacking withdraw-ft .newyorkcitycoin-token-v2 claimable user))))
+        (and (> claimable u0) (try! (as-contract (contract-call? .ccd002-treasury-nyc-stacking withdraw-ft 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 claimable user))))
       )
     )
     (print {
