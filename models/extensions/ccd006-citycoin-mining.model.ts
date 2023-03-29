@@ -52,8 +52,8 @@ export class CCD006CityMining {
     return Tx.contractCall(this.name, "set-reward-delay", [types.uint(delay)], sender.address);
   }
 
-  setMiningStatus(sender: Account, status: boolean) {
-    return Tx.contractCall(this.name, "set-mining-status", [types.bool(status)], sender.address);
+  setMiningEnabled(sender: Account, status: boolean) {
+    return Tx.contractCall(this.name, "set-mining-enabled", [types.bool(status)], sender.address);
   }
 
   // Read only functions

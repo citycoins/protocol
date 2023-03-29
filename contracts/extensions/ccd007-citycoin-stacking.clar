@@ -128,12 +128,10 @@
 
 (define-public (set-stacking-reward (cityId uint) (cycleId uint) (amount uint))
   (let
-    (
-      (cycleStats (get-stacking-stats cityId cycleId))
-    )
+    ((cycleStats (get-stacking-stats cityId cycleId)))
     (try! (is-extension))
     (asserts! (is-none (get reward cycleStats)) ERR_PAYOUT_COMPLETE)
-    (asserts! (< cycleId (get-reward-cycle burn-block-height)) ERR_INCOMPLETE_CYCLE)
+    (asserts! (or (not (var-get stackingEnabled)) (< cycleId (get-reward-cycle burn-block-height))) ERR_INCOMPLETE_CYCLE)
     (ok (map-set StackingStats
       { cityId: cityId, cycle: cycleId }
       (merge cycleStats { reward: (some amount) })
@@ -186,11 +184,11 @@
   )
 )
 
-(define-public (set-stacking-status (status bool))
+(define-public (set-stacking-enabled (status bool))
   (begin
     (try! (is-dao-or-extension))
     (print {
-      event: "set-stacking-status",
+      event: "set-stacking-enabled",
       stackingEnabled: status
     })
     (ok (var-set stackingEnabled status))
@@ -232,7 +230,7 @@
 )
 
 (define-read-only (is-cycle-paid (cityId uint) (cycle uint))
-    (is-some (get reward (get-stacking-stats cityId cycle)))
+  (is-some (get reward (get-stacking-stats cityId cycle)))
 )
 
 (define-read-only (get-stacking-reward (cityId uint) (userId uint) (cycle uint))

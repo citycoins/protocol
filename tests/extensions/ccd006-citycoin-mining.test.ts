@@ -1454,20 +1454,20 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd006-citycoin-mining: set-mining-status() fails when called directly",
+  name: "ccd006-citycoin-mining: set-mining-enabled() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
     // act
-    const block = chain.mineBlock([ccd006CityMining.setMiningStatus(sender, true)]);
+    const block = chain.mineBlock([ccd006CityMining.setMiningEnabled(sender, true)]);
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_UNAUTHORIZED);
   },
 });
 
 Clarinet.test({
-  name: "ccd006-citycoin-mining: get-mining-status() returns true after deployment",
+  name: "ccd006-citycoin-mining: get-mining-enabled() returns true after deployment",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;

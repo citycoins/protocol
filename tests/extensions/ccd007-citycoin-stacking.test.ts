@@ -940,13 +940,13 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccd007-citycoin-stacking: set-stacking-status() fails when called directly",
+  name: "ccd007-citycoin-stacking: set-stacking-enabled() fails when called directly",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     // act
-    const block = chain.mineBlock([ccd007CityStacking.setStackingStatus(sender, true)]);
+    const block = chain.mineBlock([ccd007CityStacking.setStackingEnabled(sender, true)]);
     // assert
     block.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_UNAUTHORIZED);
   },

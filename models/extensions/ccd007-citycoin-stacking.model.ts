@@ -49,8 +49,8 @@ export class CCD007CityStacking {
   stack(sender: Account, cityName: string, amount: number, lockPeriod: number) {
     return Tx.contractCall(this.name, "stack", [types.ascii(cityName), types.uint(amount), types.uint(lockPeriod)], sender.address);
   }
-  setStackingStatus(sender: Account, status: boolean) {
-    return Tx.contractCall(this.name, "set-stacking-status", [types.bool(status)], sender.address);
+  setStackingEnabled(sender: Account, status: boolean) {
+    return Tx.contractCall(this.name, "set-stacking-enabled", [types.bool(status)], sender.address);
   }
 
   // Read only functions

@@ -6,7 +6,7 @@
 
 (define-public (execute (sender principal))
 	(begin
-		(try! (contract-call? .ccd007-citycoin-stacking set-stacking-status false))
+		(try! (contract-call? .ccd007-citycoin-stacking set-stacking-enabled false))
 		(ok true)
 	)
 )

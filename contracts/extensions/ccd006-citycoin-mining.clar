@@ -70,16 +70,20 @@
 (define-public (set-reward-delay (delay uint))
   (begin 
     (try! (is-dao-or-extension))
+    (print {
+      event: "set-reward-delay",
+      rewardDelay: delay
+    })
     (asserts! (> delay u0) ERR_INVALID_DELAY)
     (ok (var-set rewardDelay delay))
   )
 )
 
-(define-public (set-mining-status (status bool))
+(define-public (set-mining-enabled (status bool))
   (begin
     (try! (is-dao-or-extension))
     (print {
-      event: "set-mining-status",
+      event: "set-mining-enabled",
       miningEnabled: status
     })
     (ok (var-set miningEnabled status))
