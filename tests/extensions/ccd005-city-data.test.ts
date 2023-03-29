@@ -399,7 +399,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
 
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
     // assert
     receipts[3].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_INVALID_CITY);
     const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
@@ -416,7 +416,7 @@ Clarinet.test({
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_017);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_017);
     // assert
     receipts[3].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_INVALID_DETAILS);
     const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();
@@ -433,7 +433,7 @@ Clarinet.test({
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_019);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_019);
     // assert
     receipts[3].result.expectErr().expectUint(CCD005CityData.ErrCode.ERR_INVALID_DETAILS);
     const coinbaseInfo = ccd005CityData.getCityCoinbaseInfo(miaCityId).result.expectTuple();

@@ -9,7 +9,7 @@ Clarinet.test({
     // TODO: setupLegacyProtocol(chain, accounts);
 
     // act
-    const receipts = passProposal(chain, accounts, PROPOSALS.CCIP_013);
+    const { receipts } = passProposal(chain, accounts, PROPOSALS.CCIP_013);
     // console.log(JSON.stringify(receipts, null, 2));
 
     // assert

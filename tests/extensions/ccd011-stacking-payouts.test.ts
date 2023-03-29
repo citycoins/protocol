@@ -57,7 +57,7 @@ Clarinet.test({
     ccd011StackingPayouts.getPoolOperator().result.expectPrincipal("ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6");
 
     // act
-    const receipts = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_001);
 
     // assert
     receipts[3].result.expectOk().expectUint(3);
