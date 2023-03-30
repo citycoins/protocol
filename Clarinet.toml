@@ -89,11 +89,17 @@ path = "contracts/extensions/ccd001-direct-execute.clar"
 [contracts.ccd002-treasury-mia-mining]
 path = "contracts/extensions/ccd002-treasury.clar"
 
+[contracts.ccd002-treasury-mia-mining-v2]
+path = "contracts/extensions/ccd002-treasury-v2.clar"
+
 [contracts.ccd002-treasury-mia-stacking]
 path = "contracts/extensions/ccd002-treasury.clar"
 
 [contracts.ccd002-treasury-nyc-mining]
 path = "contracts/extensions/ccd002-treasury.clar"
+
+[contracts.ccd002-treasury-nyc-mining-v2]
+path = "contracts/extensions/ccd002-treasury-v2.clar"
 
 [contracts.ccd002-treasury-nyc-stacking]
 path = "contracts/extensions/ccd002-treasury.clar"
@@ -133,6 +139,9 @@ path = "contracts/proposals/ccip013-migration.clar"
 
 [contracts.ccip013-activation]
 path = "contracts/proposals/ccip013-activation.clar"
+
+[contracts.ccip014-pox-2]
+path = "contracts/proposals/ccip014-pox-2.clar"
 
 # CITYCOINS PROTOCOL TRAITS
 
