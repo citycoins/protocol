@@ -94,7 +94,7 @@
   (let
     (
       (cityId (unwrap! (contract-call? .ccd004-city-registry get-city-id cityName) ERR_INVALID_CITY))
-      (cityInfo (contract-call? .ccd005-city-data get-city-info cityId "mining"))
+      (cityInfo (contract-call? .ccd005-city-data get-city-info cityId "mining-v2"))
       (cityDetails (unwrap! (get details cityInfo) ERR_NO_ACTIVATION_DETAILS))
       (cityTreasury (unwrap! (get treasury cityInfo) ERR_INVALID_TREASURY))
       (user tx-sender)
