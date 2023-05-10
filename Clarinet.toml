@@ -116,6 +116,9 @@ path = "contracts/extensions/ccd005-city-data.clar"
 [contracts.ccd006-citycoin-mining]
 path = "contracts/extensions/ccd006-citycoin-mining.clar"
 
+[contracts.ccd006-citycoin-mining-v2]
+path = "contracts/extensions/ccd006-citycoin-mining-v2.clar"
+
 [contracts.ccd007-citycoin-stacking]
 path = "contracts/extensions/ccd007-citycoin-stacking.clar"
 
@@ -140,8 +143,8 @@ path = "contracts/proposals/ccip013-migration.clar"
 [contracts.ccip013-activation]
 path = "contracts/proposals/ccip013-activation.clar"
 
-[contracts.ccip014-pox-2]
-path = "contracts/proposals/ccip014-pox-2.clar"
+[contracts.ccip014-pox-3]
+path = "contracts/proposals/ccip014-pox-3.clar"
 
 # CITYCOINS PROTOCOL TRAITS
 
