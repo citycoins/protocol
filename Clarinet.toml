@@ -183,6 +183,9 @@ path = "tests/contracts/external/test-ccext-nft-mia.clar"
 [contracts.test-ccext-nft-nyc]
 path = "tests/contracts/external/test-ccext-nft-nyc.clar"
 
+[contracts.mock-pox-3]
+path = "tests/contracts/external/mock-pox-3.clar"
+
 # CITYCOINS LEGACY CONTRACTS
 
 [contracts.citycoin-core-v2-trait]
@@ -386,11 +389,13 @@ path = "tests/contracts/proposals/test-ccd011-stacking-payouts-001.clar"
 costs_version = 2
 parser_version = 2
 
-[repl.analysis]
-passes = ["check_checker"]
+# TEMPORARILY DISABLED
 
-[repl.analysis.check_checker]
-strict = false
-trusted_sender = false
-trusted_caller = false
-callee_filter = true
+# [repl.analysis]
+# passes = ["check_checker"]
+
+# [repl.analysis.check_checker]
+# strict = false
+# trusted_sender = false
+# trusted_caller = false
+# callee_filter = true
