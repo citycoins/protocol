@@ -35,6 +35,9 @@
     (try! (contract-call? .ccd005-city-data add-treasury miaId .ccd002-treasury-mia-mining "mining-v2"))
     (try! (contract-call? .ccd005-city-data add-treasury nycId .ccd002-treasury-nyc-mining "mining-v2"))
 
+    ;; disable original mining contract
+    (try! (contract-call? (contract-call? .ccd006-citycoin-mining set-mining-enabled false)))
+
     (ok true)
   )  
 )
