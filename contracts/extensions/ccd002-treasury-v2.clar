@@ -154,7 +154,7 @@
     })
     ;; MAINNET: 'SP000000000000000000002Q6VF78.pox-3
     ;; TESTNET: 'ST000000000000000000002AMW42H.pox-3
-    (match (as-contract (contract-call? .mock-pox-3 delegate-stx maxAmount to none none))
+    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-3 delegate-stx maxAmount to none none))
       success (ok success)
       err (err (to-uint err))
     )
@@ -171,7 +171,7 @@
     })
     ;; MAINNET: 'SP000000000000000000002Q6VF78.pox-3
     ;; TESTNET: 'ST000000000000000000002AMW42H.pox-3
-    (match (as-contract (contract-call? .mock-pox-3 revoke-delegate-stx))
+    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-3 revoke-delegate-stx))
       success (ok success)
       err (err (to-uint err))
     )
