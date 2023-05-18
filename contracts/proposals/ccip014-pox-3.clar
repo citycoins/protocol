@@ -48,6 +48,8 @@
       (nycId (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_PANIC))
       (miaBalance (contract-call? .ccd002-treasury-mia-mining get-balance-stx))
       (nycBalance (contract-call? .ccd002-treasury-nyc-mining get-balance-stx))
+      (voteStart block-height) ;; vote starts right away
+      (voteEnd (+ voteStart u1000)) ;; targeting May 25, may shift
     )
 
     ;; enable mining v2 treasuries in the DAO
@@ -86,6 +88,8 @@
 )
 
 ;; READ ONLY FUNCTIONS
+
+;; TODO: is-executable: checked by `execute` to verify vote complete
 
 (define-read-only (get-proposal-info)
   (some CCIP_014)
