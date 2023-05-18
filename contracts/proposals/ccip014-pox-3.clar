@@ -1,6 +1,45 @@
+;; TRAITS
+
 (impl-trait .proposal-trait.proposal-trait)
 
-(define-constant ERR_PANIC (err u500))
+;; ERRORS
+
+(define-constant ERR_PANIC (err u1400))
+(define-constant ERR_VOTED_ALREADY (err u1401))
+(define-constant ERR_NOTHING_STACKED (err u1402))
+
+;; CONSTANTS
+
+(define-constant CCIP_014 {
+  name: "",
+  link: "",
+  hash: "",
+})
+
+;; DATA VARS
+
+;; vote block heights
+(define-data-var voteStart uint u0)
+(define-data-var voteEnd uint u0)
+(var-set voteStart block-height)
+
+;; vote tracking
+(define-data-var yesVotes uint u0)
+(define-data-var yesTotal uint u0)
+(define-data-var noVotes uint u0)
+(define-data-var noTotal uint u0)
+
+;; DATA MAPS
+
+(define-map UserVotes
+  uint ;; user ID
+  { ;; vote
+    vote: bool,
+    amount: uint
+  }
+)
+
+;; PUBLIC FUNCTIONS
 
 (define-public (execute (sender principal))
   (let
@@ -44,4 +83,47 @@
 
     (ok true)
   )  
+)
+
+;; READ ONLY FUNCTIONS
+
+(define-read-only (get-proposal-info)
+  (some CCIP_014)
+)
+
+(define-read-only (get-vote-period)
+  (if (and
+    ((var-get voteStart) > u0)
+    ((var-get voteEnd) > u0))
+    ;; if both are set, return values
+    (some {
+      startBlock: (var-get voteStart),
+      endBlock: (var-get voteEnd),
+      length: (- (var-get voteEnd) (var-get voteStart))
+    })
+    ;; else return none
+    none
+  )
+)
+
+(define-read-only (get-vote-totals)
+  (some {
+    yesVotes: (var-get yesVotes),
+    yesTotal: (var-get yesTotal),
+    noVotes: (var-get noVotes),
+    noTotal: (var-get noTotal)
+  })
+)
+
+(define-read-only (get-voter-info (id uint))
+  (map-get? UserVotes id)
+)
+
+;; PRIVATE FUNCTIONS
+
+;; TODO: getter for user ID from ccd003
+
+;; get block hash by height
+(define-private (get-block-hash (blockHeight uint))
+  (get-block-info? id-header-hash blockHeight)
 )
