@@ -1143,14 +1143,14 @@ Clarinet.test({
 
     let winner: number;
 
-    if (miningClaimUser2.receipts[0].result === "(err u6010)") {
+    if (miningClaimUser2.receipts[0].result === "(err u6014)") {
       //console.log("USER 1 WINS");
       miningClaimUser1.receipts[0].result.expectOk().expectBool(true);
-      miningClaimUser2.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_NOT_WINNER);
+      miningClaimUser2.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_CLAIMED);
       winner = 1;
     } else {
       //console.log("USER 2 WINS");
-      miningClaimUser1.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_NOT_WINNER);
+      miningClaimUser1.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_CLAIMED);
       miningClaimUser2.receipts[0].result.expectOk().expectBool(true);
       winner = 2;
     }
@@ -1437,14 +1437,14 @@ Clarinet.test({
 
     let winner: number;
 
-    if (miningClaimUser2.receipts[0].result === "(err u6010)") {
+    if (miningClaimUser2.receipts[0].result === "(err u6014)") {
       //console.log("USER 1 WINS");
       miningClaimUser1.receipts[0].result.expectOk().expectBool(true);
-      miningClaimUser2.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_NOT_WINNER);
+      miningClaimUser2.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_CLAIMED);
       winner = 1;
     } else {
       //console.log("USER 2 WINS");
-      miningClaimUser1.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_NOT_WINNER);
+      miningClaimUser1.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_CLAIMED);
       miningClaimUser2.receipts[0].result.expectOk().expectBool(true);
       winner = 2;
     }
