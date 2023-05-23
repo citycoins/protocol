@@ -7,6 +7,9 @@
 (define-constant ERR_PANIC (err u1400))
 (define-constant ERR_VOTED_ALREADY (err u1401))
 (define-constant ERR_NOTHING_STACKED (err u1402))
+(define-constant ERR_USER_NOT_FOUND (err u1403))
+(define-constant ERR_PROPOSAL_NOT_ACTIVE (err u1404))
+(define-constant ERR_NO_CITY_ID (err u1405))
 
 ;; CONSTANTS
 
@@ -15,6 +18,12 @@
   link: "",
   hash: "",
 })
+
+(define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
+(define-constant MIA_SCALE_BASE (pow u10 u4)) ;; 4 decimal places
+(define-constant MIA_SCALE_FACTOR u876) ;; 0.876 or 87.6%
+;; MIA votes scaled to make 1 MIA = 1 NYC
+;; full calculation available in CCIP-014
 
 ;; DATA VARS
 
@@ -35,7 +44,9 @@
   uint ;; user ID
   { ;; vote
     vote: bool,
-    amount: uint
+    mia: uint,
+    nyc: uint,
+    total: uint,
   }
 )
 
@@ -85,6 +96,79 @@
   )  
 )
 
+(define-public (vote-on-ccip014 (vote bool))
+  (let
+    (
+      (miaId (unwrap! (contract-call? .ccd004-city-registry get-city-id "mia") ERR_NO_CITY_ID))
+      (nycId (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_NO_CITY_ID))
+      (voterId (unwrap! (contract-call? .ccd003-user-registry get-user-id contract-caller) ERR_USER_NOT_FOUND))
+      (voterRecord (map-get? UserVotes voterId))
+    )
+    ;; check that proposal is active
+    (asserts! (and
+      (>= block-height (var-get voteStart))
+      (<= block-height (var-get voteEnd)))
+      ERR_PROPOSAL_NOT_ACTIVE)
+    ;; check if vote record exists
+    (match voterRecord record
+      ;; if the voterRecord exists
+      (begin
+        ;; check vote is not the same as before
+        (asserts! (not (is-eq (get vote record) vote)) ERR_VOTED_ALREADY)
+        ;; record the vote for the user
+        (map-set UserVotes voterId
+          (merge record { vote: vote })
+        )
+        ;; update the overall vote totals
+        (if vote
+          (begin
+            (var-set yesVotes (+ (var-get yesVotes) u1))
+            (var-set yesTotal (+ (var-get yesTotal) (get total record)))
+          )
+          (begin
+            (var-set noVotes (+ (var-get noVotes) u1))
+            (var-set noTotal (+ (var-get noTotal) (get total record)))
+          )
+        )
+      )
+      ;; if the voterRecord does not exist
+      (let
+        (
+          ;; TODO
+          (scaledVoteMia u0)
+          (scaledVoteNyc u0)
+          (voteMia u0)
+          (voteNyc u0)
+          (voteTotal (+ voteMia voteNyc))
+        )
+        ;; record the vote for the user
+        (map-insert UserVotes voterId {
+          vote: vote,
+          mia: voteMia,
+          nyc: voteNyc,
+          total: voteTotal,
+        })
+        ;; update the overall vote totals
+        (if vote
+          (begin
+            (var-set yesVotes (+ (var-get yesVotes) u1))
+            (var-set yesTotal (+ (var-get yesTotal) voteTotal))
+          )
+          (begin
+            (var-set noVotes (+ (var-get noVotes) u1))
+            (var-set noTotal (+ (var-get noTotal) voteTotal))
+          )
+        )
+      )
+    )
+    ;; print voter information
+    (print (map-get? UserVotes voterId))
+    ;; print vote totals
+    (print (get-vote-totals))
+    (ok true)
+  )
+)
+
 ;; READ ONLY FUNCTIONS
 
 ;; TODO: is-executable: checked by `execute` to verify vote complete
@@ -121,11 +205,72 @@
   (map-get? UserVotes id)
 )
 
-;; PRIVATE FUNCTIONS
+;; MIA vote calculation
+;; returns (some uint) or (none)
+;; optionally scaled by VOTE_SCALE_FACTOR (10^6)
+(define-read-only (get-mia-vote (cityId uint) (userId uint) (scaled bool))
+  (let
+    (
+      ;; MAINNET: MIA cycle 54 / first block 74,897
+      ;; cycle 2 / u4500 used in tests
+      (cycle54Hash (unwrap! (get-block-hash u4500) none))
+      (cycle54Data (at-block cycle54Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
+      (cycle54Amount (get stacked cycle54Data))
+      ;; MAINNET: MIA cycle 55 / first block 76,997
+      ;; cycle 3 / u6600 used in tests
+      (cycle55Hash (unwrap! (get-block-hash u6600) none))
+      (cycle55Data (at-block cycle55Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
+      (cycle55Amount (get stacked cycle55Data))
+      ;; MIA vote calculation
+      (avgStacked (/ (+ (scale-up cycle54Amount) (scale-up cycle55Amount)) u2))
+      (scaledVote (/ (* avgStacked MIA_SCALE_FACTOR) MIA_SCALE_BASE))
+    )
+    ;; check that at least one value is positive
+    (asserts! (or (> cycle54Amount u0) (> cycle55Amount u0)) none)
+    ;; return scaled or unscaled value
+    (if scaled (some scaledVote) (some (/ scaledVote VOTE_SCALE_FACTOR)))
+  )
+)
 
-;; TODO: getter for user ID from ccd003
+;; NYC vote calculation
+;; returns (some uint) or (none)
+;; optionally scaled by VOTE_SCALE_FACTOR (10^6)
+(define-read-only (get-nyc-vote (cityId uint) (userId uint) (scaled bool))
+  (let
+    (
+      ;; NYC cycle 54 / first block 75,249, cycle 2 / u4500 used in tests
+      ;; mainnet: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2
+      (cycle54Hash (unwrap! (get-block-hash u4500) none))
+      (cycle54Data (at-block cycle54Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
+      (cycle54Amount (get stacked cycle54Data))
+      ;; NYC cycle 55 / first block 77,349, cycle 3 / u6600 used in tests
+      ;; mainnet: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2
+      (cycle55Hash (unwrap! (get-block-hash u6600) none))
+      (cycle55Data (at-block cycle55Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
+      (cycle55Amount (get stacked cycle55Data))
+      ;; NYC vote calculation
+      (scaledVote (/ (+ (scale-up cycle54Amount) (scale-up cycle55Amount)) u2))
+    )
+    ;; check that at least one value is positive
+    (asserts! (or (> cycle54Amount u0) (> cycle55Amount u0)) none)
+    ;; return scaled or unscaled value
+    (if scaled (some scaledVote) (some (/ scaledVote VOTE_SCALE_FACTOR)))
+  )
+)
+
+;; PRIVATE FUNCTIONS
 
 ;; get block hash by height
 (define-private (get-block-hash (blockHeight uint))
   (get-block-info? id-header-hash blockHeight)
+)
+
+;; CREDIT: ALEX math-fixed-point-16.clar
+
+(define-private (scale-up (a uint))
+  (* a VOTE_SCALE_FACTOR)
+)
+
+(define-private (scale-down (a uint))
+  (/ a VOTE_SCALE_FACTOR)
 )
