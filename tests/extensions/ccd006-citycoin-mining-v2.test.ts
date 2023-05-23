@@ -247,7 +247,7 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_001);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
     ccd005CityData.getCityTreasuryId(mia.cityId, mia.treasuryV1Name).result.expectSome().expectUint(1);
     ccd005CityData.getCityTreasuryName(mia.cityId, mia.treasuryV1Id).result.expectSome().expectAscii(mia.treasuryV1Name);
@@ -270,7 +270,7 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_002);
     const block = chain.mineBlock([ccd006CityMining.mine(sender, mia.cityName, entries)]);
 
     // assert
@@ -291,7 +291,8 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_V2_002);
+    passProposal(chain, accounts, PROPOSALS.CCIP_014);
     const block = chain.mineBlock([ccd006CityMining.mine(sender, mia.cityName, entries)]);
 
     // assert
@@ -313,7 +314,7 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_V2_002);
     const block = chain.mineBlock([ccd006CityMining.mine(sender, mia.cityName, entries)]);
 
     // assert
@@ -335,7 +336,7 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_V2_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_003);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
     ccd005CityData.getCityTreasuryId(mia.cityId, mia.treasuryV1Name).result.expectSome().expectUint(1);
@@ -360,7 +361,7 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
     ccd005CityData.getCityTreasuryId(mia.cityId, mia.treasuryV1Name).result.expectSome().expectUint(1);
     ccd005CityData.getCityTreasuryName(mia.cityId, mia.treasuryV1Id).result.expectSome().expectAscii(mia.treasuryV1Name);
@@ -384,7 +385,7 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
     const block = chain.mineBlock([ccd006CityMining.mine(sender, mia.cityName, entries)]);
 
@@ -409,7 +410,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
     const block = chain.mineBlock([ccd006CityMining.mine(user, mia.cityName, entries)]);
 
@@ -467,7 +468,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
     const block = chain.mineBlock([ccd006CityMining.mine(user, mia.cityName, entries)]);
 
@@ -525,7 +526,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
     const block = chain.mineBlock([ccd006CityMining.mine(users[0], mia.cityName, entries), ccd006CityMining.mine(users[1], mia.cityName, entries), ccd006CityMining.mine(users[2], mia.cityName, entries)]);
     const firstBlock = block.height - 1;
@@ -590,7 +591,7 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_V2_002);
     const block = chain.mineBlock([ccd006CityMining.mine(sender, mia.cityName, entries), ccd006CityMining.mine(sender, mia.cityName, entries)]);
     const firstBlock = block.height - 1;
     const lastBlock = firstBlock + entries.length - 1;
@@ -635,7 +636,7 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_002);
     const block = chain.mineBlock([ccd006CityMining.mine(users[0], mia.cityName, entries), ccd006CityMining.mine(users[1], mia.cityName, entries), ccd006CityMining.mine(users[2], mia.cityName, entries), ccd006CityMining.mine(users[3], mia.cityName, entries)]);
     const firstBlock = block.height - 1;
     const lastBlock = firstBlock + entries.length - 1;
@@ -704,7 +705,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_009);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
 
     const miningBlock = chain.mineBlock([ccd006CityMining.mine(user1, mia.cityName, entries)]);
@@ -765,7 +766,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_009);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
 
     const miningBlock = chain.mineBlock([ccd006CityMining.mine(user1, mia.cityName, entries)]);
@@ -908,7 +909,7 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
     let block = chain.mineBlock([ccd006CityMining.mine(sender, mia.cityName, entries)]);
     const claimHeight = block.height - 1; // one less than actual bh
@@ -935,7 +936,7 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
     let block = chain.mineBlock([ccd006CityMining.mine(user, mia.cityName, entries)]);
     const claimHeight = block.height - 1; // one less than actual bh
@@ -962,7 +963,7 @@ Clarinet.test({
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
     let block = chain.mineBlock([ccd006CityMining.mine(user, mia.cityName, entries)]);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -1006,7 +1007,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_007);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
     let block = chain.mineBlock([ccd006CityMining.mine(user, mia.cityName, entries)]);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -1054,7 +1055,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_007);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
 
     const block1 = chain.mineBlock([ccd006CityMining.mine(user1, mia.cityName, entries), ccd006CityMining.mine(user2, mia.cityName, entries)]);
@@ -1115,7 +1116,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_009);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
 
     const miningBlock = chain.mineBlock([ccd006CityMining.mine(user1, mia.cityName, entries), ccd006CityMining.mine(user2, mia.cityName, entries)]);
@@ -1214,7 +1215,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
     // add mining treasury
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
 
     // assert
@@ -1259,7 +1260,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
     // add mining treasury
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
 
     // assert
@@ -1306,7 +1307,7 @@ Clarinet.test({
     const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
-    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_004);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_004);
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(100);
@@ -1323,7 +1324,7 @@ Clarinet.test({
     ccd006CityMining.getRewardDelay().result.expectUint(100);
 
     // act
-    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_003);
+    const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_003);
 
     // assert
     ccd006CityMining.getRewardDelay().result.expectUint(50);
@@ -1352,8 +1353,8 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_005);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_005);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
     const block = chain.mineBlock([ccd006CityMining.mine(user, mia.cityName, entries)]);
 
@@ -1385,7 +1386,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD003_USER_REGISTRY_001);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_005);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_005);
     const claimHeight = 6; // one less than actual bh
     chain.mineEmptyBlock(rewardDelay);
     const block = chain.mineBlock([ccd006CityMining.claimMiningReward(user, mia.cityName, claimHeight)]);
@@ -1416,7 +1417,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_009);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_010);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_018);
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_002);
     ccd005CityData.getCityTreasuryNonce(mia.cityId).result.expectUint(1);
 
     const miningBlock = chain.mineBlock([ccd006CityMining.mine(user1, mia.cityName, entries), ccd006CityMining.mine(user2, mia.cityName, entries)]);
@@ -1426,7 +1427,7 @@ Clarinet.test({
     chain.mineEmptyBlock(rewardDelay + 1);
 
     // disable mining
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_005);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_V2_005);
 
     const miningClaimUser1 = chain.mineBlock([ccd006CityMining.claimMiningReward(user1, mia.cityName, claimHeight)]);
     const miningClaimUser2 = chain.mineBlock([ccd006CityMining.claimMiningReward(user2, mia.cityName, claimHeight)]);
