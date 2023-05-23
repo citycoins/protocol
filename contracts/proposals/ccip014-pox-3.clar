@@ -115,7 +115,7 @@
       (begin
         ;; check vote is not the same as before
         (asserts! (not (is-eq (get vote record) vote)) ERR_VOTED_ALREADY)
-        ;; record the vote for the user
+        ;; record the new vote for the user
         (map-set UserVotes voterId
           (merge record { vote: vote })
         )
@@ -124,8 +124,12 @@
           (begin
             (var-set yesVotes (+ (var-get yesVotes) u1))
             (var-set yesTotal (+ (var-get yesTotal) (get total record)))
+            (var-set noVotes (- (var-get noVotes) u1))
+            (var-set noTotal (- (var-get noTotal) (get total record)))
           )
           (begin
+            (var-set yesVotes (- (var-get yesVotes) u1))
+            (var-set yesTotal (- (var-get yesTotal) (get total record)))
             (var-set noVotes (+ (var-get noVotes) u1))
             (var-set noTotal (+ (var-get noTotal) (get total record)))
           )
@@ -135,10 +139,10 @@
       (let
         (
           ;; TODO
-          (scaledVoteMia u0)
-          (scaledVoteNyc u0)
-          (voteMia u0)
-          (voteNyc u0)
+          (scaledVoteMia (default-to u0 (get-mia-vote miaId voterId true)))
+          (scaledVoteNyc (default-to u0 (get-nyc-vote nycId voterId true)))
+          (voteMia (scale-down scaledVoteMia))
+          (voteNyc (scale-down scaledVoteNyc))
           (voteTotal (+ voteMia voteNyc))
         )
         ;; record the vote for the user
@@ -211,12 +215,12 @@
 (define-read-only (get-mia-vote (cityId uint) (userId uint) (scaled bool))
   (let
     (
-      ;; MAINNET: MIA cycle 54 / first block 74,897
+      ;; MAINNET: MIA cycle 54 / first block BTC 779,450 STX 97,453
       ;; cycle 2 / u4500 used in tests
       (cycle54Hash (unwrap! (get-block-hash u4500) none))
-      (cycle54Data (at-block cycle54Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
+      (cycle54Data (at-block cycle54Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
       (cycle54Amount (get stacked cycle54Data))
-      ;; MAINNET: MIA cycle 55 / first block 76,997
+      ;; MAINNET: MIA cycle 55 / first block BTC 781,550 STX 99,112
       ;; cycle 3 / u6600 used in tests
       (cycle55Hash (unwrap! (get-block-hash u6600) none))
       (cycle55Data (at-block cycle55Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
@@ -238,13 +242,13 @@
 (define-read-only (get-nyc-vote (cityId uint) (userId uint) (scaled bool))
   (let
     (
-      ;; NYC cycle 54 / first block 75,249, cycle 2 / u4500 used in tests
-      ;; mainnet: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2
+      ;; NYC cycle 54 / first block BTC 779,450 STX 97,453
+      ;; cycle 2 / u4500 used in tests
       (cycle54Hash (unwrap! (get-block-hash u4500) none))
       (cycle54Data (at-block cycle54Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
       (cycle54Amount (get stacked cycle54Data))
-      ;; NYC cycle 55 / first block 77,349, cycle 3 / u6600 used in tests
-      ;; mainnet: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2
+      ;; NYC cycle 55 / first block BTC 781,550 STX 99,112
+      ;; cycle 3 / u6600 used in tests
       (cycle55Hash (unwrap! (get-block-hash u6600) none))
       (cycle55Data (at-block cycle55Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
       (cycle55Amount (get stacked cycle55Data))
