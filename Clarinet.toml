@@ -146,7 +146,7 @@ path = "contracts/proposals/ccip013-activation.clar"
 [contracts.ccip014-pox-3]
 path = "contracts/proposals/ccip014-pox-3.clar"
 clarity_version = 2
-epoch = 2.1
+epoch = 2.4
 
 # CITYCOINS PROTOCOL TRAITS
 
@@ -188,7 +188,7 @@ path = "tests/contracts/external/test-ccext-nft-nyc.clar"
 [contracts.mock-pox-3]
 path = "tests/contracts/external/mock-pox-3.clar"
 clarity_version = 2
-epoch = 2.1
+epoch = 2.4
 
 # CITYCOINS LEGACY CONTRACTS
 
