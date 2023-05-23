@@ -9,7 +9,9 @@
 (define-constant ERR_NOTHING_STACKED (err u1402))
 (define-constant ERR_USER_NOT_FOUND (err u1403))
 (define-constant ERR_PROPOSAL_NOT_ACTIVE (err u1404))
-(define-constant ERR_NO_CITY_ID (err u1405))
+(define-constant ERR_PROPOSAL_STILL_ACTIVE (err u1405))
+(define-constant ERR_NO_CITY_ID (err u1406))
+(define-constant ERR_VOTE_FAILED (err u1407))
 
 ;; CONSTANTS
 
@@ -60,6 +62,9 @@
       (miaBalance (contract-call? .ccd002-treasury-mia-mining get-balance-stx))
       (nycBalance (contract-call? .ccd002-treasury-nyc-mining get-balance-stx))
     )
+
+    ;; check vote details
+    (try! (is-executable))
 
     ;; enable mining v2 treasuries in the DAO
     (try! (contract-call? .base-dao set-extensions
@@ -175,7 +180,14 @@
 
 ;; READ ONLY FUNCTIONS
 
-;; TODO: is-executable: checked by `execute` to verify vote complete
+(define-read-only (is-executable)
+  (begin
+    (asserts! (>= block-height (var-get voteStart)) ERR_PROPOSAL_NOT_ACTIVE)
+    (asserts! (>= block-height (var-get voteEnd)) ERR_PROPOSAL_STILL_ACTIVE)
+    (asserts! (> (var-get yesTotal) (var-get noTotal)) ERR_VOTE_FAILED)
+    (ok true)
+  )
+)
 
 (define-read-only (get-proposal-info)
   (some CCIP_014)
