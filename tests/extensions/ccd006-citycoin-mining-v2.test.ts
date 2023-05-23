@@ -13,7 +13,6 @@ import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts
 import { CCD003UserRegistry } from "../../models/extensions/ccd003-user-registry.model.ts";
 import { CCD005CityData } from "../../models/extensions/ccd005-city-data.model.ts";
 import { CCD006CityMining } from "../../models/extensions/ccd006-citycoin-mining.model.ts";
-import { CCD006CityMiningV2 } from "../../models/extensions/ccd006-citycoin-mining-v2.model.ts";
 import { CCD010CoreV2Adapter } from "../../models/extensions/ccd010-core-v2-adapter.model.ts";
 import { CCEXTGovernanceToken } from "../../models/external/test-ccext-governance-token.model.ts";
 
@@ -127,7 +126,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
 
@@ -143,7 +142,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.callback(sender, "test")]);
@@ -163,7 +162,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries = [10, 10];
@@ -180,7 +179,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries = [10, 10];
@@ -202,7 +201,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries = [10, 10];
@@ -221,7 +220,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries = [10, 10];
@@ -241,7 +240,7 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries = [10, 10];
@@ -264,7 +263,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries = [100000000000001];
@@ -285,7 +284,7 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries = [50000000000000, 50000000000000];
@@ -307,7 +306,7 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries = [50000000000000, 50000000000000, 1];
@@ -329,7 +328,7 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries = [10, 10];
@@ -354,7 +353,7 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries: number[] = [];
@@ -378,7 +377,7 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries: number[] = [10, 10, 10, 0, 10];
@@ -401,7 +400,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries: number[] = [10];
@@ -454,7 +453,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     const userId = 1;
     const commitAmount = 10;
     const numberOfBlocks = 200;
@@ -512,7 +511,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const users = [accounts.get("wallet_1")!, accounts.get("wallet_2")!, accounts.get("wallet_3")!];
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     const userIds = [1, 2, 3];
     const commitAmount = 100;
     const numberOfBlocks = 100;
@@ -581,7 +580,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     const totalAmount = 30;
     const totalBlocks = 3;
     const userId = 1;
@@ -625,7 +624,7 @@ Clarinet.test({
 
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     const ccd003UserRegistry = new CCD003UserRegistry(chain, sender, "ccd003-user-registry");
 
     const totalAmount = 120;
@@ -690,7 +689,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
     const totalAmount = 10;
     const totalBlocks = 1;
@@ -751,7 +750,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
     const totalAmount = 10;
     const totalBlocks = 1;
@@ -801,7 +800,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, mia.cityName, 50)]);
@@ -817,7 +816,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -836,7 +835,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -856,7 +855,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -878,7 +877,7 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -902,7 +901,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries: number[] = [10];
@@ -929,7 +928,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries: number[] = [10];
@@ -956,7 +955,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries: number[] = [10];
@@ -999,7 +998,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries: number[] = [10];
@@ -1045,7 +1044,7 @@ Clarinet.test({
     const user1 = accounts.get("wallet_1")!;
     const user2 = accounts.get("wallet_2")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     const totalAmount = 10;
     const totalBlocks = 1;
     const entries: number[] = [10];
@@ -1104,7 +1103,7 @@ Clarinet.test({
     const user1 = accounts.get("wallet_1")!;
     const user2 = accounts.get("wallet_2")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     const totalAmount = 10;
     const totalBlocks = 1;
     const entries = [10];
@@ -1202,7 +1201,7 @@ Clarinet.test({
     const user1 = accounts.get("wallet_1")!;
     const user2 = accounts.get("wallet_2")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
     gt.getBalance(user1.address).result.expectOk().expectUint(0);
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_MINING).result.expectOk().expectUint(0);
@@ -1250,7 +1249,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -1288,7 +1287,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const { receipts } = chain.mineBlock([ccd006CityMining.setRewardDelay(sender, 50)]);
@@ -1304,7 +1303,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const { receipts } = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_004);
@@ -1320,7 +1319,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     ccd006CityMining.getRewardDelay().result.expectUint(100);
 
     // act
@@ -1344,7 +1343,7 @@ Clarinet.test({
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const entries: number[] = [10];
@@ -1379,7 +1378,7 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const user = accounts.get("wallet_1")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
@@ -1405,7 +1404,7 @@ Clarinet.test({
     const user1 = accounts.get("wallet_1")!;
     const user2 = accounts.get("wallet_2")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     const entries = [10];
     const totalAmount = entries.reduce((a, b) => a + b, 0);
     const totalBlocks = entries.length;
@@ -1495,7 +1494,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     // act
     const block = chain.mineBlock([ccd006CityMining.setMiningEnabled(sender, true)]);
     // assert
@@ -1508,7 +1507,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     // act
     // assert
     ccd006CityMining.isMiningEnabled().result.expectBool(true);
@@ -1524,7 +1523,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
 
     // act
     const { result } = ccd006CityMining.getCoinbaseAmount(mia.cityId, 100);
@@ -1539,7 +1538,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     // get MIA/NYC city IDs
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     // set city status to activated
@@ -1566,7 +1565,7 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     // get MIA/NYC city IDs
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     // set city status to activated
@@ -1595,7 +1594,7 @@ Clarinet.test({
     // arrange
     const sender = accounts.get("deployer")!;
     const ccd005CityData = new CCD005CityData(chain, sender, "ccd005-city-data");
-    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     // get MIA/NYC city IDs
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
     // set city activation details
