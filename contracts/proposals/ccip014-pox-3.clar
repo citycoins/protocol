@@ -1,6 +1,7 @@
 ;; TRAITS
 
 (impl-trait .proposal-trait.proposal-trait)
+(impl-trait .ccip-011-trait.ccip-011-trait)
 
 ;; ERRORS
 
@@ -102,7 +103,7 @@
 )
 
 ;; TODO: use at-block for call below?
-(define-public (vote-on-ccip014 (vote bool))
+(define-public (vote-on-proposal (vote bool))
   (let
     (
       (miaId (unwrap! (contract-call? .ccd004-city-registry get-city-id "mia") ERR_NO_CITY_ID))

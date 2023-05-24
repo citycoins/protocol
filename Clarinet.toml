@@ -168,6 +168,9 @@ path = "contracts/traits/ccd006-trait.clar"
 [contracts.ccd007-trait]
 path = "contracts/traits/ccd007-trait.clar"
 
+[contracts.ccip-011-trait]
+path = "contracts/traits/ccip-011-trait.clar"
+
 # CITYCOINS EXTERNAL CONTRACTS
 
 [contracts.citycoin-vrf-v2]
