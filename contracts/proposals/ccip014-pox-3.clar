@@ -101,6 +101,7 @@
   )  
 )
 
+;; TODO: use at-block for call below?
 (define-public (vote-on-ccip014 (vote bool))
   (let
     (
@@ -110,10 +111,12 @@
       (voterRecord (map-get? UserVotes voterId))
     )
     ;; check that proposal is active
-    (asserts! (and
-      (>= block-height (var-get voteStart))
-      (<= block-height (var-get voteEnd)))
-      ERR_PROPOSAL_NOT_ACTIVE)
+    ;;(asserts! (and
+    ;;  (>= block-height (var-get voteStart))
+    ;;  (<= block-height (var-get voteEnd)))
+    ;;  ERR_PROPOSAL_NOT_ACTIVE)
+    ;; lines above modified since vote will start at deployed height
+    (asserts! (<= block-height (var-get voteEnd)) ERR_PROPOSAL_NOT_ACTIVE)
     ;; check if vote record exists
     (match voterRecord record
       ;; if the voterRecord exists
@@ -143,7 +146,6 @@
       ;; if the voterRecord does not exist
       (let
         (
-          ;; TODO
           (scaledVoteMia (default-to u0 (get-mia-vote miaId voterId true)))
           (scaledVoteNyc (default-to u0 (get-nyc-vote nycId voterId true)))
           (voteMia (scale-down scaledVoteMia))
@@ -182,7 +184,8 @@
 
 (define-read-only (is-executable)
   (begin
-    (asserts! (>= block-height (var-get voteStart)) ERR_PROPOSAL_NOT_ACTIVE)
+    ;; line below removed since vote will start at deployed height
+    ;; (asserts! (>= block-height (var-get voteStart)) ERR_PROPOSAL_NOT_ACTIVE)
     (asserts! (>= block-height (var-get voteEnd)) ERR_PROPOSAL_STILL_ACTIVE)
     (asserts! (> (var-get yesTotal) (var-get noTotal)) ERR_VOTE_FAILED)
     (ok true)
