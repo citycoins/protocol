@@ -31,8 +31,10 @@
 ;; DATA VARS
 
 ;; vote block heights
+(define-data-var voteActive bool true)
 (define-data-var voteStart uint u0)
 (define-data-var voteEnd uint u0)
+
 (var-set voteStart block-height)
 
 ;; vote tracking
@@ -66,6 +68,10 @@
 
     ;; check vote complete/passed
     (try! (is-executable))
+
+    ;; update vote variables
+    (var-set voteEnd block-height)
+    (var-set voteActive false)
 
     ;; enable mining v2 treasuries in the DAO
     (try! (contract-call? .base-dao set-extensions
@@ -116,8 +122,7 @@
     ;;  (>= block-height (var-get voteStart))
     ;;  (<= block-height (var-get voteEnd)))
     ;;  ERR_PROPOSAL_NOT_ACTIVE)
-    ;; lines above modified since vote will start at deployed height
-    (asserts! (<= block-height (var-get voteEnd)) ERR_PROPOSAL_NOT_ACTIVE)
+    (asserts! (var-get voteActive) ERR_PROPOSAL_NOT_ACTIVE)
     ;; check if vote record exists
     (match voterRecord record
       ;; if the voterRecord exists
@@ -185,13 +190,21 @@
 
 (define-read-only (is-executable)
   (begin
+    ;; additional checks could be added here in future proposals
     ;; line below revised since vote will start at deployed height
     ;; (asserts! (>= block-height (var-get voteStart)) ERR_PROPOSAL_NOT_ACTIVE)
     ;; line below revised since vote will end when proposal executes
     ;; (asserts! (>= block-height (var-get voteEnd)) ERR_PROPOSAL_STILL_ACTIVE)
+    ;; check that there is at least one vote
+    (asserts! (or (> (var-get yesVotes) u0) (> (var-get noVotes) u0)) ERR_VOTE_FAILED)
+    ;; check that yes total is more than no total
     (asserts! (> (var-get yesTotal) (var-get noTotal)) ERR_VOTE_FAILED)
     (ok true)
   )
+)
+
+(define-read-only (is-vote-active)
+  (some (var-get voteActive))
 )
 
 (define-read-only (get-proposal-info)
