@@ -17,9 +17,9 @@
 ;; CONSTANTS
 
 (define-constant CCIP_014 {
-  name: "",
-  link: "",
-  hash: "",
+  name: "Upgrade to pox-3",
+  link: "https://github.com/Rapha-btc/governance/blob/patch-1/ccips/ccip-014/ccip-014-upgrade-to-pox3.md",
+  hash: "TBD",
 })
 
 (define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
@@ -64,7 +64,7 @@
       (nycBalance (contract-call? .ccd002-treasury-nyc-mining get-balance-stx))
     )
 
-    ;; check vote details
+    ;; check vote complete/passed
     (try! (is-executable))
 
     ;; enable mining v2 treasuries in the DAO
@@ -72,6 +72,7 @@
       (list
         {extension: .ccd002-treasury-mia-mining-v2, enabled: true}
         {extension: .ccd002-treasury-nyc-mining-v2, enabled: true}
+        {extension: .ccd006-citycoin-mining-v2, enabled: true}
       )
     ))
 
@@ -99,10 +100,9 @@
     (try! (contract-call? .ccd006-citycoin-mining set-mining-enabled false))
 
     (ok true)
-  )  
+  )
 )
 
-;; TODO: use at-block for call below?
 (define-public (vote-on-proposal (vote bool))
   (let
     (
@@ -185,9 +185,10 @@
 
 (define-read-only (is-executable)
   (begin
-    ;; line below removed since vote will start at deployed height
+    ;; line below revised since vote will start at deployed height
     ;; (asserts! (>= block-height (var-get voteStart)) ERR_PROPOSAL_NOT_ACTIVE)
-    (asserts! (>= block-height (var-get voteEnd)) ERR_PROPOSAL_STILL_ACTIVE)
+    ;; line below revised since vote will end when proposal executes
+    ;; (asserts! (>= block-height (var-get voteEnd)) ERR_PROPOSAL_STILL_ACTIVE)
     (asserts! (> (var-get yesTotal) (var-get noTotal)) ERR_VOTE_FAILED)
     (ok true)
   )
