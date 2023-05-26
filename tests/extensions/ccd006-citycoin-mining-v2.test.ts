@@ -189,6 +189,11 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     // set city treasury (fails before this check)
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_012);
+    // generalize to three functions:
+    // passCCIP014 which will vote and execute
+    // voteCCIP014 which votes for given user
+    // execCCIP014 which executes the proposal
+    console.log(passProposal(chain, accounts, PROPOSALS.CCIP_014));
     const block = chain.mineBlock([ccd006CityMining.mine(sender, mia.cityName, entries)]);
 
     // assert
