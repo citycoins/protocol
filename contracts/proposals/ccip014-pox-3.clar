@@ -21,7 +21,7 @@
 (define-constant CCIP_014 {
   name: "Upgrade to pox-3",
   link: "https://github.com/Rapha-btc/governance/blob/patch-1/ccips/ccip-014/ccip-014-upgrade-to-pox3.md",
-  hash: "TBD",
+  hash: "0448a33745e8f157214e3da87c512a2cd382dcd2",
 })
 
 (define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
