@@ -407,6 +407,9 @@ path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-012.clar"
 [contracts.test-ccd011-stacking-payouts-001]
 path = "tests/contracts/proposals/test-ccd011-stacking-payouts-001.clar"
 
+[contracts.test-ccip014-pox-3-001]
+path = "tests/contracts/proposals/test-ccip014-pox-3-001.clar"
+
 [repl]
 costs_version = 2
 parser_version = 2

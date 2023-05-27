@@ -52,8 +52,8 @@ export class CCIP014Pox3 {
     return this.callReadOnlyFn("get-vote-totals");
   }
 
-  getVoterInfo() {
-    return this.callReadOnlyFn("get-voter-info");
+  getVoterInfo(userId: number) {
+    return this.callReadOnlyFn("get-voter-info", [types.uint(userId)]);
   }
 
   getMiaVote(cityId: number, userId: number, scaled: boolean) {

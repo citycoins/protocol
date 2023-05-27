@@ -24,7 +24,7 @@
 
 (define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
 (define-constant MIA_SCALE_BASE (pow u10 u4)) ;; 4 decimal places
-(define-constant MIA_SCALE_FACTOR u876) ;; 0.876 or 87.6%
+(define-constant MIA_SCALE_FACTOR u8760) ;; 0.8760 or 87.60%
 ;; MIA votes scaled to make 1 MIA = 1 NYC
 ;; full calculation available in CCIP-014
 

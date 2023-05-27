@@ -91,6 +91,7 @@ export const PROPOSALS = {
   TEST_CCD007_CITY_STACKING_011: ADDRESS.concat(".test-ccd007-citycoin-stacking-011"),
   TEST_CCD007_CITY_STACKING_012: ADDRESS.concat(".test-ccd007-citycoin-stacking-012"),
   TEST_CCD011_STACKING_PAYOUTS_001: ADDRESS.concat(".test-ccd011-stacking-payouts-001"),
+  TEST_CCIP014_POX3_001: ADDRESS.concat(".test-ccip014-pox-3-001"),
 };
 
 export const EXTERNAL = {
