@@ -124,8 +124,8 @@
     (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-nyc u3 MISSED_PAYOUT)))
     (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-nyc u4 MISSED_PAYOUT)))
 
-    ;; set pool operator to FAST pool
-    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox-fast-pool-v2
+    ;; set pool operator to Friedger pool
+    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP
     (try! (contract-call? .ccd011-stacking-payouts set-pool-operator 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
 
     (ok true)
