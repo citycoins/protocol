@@ -1,7 +1,7 @@
 ;; TRAITS
 
 (impl-trait .proposal-trait.proposal-trait)
-(impl-trait .ccip-015-trait.ccip-015-trait)
+(impl-trait .ccip015-trait.ccip015-trait)
 
 ;; ERRORS
 

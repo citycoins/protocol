@@ -168,8 +168,8 @@ path = "contracts/traits/ccd006-trait.clar"
 [contracts.ccd007-trait]
 path = "contracts/traits/ccd007-trait.clar"
 
-[contracts.ccip-015-trait]
-path = "contracts/traits/ccip-015-trait.clar"
+[contracts.ccip015-trait]
+path = "contracts/traits/ccip015-trait.clar"
 
 # CITYCOINS EXTERNAL CONTRACTS
 
