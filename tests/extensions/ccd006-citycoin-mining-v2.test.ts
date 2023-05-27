@@ -15,6 +15,8 @@ import { CCD005CityData } from "../../models/extensions/ccd005-city-data.model.t
 import { CCD006CityMining } from "../../models/extensions/ccd006-citycoin-mining.model.ts";
 import { CCD010CoreV2Adapter } from "../../models/extensions/ccd010-core-v2-adapter.model.ts";
 import { CCEXTGovernanceToken } from "../../models/external/test-ccext-governance-token.model.ts";
+import { CCD001DirectExecute } from "../../models/extensions/ccd001-direct-execute.model.js";
+import { CCIP014 } from "../../models/proposals/ccip014-pox-3.model.js";
 
 // =============================
 // INTERNAL DATA / FUNCTIONS
