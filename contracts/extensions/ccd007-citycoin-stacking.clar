@@ -240,7 +240,7 @@
       (stacker (get-stacker cityId cycle userId))
       (userStacked (get stacked stacker))
     )
-    (if (and (or (not (var-get stackingEnabled)) (< cycle  (get-reward-cycle burn-block-height))) (> userStacked u0))
+    (if (and (or (not (var-get stackingEnabled)) (< cycle (get-reward-cycle burn-block-height))) (> userStacked u0))
       (some (/ (* (unwrap! (get reward cycleStats) (some u0)) userStacked) (get total cycleStats)))
       none
     )

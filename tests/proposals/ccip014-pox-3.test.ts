@@ -60,10 +60,11 @@ Clarinet.test({
     stackingBlock.receipts[0].result.expectOk().expectBool(true);
     stackingBlock.receipts[1].result.expectOk().expectBool(true);
 
-    // progress the chain to cycle 4
+    // progress the chain to cycle 5
     // votes are counted in cycles 2-3
-    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 5 + 10);
-    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(4);
+    // past payouts tested for cycles 1-4
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
 
     // act
 
@@ -109,6 +110,7 @@ Clarinet.test({
     // progress the chain to avoid underflow in
     // stacking reward cycle calculation
     chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+
     // prepare for CCIP-014
     const constructBlock = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP014_POX3_001);
 
@@ -119,10 +121,11 @@ Clarinet.test({
     const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod)]);
     stackingBlock.receipts[0].result.expectOk().expectBool(true);
 
-    // progress the chain to cycle 4
+    // progress the chain to cycle 5
     // votes are counted in cycles 2-3
-    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 5 + 10);
-    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(4);
+    // past payouts tested for cycles 1-4
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
 
     // act
 
@@ -185,10 +188,11 @@ Clarinet.test({
     const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked / 2, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked / 2, lockPeriod)]);
     stackingBlock.receipts[0].result.expectOk().expectBool(true);
 
-    // progress the chain to cycle 4
+    // progress the chain to cycle 5
     // votes are counted in cycles 2-3
-    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 5 + 10);
-    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(4);
+    // past payouts tested for cycles 1-4
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
 
     // act
 
@@ -263,10 +267,11 @@ Clarinet.test({
     const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked / 2, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked / 2, lockPeriod)]);
     stackingBlock.receipts[0].result.expectOk().expectBool(true);
 
-    // progress the chain to cycle 4
+    // progress the chain to cycle 5
     // votes are counted in cycles 2-3
-    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 5 + 10);
-    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(4);
+    // past payouts tested for cycles 1-4
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
 
     // act
 
@@ -320,10 +325,11 @@ Clarinet.test({
     const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked / 2, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked / 2, lockPeriod)]);
     stackingBlock.receipts[0].result.expectOk().expectBool(true);
 
-    // progress the chain to cycle 4
+    // progress the chain to cycle 5
     // votes are counted in cycles 2-3
-    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 5 + 10);
-    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(4);
+    // past payouts tested for cycles 1-4
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
 
     // act
 
@@ -364,10 +370,11 @@ Clarinet.test({
     const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked / 2, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked / 2, lockPeriod)]);
     stackingBlock.receipts[0].result.expectOk().expectBool(true);
 
-    // progress the chain to cycle 4
+    // progress the chain to cycle 5
     // votes are counted in cycles 2-3
-    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 5 + 10);
-    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(4);
+    // past payouts tested for cycles 1-4
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
 
     // execute yes and no vote
     // user 1 has more voting power
@@ -412,10 +419,11 @@ Clarinet.test({
     const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked / 2, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked / 2, lockPeriod)]);
     stackingBlock.receipts[0].result.expectOk().expectBool(true);
 
-    // progress the chain to cycle 4
+    // progress the chain to cycle 5
     // votes are counted in cycles 2-3
-    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 5 + 10);
-    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(4);
+    // past payouts tested for cycles 1-4
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
 
     // execute yes and no vote
     // user 1 has more voting power
@@ -461,10 +469,11 @@ Clarinet.test({
     const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked / 2, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked / 2, lockPeriod)]);
     stackingBlock.receipts[0].result.expectOk().expectBool(true);
 
-    // progress the chain to cycle 4
+    // progress the chain to cycle 5
     // votes are counted in cycles 2-3
-    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 5 + 10);
-    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(4);
+    // past payouts tested for cycles 1-4
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
 
     // act
 
@@ -509,11 +518,12 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "ccip-014: after upgrade mining disabled, mining-v2 enabled, claims work for both",
+  name: "ccip-014: after upgrade mining disabled, mining-v2 enabled, mining and stacking claims work as expected",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
     const user1 = accounts.get("wallet_1")!;
+    const user2 = accounts.get("wallet_2")!;
     const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
     const ccd006CityMiningV2 = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
@@ -521,11 +531,12 @@ Clarinet.test({
 
     const miningEntries = [25000000, 25000000];
     const amountStacked = 500;
-    const lockPeriod = 10;
+    const lockPeriod = 4;
 
     // progress the chain to avoid underflow in
     // stacking reward cycle calculation
     chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+
     // prepare for CCIP-014
     const constructBlock = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP014_POX3_001);
 
@@ -541,13 +552,37 @@ Clarinet.test({
     miningBlockV2Before.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_INVALID_TREASURY);
 
     // stack first cycle u1, last cycle u10
-    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod)]);
+    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked, lockPeriod)]);
     stackingBlock.receipts[0].result.expectOk().expectBool(true);
+    stackingBlock.receipts[1].result.expectOk().expectBool(true);
+    stackingBlock.receipts[2].result.expectOk().expectBool(true);
+    stackingBlock.receipts[3].result.expectOk().expectBool(true);
 
-    // progress the chain to cycle 4
+    // progress the chain to cycle 5
     // votes are counted in cycles 2-3
-    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 5 + 10);
-    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(4);
+    // past payouts tested for cycles 1-4
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
+
+    // is-cycle-paid returns false for cycles 1-4 for MIA
+    ccd007CityStacking.isCyclePaid(mia.cityId, 1).result.expectBool(false);
+    ccd007CityStacking.isCyclePaid(mia.cityId, 2).result.expectBool(false);
+    ccd007CityStacking.isCyclePaid(mia.cityId, 3).result.expectBool(false);
+    ccd007CityStacking.isCyclePaid(mia.cityId, 4).result.expectBool(false);
+
+    // is-cycle-paid returns false for cycles 1-4 for NYC
+    ccd007CityStacking.isCyclePaid(nyc.cityId, 1).result.expectBool(false);
+    ccd007CityStacking.isCyclePaid(nyc.cityId, 2).result.expectBool(false);
+    ccd007CityStacking.isCyclePaid(nyc.cityId, 3).result.expectBool(false);
+    ccd007CityStacking.isCyclePaid(nyc.cityId, 4).result.expectBool(false);
+
+    // claim-stacking-reward before, fails with ERR_NOTHING_TO_CLAIM
+    // since cycle is not paid out yet
+    const claimStackingRewardBefore = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, mia.cityName, 2), ccd007CityStacking.claimStackingReward(user1, nyc.cityName, 2), ccd007CityStacking.claimStackingReward(user2, mia.cityName, 2), ccd007CityStacking.claimStackingReward(user2, nyc.cityName, 2)]);
+    claimStackingRewardBefore.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_NOTHING_TO_CLAIM);
+    claimStackingRewardBefore.receipts[1].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_NOTHING_TO_CLAIM);
+    claimStackingRewardBefore.receipts[2].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_NOTHING_TO_CLAIM);
+    claimStackingRewardBefore.receipts[3].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_NOTHING_TO_CLAIM);
 
     // execute single yes vote
     const votingBlock = chain.mineBlock([ccip014pox3.voteOnProposal(user1, true)]);
@@ -610,5 +645,34 @@ Clarinet.test({
     const miningClaimV2After = chain.mineBlock([ccd006CityMiningV2.claimMiningReward(sender, mia.cityName, claimBlockHeightV2)]);
     //console.log(`\nmining claim v2 after:\n${JSON.stringify(miningClaimV2After, null, 2)}`);
     miningClaimV2After.receipts[0].result.expectOk().expectBool(true);
+
+    // is-cycle-paid returns true for cycles 1-4 for MIA
+    ccd007CityStacking.isCyclePaid(mia.cityId, 1).result.expectBool(true);
+    ccd007CityStacking.isCyclePaid(mia.cityId, 2).result.expectBool(true);
+    ccd007CityStacking.isCyclePaid(mia.cityId, 3).result.expectBool(true);
+    ccd007CityStacking.isCyclePaid(mia.cityId, 4).result.expectBool(true);
+
+    // is-cycle-paid returns true for cycles 1-4 for NYC
+    ccd007CityStacking.isCyclePaid(nyc.cityId, 1).result.expectBool(true);
+    ccd007CityStacking.isCyclePaid(nyc.cityId, 2).result.expectBool(true);
+    ccd007CityStacking.isCyclePaid(nyc.cityId, 3).result.expectBool(true);
+    ccd007CityStacking.isCyclePaid(nyc.cityId, 4).result.expectBool(true);
+
+    // claim-stacking-reward after for cycle 2
+    // fails with ERR_NOTHING_TO_CLAIM since 1 uSTX cannot be divided among participants
+    const claimStackingRewardAfter = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, mia.cityName, 2), ccd007CityStacking.claimStackingReward(user1, nyc.cityName, 2), ccd007CityStacking.claimStackingReward(user2, mia.cityName, 2), ccd007CityStacking.claimStackingReward(user2, nyc.cityName, 2)]);
+    //console.log(`\nclaim stacking reward cycle 2 after:\n${JSON.stringify(claimStackingRewardAfter, null, 2)}`);
+    claimStackingRewardAfter.receipts[0].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_NOTHING_TO_CLAIM);
+    claimStackingRewardAfter.receipts[1].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_NOTHING_TO_CLAIM);
+    claimStackingRewardAfter.receipts[2].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_NOTHING_TO_CLAIM);
+    claimStackingRewardAfter.receipts[3].result.expectErr().expectUint(CCD007CityStacking.ErrCode.ERR_NOTHING_TO_CLAIM);
+
+    // claim-stacking-reward after for cycle 4
+    const claimStackingRewardAfter2 = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, mia.cityName, 4), ccd007CityStacking.claimStackingReward(user1, nyc.cityName, 4), ccd007CityStacking.claimStackingReward(user2, mia.cityName, 4), ccd007CityStacking.claimStackingReward(user2, nyc.cityName, 4)]);
+    //console.log(`\nclaim stacking reward cycle 4 after:\n${JSON.stringify(claimStackingRewardAfter2, null, 2)}`);
+    claimStackingRewardAfter2.receipts[0].result.expectOk().expectBool(true);
+    claimStackingRewardAfter2.receipts[1].result.expectOk().expectBool(true);
+    claimStackingRewardAfter2.receipts[2].result.expectOk().expectBool(true);
+    claimStackingRewardAfter2.receipts[3].result.expectOk().expectBool(true);
   },
 });

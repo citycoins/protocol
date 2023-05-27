@@ -16,6 +16,8 @@
 
 ;; CONSTANTS
 
+(define-constant SELF (as-contract tx-sender))
+(define-constant MISSED_PAYOUT u1)
 (define-constant CCIP_014 {
   name: "Upgrade to pox-3",
   link: "https://github.com/Rapha-btc/governance/blob/patch-1/ccips/ccip-014/ccip-014-upgrade-to-pox3.md",
@@ -93,8 +95,8 @@
     (try! (contract-call? .ccd002-treasury-nyc-mining withdraw-stx nycBalance .ccd002-treasury-nyc-mining-v2))
 
     ;; delegate stack the STX in the mining treasuries (up to 50M STX each)
-    ;; MAINNET: TODO
-    ;; MAINNET: TODO
+    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox-fast-pool-v2
+    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox-fast-pool-v2
     (try! (contract-call? .ccd002-treasury-mia-mining-v2 delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
     (try! (contract-call? .ccd002-treasury-nyc-mining-v2 delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
 
@@ -104,6 +106,27 @@
 
     ;; disable original mining contract
     (try! (contract-call? .ccd006-citycoin-mining set-mining-enabled false))
+
+    ;; set pool operator to self
+    (try! (contract-call? .ccd011-stacking-payouts set-pool-operator SELF))
+
+    ;; pay out missed MIA cycles 56, 57, 58, 59 with 1 uSTX each
+    ;; MAINNET: u56, u57, u58, u59
+    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-mia u1 MISSED_PAYOUT)))
+    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-mia u2 MISSED_PAYOUT)))
+    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-mia u3 MISSED_PAYOUT)))
+    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-mia u4 MISSED_PAYOUT)))
+
+    ;; pay out missed NYC cycles 56, 57, 58, 59 with 1 uSTX each
+    ;; MAINNET: u56, u57, u58, u59
+    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-nyc u1 MISSED_PAYOUT)))
+    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-nyc u2 MISSED_PAYOUT)))
+    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-nyc u3 MISSED_PAYOUT)))
+    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-nyc u4 MISSED_PAYOUT)))
+
+    ;; set pool operator to FAST pool
+    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox-fast-pool-v2
+    (try! (contract-call? .ccd011-stacking-payouts set-pool-operator 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
 
     (ok true)
   )
@@ -308,3 +331,8 @@
 (define-private (scale-down (a uint))
   (/ a VOTE_SCALE_FACTOR)
 )
+
+;; INITIALIZATION
+
+;; fund proposal with 8 uSTX for payouts from deployer
+(stx-transfer? (* MISSED_PAYOUT u8) tx-sender (as-contract tx-sender))
