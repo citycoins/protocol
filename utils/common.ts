@@ -6,6 +6,7 @@ import { BaseDao } from "../models/base-dao.model.ts";
 // export const START_BLOCK_BASE_DAO = 100; // or 99
 export const START_BLOCK_CCD005 = 6; // 6 or 7
 export const START_BLOCK_CCD006 = 9; // or 9 or 10
+export const CCD006_REWARD_DELAY = 100;
 
 export const ADDRESS = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM";
 
@@ -92,6 +93,7 @@ export const PROPOSALS = {
   TEST_CCD007_CITY_STACKING_012: ADDRESS.concat(".test-ccd007-citycoin-stacking-012"),
   TEST_CCD011_STACKING_PAYOUTS_001: ADDRESS.concat(".test-ccd011-stacking-payouts-001"),
   TEST_CCIP014_POX3_001: ADDRESS.concat(".test-ccip014-pox-3-001"),
+  TEST_CCIP014_POX3_002: ADDRESS.concat(".test-ccip014-pox-3-002"),
 };
 
 export const EXTERNAL = {

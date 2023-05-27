@@ -34,7 +34,3 @@
 		(ok true)
 	)
 )
-
-;; setup each passed proposal here
-;; for more fine grained control
-;; and ability to use both cities
