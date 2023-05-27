@@ -131,3 +131,38 @@ export const constructAndPassProposal = (chain: Chain, accounts: Map<string, Acc
   // console.log(`block:\n${JSON.stringify(block, null, 2)}`);
   return block;
 };
+
+// reusable city data
+
+export type CityData = {
+  cityId: number;
+  cityName: string;
+  treasuryV1Contract: string;
+  treasuryV1Id: number;
+  treasuryV1Name: string;
+  treasuryV2Contract: string;
+  treasuryV2Id: number;
+  treasuryV2Name: string;
+};
+
+export const mia: CityData = {
+  cityId: 1,
+  cityName: "mia",
+  treasuryV1Contract: "ccd002-treasury-mia-mining",
+  treasuryV1Id: 1,
+  treasuryV1Name: "mining",
+  treasuryV2Contract: "ccd002-treasury-mia-mining-v2",
+  treasuryV2Id: 2,
+  treasuryV2Name: "mining-v2",
+};
+
+export const nyc: CityData = {
+  cityId: 2,
+  cityName: "nyc",
+  treasuryV1Contract: "ccd002-treasury-nyc-mining",
+  treasuryV1Id: 1,
+  treasuryV1Name: "mining",
+  treasuryV2Contract: "ccd002-treasury-nyc-mining-v2",
+  treasuryV2Id: 2,
+  treasuryV2Name: "mining-v2",
+};

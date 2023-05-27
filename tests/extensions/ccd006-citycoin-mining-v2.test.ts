@@ -8,56 +8,20 @@
  * 5. read-only functions
  */
 import { Account, assert, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
-import { constructAndPassProposal, EXTENSIONS, passProposal, PROPOSALS } from "../../utils/common.ts";
+import { constructAndPassProposal, EXTENSIONS, mia, passProposal, PROPOSALS } from "../../utils/common.ts";
 import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
 import { CCD003UserRegistry } from "../../models/extensions/ccd003-user-registry.model.ts";
 import { CCD005CityData } from "../../models/extensions/ccd005-city-data.model.ts";
 import { CCD006CityMining } from "../../models/extensions/ccd006-citycoin-mining.model.ts";
 import { CCD010CoreV2Adapter } from "../../models/extensions/ccd010-core-v2-adapter.model.ts";
 import { CCEXTGovernanceToken } from "../../models/external/test-ccext-governance-token.model.ts";
-import { CCD001DirectExecute } from "../../models/extensions/ccd001-direct-execute.model.js";
-import { CCIP014 } from "../../models/proposals/ccip014-pox-3.model.js";
+import { CCIP014 } from "../../models/proposals/ccip014-pox-3.model.ts";
 
 // =============================
 // INTERNAL DATA / FUNCTIONS
 // =============================
 
 const rewardDelay = 100;
-
-// reusable city data
-
-type CityData = {
-  cityId: number;
-  cityName: string;
-  treasuryV1Contract: string;
-  treasuryV1Id: number;
-  treasuryV1Name: string;
-  treasuryV2Contract: string;
-  treasuryV2Id: number;
-  treasuryV2Name: string;
-};
-
-const mia: CityData = {
-  cityId: 1,
-  cityName: "mia",
-  treasuryV1Contract: "ccd002-treasury-mia-mining",
-  treasuryV1Id: 1,
-  treasuryV1Name: "mining",
-  treasuryV2Contract: "ccd002-treasury-mia-mining-v2",
-  treasuryV2Id: 2,
-  treasuryV2Name: "mining-v2",
-};
-
-const nyc: CityData = {
-  cityId: 2,
-  cityName: "nyc",
-  treasuryV1Contract: "ccd002-treasury-nyc-mining",
-  treasuryV1Id: 1,
-  treasuryV1Name: "mining",
-  treasuryV2Contract: "ccd002-treasury-nyc-mining-v2",
-  treasuryV2Id: 2,
-  treasuryV2Name: "mining-v2",
-};
 
 // reusable mining functions
 
@@ -67,7 +31,7 @@ const checkMiningData = (ccd006CityMining: any, cityId: number, height: number, 
     claimed: types.bool(miningStatsAt.claimed),
     miners: types.uint(miningStatsAt.miners),
   };
-  assertEquals(ccd006CityMining.getMiningStatsAtBlock(cityId, height).result.expectTuple(), expectedStats);
+  assertEquals(ccd006CityMining.getMiningStats(cityId, height).result.expectTuple(), expectedStats);
 
   expectedStats = {
     commit: types.uint(minerAt.commit),
@@ -75,7 +39,7 @@ const checkMiningData = (ccd006CityMining: any, cityId: number, height: number, 
     low: types.uint(minerAt.low),
     winner: types.bool(minerAt.winner),
   };
-  assertEquals(ccd006CityMining.getMinerAtBlock(cityId, height, userId).result.expectTuple(), expectedStats);
+  assertEquals(ccd006CityMining.getMiner(cityId, height, userId).result.expectTuple(), expectedStats);
 };
 
 const twoMinersMine = (user1: Account, user2: Account, ccd006CityMining: CCD006CityMining, chain: Chain, sender: Account): any => {
@@ -97,7 +61,7 @@ const twoMinersMine = (user1: Account, user2: Account, ccd006CityMining: CCD006C
     /**
     console.log("getCoinbaseAmount : " + coinbase)
     console.log("isBlockWinner : " + ccd006CityMining.isBlockWinner(mia.cityId, user1.address, claimHeight).result.expectSome().expectTuple())
-    console.log("getMiningStatsAtBlock : ", ccd006CityMining.getMiningStatsAtBlock(mia.cityId, claimHeight))
+    console.log("getMiningStats : ", ccd006CityMining.getMiningStats(mia.cityId, claimHeight))
     */
     winner = 1;
   } else if (miningClaimBlock.receipts[1].result === "(ok true)") {
@@ -110,7 +74,7 @@ const twoMinersMine = (user1: Account, user2: Account, ccd006CityMining: CCD006C
     /**
     console.log("getCoinbaseAmount : " + coinbase)
     console.log("isBlockWinner : " + ccd006CityMining.isBlockWinner(mia.cityId, user2.address, claimHeight).result.expectSome().expectTuple())
-    console.log("getMiningStatsAtBlock : ", ccd006CityMining.getMiningStatsAtBlock(mia.cityId, claimHeight))
+    console.log("getMiningStats : ", ccd006CityMining.getMiningStats(mia.cityId, claimHeight))
      */
   } else {
     console.log("======== NOONE WINS =========================");
@@ -440,13 +404,13 @@ Clarinet.test({
       low: types.uint(0),
       winner: types.bool(false),
     };
-    assertEquals(ccd006CityMining.getMinerAtBlock(mia.cityId, firstBlock, userId).result.expectTuple(), expectedStats2);
+    assertEquals(ccd006CityMining.getMiner(mia.cityId, firstBlock, userId).result.expectTuple(), expectedStats2);
     const expectedStats = {
       amount: types.uint(10),
       claimed: types.bool(false),
       miners: types.uint(1),
     };
-    assertEquals(ccd006CityMining.getMiningStatsAtBlock(mia.cityId, firstBlock).result.expectTuple(), expectedStats);
+    assertEquals(ccd006CityMining.getMiningStats(mia.cityId, firstBlock).result.expectTuple(), expectedStats);
     ccd006CityMining.getBlockWinner(mia.cityId, firstBlock).result.expectNone();
 
     block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd006-citycoin-mining`, expectedPrintMsg);
@@ -501,8 +465,8 @@ Clarinet.test({
       winner: types.bool(false),
     };
     for (let i = 0; i < entries.length; i++) {
-      assertEquals(ccd006CityMining.getMiningStatsAtBlock(mia.cityId, firstBlock).result.expectTuple(), expectedStats);
-      assertEquals(ccd006CityMining.getMinerAtBlock(mia.cityId, firstBlock + i, userId).result.expectTuple(), expectedMinerStats);
+      assertEquals(ccd006CityMining.getMiningStats(mia.cityId, firstBlock).result.expectTuple(), expectedStats);
+      assertEquals(ccd006CityMining.getMiner(mia.cityId, firstBlock + i, userId).result.expectTuple(), expectedMinerStats);
     }
 
     ccd006CityMining.getBlockWinner(mia.cityId, firstBlock).result.expectNone();
@@ -556,7 +520,7 @@ Clarinet.test({
     };
     // loop through each block to check miner stats
     for (let i = 0; i < entries.length; i++) {
-      assertEquals(ccd006CityMining.getMiningStatsAtBlock(mia.cityId, firstBlock).result.expectTuple(), expectedStats);
+      assertEquals(ccd006CityMining.getMiningStats(mia.cityId, firstBlock).result.expectTuple(), expectedStats);
       // loop through each user
       for (let j = 0; j < userIds.length; j++) {
         // check the data
@@ -568,7 +532,7 @@ Clarinet.test({
           low: types.uint(j === 0 ? 0 : lastCommit + 1),
           winner: types.bool(false),
         };
-        assertEquals(ccd006CityMining.getMinerAtBlock(mia.cityId, firstBlock + i, userIds[j]).result.expectTuple(), expectedMinerStats);
+        assertEquals(ccd006CityMining.getMiner(mia.cityId, firstBlock + i, userIds[j]).result.expectTuple(), expectedMinerStats);
       }
     }
 
@@ -1376,7 +1340,7 @@ Clarinet.test({
       claimed: types.bool(false),
       miners: types.uint(0),
     };
-    assertEquals(ccd006CityMining.getMiningStatsAtBlock(mia.cityId, firstBlock).result.expectTuple(), expectedMiningStats);
+    assertEquals(ccd006CityMining.getMiningStats(mia.cityId, firstBlock).result.expectTuple(), expectedMiningStats);
   },
 });
 

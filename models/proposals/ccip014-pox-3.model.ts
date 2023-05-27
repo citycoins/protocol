@@ -8,10 +8,10 @@ enum ErrCode {
   ERR_PROPOSAL_NOT_ACTIVE,
   ERR_PROPOSAL_STILL_ACTIVE,
   ERR_NO_CITY_ID,
-  ERR_VOTE_VAILED,
+  ERR_VOTE_FAILED,
 }
 
-export class CCIP014 {
+export class CCIP014Pox3 {
   name = "ccip014-pox-3";
   static readonly ErrCode = ErrCode;
   chain: Chain;
