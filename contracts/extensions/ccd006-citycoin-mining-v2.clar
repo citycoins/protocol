@@ -30,7 +30,7 @@
 
 ;; DATA VARS
 
-(define-data-var miningEnabled bool true)
+(define-data-var miningEnabled bool false)
 (define-data-var rewardDelay uint u100)
 
 ;; DATA MAPS

@@ -104,8 +104,9 @@
     (try! (contract-call? .ccd005-city-data add-treasury miaId .ccd002-treasury-mia-mining-v2 "mining-v2"))
     (try! (contract-call? .ccd005-city-data add-treasury nycId .ccd002-treasury-nyc-mining-v2 "mining-v2"))
 
-    ;; disable original mining contract
+    ;; disable original mining contract and enable v2
     (try! (contract-call? .ccd006-citycoin-mining set-mining-enabled false))
+    (try! (contract-call? .ccd006-citycoin-mining-v2 set-mining-enabled true))
 
     ;; set pool operator to self
     (try! (contract-call? .ccd011-stacking-payouts set-pool-operator SELF))
