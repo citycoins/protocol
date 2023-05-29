@@ -1,7 +1,6 @@
 ;; TRAITS
 
 (impl-trait .proposal-trait.proposal-trait)
-(impl-trait .ccip-015-trait.ccip-015-trait)
 
 ;; ERRORS
 
@@ -9,6 +8,7 @@
 (define-constant ERR_NOTHING_STACKED (err u1402))
 (define-constant ERR_USER_NOT_FOUND (err u1403))
 (define-constant ERR_NO_CITY_ID (err u1406))
+(define-constant ERR_VOTE_FAILED (err u1407))
 
 ;; PUBLIC FUNCTIONS
 
@@ -22,10 +22,10 @@
       (nycBalance (contract-call? .ccd002-treasury-nyc-mining get-balance-stx))
     )
 
-    ;; check vote complete/passed
+    ;; check vote complete/passed in CCIP-014
     (try! (is-executable))
 
-    ;; enable mining v2 treasuries in the DAO
+    ;; enable mining v2 contracts in the DAO
     (try! (contract-call? .base-dao set-extensions
       (list
         {extension: .ccd002-treasury-mia-mining-v2, enabled: true}
@@ -66,10 +66,8 @@
   )
 )
 
-(define-read-only (is-executable)
-  (ok true)
-)
+;; READ ONLY FUNCTIONS
 
-(define-read-only (get-proposal-info)
-  (some CCIP_014)
+(define-read-only (is-executable)
+  (contract-call? .ccip014-pox-3 is-executable)
 )
