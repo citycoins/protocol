@@ -8,7 +8,7 @@
  * 5. read-only functions
  */
 import { Account, assert, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
-import { constructAndPassProposal, EXTENSIONS, passProposal, PROPOSALS } from "../../utils/common.ts";
+import { constructAndPassProposal, EXTENSIONS, passCcip014, passProposal, PROPOSALS } from "../../utils/common.ts";
 import { CCD002Treasury } from "../../models/extensions/ccd002-treasury.model.ts";
 import { CCD003UserRegistry } from "../../models/extensions/ccd003-user-registry.model.ts";
 import { CCD005CityData } from "../../models/extensions/ccd005-city-data.model.ts";
@@ -1049,7 +1049,7 @@ Clarinet.test({
     block1.receipts[0].result.expectOk().expectBool(true);
     block1.receipts[1].result.expectOk().expectBool(true);
 
-    if (block2.receipts[0].result === "(err u6011)") {
+    if (block2.receipts[0].result === "(err u6015)") {
       //console.log("USER 2 WINS");
       block2.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_NOT_WINNER);
       block2.receipts[1].result.expectErr().expectUint(CCD010CoreV2Adapter.ErrCode.ERR_NOTHING_TO_MINT);
@@ -1153,7 +1153,7 @@ Clarinet.test({
       winner = 1;
     } else {
       //console.log("USER 2 WINS");
-      miningClaimUser1.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_CLAIMED);
+      miningClaimUser1.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_NOT_WINNER);
       miningClaimUser2.receipts[0].result.expectOk().expectBool(true);
       winner = 2;
     }
@@ -1447,7 +1447,7 @@ Clarinet.test({
       winner = 1;
     } else {
       //console.log("USER 2 WINS");
-      miningClaimUser1.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_ALREADY_CLAIMED);
+      miningClaimUser1.receipts[0].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINER_NOT_WINNER);
       miningClaimUser2.receipts[0].result.expectOk().expectBool(true);
       winner = 2;
     }
