@@ -24,7 +24,7 @@ export class CCIP014Pox3 {
 
   // public functions
 
-  // execute excluded since can be used with passProposal and CCD001
+  // execute() excluded since called by passProposal and CCD001
 
   voteOnProposal(sender: Account, vote: boolean) {
     return Tx.contractCall(this.name, "vote-on-proposal", [types.bool(vote)], sender.address);

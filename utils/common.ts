@@ -33,6 +33,7 @@ export const PROPOSALS = {
   CCIP_012: ADDRESS.concat(".ccip012-bootstrap"),
   CCIP_013: ADDRESS.concat(".ccip013-migration"),
   CCIP_014: ADDRESS.concat(".ccip014-pox-3"),
+  CCIP_014_V2: ADDRESS.concat(".ccip014-pox-3-v2"),
   TEST_CCD001_DIRECT_EXECUTE_001: ADDRESS.concat(".test-ccd001-direct-execute-001"),
   TEST_CCD001_DIRECT_EXECUTE_002: ADDRESS.concat(".test-ccd001-direct-execute-002"),
   TEST_CCD001_DIRECT_EXECUTE_003: ADDRESS.concat(".test-ccd001-direct-execute-003"),
