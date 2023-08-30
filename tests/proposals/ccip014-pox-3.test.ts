@@ -151,11 +151,35 @@ Clarinet.test({
     console.log(ccip014pox3.getNycVote(nyc.cityId, userId, true));
     */
 
+    // check vote is active
+    ccip014pox3.isVoteActive().result.expectSome().expectBool(true);
+    // check proposal info
+    const proposalInfo = {
+      hash: types.ascii("0448a33745e8f157214e3da87c512a2cd382dcd2"),
+      link: types.ascii("https://github.com/Rapha-btc/governance/blob/patch-1/ccips/ccip-014/ccip-014-upgrade-to-pox3.md"),
+      name: types.ascii("Upgrade to pox-3"),
+    };
+    assertEquals(ccip014pox3.getProposalInfo().result.expectSome().expectTuple(), proposalInfo);
+    // check vote period is not set (end unknown)
+    ccip014pox3.getVotePeriod().result.expectNone();
+
     // execute ccip-014
     const block = passProposal(chain, accounts, PROPOSALS.CCIP_014);
 
     // assert
+    // check vote period is set and returns
+    const start = constructBlock.height - CCD007CityStacking.FIRST_STACKING_BLOCK - 1;
+    const end = votingBlock.height;
+    const votingPeriod = {
+      startBlock: types.uint(start),
+      endBlock: types.uint(end),
+      length: types.uint(end - start),
+    };
+    assertEquals(ccip014pox3.getVotePeriod().result.expectSome().expectTuple(), votingPeriod);
+    // check vote is no longer active
+    ccip014pox3.isVoteActive().result.expectSome().expectBool(false);
     //console.log(`\nexecute block:\n${JSON.stringify(block, null, 2)}`);
+    // check that proposal executed
     block.receipts[2].result.expectOk().expectUint(3);
   },
 });
