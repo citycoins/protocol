@@ -271,6 +271,42 @@ path = "tests/contracts/proposals/test-ccd002-treasury-011.clar"
 [contracts.test-ccd002-treasury-012]
 path = "tests/contracts/proposals/test-ccd002-treasury-012.clar"
 
+[contracts.test-ccd002-treasury-v2-001]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-001.clar"
+
+[contracts.test-ccd002-treasury-v2-002]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-002.clar"
+
+[contracts.test-ccd002-treasury-v2-003]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-003.clar"
+
+[contracts.test-ccd002-treasury-v2-004]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-004.clar"
+
+[contracts.test-ccd002-treasury-v2-005]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-005.clar"
+
+[contracts.test-ccd002-treasury-v2-006]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-006.clar"
+
+[contracts.test-ccd002-treasury-v2-007]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-007.clar"
+
+[contracts.test-ccd002-treasury-v2-008]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-008.clar"
+
+[contracts.test-ccd002-treasury-v2-009]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-009.clar"
+
+[contracts.test-ccd002-treasury-v2-010]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-010.clar"
+
+[contracts.test-ccd002-treasury-v2-011]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-011.clar"
+
+[contracts.test-ccd002-treasury-v2-012]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-012.clar"
+
 [contracts.test-ccd003-user-registry-001]
 path = "tests/contracts/proposals/test-ccd003-user-registry-001.clar"
 
