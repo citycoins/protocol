@@ -203,6 +203,11 @@ Clarinet.test({
     // assert
     for (const ext of Object.values(EXTENSIONS)) {
       if (ext === EXTENSIONS.CCD008_CITY_ACTIVATION) continue; // temporarily skip
+      if (ext === EXTENSIONS.CCD006_CITYCOIN_MINING_V2) continue; // skip, not enabled until CCIP-014
+      if (ext === EXTENSIONS.CCD002_TREASURY_MIA_MINING_V2) continue; // skip, not enabled until CCIP-014
+      if (ext === EXTENSIONS.CCD002_TREASURY_NYC_MINING_V2) continue; // skip, not enabled until CCIP-014
+      //console.log("ext:", ext);
+      //console.log("enabled:", baseDao.isExtension(ext).result);
       baseDao.isExtension(ext).result.expectBool(true);
     }
   },

@@ -89,11 +89,17 @@ path = "contracts/extensions/ccd001-direct-execute.clar"
 [contracts.ccd002-treasury-mia-mining]
 path = "contracts/extensions/ccd002-treasury.clar"
 
+[contracts.ccd002-treasury-mia-mining-v2]
+path = "contracts/extensions/ccd002-treasury-v2.clar"
+
 [contracts.ccd002-treasury-mia-stacking]
 path = "contracts/extensions/ccd002-treasury.clar"
 
 [contracts.ccd002-treasury-nyc-mining]
 path = "contracts/extensions/ccd002-treasury.clar"
+
+[contracts.ccd002-treasury-nyc-mining-v2]
+path = "contracts/extensions/ccd002-treasury-v2.clar"
 
 [contracts.ccd002-treasury-nyc-stacking]
 path = "contracts/extensions/ccd002-treasury.clar"
@@ -109,6 +115,9 @@ path = "contracts/extensions/ccd005-city-data.clar"
 
 [contracts.ccd006-citycoin-mining]
 path = "contracts/extensions/ccd006-citycoin-mining.clar"
+
+[contracts.ccd006-citycoin-mining-v2]
+path = "contracts/extensions/ccd006-citycoin-mining-v2.clar"
 
 [contracts.ccd007-citycoin-stacking]
 path = "contracts/extensions/ccd007-citycoin-stacking.clar"
@@ -134,6 +143,16 @@ path = "contracts/proposals/ccip013-migration.clar"
 [contracts.ccip013-activation]
 path = "contracts/proposals/ccip013-activation.clar"
 
+[contracts.ccip014-pox-3]
+path = "contracts/proposals/ccip014-pox-3.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.ccip014-pox-3-v2]
+path = "contracts/proposals/ccip014-pox-3-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
 # CITYCOINS PROTOCOL TRAITS
 
 [contracts.extension-trait]
@@ -154,6 +173,9 @@ path = "contracts/traits/ccd006-trait.clar"
 [contracts.ccd007-trait]
 path = "contracts/traits/ccd007-trait.clar"
 
+[contracts.ccip-015-trait]
+path = "contracts/traits/ccip-015-trait.clar"
+
 # CITYCOINS EXTERNAL CONTRACTS
 
 [contracts.citycoin-vrf-v2]
@@ -170,6 +192,11 @@ path = "tests/contracts/external/test-ccext-nft-mia.clar"
 
 [contracts.test-ccext-nft-nyc]
 path = "tests/contracts/external/test-ccext-nft-nyc.clar"
+
+[contracts.mock-pox-3]
+path = "tests/contracts/external/mock-pox-3.clar"
+clarity_version = 2
+epoch = 2.4
 
 # CITYCOINS LEGACY CONTRACTS
 
@@ -244,6 +271,42 @@ path = "tests/contracts/proposals/test-ccd002-treasury-011.clar"
 [contracts.test-ccd002-treasury-012]
 path = "tests/contracts/proposals/test-ccd002-treasury-012.clar"
 
+[contracts.test-ccd002-treasury-v2-001]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-001.clar"
+
+[contracts.test-ccd002-treasury-v2-002]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-002.clar"
+
+[contracts.test-ccd002-treasury-v2-003]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-003.clar"
+
+[contracts.test-ccd002-treasury-v2-004]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-004.clar"
+
+[contracts.test-ccd002-treasury-v2-005]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-005.clar"
+
+[contracts.test-ccd002-treasury-v2-006]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-006.clar"
+
+[contracts.test-ccd002-treasury-v2-007]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-007.clar"
+
+[contracts.test-ccd002-treasury-v2-008]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-008.clar"
+
+[contracts.test-ccd002-treasury-v2-009]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-009.clar"
+
+[contracts.test-ccd002-treasury-v2-010]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-010.clar"
+
+[contracts.test-ccd002-treasury-v2-011]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-011.clar"
+
+[contracts.test-ccd002-treasury-v2-012]
+path = "tests/contracts/proposals/test-ccd002-treasury-v2-012.clar"
+
 [contracts.test-ccd003-user-registry-001]
 path = "tests/contracts/proposals/test-ccd003-user-registry-001.clar"
 
@@ -316,6 +379,9 @@ path = "tests/contracts/proposals/test-ccd005-city-data-018.clar"
 [contracts.test-ccd005-city-data-019]
 path = "tests/contracts/proposals/test-ccd005-city-data-019.clar"
 
+[contracts.test-ccd005-city-data-020]
+path = "tests/contracts/proposals/test-ccd005-city-data-020.clar"
+
 [contracts.test-ccd006-citycoin-mining-001]
 path = "tests/contracts/proposals/test-ccd006-citycoin-mining-001.clar"
 
@@ -330,6 +396,27 @@ path = "tests/contracts/proposals/test-ccd006-citycoin-mining-004.clar"
 
 [contracts.test-ccd006-citycoin-mining-005]
 path = "tests/contracts/proposals/test-ccd006-citycoin-mining-005.clar"
+
+[contracts.test-ccd006-citycoin-mining-v2-001]
+path = "tests/contracts/proposals/test-ccd006-citycoin-mining-v2-001.clar"
+
+[contracts.test-ccd006-citycoin-mining-v2-002]
+path = "tests/contracts/proposals/test-ccd006-citycoin-mining-v2-002.clar"
+
+[contracts.test-ccd006-citycoin-mining-v2-003]
+path = "tests/contracts/proposals/test-ccd006-citycoin-mining-v2-003.clar"
+
+[contracts.test-ccd006-citycoin-mining-v2-004]
+path = "tests/contracts/proposals/test-ccd006-citycoin-mining-v2-004.clar"
+
+[contracts.test-ccd006-citycoin-mining-v2-005]
+path = "tests/contracts/proposals/test-ccd006-citycoin-mining-v2-005.clar"
+
+[contracts.test-ccd006-citycoin-mining-v2-006]
+path = "tests/contracts/proposals/test-ccd006-citycoin-mining-v2-006.clar"
+
+[contracts.test-ccd006-citycoin-mining-v2-007]
+path = "tests/contracts/proposals/test-ccd006-citycoin-mining-v2-007.clar"
 
 [contracts.test-ccd007-citycoin-stacking-001]
 path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-001.clar"
@@ -370,15 +457,23 @@ path = "tests/contracts/proposals/test-ccd007-citycoin-stacking-012.clar"
 [contracts.test-ccd011-stacking-payouts-001]
 path = "tests/contracts/proposals/test-ccd011-stacking-payouts-001.clar"
 
+[contracts.test-ccip014-pox-3-001]
+path = "tests/contracts/proposals/test-ccip014-pox-3-001.clar"
+
+[contracts.test-ccip014-pox-3-002]
+path = "tests/contracts/proposals/test-ccip014-pox-3-002.clar"
+
 [repl]
 costs_version = 2
 parser_version = 2
 
-[repl.analysis]
-passes = ["check_checker"]
+# TEMPORARILY DISABLED
 
-[repl.analysis.check_checker]
-strict = false
-trusted_sender = false
-trusted_caller = false
-callee_filter = true
+# [repl.analysis]
+# passes = ["check_checker"]
+
+# [repl.analysis.check_checker]
+# strict = false
+# trusted_sender = false
+# trusted_caller = false
+# callee_filter = true

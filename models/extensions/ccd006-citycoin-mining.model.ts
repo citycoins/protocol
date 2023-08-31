@@ -38,15 +38,11 @@ export class CCD006CityMining {
     return this.callReadOnlyFn("is-dao-or-extension");
   }
 
+  callback(sender: Account, memo: string) {
+    return Tx.contractCall(this.name, "callback", [types.principal(sender.address), types.buff(memo)], sender.address);
+  }
+
   // Internal DAO functions
-
-  mine(sender: Account, cityName: string, amounts: Array<number>) {
-    return Tx.contractCall(this.name, "mine", [types.ascii(cityName), types.list(amounts.map((entry) => types.uint(entry)))], sender.address);
-  }
-
-  claimMiningReward(sender: Account, cityName: string, claimHeight: number) {
-    return Tx.contractCall(this.name, "claim-mining-reward", [types.ascii(cityName), types.uint(claimHeight)], sender.address);
-  }
 
   setRewardDelay(sender: Account, delay: number) {
     return Tx.contractCall(this.name, "set-reward-delay", [types.uint(delay)], sender.address);
@@ -56,49 +52,55 @@ export class CCD006CityMining {
     return Tx.contractCall(this.name, "set-mining-enabled", [types.bool(status)], sender.address);
   }
 
+  // Public functions
+
+  mine(sender: Account, cityName: string, amounts: Array<number>) {
+    return Tx.contractCall(this.name, "mine", [types.ascii(cityName), types.list(amounts.map((entry) => types.uint(entry)))], sender.address);
+  }
+
+  claimMiningReward(sender: Account, cityName: string, claimHeight: number) {
+    return Tx.contractCall(this.name, "claim-mining-reward", [types.ascii(cityName), types.uint(claimHeight)], sender.address);
+  }
+
   // Read only functions
 
-  isBlockWinner(cityId: number, user: string, claimHeight: number): ReadOnlyFn {
-    return this.callReadOnlyFn("is-block-winner", [types.uint(cityId), types.principal(user), types.uint(claimHeight)]);
+  getRewardDelay(): ReadOnlyFn {
+    return this.callReadOnlyFn("get-reward-delay", []);
   }
 
-  getBlockWinner(cityId: number, blockHeight: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-block-winner", [types.uint(cityId), types.uint(blockHeight)]);
-  }
-
-  getHighValue(cityId: number, blockHeight: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-high-value", [types.uint(cityId), types.uint(blockHeight)]);
-  }
-
-  getMinerAtBlock(cityId: number, blockHeight: number, userId: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-miner", [types.uint(cityId), types.uint(blockHeight), types.uint(userId)]);
+  getMiningStats(cityId: number, blockHeight: number): ReadOnlyFn {
+    return this.callReadOnlyFn("get-mining-stats", [types.uint(cityId), types.uint(blockHeight)]);
   }
 
   hasMinedAtBlock(cityId: number, blockHeight: number, userId: number): ReadOnlyFn {
     return this.callReadOnlyFn("has-mined-at-block", [types.uint(cityId), types.uint(blockHeight), types.uint(userId)]);
   }
 
-  getMiningStatsAtBlock(cityId: number, blockHeight: number): ReadOnlyFn {
-    return this.callReadOnlyFn("get-mining-stats", [types.uint(cityId), types.uint(blockHeight)]);
+  getMiner(cityId: number, blockHeight: number, userId: number): ReadOnlyFn {
+    return this.callReadOnlyFn("get-miner", [types.uint(cityId), types.uint(blockHeight), types.uint(userId)]);
+  }
+
+  getHighValue(cityId: number, blockHeight: number): ReadOnlyFn {
+    return this.callReadOnlyFn("get-high-value", [types.uint(cityId), types.uint(blockHeight)]);
+  }
+
+  getBlockWinner(cityId: number, blockHeight: number): ReadOnlyFn {
+    return this.callReadOnlyFn("get-block-winner", [types.uint(cityId), types.uint(blockHeight)]);
+  }
+
+  isBlockWinner(cityId: number, user: string, claimHeight: number): ReadOnlyFn {
+    return this.callReadOnlyFn("is-block-winner", [types.uint(cityId), types.principal(user), types.uint(claimHeight)]);
   }
 
   getCoinbaseAmount(cityId: number, blockHeight: number): ReadOnlyFn {
     return this.callReadOnlyFn("get-coinbase-amount", [types.uint(cityId), types.uint(blockHeight)]);
   }
 
-  getRewardDelay(): ReadOnlyFn {
-    return this.callReadOnlyFn("get-reward-delay", []);
-  }
-
   isMiningEnabled(): ReadOnlyFn {
     return this.callReadOnlyFn("is-mining-enabled", []);
   }
 
-  // Extension callback
-
-  callback(sender: Account, memo: string) {
-    return Tx.contractCall(this.name, "callback", [types.principal(sender.address), types.buff(memo)], sender.address);
-  }
+  // helper for calling read only functions
 
   private callReadOnlyFn(method: string, args: Array<any> = [], sender: Account = this.deployer): ReadOnlyFn {
     const result = this.chain.callReadOnlyFn(this.name, method, args, sender?.address);
