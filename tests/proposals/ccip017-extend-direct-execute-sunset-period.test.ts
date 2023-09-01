@@ -500,7 +500,6 @@ Clarinet.test({
     ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
 
     // act
-
     // execute yes and no vote
     // user 1 has more voting power
     const votingBlock = chain.mineBlock([ccip017ExtendDirectExecuteSunsetPeriod.voteOnProposal(user1, false), ccip017ExtendDirectExecuteSunsetPeriod.voteOnProposal(user2, true)]);
@@ -508,13 +507,37 @@ Clarinet.test({
     // assert
 
     // overall totals
-    assertEquals(ccip017ExtendDirectExecuteSunsetPeriod.getVoteTotals().result.expectSome().expectTuple(), { noTotal: types.uint(938), noVotes: types.uint(1), yesTotal: types.uint(469), yesVotes: types.uint(1) });
+    assertEquals(ccip017ExtendDirectExecuteSunsetPeriod.getVoteTotals().result.expectSome().expectTuple(), {
+      noTotal: types.uint(941),
+      noVotes: types.uint(1),
+      yesTotal: types.uint(470),
+      yesVotes: types.uint(1),
+    });
+
     // user 1
-    assertEquals(ccd007CityStacking.getStacker(mia.cityId, cycleId, user1Id).result.expectTuple(), { claimable: types.uint(0), stacked: types.uint(500) });
-    assertEquals(ccip017ExtendDirectExecuteSunsetPeriod.getVoterInfo(user1Id).result.expectSome().expectTuple(), { mia: types.uint(438), nyc: types.uint(500), total: types.uint(938), vote: types.bool(false) });
+
+    assertEquals(ccd007CityStacking.getStacker(mia.cityId, cycleId, user1Id).result.expectTuple(), {
+      claimable: types.uint(0),
+      stacked: types.uint(500),
+    });
+    assertEquals(ccip017ExtendDirectExecuteSunsetPeriod.getVoterInfo(user1Id).result.expectSome().expectTuple(), {
+      mia: types.uint(441),
+      nyc: types.uint(500),
+      total: types.uint(941),
+      vote: types.bool(false),
+    });
+
     // user 2
-    assertEquals(ccd007CityStacking.getStacker(mia.cityId, cycleId, user2Id).result.expectTuple(), { claimable: types.uint(0), stacked: types.uint(250) });
-    assertEquals(ccip017ExtendDirectExecuteSunsetPeriod.getVoterInfo(user2Id).result.expectSome().expectTuple(), { mia: types.uint(219), nyc: types.uint(250), total: types.uint(469), vote: types.bool(true) });
+    assertEquals(ccd007CityStacking.getStacker(mia.cityId, cycleId, user2Id).result.expectTuple(), {
+      claimable: types.uint(0),
+      stacked: types.uint(250),
+    });
+    assertEquals(ccip017ExtendDirectExecuteSunsetPeriod.getVoterInfo(user2Id).result.expectSome().expectTuple(), {
+      mia: types.uint(220),
+      nyc: types.uint(250),
+      total: types.uint(470),
+      vote: types.bool(true),
+    });
 
     // act
 
@@ -524,19 +547,39 @@ Clarinet.test({
     // assert
 
     // overall totals
-    assertEquals(ccip017ExtendDirectExecuteSunsetPeriod.getVoteTotals().result.expectSome().expectTuple(), { noTotal: types.uint(469), noVotes: types.uint(1), yesTotal: types.uint(938), yesVotes: types.uint(1) });
+    assertEquals(ccip017ExtendDirectExecuteSunsetPeriod.getVoteTotals().result.expectSome().expectTuple(), {
+      noTotal: types.uint(470),
+      noVotes: types.uint(1),
+      yesTotal: types.uint(941),
+      yesVotes: types.uint(1),
+    });
     // user 1
-    assertEquals(ccd007CityStacking.getStacker(mia.cityId, cycleId, user1Id).result.expectTuple(), { claimable: types.uint(0), stacked: types.uint(500) });
-    assertEquals(ccip017ExtendDirectExecuteSunsetPeriod.getVoterInfo(user1Id).result.expectSome().expectTuple(), { mia: types.uint(438), nyc: types.uint(500), total: types.uint(938), vote: types.bool(true) });
+    assertEquals(ccd007CityStacking.getStacker(mia.cityId, cycleId, user1Id).result.expectTuple(), {
+      claimable: types.uint(0),
+      stacked: types.uint(500),
+    });
+    assertEquals(ccip017ExtendDirectExecuteSunsetPeriod.getVoterInfo(user1Id).result.expectSome().expectTuple(), {
+      mia: types.uint(441),
+      nyc: types.uint(500),
+      total: types.uint(941),
+      vote: types.bool(true),
+    });
     // user 2
-    assertEquals(ccd007CityStacking.getStacker(mia.cityId, cycleId, user2Id).result.expectTuple(), { claimable: types.uint(0), stacked: types.uint(250) });
-    assertEquals(ccip017ExtendDirectExecuteSunsetPeriod.getVoterInfo(user2Id).result.expectSome().expectTuple(), { mia: types.uint(219), nyc: types.uint(250), total: types.uint(469), vote: types.bool(false) });
+    assertEquals(ccd007CityStacking.getStacker(mia.cityId, cycleId, user2Id).result.expectTuple(), {
+      claimable: types.uint(0),
+      stacked: types.uint(250),
+    });
+    assertEquals(ccip017ExtendDirectExecuteSunsetPeriod.getVoterInfo(user2Id).result.expectSome().expectTuple(), {
+      mia: types.uint(220),
+      nyc: types.uint(250),
+      total: types.uint(470),
+      vote: types.bool(false),
+    });
 
     // execute ccip-017
     const block = passProposal(chain, accounts, PROPOSALS.CCIP_017);
 
     // assert
-    //console.log(`\nexecute block:\n${JSON.stringify(block, null, 2)}`);
     block.receipts[2].result.expectOk().expectUint(3);
   },
 });
