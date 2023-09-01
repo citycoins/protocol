@@ -153,6 +153,11 @@ path = "contracts/proposals/ccip014-pox-3-v2.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.ccip017]
+path = "contracts/proposals/ccip017-extend-direct-execute-sunset-period.clar"
+clarity_version = 2
+epoch = 2.4
+
 # CITYCOINS PROTOCOL TRAITS
 
 [contracts.extension-trait]
