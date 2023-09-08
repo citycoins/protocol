@@ -1,7 +1,7 @@
 ;; TRAITS
 
 (impl-trait .proposal-trait.proposal-trait)
-(impl-trait .ccip-015-trait.ccip-015-trait)
+(impl-trait .ccip015-trait.ccip015-trait)
 
 ;; ERRORS
 
@@ -204,7 +204,7 @@
       (cycle64Hash (unwrap! (get-block-hash u4500) none))
       (cycle64Data (at-block cycle64Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
       (cycle64Amount (get stacked cycle64Data))
-      ;; MAINNET: MIA cycle 65 / first block BTC 804,649 STX 118,282
+      ;; MAINNET: MIA cycle 65 / first block BTC 802,550 STX 116,486
       ;; cycle 3 / u6600 used in tests
       (cycle65Hash (unwrap! (get-block-hash u6600) none))
       (cycle65Data (at-block cycle65Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
@@ -231,7 +231,7 @@
       (cycle64Hash (unwrap! (get-block-hash u4500) none))
       (cycle64Data (at-block cycle64Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
       (cycle64Amount (get stacked cycle64Data))
-      ;; NYC cycle 65 / first block BTC 804,649 STX 118,282
+      ;; NYC cycle 65 / first block BTC 802,550 STX 116,486
       ;; cycle 3 / u6600 used in tests
       (cycle65Hash (unwrap! (get-block-hash u6600) none))
       (cycle65Data (at-block cycle65Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
