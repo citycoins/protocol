@@ -4,6 +4,8 @@ import { CCD006CityMining } from "../../models/extensions/ccd006-citycoin-mining
 import { CCD007CityStacking } from "../../models/extensions/ccd007-citycoin-stacking.model.ts";
 import { CCIP017ExtendDirectExecuteSunsetPeriod } from "../../models/proposals/ccip017-extend-direct-execute-sunset-period.model.ts";
 
+const TARGET_SUNSET_BLOCK = 147828;
+
 Clarinet.test({
   name: "ccip-017: execute() fails with ERR_VOTE_FAILED if there are no votes",
   fn(chain: Chain, accounts: Map<string, Account>) {
@@ -181,6 +183,9 @@ Clarinet.test({
     //console.log(`\nexecute block:\n${JSON.stringify(block, null, 2)}`);
     // check that proposal executed
     block.receipts[2].result.expectOk().expectUint(3);
+    // check for print event in execute block
+    const ccip017PrintEvent = `{event: ${types.ascii("set-sunset-block")}, height: ${types.uint(TARGET_SUNSET_BLOCK)}}`;
+    assertEquals(block.receipts[2].events[1].contract_event.value, ccip017PrintEvent);
   },
 });
 
