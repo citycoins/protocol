@@ -150,8 +150,11 @@
       (claimable (get claimable stacker))
     )
     (asserts! (or (not (var-get stackingEnabled)) (< cycleId (get-reward-cycle burn-block-height))) ERR_INCOMPLETE_CYCLE)
-    (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
+    (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM) ;; Rafa: claimable is positive in use case tested, which ends up setting stacked to u0 before reward is sent by poolOperator
+    ;; Rafa: when user tries to claim after poolOperator has sent reward, this assert fails (and stacked was already set to u0)
     ;; contract addresses hardcoded for this version
+    ;; if we made a change to ccd007-citycoin-stacking then we need to check is-cycle-paid first in that control flow
+    ;; or a patch extension that can handle when this happens, (and block it in the UI)
     (and (is-eq cityName "mia")
       (begin
         (and (> reward u0) (try! (as-contract (contract-call? .ccd002-treasury-mia-stacking withdraw-stx reward user))))
