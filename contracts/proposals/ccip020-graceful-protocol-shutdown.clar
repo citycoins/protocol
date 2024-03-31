@@ -11,7 +11,7 @@
 (define-constant ERR_USER_NOT_FOUND (err u2003))
 (define-constant ERR_PROPOSAL_NOT_ACTIVE (err u2004))
 (define-constant ERR_PROPOSAL_STILL_ACTIVE (err u2005))
-(define-constant ERR_NO_CITY_ID (err u2006))
+(define-constant ERR_NO_CITY_ID (err u2006)) ;; depracated in favor of MIA_ID and NYC_ID constants
 (define-constant ERR_VOTE_FAILED (err u2007))
 
 ;; CONSTANTS
@@ -155,6 +155,8 @@
         (miaVoteAmount (scale-down (default-to u0 (get-mia-vote voterId true))))
         (nycVoteAmount (scale-down (default-to u0 (get-nyc-vote voterId true))))
       )
+      ;; check that the user has a positive vote
+      (asserts! (or (> miaVoteAmount u0) (> nycVoteAmount u0)) ERR_NOTHING_STACKED)
       ;; insert new user vote record  
       (map-insert UserVotes voterId {
         vote: vote, 
@@ -172,7 +174,26 @@
 ;; READ ONLY FUNCTIONS
 
 (define-read-only (is-executable)
-  (ok true) ;; TODO
+  (let
+    (
+      (votingRecord (get-vote-totals))
+      (miaRecord (get mia votingRecord))
+      (nycRecord (get nyc votingRecord))
+      (voteTotals (get totals votingRecord))
+    )
+    ;; check that there is at least one vote
+    (asserts! (or (> (get totalVotesYes voteTotals) u0) (> (get totalVotesNo voteTotals) u0)) ERR_VOTE_FAILED)
+    ;; check that the yes total si more than no total
+    (asserts! (> (get totalVotesYes voteTotals) (get totalVotesNo voteTotals)) ERR_VOTE_FAILED)
+    ;; check that neither city vote is more than 50% of total
+    ;; TODO: make sure threshold is agreed upon
+    (asserts! (and
+      (<= (get totalVotesYes miaRecord) (/ (get totalVotesYes voteTotals) u2))
+      (<= (get totalVotesYes nycRecord) (/ (get totalVotesYes voteTotals) u2))
+    ) ERR_VOTE_FAILED)
+    ;; allow execution
+    (ok true)
+  )
 )
 
 (define-read-only (is-vote-active)
