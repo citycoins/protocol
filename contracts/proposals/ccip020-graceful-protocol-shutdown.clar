@@ -26,12 +26,14 @@
 
 (define-constant MIA_ID (unwrap! (contract-call? .ccd004-city-registry get-city-id "mia") ERR_PANIC))
 (define-constant NYC_ID (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_PANIC))
+;; TODO: determine actual percentage from Miami
+(define-constant MIA_DRAW_PERCENTAGE u2) ;; 50% as placeholder
 
 ;; MIA votes scaled to make 1 MIA = 1 NYC
 ;; full calculation available in CCIP-020
 (define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
 (define-constant MIA_SCALE_BASE (pow u10 u4)) ;; 4 decimal places
-(define-constant MIA_SCALE_FACTOR u8760) ;; TODO: GET NEW VALUE
+(define-constant MIA_SCALE_FACTOR u8916) ;; 0.8916 or 89.16%
 
 ;; DATA VARS
 
@@ -69,11 +71,11 @@
 (define-public (execute (sender principal))
   (let
     (
-      (miaBalance (contract-call? .ccd002-treasury-mia-mining-v2 get-balance-stx))
-      (nycBalance (contract-call? .ccd002-treasury-nyc-mining-v2 get-balance-stx))
+      (miaRedemptionBalance (/ (contract-call? .ccd002-treasury-mia-mining-v2 get-balance-stx)) MIA_DRAW_PERCENTAGE)
+      (nycRedemptionBalance (contract-call? .ccd002-treasury-nyc-mining-v2 get-balance-stx))
     )
 
-    ;; check vote complete/passed
+    ;; check vote is complete/passed
     (try! (is-executable))
 
     ;; update vote variables
@@ -89,9 +91,8 @@
     ))
 
     ;; transfer funds to new redemption extensions
-    ;; TODO: determine total here for MIA
-    (try! (contract-call? .ccd002-treasury-mia-mining-v2 withdraw-stx miaBalance .ccd012-redemption-mia))
-    (try! (contract-call? .ccd002-treasury-nyc-mining-v2 withdraw-stx nycBalance .ccd012-redemption-nyc))
+    (try! (contract-call? .ccd002-treasury-mia-mining-v2 withdraw-stx miaRedemptionBalance .ccd012-redemption-mia))
+    (try! (contract-call? .ccd002-treasury-nyc-mining-v2 withdraw-stx nycRedemptionBalance .ccd012-redemption-nyc))
 
 
     ;; disable mining and stacking contracts
@@ -183,7 +184,7 @@
     )
     ;; check that there is at least one vote
     (asserts! (or (> (get totalVotesYes voteTotals) u0) (> (get totalVotesNo voteTotals) u0)) ERR_VOTE_FAILED)
-    ;; check that the yes total si more than no total
+    ;; check that the yes total is more than no total
     (asserts! (> (get totalVotesYes voteTotals) (get totalVotesNo voteTotals)) ERR_VOTE_FAILED)
     ;; check that neither city vote is more than 50% of total
     ;; TODO: make sure threshold is agreed upon
@@ -255,13 +256,11 @@
   (let
     (
       ;; MAINNET: MIA cycle 80 / first block BTC 834,050 STX 142,301
-      ;; TODO: update to cycle 80
       ;; cycle 2 / u4500 used in tests
       (cycle80Hash (unwrap! (get-block-hash u4500) none))
       (cycle80Data (at-block cycle80Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
       (cycle80Amount (get stacked cycle80Data))
       ;; MAINNET: MIA cycle 81 / first block BTC 836,150 STX 143,989
-      ;; TODO: update to cycle 81
       ;; cycle 3 / u6600 used in tests
       (cycle81Hash (unwrap! (get-block-hash u6600) none))
       (cycle81Data (at-block cycle81Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
@@ -284,13 +283,11 @@
   (let
     (
       ;; NYC cycle 80 / first block BTC 834,050 STX 142,301
-      ;; TODO: update to cycle 80
       ;; cycle 2 / u4500 used in tests
       (cycle80Hash (unwrap! (get-block-hash u4500) none))
       (cycle80Data (at-block cycle80Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
       (cycle80Amount (get stacked cycle80Data))
       ;; NYC cycle 81 / first block BTC 836,150 STX 143,989
-      ;; TODO: update to cycle 81
       ;; cycle 3 / u6600 used in tests
       (cycle81Hash (unwrap! (get-block-hash u6600) none))
       (cycle81Data (at-block cycle81Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
