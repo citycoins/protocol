@@ -69,9 +69,7 @@
 (define-public (execute (sender principal))
   (let
     (
-      (miaId (unwrap! (contract-call? .ccd004-city-registry get-city-id "mia") ERR_PANIC))
-      (nycId (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_PANIC))
-      (miaBalance (contract-call? .ccd002-treasury-mia-mining-v2 get-balance-stx)) ;; TODO: determine total here
+      (miaBalance (contract-call? .ccd002-treasury-mia-mining-v2 get-balance-stx))
       (nycBalance (contract-call? .ccd002-treasury-nyc-mining-v2 get-balance-stx))
     )
 
@@ -91,6 +89,7 @@
     ))
 
     ;; transfer funds to new redemption extensions
+    ;; TODO: determine total here for MIA
     (try! (contract-call? .ccd002-treasury-mia-mining-v2 withdraw-stx miaBalance .ccd012-redemption-mia))
     (try! (contract-call? .ccd002-treasury-nyc-mining-v2 withdraw-stx nycBalance .ccd012-redemption-nyc))
 
@@ -199,9 +198,29 @@
   )
 )
 
+(define-read-only (get-vote-total-mia)
+  (map-get? CityVotes MIA_ID)
+)
+
+(define-read-only (get-vote-total-nyc)
+  (map-get? CityVotes NYC_ID)
+)
+
 (define-read-only (get-vote-totals)
-  ;; TODO
-  none
+  (let (
+    (miaRecord (get-vote-total-mia))
+    (nycRecord (get-vote-total-nyc))
+  )
+  (some {
+    mia: miaRecord,
+    nyc: nycRecord,
+    totals: {
+      totalAmountYes: (+ (get totalAmountYes miaRecord) (get totalAmountYes nycRecord)),
+      totalAmountNo: (+ (get totalAmountNo miaRecord) (get totalAmountNo nycRecord)),
+      totalVotesYes: (+ (get totalVotesYes miaRecord) (get totalVotesYes nycRecord)),
+      totalVotesNo: (+ (get totalVotesNo miaRecord) (get totalVotesNo nycRecord)),
+    }
+  })
 )
 
 (define-read-only (get-voter-info (id uint))
@@ -214,13 +233,13 @@
 (define-read-only (get-mia-vote (cityId uint) (userId uint) (scaled bool))
   (let
     (
-      ;; MAINNET: MIA cycle 64 / first block BTC 800,450 STX 114,689
+      ;; MAINNET: MIA cycle 80 / first block BTC 834,050 STX 142,301
       ;; TODO: update to cycle 80
       ;; cycle 2 / u4500 used in tests
       (cycle80Hash (unwrap! (get-block-hash u4500) none))
       (cycle80Data (at-block cycle80Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
       (cycle80Amount (get stacked cycle80Data))
-      ;; MAINNET: MIA cycle 65 / first block BTC 802,550 STX 116,486
+      ;; MAINNET: MIA cycle 81 / first block BTC 836,150 STX 143,989
       ;; TODO: update to cycle 81
       ;; cycle 3 / u6600 used in tests
       (cycle81Hash (unwrap! (get-block-hash u6600) none))
@@ -243,13 +262,13 @@
 (define-read-only (get-nyc-vote (cityId uint) (userId uint) (scaled bool))
   (let
     (
-      ;; NYC cycle 64 / first block BTC 800,450 STX 114,689
+      ;; NYC cycle 80 / first block BTC 834,050 STX 142,301
       ;; TODO: update to cycle 80
       ;; cycle 2 / u4500 used in tests
       (cycle80Hash (unwrap! (get-block-hash u4500) none))
       (cycle80Data (at-block cycle80Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
       (cycle80Amount (get stacked cycle80Data))
-      ;; NYC cycle 65 / first block BTC 802,550 STX 116,486
+      ;; NYC cycle 81 / first block BTC 836,150 STX 143,989
       ;; TODO: update to cycle 81
       ;; cycle 3 / u6600 used in tests
       (cycle81Hash (unwrap! (get-block-hash u6600) none))
