@@ -39,25 +39,21 @@
 
 (var-set voteStart block-height)
 
+;; vote tracking
+(define-data-var yesVotes uint u0)
+(define-data-var yesTotal uint u0)
+(define-data-var noVotes uint u0)
+(define-data-var noTotal uint u0)
+
 ;; DATA MAPS
 
-(define-map ProposalVotes
-  uint ;; city ID
+(define-map UserVotes
+  uint ;; user ID
   { ;; vote
     vote: bool,
     mia: uint,
     nyc: uint,
     total: uint,
-  }
-)
-
-(define-map UserVotes
-  uint ;; user ID
-  { ;; vote
-    yesVotes: bool,
-    yesTotal: uint,
-    noVotes: uint,
-    noTotal: uint,
   }
 )
 
@@ -68,8 +64,8 @@
     (
       (miaId (unwrap! (contract-call? .ccd004-city-registry get-city-id "mia") ERR_PANIC))
       (nycId (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_PANIC))
-      (miaBalance (contract-call? .ccd002-treasury-mia-mining-v2 get-balance-stx)) ;; TODO: determine total here
-      (nycBalance (contract-call? .ccd002-treasury-nyc-mining-v2 get-balance-stx))
+      (miaBalance (contract-call? .ccd002-treasury-mia-mining get-balance-stx))
+      (nycBalance (contract-call? .ccd002-treasury-nyc-mining get-balance-stx))
     )
 
     ;; check vote complete/passed
@@ -79,22 +75,38 @@
     (var-set voteEnd block-height)
     (var-set voteActive false)
 
-    ;; enable redemption extensions in the DAO
+    ;; enable mining v2 treasuries in the DAO
     (try! (contract-call? .base-dao set-extensions
       (list
-        {extension: .ccd012-redemption-mia, enabled: true}
-        {extension: .ccd012-redemption-nyc, enabled: true}
+        {extension: .ccd002-treasury-mia-mining-v2, enabled: true}
+        {extension: .ccd002-treasury-nyc-mining-v2, enabled: true}
+        {extension: .ccd006-citycoin-mining-v2, enabled: true}
       )
     ))
 
-    ;; transfer funds to new redemption extensions
-    (try! (contract-call? .ccd002-treasury-mia-mining-v2 withdraw-stx miaBalance .ccd012-redemption-mia))
-    (try! (contract-call? .ccd002-treasury-nyc-mining-v2 withdraw-stx nycBalance .ccd012-redemption-nyc))
+    ;; allow MIA/NYC in respective treasuries
+    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
+    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
+    (try! (contract-call? .ccd002-treasury-mia-mining-v2 set-allowed 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2 true))
+    (try! (contract-call? .ccd002-treasury-nyc-mining-v2 set-allowed 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2 true))
 
+    ;; transfer funds to new treasury extensions
+    (try! (contract-call? .ccd002-treasury-mia-mining withdraw-stx miaBalance .ccd002-treasury-mia-mining-v2))
+    (try! (contract-call? .ccd002-treasury-nyc-mining withdraw-stx nycBalance .ccd002-treasury-nyc-mining-v2))
 
-    ;; disable mining and stacking contracts
-    (try! (contract-call? .ccd006-citycoin-mining-v2 set-mining-enabled false))
-    (try! (contract-call? .ccd007-citycoin-stacking set-stacking-enabled false))
+    ;; delegate stack the STX in the mining treasuries (up to 50M STX each)
+    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox-fast-pool-v2
+    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox-fast-pool-v2
+    (try! (contract-call? .ccd002-treasury-mia-mining-v2 delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
+    (try! (contract-call? .ccd002-treasury-nyc-mining-v2 delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
+
+    ;; add treasuries to ccd005-city-data
+    (try! (contract-call? .ccd005-city-data add-treasury miaId .ccd002-treasury-mia-mining-v2 "mining-v2"))
+    (try! (contract-call? .ccd005-city-data add-treasury nycId .ccd002-treasury-nyc-mining-v2 "mining-v2"))
+
+    ;; disable original mining contract and enable v2
+    (try! (contract-call? .ccd006-citycoin-mining set-mining-enabled false))
+    (try! (contract-call? .ccd006-citycoin-mining-v2 set-mining-enabled true))
 
     ;; set pool operator to self
     (try! (contract-call? .ccd011-stacking-payouts set-pool-operator SELF))
