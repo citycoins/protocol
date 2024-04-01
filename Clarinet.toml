@@ -134,6 +134,11 @@ path = "contracts/extensions/ccd010-core-v2-adapter.clar"
 [contracts.ccd011-stacking-payouts]
 path = "contracts/extensions/ccd011-stacking-payouts.clar"
 
+[contracts.ccd012-redemption-mia]
+path = "contracts/extensions/ccd012-redemption-mia.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
 
