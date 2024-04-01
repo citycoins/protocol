@@ -24,8 +24,8 @@
   hash: "TBD",
 })
 
-(define-constant MIA_ID (unwrap! (contract-call? .ccd004-city-registry get-city-id "mia") ERR_PANIC))
-(define-constant NYC_ID (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_PANIC))
+(define-constant MIA_ID u1) ;; (contract-call? .ccd004-city-registry get-city-id "mia")
+(define-constant NYC_ID u2) ;; (contract-call? .ccd004-city-registry get-city-id "nyc")
 ;; TODO: determine actual percentage from Miami
 (define-constant MIA_DRAW_PERCENTAGE u2) ;; 50% as placeholder
 
@@ -71,8 +71,10 @@
 (define-public (execute (sender principal))
   (let
     (
-      (miaRedemptionBalance (/ (contract-call? .ccd002-treasury-mia-mining-v2 get-balance-stx)) MIA_DRAW_PERCENTAGE)
-      (nycRedemptionBalance (contract-call? .ccd002-treasury-nyc-mining-v2 get-balance-stx))
+      (miaBalance (contract-call? .ccd002-treasury-mia-mining-v2 get-balance-stx))
+      (nycBalance (contract-call? .ccd002-treasury-nyc-mining-v2 get-balance-stx))
+      (miaRedemptionBalance (/ miaBalance MIA_DRAW_PERCENTAGE))
+      (nycRedemptionBalance nycBalance)
     )
 
     ;; check vote is complete/passed
@@ -125,49 +127,51 @@
 )
 
 (define-public (vote-on-proposal (vote bool))
-  (let (
-    (voteActive (asserts! (var-get voteActive) ERR_PROPOSAL_NOT_ACTIVE))
-    (voterId (unwrap! (contract-call? .ccd003-user-registry get-user-id contract-caller) ERR_USER_NOT_FOUND))
-    (voterRecord (map-get? UserVotes voterId))
-  ))
-  ;; check if vote record exists for user
-  (match voterRecord record
-    ;; if the voterRecord exists
-    (let
-      (
-        (oldVote (get vote record))
-        (miaVoteAmount (get mia record))
-        (nycVoteAmount (get nyc record))
-      )
-      ;; check vote is not the same as before
-      (asserts! (not (is-eq oldVote vote)) ERR_VOTED_ALREADY)
-      ;; record the new vote for the user
-      (map-set UserVotes voterId
-        (merge record { vote: vote })
-      )
-      ;; update vote stats for each city
-      (update-city-votes MIA_ID miaVoteAmount vote true)
-      (update-city-votes NYC_ID nycVoteAmount vote true)
-      (ok true)
+  (let
+    (
+      (voteIsActive (asserts! (var-get voteActive) ERR_PROPOSAL_NOT_ACTIVE))
+      (voterId (unwrap! (contract-call? .ccd003-user-registry get-user-id contract-caller) ERR_USER_NOT_FOUND))
+      (voterRecord (map-get? UserVotes voterId))
     )
-    ;; if the voterRecord does not exist
-    (let
-      (
-        (miaVoteAmount (scale-down (default-to u0 (get-mia-vote voterId true))))
-        (nycVoteAmount (scale-down (default-to u0 (get-nyc-vote voterId true))))
+    ;; check if vote record exists for user
+    (match voterRecord record
+      ;; if the voterRecord exists
+      (let
+        (
+          (oldVote (get vote record))
+          (miaVoteAmount (get mia record))
+          (nycVoteAmount (get nyc record))
+        )
+        ;; check vote is not the same as before
+        (asserts! (not (is-eq oldVote vote)) ERR_VOTED_ALREADY)
+        ;; record the new vote for the user
+        (map-set UserVotes voterId
+          (merge record { vote: vote })
+        )
+        ;; update vote stats for each city
+        (update-city-votes MIA_ID miaVoteAmount vote true)
+        (update-city-votes NYC_ID nycVoteAmount vote true)
+        (ok true)
       )
-      ;; check that the user has a positive vote
-      (asserts! (or (> miaVoteAmount u0) (> nycVoteAmount u0)) ERR_NOTHING_STACKED)
-      ;; insert new user vote record  
-      (map-insert UserVotes voterId {
-        vote: vote, 
-        mia: miaVote,
-        nyc: nycVote
-      })
-      ;; update vote stats for each city
-      (update-city-votes MIA_ID miaVoteAmount vote false)
-      (update-city-votes NYC_ID nycVoteAmount vote false)
-      (ok true)
+      ;; if the voterRecord does not exist
+      (let
+        (
+          (miaVoteAmount (scale-down (default-to u0 (get-mia-vote voterId true))))
+          (nycVoteAmount (scale-down (default-to u0 (get-nyc-vote voterId true))))
+        )
+        ;; check that the user has a positive vote
+        (asserts! (or (> miaVoteAmount u0) (> nycVoteAmount u0)) ERR_NOTHING_STACKED)
+        ;; insert new user vote record  
+        (map-insert UserVotes voterId {
+          vote: vote, 
+          mia: miaVoteAmount,
+          nyc: nycVoteAmount
+        })
+        ;; update vote stats for each city
+        (update-city-votes MIA_ID miaVoteAmount vote false)
+        (update-city-votes NYC_ID nycVoteAmount vote false)
+        (ok true)
+      )
     )
   )
 )
@@ -177,7 +181,7 @@
 (define-read-only (is-executable)
   (let
     (
-      (votingRecord (get-vote-totals))
+      (votingRecord (unwrap! (get-vote-totals) ERR_PANIC))
       (miaRecord (get mia votingRecord))
       (nycRecord (get nyc votingRecord))
       (voteTotals (get totals votingRecord))
@@ -224,25 +228,35 @@
   (map-get? CityVotes MIA_ID)
 )
 
+(define-read-only (get-vote-total-mia-or-default)
+  (default-to { totalAmountYes: u0, totalAmountNo: u0, totalVotesYes: u0, totalVotesNo: u0 } (get-vote-total-mia))
+)
+
 (define-read-only (get-vote-total-nyc)
   (map-get? CityVotes NYC_ID)
 )
 
+(define-read-only (get-vote-total-nyc-or-default)
+  (default-to { totalAmountYes: u0, totalAmountNo: u0, totalVotesYes: u0, totalVotesNo: u0 } (get-vote-total-nyc))
+)
+
 (define-read-only (get-vote-totals)
-  (let (
-    (miaRecord (get-vote-total-mia))
-    (nycRecord (get-vote-total-nyc))
+  (let
+    (
+      (miaRecord (get-vote-total-mia-or-default))
+      (nycRecord (get-vote-total-nyc-or-default))
+    )
+    (some {
+      mia: miaRecord,
+      nyc: nycRecord,
+      totals: {
+        totalAmountYes: (+ (get totalAmountYes miaRecord) (get totalAmountYes nycRecord)),
+        totalAmountNo: (+ (get totalAmountNo miaRecord) (get totalAmountNo nycRecord)),
+        totalVotesYes: (+ (get totalVotesYes miaRecord) (get totalVotesYes nycRecord)),
+        totalVotesNo: (+ (get totalVotesNo miaRecord) (get totalVotesNo nycRecord)),
+      }
+    })
   )
-  (some {
-    mia: miaRecord,
-    nyc: nycRecord,
-    totals: {
-      totalAmountYes: (+ (get totalAmountYes miaRecord) (get totalAmountYes nycRecord)),
-      totalAmountNo: (+ (get totalAmountNo miaRecord) (get totalAmountNo nycRecord)),
-      totalVotesYes: (+ (get totalVotesYes miaRecord) (get totalVotesYes nycRecord)),
-      totalVotesNo: (+ (get totalVotesNo miaRecord) (get totalVotesNo nycRecord)),
-    }
-  })
 )
 
 (define-read-only (get-voter-info (id uint))
@@ -252,18 +266,18 @@
 ;; MIA vote calculation
 ;; returns (some uint) or (none)
 ;; optionally scaled by VOTE_SCALE_FACTOR (10^6)
-(define-read-only (get-mia-vote (cityId uint) (userId uint) (scaled bool))
+(define-read-only (get-mia-vote (userId uint) (scaled bool))
   (let
     (
       ;; MAINNET: MIA cycle 80 / first block BTC 834,050 STX 142,301
       ;; cycle 2 / u4500 used in tests
       (cycle80Hash (unwrap! (get-block-hash u4500) none))
-      (cycle80Data (at-block cycle80Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
+      (cycle80Data (at-block cycle80Hash (contract-call? .ccd007-citycoin-stacking get-stacker MIA_ID u2 userId)))
       (cycle80Amount (get stacked cycle80Data))
       ;; MAINNET: MIA cycle 81 / first block BTC 836,150 STX 143,989
       ;; cycle 3 / u6600 used in tests
       (cycle81Hash (unwrap! (get-block-hash u6600) none))
-      (cycle81Data (at-block cycle81Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
+      (cycle81Data (at-block cycle81Hash (contract-call? .ccd007-citycoin-stacking get-stacker MIA_ID u3 userId)))
       (cycle81Amount (get stacked cycle81Data))
       ;; MIA vote calculation
       (avgStacked (/ (+ (scale-up cycle80Amount) (scale-up cycle81Amount)) u2))
@@ -279,18 +293,18 @@
 ;; NYC vote calculation
 ;; returns (some uint) or (none)
 ;; optionally scaled by VOTE_SCALE_FACTOR (10^6)
-(define-read-only (get-nyc-vote (cityId uint) (userId uint) (scaled bool))
+(define-read-only (get-nyc-vote (userId uint) (scaled bool))
   (let
     (
       ;; NYC cycle 80 / first block BTC 834,050 STX 142,301
       ;; cycle 2 / u4500 used in tests
       (cycle80Hash (unwrap! (get-block-hash u4500) none))
-      (cycle80Data (at-block cycle80Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
+      (cycle80Data (at-block cycle80Hash (contract-call? .ccd007-citycoin-stacking get-stacker NYC_ID u2 userId)))
       (cycle80Amount (get stacked cycle80Data))
       ;; NYC cycle 81 / first block BTC 836,150 STX 143,989
       ;; cycle 3 / u6600 used in tests
       (cycle81Hash (unwrap! (get-block-hash u6600) none))
-      (cycle81Data (at-block cycle81Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
+      (cycle81Data (at-block cycle81Hash (contract-call? .ccd007-citycoin-stacking get-stacker NYC_ID u3 userId)))
       (cycle81Amount (get stacked cycle81Data))
       ;; NYC vote calculation
       (scaledVote (/ (+ (scale-up cycle80Amount) (scale-up cycle81Amount)) u2))
@@ -314,19 +328,19 @@
     )
     (if vote
       ;; handle yes vote
-      (map-set CityVotes cityId
+      (map-set CityVotes cityId {
         totalAmountYes: (+ voteAmount (get totalAmountYes cityRecord)),
         totalVotesYes: (+ u1 (get totalVotesYes cityRecord)),
         totalAmountNo: (if changedVote (- (get totalAmountNo cityRecord) voteAmount) (get totalAmountNo cityRecord)),
-        totalVotesNo: (if changedVote (- (get totalVotesNo cityRecord) u1) (get totalVotesNo cityRecord)),
-      )
+        totalVotesNo: (if changedVote (- (get totalVotesNo cityRecord) u1) (get totalVotesNo cityRecord)) 
+      })
       ;; handle no vote
-      (map-set CityVotes cityId
+      (map-set CityVotes cityId {
         totalAmountYes: (if changedVote (- (get totalAmountYes cityRecord) voteAmount) (get totalAmountYes cityRecord)),
         totalVotesYes: (if changedVote (- (get totalVotesYes cityRecord) u1) (get totalVotesYes cityRecord)),
         totalAmountNo: (+ voteAmount (get totalAmountNo cityRecord)),
-        totalVotesNo: (+ u1 (get totalVotesNo cityRecord)),
-      )
+        totalVotesNo: (+ u1 (get totalVotesNo cityRecord)), 
+      })
     )
   )
 )
