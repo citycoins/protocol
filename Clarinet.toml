@@ -215,11 +215,32 @@ epoch = 2.4
 
 # CITYCOINS LEGACY CONTRACTS
 
+[contracts.citycoin-vrf]
+path = "contracts/legacy/citycoin-vrf.clar"
+
+[contracts.citycoin-core-trait]
+path = "contracts/legacy/citycoin-core-trait.clar"
+
 [contracts.citycoin-core-v2-trait]
 path = "contracts/legacy/citycoin-core-v2-trait.clar"
 
+[contracts.citycoin-token-trait]
+path = "contracts/legacy/citycoin-token-trait.clar"
+
 [contracts.citycoin-token-v2-trait]
 path = "contracts/legacy/citycoin-token-v2-trait.clar"
+
+[contracts.miamicoin-auth]
+path = "contracts/legacy/miamicoin-auth.clar"
+
+[contracts.miamicoin-core-v1]
+path = "contracts/legacy/miamicoin-core-v1.clar"
+
+[contracts.miamicoin-token]
+path = "contracts/legacy/miamicoin-token.clar"
+
+[contracts.miamicoin-core-v1-patch]
+path = "contracts/legacy/miamicoin-core-v1-patch.clar"
 
 [contracts.miamicoin-auth-v2]
 path = "contracts/legacy/miamicoin-auth-v2.clar"
@@ -229,6 +250,18 @@ path = "contracts/legacy/miamicoin-core-v2.clar"
 
 [contracts.miamicoin-token-v2]
 path = "contracts/legacy/miamicoin-token-v2.clar"
+
+[contracts.newyorkcitycoin-auth]
+path = "contracts/legacy/newyorkcitycoin-auth.clar"
+
+[contracts.newyorkcitycoin-core-v1]
+path = "contracts/legacy/newyorkcitycoin-core-v1.clar"
+
+[contracts.newyorkcitycoin-token]
+path = "contracts/legacy/newyorkcitycoin-token.clar"
+
+[contracts.newyorkcitycoin-core-v1-patch]
+path = "contracts/legacy/newyorkcitycoin-core-v1-patch.clar"
 
 [contracts.newyorkcitycoin-auth-v2]
 path = "contracts/legacy/newyorkcitycoin-auth-v2.clar"
