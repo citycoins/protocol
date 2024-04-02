@@ -9,6 +9,7 @@
 
 ;; CONSTANTS
 
+;; error codes
 (define-constant ERR_UNAUTHORIZED (err u12000))
 (define-constant ERR_PANIC (err u12001))
 (define-constant ERR_GETTING_TOTAL_SUPPLY (err u12002))
@@ -17,6 +18,9 @@
 (define-constant ERR_NOT_ENABLED (err u12005))
 (define-constant ERR_BALANCE_NOT_FOUND (err u12006))
 (define-constant ERR_NOTHING_TO_REDEEM (err u12007))
+
+;; helpers
+(define-constant MICRO_CITYCOINS (pow u10 u6)) ;; 6 decimal places
 
 ;; DATA VARS
 
@@ -51,13 +55,15 @@
   (let
     (
       ;; MAINNET: TODO
-      (miaTotalSupply (unwrap! (contract-call? .miamicoin-token-v2 get-total-supply) ERR_PANIC))
+      (miaTotalSupplyV1 (unwrap! (contract-call? .miamicoin-token get-total-supply) ERR_PANIC))
+      (miaTotalSupplyV2 (unwrap! (contract-call? .miamicoin-token-v2 get-total-supply) ERR_PANIC))
+      (miaTotalSupply (+ (* miaTotalSupplyV1 MICRO_CITYCOINS) miaTotalSupplyV2))
       (miaRedemptionBalance (as-contract (stx-get-balance tx-sender)))
     )
     ;; check if sender is DAO or extension
     (try! (is-dao-or-extension))
     ;; check that total supply is greater than 0
-    (asserts! (> miaTotalSupply u0) ERR_GETTING_TOTAL_SUPPLY)
+    (asserts! (and (> miaTotalSupplyV1 u0) (> miaTotalSupplyV2 u0)) ERR_GETTING_TOTAL_SUPPLY)
     ;; check that redemption balance is greater than 0
     (asserts! (> miaRedemptionBalance u0) ERR_GETTING_REDEMPTION_BALANCE)
     ;; check if redemptions are already enabled
@@ -79,9 +85,10 @@
   (let
     (
       (userAddress tx-sender)
+      (balanceV1 (unwrap! (contract-call? .miamicoin-token get-balance userAddress) ERR_BALANCE_NOT_FOUND))
       (balanceV2 (unwrap! (contract-call? .miamicoin-token-v2 get-balance userAddress) ERR_BALANCE_NOT_FOUND))
       (redemptionAmount (unwrap! (get-redemption-amount balanceV2) ERR_NOTHING_TO_REDEEM))
-      (redemptionClaims (default-to u0 (get-redemption-claims (some userAddress))))
+      (redemptionClaims (default-to u0 (get-redemption-claims userAddress)))
     )
     ;; check if redemptions are enabled
     (asserts! (var-get redemptionsEnabled) ERR_NOT_ENABLED)
@@ -137,11 +144,8 @@
   )
 )
 
-(define-read-only (get-redemption-claims (address (optional principal)))
-  (if (is-some address)
-    (map-get? RedemptionClaims (unwrap! address none))
+(define-read-only (get-redemption-claims (address principal))
     (map-get? RedemptionClaims tx-sender)
-  )
 )
 
 ;; TODO: read-only that returns all post conditions in one call
