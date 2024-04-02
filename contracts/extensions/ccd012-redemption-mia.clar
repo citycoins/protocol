@@ -16,6 +16,7 @@
 (define-constant ERR_ALREADY_ENABLED (err u12004))
 (define-constant ERR_NOT_ENABLED (err u12005))
 (define-constant ERR_BALANCE_NOT_FOUND (err u12006))
+(define-constant ERR_NOTHING_TO_REDEEM (err u12007))
 
 ;; DATA VARS
 
@@ -24,6 +25,14 @@
 (define-data-var totalSupply uint u0)
 (define-data-var contractBalance uint u0)
 (define-data-var redemptionRatio uint u0)
+
+;; DATA MAPS
+
+;; track totals per principal
+(define-map RedemptionClaims
+  principal ;; address
+  uint      ;; total redemption amount
+)
 
 ;; PUBLIC FUNCTIONS
 
@@ -69,16 +78,21 @@
 (define-public (redeem-mia)
   (let
     (
-      (balanceV2 (unwrap! (contract-call? .miamicoin-token-v2 get-balance tx-sender) ERR_BALANCE_NOT_FOUND))
-      (redemptionAmount (unwrap! (get-redemption-amount balanceV2) ERR_PANIC)) ;; TODO: more specific err?
       (userAddress tx-sender)
+      (balanceV2 (unwrap! (contract-call? .miamicoin-token-v2 get-balance userAddress) ERR_BALANCE_NOT_FOUND))
+      (redemptionAmount (unwrap! (get-redemption-amount balanceV2) ERR_NOTHING_TO_REDEEM))
+      (redemptionClaims (default-to u0 (get-redemption-claims (some userAddress))))
     )
     ;; check if redemptions are enabled
     (asserts! (var-get redemptionsEnabled) ERR_NOT_ENABLED)
+    ;; check that redemption amount is > 0
+    (asserts! (> redemptionAmount u0) ERR_NOTHING_TO_REDEEM)
     ;; burn MIA
-    (try! (contract-call? .miamicoin-token-v2 burn balanceV2 tx-sender))
+    (try! (contract-call? .miamicoin-token-v2 burn balanceV2 userAddress))
     ;; transfer STX
-    (try! (as-contract (stx-transfer? redemptionAmount tx-sender userAddress)))
+    (try! (as-contract (stx-transfer? redemptionAmount userAddress userAddress)))
+    ;; update redemption claims
+    (map-set RedemptionClaims userAddress (+ redemptionClaims redemptionAmount))
     (ok true)
   )
 )
@@ -120,6 +134,13 @@
   (begin
     (asserts! (var-get redemptionsEnabled) none)
     (some (* balance (var-get redemptionRatio)))
+  )
+)
+
+(define-read-only (get-redemption-claims (address (optional principal)))
+  (if (is-some address)
+    (map-get? RedemptionClaims (unwrap! address none))
+    (map-get? RedemptionClaims tx-sender)
   )
 )
 
