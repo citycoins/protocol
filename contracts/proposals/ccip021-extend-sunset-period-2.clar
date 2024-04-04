@@ -19,16 +19,16 @@
 (define-constant SELF (as-contract tx-sender))
 (define-constant CCIP_021 {
   name: "Extend Direct Execute Sunset Period 2",
-  link: "https://github.com/citycoins/governance/blob/feat/add-ccip-017/ccips/ccip-017/ccip-017-extend-direct-execute-sunset-period.md",
-  hash: "7ddbf6152790a730faa059b564a8524abc3c70d3",
+  link: "https://github.com/citycoins/governance/blob/feat/ccip-21/ccips/ccip-021/ccip-021-extend-direct-execute-sunset-period-2.md",
+  hash: "", ;; TODO
 })
-(define-constant SUNSET_BLOCK u147828)
+(define-constant SUNSET_BLOCK u173748)
 
 (define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
 (define-constant MIA_SCALE_BASE (pow u10 u4)) ;; 4 decimal places
 (define-constant MIA_SCALE_FACTOR u8823) ;; 0.8823 or 88.23%
 ;; MIA votes scaled to make 1 MIA = 1 NYC
-;; full calculation available in CCIP-017
+;; full calculation available in CCIP-021
 
 ;; DATA VARS
 
