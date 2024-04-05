@@ -226,21 +226,21 @@
 (define-read-only (get-nyc-vote (cityId uint) (userId uint) (scaled bool))
   (let
     (
-      ;; NYC cycle 64 / first block BTC 800,450 STX 114,689
+      ;; NYC cycle 80 / first block BTC 834,050 STX 142,301
       ;; cycle 2 / u4500 used in tests
-      (cycle64Hash (unwrap! (get-block-hash u4500) none))
-      (cycle64Data (at-block cycle64Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
-      (cycle64Amount (get stacked cycle64Data))
-      ;; NYC cycle 65 / first block BTC 802,550 STX 116,486
+      (cycle80Hash (unwrap! (get-block-hash u4500) none))
+      (cycle80Data (at-block cycle80Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
+      (cycle80Amount (get stacked cycle80Data))
+      ;; NYC cycle 81 / first block BTC 836,150 STX 143,989
       ;; cycle 3 / u6600 used in tests
-      (cycle65Hash (unwrap! (get-block-hash u6600) none))
-      (cycle65Data (at-block cycle65Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
-      (cycle65Amount (get stacked cycle65Data))
+      (cycle81Hash (unwrap! (get-block-hash u6600) none))
+      (cycle81Data (at-block cycle81Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
+      (cycle81Amount (get stacked cycle81Data))
       ;; NYC vote calculation
-      (scaledVote (/ (+ (scale-up cycle64Amount) (scale-up cycle65Amount)) u2))
+      (scaledVote (/ (+ (scale-up cycle80Amount) (scale-up cycle81Amount)) u2))
     )
     ;; check that at least one value is positive
-    (asserts! (or (> cycle64Amount u0) (> cycle65Amount u0)) none)
+    (asserts! (or (> cycle80Amount u0) (> cycle81Amount u0)) none)
     ;; return scaled or unscaled value
     (if scaled (some scaledVote) (some (/ scaledVote VOTE_SCALE_FACTOR)))
   )
