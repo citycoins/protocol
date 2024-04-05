@@ -162,7 +162,7 @@
 )
 
 (define-read-only (get-proposal-info)
-  (some CCIP_017)
+  (some CCIP_021)
 )
 
 (define-read-only (get-vote-period)
