@@ -157,9 +157,9 @@ Clarinet.test({
     ccip021ExtendDirectExecuteSunsetPeriod.isVoteActive().result.expectSome().expectBool(true);
     // check proposal info
     const proposalInfo = {
-      hash: types.ascii("7ddbf6152790a730faa059b564a8524abc3c70d3"),
-      link: types.ascii("https://github.com/citycoins/governance/blob/feat/add-ccip-021/ccips/ccip-021/ccip-021-extend-direct-execute-sunset-period.md"),
-      name: types.ascii("Extend Direct Execute Sunset Period"),
+      hash: types.ascii("3af7199173df90463a0ba65541b53fa74e0914db"),
+      link: types.ascii("https://github.com/citycoins/governance/blob/feat/ccip-21/ccips/ccip-021/ccip-021-extend-direct-execute-sunset-period-2.md"),
+      name: types.ascii("Extend Direct Execute Sunset Period 2"),
     };
     assertEquals(ccip021ExtendDirectExecuteSunsetPeriod.getProposalInfo().result.expectSome().expectTuple(), proposalInfo);
     // check vote period is not set (end unknown)
@@ -513,9 +513,9 @@ Clarinet.test({
 
     // overall totals
     assertEquals(ccip021ExtendDirectExecuteSunsetPeriod.getVoteTotals().result.expectSome().expectTuple(), {
-      noTotal: types.uint(941),
+      noTotal: types.uint(945),
       noVotes: types.uint(1),
-      yesTotal: types.uint(470),
+      yesTotal: types.uint(472),
       yesVotes: types.uint(1),
     });
 
