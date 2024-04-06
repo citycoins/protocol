@@ -4,7 +4,7 @@ import { CCD006CityMining } from "../../models/extensions/ccd006-citycoin-mining
 import { CCD007CityStacking } from "../../models/extensions/ccd007-citycoin-stacking.model.ts";
 import { CCIP021ExtendDirectExecuteSunsetPeriod } from "../../models/proposals/ccip021-extend-direct-execute-sunset-period-2.model.ts";
 
-const TARGET_SUNSET_BLOCK = 147828;
+const TARGET_SUNSET_BLOCK = 173748;
 
 Clarinet.test({
   name: "ccip-021: execute() fails with ERR_VOTE_FAILED if there are no votes",
