@@ -20,7 +20,7 @@
 (define-constant CCIP_021 {
   name: "Extend Direct Execute Sunset Period 2",
   link: "https://github.com/citycoins/governance/blob/feat/ccip-21/ccips/ccip-021/ccip-021-extend-direct-execute-sunset-period-2.md",
-  hash: "", ;; TODO
+  hash: "3af7199173df90463a0ba65541b53fa74e0914db",
 })
 (define-constant SUNSET_BLOCK u173748)
 
