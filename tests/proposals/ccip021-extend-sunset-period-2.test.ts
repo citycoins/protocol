@@ -2,7 +2,7 @@ import { Account, Clarinet, Chain, types, assertEquals } from "../../utils/deps.
 import { constructAndPassProposal, mia, nyc, passProposal, PROPOSALS } from "../../utils/common.ts";
 import { CCD006CityMining } from "../../models/extensions/ccd006-citycoin-mining.model.ts";
 import { CCD007CityStacking } from "../../models/extensions/ccd007-citycoin-stacking.model.ts";
-import { CCIP021ExtendDirectExecuteSunsetPeriod } from "../../models/proposals/ccip021-extend-direct-execute-sunset-period.model.ts";
+import { CCIP021ExtendDirectExecuteSunsetPeriod } from "../../models/proposals/ccip021-extend-direct-execute-sunset-period-2.model.ts";
 
 const TARGET_SUNSET_BLOCK = 147828;
 
