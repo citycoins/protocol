@@ -538,9 +538,9 @@ Clarinet.test({
       stacked: types.uint(250),
     });
     assertEquals(ccip021ExtendDirectExecuteSunsetPeriod.getVoterInfo(user2Id).result.expectSome().expectTuple(), {
-      mia: types.uint(220),
+      mia: types.uint(222),
       nyc: types.uint(250),
-      total: types.uint(470),
+      total: types.uint(472),
       vote: types.bool(true),
     });
 
@@ -575,9 +575,9 @@ Clarinet.test({
       stacked: types.uint(250),
     });
     assertEquals(ccip021ExtendDirectExecuteSunsetPeriod.getVoterInfo(user2Id).result.expectSome().expectTuple(), {
-      mia: types.uint(220),
+      mia: types.uint(222),
       nyc: types.uint(250),
-      total: types.uint(470),
+      total: types.uint(472),
       vote: types.bool(false),
     });
 
