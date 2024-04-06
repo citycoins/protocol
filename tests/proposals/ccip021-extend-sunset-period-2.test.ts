@@ -526,9 +526,9 @@ Clarinet.test({
       stacked: types.uint(500),
     });
     assertEquals(ccip021ExtendDirectExecuteSunsetPeriod.getVoterInfo(user1Id).result.expectSome().expectTuple(), {
-      mia: types.uint(441),
+      mia: types.uint(445),
       nyc: types.uint(500),
-      total: types.uint(941),
+      total: types.uint(945),
       vote: types.bool(false),
     });
 
@@ -553,9 +553,9 @@ Clarinet.test({
 
     // overall totals
     assertEquals(ccip021ExtendDirectExecuteSunsetPeriod.getVoteTotals().result.expectSome().expectTuple(), {
-      noTotal: types.uint(470),
+      noTotal: types.uint(472),
       noVotes: types.uint(1),
-      yesTotal: types.uint(941),
+      yesTotal: types.uint(945),
       yesVotes: types.uint(1),
     });
     // user 1
@@ -564,9 +564,9 @@ Clarinet.test({
       stacked: types.uint(500),
     });
     assertEquals(ccip021ExtendDirectExecuteSunsetPeriod.getVoterInfo(user1Id).result.expectSome().expectTuple(), {
-      mia: types.uint(441),
+      mia: types.uint(445),
       nyc: types.uint(500),
-      total: types.uint(941),
+      total: types.uint(945),
       vote: types.bool(true),
     });
     // user 2
