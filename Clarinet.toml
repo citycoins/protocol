@@ -92,6 +92,9 @@ path = "contracts/extensions/ccd002-treasury.clar"
 [contracts.ccd002-treasury-mia-mining-v2]
 path = "contracts/extensions/ccd002-treasury-v2.clar"
 
+# [contracts.ccd002-treasury-mia-mining-v3]
+# path = "contracts/extensions/ccd002-treasury-v3.clar"
+
 [contracts.ccd002-treasury-mia-stacking]
 path = "contracts/extensions/ccd002-treasury.clar"
 
@@ -100,6 +103,9 @@ path = "contracts/extensions/ccd002-treasury.clar"
 
 [contracts.ccd002-treasury-nyc-mining-v2]
 path = "contracts/extensions/ccd002-treasury-v2.clar"
+
+# [contracts.ccd002-treasury-nyc-mining-v3]
+# path = "contracts/extensions/ccd002-treasury-v3.clar"
 
 [contracts.ccd002-treasury-nyc-stacking]
 path = "contracts/extensions/ccd002-treasury.clar"
@@ -155,6 +161,11 @@ epoch = 2.4
 
 [contracts.ccip017-extend-sunset-period]
 path = "contracts/proposals/ccip017-extend-sunset-period.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.ccip021-extend-sunset-period-2]
+path = "contracts/proposals/ccip021-extend-sunset-period-2.clar"
 clarity_version = 2
 epoch = 2.4
 
