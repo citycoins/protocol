@@ -97,7 +97,7 @@
     ;; burn MIA
     (try! (contract-call? .miamicoin-token-v2 burn balanceV2 userAddress))
     ;; transfer STX
-    (try! (as-contract (stx-transfer? redemptionAmount userAddress userAddress)))
+    (try! (as-contract (stx-transfer? redemptionAmount tx-sender userAddress)))
     ;; update redemption claims
     (map-set RedemptionClaims userAddress (+ redemptionClaims redemptionAmount))
     (ok true)
