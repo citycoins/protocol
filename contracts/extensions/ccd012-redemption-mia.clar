@@ -87,15 +87,17 @@
       (userAddress tx-sender)
       (balanceV1 (unwrap! (contract-call? .miamicoin-token get-balance userAddress) ERR_BALANCE_NOT_FOUND))
       (balanceV2 (unwrap! (contract-call? .miamicoin-token-v2 get-balance userAddress) ERR_BALANCE_NOT_FOUND))
-      (redemptionAmount (unwrap! (get-redemption-amount balanceV2) ERR_NOTHING_TO_REDEEM))
-      (redemptionClaims (default-to u0 (get-redemption-claims userAddress)))
+      (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
+      (redemptionAmount (unwrap! (get-redemption-for-balance totalBalance) ERR_NOTHING_TO_REDEEM))
+      (redemptionClaims (default-to u0 (get-redemption-amount-claimed userAddress)))
     )
     ;; check if redemptions are enabled
     (asserts! (var-get redemptionsEnabled) ERR_NOT_ENABLED)
     ;; check that redemption amount is > 0
     (asserts! (> redemptionAmount u0) ERR_NOTHING_TO_REDEEM)
     ;; burn MIA
-    (try! (contract-call? .miamicoin-token-v2 burn balanceV2 userAddress))
+    (and (> u0 balanceV1) (try! (contract-call? .miamicoin-core-v1-patch burn-mia-v1 balanceV1 userAddress)))
+    (and (> u0 balanceV2) (try! (contract-call? .miamicoin-token-v2 burn balanceV2 userAddress)))
     ;; transfer STX
     (try! (as-contract (stx-transfer? redemptionAmount tx-sender userAddress)))
     ;; update redemption claims
@@ -137,17 +139,47 @@
   }
 )
 
-(define-read-only (get-redemption-amount (balance uint))
+(define-read-only (get-mia-balances)
+  (let
+    (
+      (balanceV1 (unwrap! (contract-call? .miamicoin-token get-balance tx-sender) ERR_BALANCE_NOT_FOUND))
+      (balanceV2 (unwrap! (contract-call? .miamicoin-token-v2 get-balance tx-sender) ERR_BALANCE_NOT_FOUND))
+      (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
+    )
+    (ok {
+      balanceV1: balanceV1,
+      balanceV2: balanceV2,
+      totalBalance: totalBalance
+    })
+  )
+)
+
+(define-read-only (get-redemption-for-balance (balance uint))
   (begin
     (asserts! (var-get redemptionsEnabled) none)
     (some (* balance (var-get redemptionRatio)))
   )
 )
 
-(define-read-only (get-redemption-claims (address principal))
+(define-read-only (get-redemption-amount-claimed (address principal))
     (map-get? RedemptionClaims tx-sender)
 )
 
-;; TODO: read-only that returns all post conditions in one call
+;; aggregate all exposed vars above
+(define-read-only (get-user-redemption-info)
+  (let
+    (
+      (miaBalances (try! (get-mia-balances)))
+      (redemptionAmount (default-to u0 (get-redemption-for-balance (get totalBalance miaBalances))))
+      (redemptionClaims (default-to u0 (get-redemption-amount-claimed tx-sender)))
+    )
+    (ok {
+      address: tx-sender,
+      miaBalances: miaBalances,
+      redemptionAmount: redemptionAmount,
+      redemptionClaims: redemptionClaims
+    })
+  )
+)
 
 ;; PRIVATE FUNCTIONS
