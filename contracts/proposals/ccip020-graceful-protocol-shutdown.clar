@@ -11,13 +11,10 @@
 (define-constant ERR_USER_NOT_FOUND (err u2003))
 (define-constant ERR_PROPOSAL_NOT_ACTIVE (err u2004))
 (define-constant ERR_PROPOSAL_STILL_ACTIVE (err u2005))
-(define-constant ERR_NO_CITY_ID (err u2006)) ;; depracated in favor of MIA_ID and NYC_ID constants
-(define-constant ERR_VOTE_FAILED (err u2007))
+(define-constant ERR_VOTE_FAILED (err u2006))
 
 ;; CONSTANTS
 
-(define-constant SELF (as-contract tx-sender))
-(define-constant MISSED_PAYOUT u1)
 (define-constant CCIP_020 {
   name: "Graceful Protocol Shutdown",
   link: "https://github.com/citycoins/governance/blob/feat/add-ccip-020/ccips/ccip-020/ccip-020-graceful-protocol-shutdown.md",
@@ -26,8 +23,6 @@
 
 (define-constant MIA_ID u1) ;; (contract-call? .ccd004-city-registry get-city-id "mia")
 (define-constant NYC_ID u2) ;; (contract-call? .ccd004-city-registry get-city-id "nyc")
-;; TODO: determine actual percentage from Miami
-(define-constant MIA_DRAW_PERCENTAGE u2) ;; 50% as placeholder
 
 ;; MIA votes scaled to make 1 MIA = 1 NYC
 ;; full calculation available in CCIP-020
@@ -85,10 +80,11 @@
 (define-public (vote-on-proposal (vote bool))
   (let
     (
-      (voteIsActive (asserts! (var-get voteActive) ERR_PROPOSAL_NOT_ACTIVE))
       (voterId (unwrap! (contract-call? .ccd003-user-registry get-user-id contract-caller) ERR_USER_NOT_FOUND))
       (voterRecord (map-get? UserVotes voterId))
     )
+    ;; check if vote is active
+    (asserts! (var-get voteActive) ERR_PROPOSAL_NOT_ACTIVE)
     ;; check if vote record exists for user
     (match voterRecord record
       ;; if the voterRecord exists
@@ -147,7 +143,6 @@
     ;; check that the yes total is more than no total
     (asserts! (> (get totalVotesYes voteTotals) (get totalVotesNo voteTotals)) ERR_VOTE_FAILED)
     ;; check that neither city vote is more than 50% of total
-    ;; TODO: make sure threshold is agreed upon
     (asserts! (and
       (<= (get totalVotesYes miaRecord) (/ (get totalVotesYes voteTotals) u2))
       (<= (get totalVotesYes nycRecord) (/ (get totalVotesYes voteTotals) u2))
