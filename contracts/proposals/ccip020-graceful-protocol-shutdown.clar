@@ -69,59 +69,15 @@
 ;; PUBLIC FUNCTIONS
 
 (define-public (execute (sender principal))
-  (let
-    (
-      (miaBalance (contract-call? .ccd002-treasury-mia-mining-v2 get-balance-stx))
-      (nycBalance (contract-call? .ccd002-treasury-nyc-mining-v2 get-balance-stx))
-      (miaRedemptionBalance (/ miaBalance MIA_DRAW_PERCENTAGE))
-      (nycRedemptionBalance nycBalance)
-    )
-
+  (begin
     ;; check vote is complete/passed
     (try! (is-executable))
-
     ;; update vote variables
     (var-set voteEnd block-height)
     (var-set voteActive false)
-
-    ;; enable redemption extensions in the DAO
-    (try! (contract-call? .base-dao set-extensions
-      (list
-        {extension: .ccd012-redemption-mia, enabled: true}
-        {extension: .ccd012-redemption-nyc, enabled: true}
-      )
-    ))
-
-    ;; transfer funds to new redemption extensions
-    (try! (contract-call? .ccd002-treasury-mia-mining-v2 withdraw-stx miaRedemptionBalance .ccd012-redemption-mia))
-    (try! (contract-call? .ccd002-treasury-nyc-mining-v2 withdraw-stx nycRedemptionBalance .ccd012-redemption-nyc))
-
-
     ;; disable mining and stacking contracts
     (try! (contract-call? .ccd006-citycoin-mining-v2 set-mining-enabled false))
     (try! (contract-call? .ccd007-citycoin-stacking set-stacking-enabled false))
-
-    ;; set pool operator to self
-    (try! (contract-call? .ccd011-stacking-payouts set-pool-operator SELF))
-
-    ;; pay out missed MIA cycles 56, 57, 58, 59 with 1 uSTX each
-    ;; MAINNET: u56, u57, u58, u59
-    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-mia u1 MISSED_PAYOUT)))
-    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-mia u2 MISSED_PAYOUT)))
-    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-mia u3 MISSED_PAYOUT)))
-    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-mia u4 MISSED_PAYOUT)))
-
-    ;; pay out missed NYC cycles 56, 57, 58, 59 with 1 uSTX each
-    ;; MAINNET: u56, u57, u58, u59
-    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-nyc u1 MISSED_PAYOUT)))
-    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-nyc u2 MISSED_PAYOUT)))
-    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-nyc u3 MISSED_PAYOUT)))
-    (as-contract (try! (contract-call? .ccd011-stacking-payouts send-stacking-reward-nyc u4 MISSED_PAYOUT)))
-
-    ;; set pool operator to Friedger pool
-    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP
-    (try! (contract-call? .ccd011-stacking-payouts set-pool-operator 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
-
     (ok true)
   )
 )
