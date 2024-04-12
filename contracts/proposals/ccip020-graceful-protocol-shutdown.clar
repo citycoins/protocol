@@ -277,6 +277,9 @@
         { totalAmountYes: u0, totalAmountNo: u0, totalVotesYes: u0, totalVotesNo: u0 }
         (map-get? CityVotes cityId)))
     )
+    ;; do not record if amount is 0
+    (asserts! (> voteAmount u0) false)
+    ;; handle vote
     (if vote
       ;; handle yes vote
       (map-set CityVotes cityId {
