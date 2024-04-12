@@ -142,10 +142,10 @@
     (asserts! (or (> (get totalVotesYes voteTotals) u0) (> (get totalVotesNo voteTotals) u0)) ERR_VOTE_FAILED)
     ;; check that the yes total is more than no total
     (asserts! (> (get totalVotesYes voteTotals) (get totalVotesNo voteTotals)) ERR_VOTE_FAILED)
-    ;; check that neither city vote is more than 50% of total
+    ;; check that each city has at least 25% of the total "yes" votes
     (asserts! (and
-      (<= (get totalAmountYes miaRecord) (/ (get totalAmountYes voteTotals) u2))
-      (<= (get totalAmountYes nycRecord) (/ (get totalAmountYes voteTotals) u2))
+      (>= (get totalAmountYes miaRecord) (/ (get totalAmountYes voteTotals) u4))
+      (>= (get totalAmountYes nycRecord) (/ (get totalAmountYes voteTotals) u4))
     ) ERR_VOTE_FAILED)
     ;; allow execution
     (ok true)
