@@ -412,17 +412,19 @@ Clarinet.test({
     // execute two yes votes, one no vote
     const votingBlock = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user1, true), ccip020GracefulProtocolShutdown.voteOnProposal(user2, true), ccip020GracefulProtocolShutdown.voteOnProposal(user3, false)]);
 
-    // double check voting data
+    /* double check voting data
     console.log("BEFORE REVERSAL");
     console.log(`voting block:\n${JSON.stringify(votingBlock, null, 2)}`);
     printVotingData(ccd007CityStacking, ccip020GracefulProtocolShutdown);
+    */
 
     const votingBlockReversed = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user3, true)]);
 
-    // double check voting data
+    /* double check voting data
     console.log("AFTER REVERSAL");
     console.log(`voting block reversed:\n${JSON.stringify(votingBlockReversed, null, 2)}`);
     printVotingData(ccd007CityStacking, ccip020GracefulProtocolShutdown);
+    */
 
     // execute ccip-020
     const block = passProposal(chain, accounts, PROPOSALS.CCIP_020);
@@ -436,4 +438,4 @@ Clarinet.test({
 // ccip-020: vote-on-proposal() fails with ERR_PROPOSAL_NOT_ACTIVE if called after the vote ends
 // ccip-020: vote-on-proposal() fails with ERR_VOTED_ALREADY if user already voted with the same value
 // ccip-020: read-only functions return expected values before/after reversal
-// ccip-020: after upgrade mining disabled, stackign disabled, mining and stacking claims work as expected
+// ccip-020: after upgrade mining disabled, stacking disabled, mining and stacking claims work as expected
