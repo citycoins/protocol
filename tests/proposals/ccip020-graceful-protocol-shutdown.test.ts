@@ -396,7 +396,7 @@ Clarinet.test({
 
     // stack first cycle u1, last cycle u10
     const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, nyc.cityName, amountStacked, lockPeriod)]);
-    // for length of mineBlock array, expectOk and expectBool(true)
+    // for length of array, expectOk and expectBool(true)
     for (let i = 0; i < stackingBlock.receipts.length; i++) {
       stackingBlock.receipts[i].result.expectOk().expectBool(true);
     }
@@ -434,8 +434,185 @@ Clarinet.test({
   },
 });
 
-// ccip-020: vote-on-proposal() fails with ERR_USER_NOT_FOUND if user is not registered in ccd003-user-registry
-// ccip-020: vote-on-proposal() fails with ERR_PROPOSAL_NOT_ACTIVE if called after the vote ends
-// ccip-020: vote-on-proposal() fails with ERR_VOTED_ALREADY if user already voted with the same value
+Clarinet.test({
+  name: "ccip-020: vote-on-proposal() fails with ERR_USER_NOT_FOUND if user is not registered in ccd003-user-registry",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
+    const user2 = accounts.get("wallet_2")!;
+    const user3 = accounts.get("wallet_3")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    const ccip020GracefulProtocolShutdown = new CCIP020GracefulProtocolShutdown(chain, sender);
+
+    const miningEntries = [25000000, 25000000];
+    const amountStacked = 500;
+    const lockPeriod = 10;
+
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+
+    // prepare for CCIP (sets up cities, tokens, and data)
+    const constructBlock = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP014_POX3_001);
+    constructBlock.receipts[0].result.expectOk().expectBool(true);
+
+    // mine to put funds in the mining treasury
+    const miningBlock = chain.mineBlock([ccd006CityMining.mine(sender, mia.cityName, miningEntries), ccd006CityMining.mine(sender, nyc.cityName, miningEntries)]);
+    for (let i = 0; i < miningBlock.receipts.length; i++) {
+      miningBlock.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // stack first cycle u1, last cycle u10
+    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked / 2, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked / 2, lockPeriod)]);
+    for (let i = 0; i < stackingBlock.receipts.length; i++) {
+      stackingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // progress the chain to cycle 5
+    // votes are counted in cycles 2-3
+    // past payouts tested for cycles 1-4
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
+
+    // act
+    const votingBlock = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user1, true), ccip020GracefulProtocolShutdown.voteOnProposal(user2, true), ccip020GracefulProtocolShutdown.voteOnProposal(user3, true)]);
+
+    // assert
+    votingBlock.receipts[0].result.expectOk().expectBool(true);
+    votingBlock.receipts[1].result.expectOk().expectBool(true);
+    votingBlock.receipts[2].result.expectErr().expectUint(CCIP020GracefulProtocolShutdown.ErrCode.ERR_USER_NOT_FOUND);
+  },
+});
+
+Clarinet.test({
+  name: "ccip-020: vote-on-proposal() fails with ERR_PROPOSAL_NOT_ACTIVE if called after the vote ends",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
+    const user2 = accounts.get("wallet_2")!;
+    const user3 = accounts.get("wallet_3");
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    const ccip020GracefulProtocolShutdown = new CCIP020GracefulProtocolShutdown(chain, sender);
+
+    const miningEntries = [25000000, 25000000];
+    const amountStacked = 500;
+    const lockPeriod = 10;
+
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+
+    // prepare for CCIP (sets up cities, tokens, and data)
+    const constructBlock = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP014_POX3_001);
+    constructBlock.receipts[0].result.expectOk().expectBool(true);
+
+    // mine to put funds in the mining treasury
+    const miningBlock = chain.mineBlock([ccd006CityMining.mine(sender, mia.cityName, miningEntries), ccd006CityMining.mine(sender, nyc.cityName, miningEntries)]);
+    for (let i = 0; i < miningBlock.receipts.length; i++) {
+      miningBlock.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // stack first cycle u1, last cycle u10
+    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, nyc.cityName, amountStacked, lockPeriod)]);
+    for (let i = 0; i < stackingBlock.receipts.length; i++) {
+      stackingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // progress the chain to cycle 5
+    // votes are counted in cycles 2-3
+    // past payouts tested for cycles 1-4
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
+
+    // execute yes and no vote
+    // user 1 and 2 vote yes
+    // user 3 votes no
+    const votingBlock = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user1, true), ccip020GracefulProtocolShutdown.voteOnProposal(user2, true), ccip020GracefulProtocolShutdown.voteOnProposal(user3, false)]);
+    for (let i = 0; i < votingBlock.receipts.length; i++) {
+      votingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // execute ccip-020, ending the vote
+    passProposal(chain, accounts, PROPOSALS.CCIP_020);
+
+    // act
+    // user 1 tries to reverse their vote
+    const votingBlockAfter = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user1, false)]);
+
+    // assert
+    votingBlockAfter.receipts[0].result.expectErr().expectUint(CCIP020GracefulProtocolShutdown.ErrCode.ERR_PROPOSAL_NOT_ACTIVE);
+  },
+});
+
+Clarinet.test({
+  name: "ccip-020: vote-on-proposal() fails with ERR_VOTED_ALREADY if user already voted with the same value",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
+    const user2 = accounts.get("wallet_2")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    const ccip020GracefulProtocolShutdown = new CCIP020GracefulProtocolShutdown(chain, sender);
+
+    const miningEntries = [25000000, 25000000];
+    const amountStacked = 500;
+    const lockPeriod = 10;
+
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+
+    // prepare for CCIP (sets up cities, tokens, and data)
+    const constructBlock = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP014_POX3_001);
+    constructBlock.receipts[0].result.expectOk().expectBool(true);
+
+    // mine to put funds in the mining treasury
+    const miningBlock = chain.mineBlock([ccd006CityMining.mine(sender, mia.cityName, miningEntries), ccd006CityMining.mine(sender, nyc.cityName, miningEntries)]);
+    for (let i = 0; i < miningBlock.receipts.length; i++) {
+      miningBlock.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // stack first cycle u1, last cycle u10
+    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked / 2, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked / 2, lockPeriod)]);
+    for (let i = 0; i < stackingBlock.receipts.length; i++) {
+      stackingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // progress the chain to cycle 5
+    // votes are counted in cycles 2-3
+    // past payouts tested for cycles 1-4
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
+
+    // vote yes
+    const votingBlock = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user1, true)]);
+    votingBlock.receipts[0].result.expectOk().expectBool(true);
+
+    // act
+    const votingBlockDupe = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user1, true)]);
+
+    // assert
+    votingBlockDupe.receipts[0].result.expectErr().expectUint(CCIP020GracefulProtocolShutdown.ErrCode.ERR_VOTED_ALREADY);
+  },
+});
+
+/*
+Clarinet.test({
+  name: "",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+
+    // act
+
+    // assert
+  }
+})
+*/
+
 // ccip-020: read-only functions return expected values before/after reversal
 // ccip-020: after upgrade mining disabled, stacking disabled, mining and stacking claims work as expected
