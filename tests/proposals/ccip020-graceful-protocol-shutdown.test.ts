@@ -4,6 +4,7 @@ import { CCD006CityMining } from "../../models/extensions/ccd006-citycoin-mining
 import { CCD007CityStacking } from "../../models/extensions/ccd007-citycoin-stacking.model.ts";
 import { CCIP020GracefulProtocolShutdown } from "../../models/proposals/ccip020-graceful-protocol-shutdown.model.ts";
 
+// helper function to print voting data for users 1, 2, and 3
 function printVotingData(ccd007: CCD007CityStacking, ccip020: CCIP020GracefulProtocolShutdown) {
   console.log("contract vote totals mia:");
   console.log(JSON.stringify(ccip020.getVoteTotalMia(), null, 2));
@@ -99,8 +100,10 @@ Clarinet.test({
 
     // stack first cycle u1, last cycle u10
     const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked, lockPeriod)]);
-    stackingBlock.receipts[0].result.expectOk().expectBool(true);
-    stackingBlock.receipts[1].result.expectOk().expectBool(true);
+    // make sure every transaction succeeded
+    for (let i = 0; i < stackingBlock.receipts.length; i++) {
+      stackingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
 
     // progress the chain to cycle 5
     // votes are counted in cycles 2-3
@@ -112,6 +115,9 @@ Clarinet.test({
 
     // execute two no votes
     const votingBlock = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user1, false), ccip020GracefulProtocolShutdown.voteOnProposal(user2, false)]);
+    for (let i = 0; i < votingBlock.receipts.length; i++) {
+      votingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
 
     /* double check voting data
     console.log(`voting block:\n${JSON.stringify(votingBlock, null, 2)}`);
@@ -171,6 +177,9 @@ Clarinet.test({
 
     // execute two yes votes with MIA only
     const votingBlock = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user1, true), ccip020GracefulProtocolShutdown.voteOnProposal(user2, true)]);
+    for (let i = 0; i < votingBlock.receipts.length; i++) {
+      votingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
 
     /* double check voting data
     console.log(`voting block:\n${JSON.stringify(votingBlock, null, 2)}`);
@@ -230,6 +239,9 @@ Clarinet.test({
 
     // execute two yes votes with MIA only
     const votingBlock = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user1, true), ccip020GracefulProtocolShutdown.voteOnProposal(user2, true)]);
+    for (let i = 0; i < votingBlock.receipts.length; i++) {
+      votingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
 
     /* double check voting data
     console.log(`voting block:\n${JSON.stringify(votingBlock, null, 2)}`);
@@ -287,6 +299,7 @@ Clarinet.test({
 
     // execute two yes votes with MIA only
     const votingBlock = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user1, true)]);
+    votingBlock.receipts[0].result.expectOk().expectBool(true);
 
     /* double check voting data
     console.log(`voting block:\n${JSON.stringify(votingBlock, null, 2)}`);
@@ -349,6 +362,9 @@ Clarinet.test({
 
     // execute two yes votes, one no vote
     const votingBlock = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user1, true), ccip020GracefulProtocolShutdown.voteOnProposal(user2, true), ccip020GracefulProtocolShutdown.voteOnProposal(user3, false)]);
+    for (let i = 0; i < votingBlock.receipts.length; i++) {
+      votingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
 
     /* double check voting data
     console.log(`voting block:\n${JSON.stringify(votingBlock, null, 2)}`);
@@ -396,7 +412,6 @@ Clarinet.test({
 
     // stack first cycle u1, last cycle u10
     const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, nyc.cityName, amountStacked, lockPeriod)]);
-    // for length of array, expectOk and expectBool(true)
     for (let i = 0; i < stackingBlock.receipts.length; i++) {
       stackingBlock.receipts[i].result.expectOk().expectBool(true);
     }
@@ -411,6 +426,9 @@ Clarinet.test({
 
     // execute two yes votes, one no vote
     const votingBlock = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user1, true), ccip020GracefulProtocolShutdown.voteOnProposal(user2, true), ccip020GracefulProtocolShutdown.voteOnProposal(user3, false)]);
+    for (let i = 0; i < votingBlock.receipts.length; i++) {
+      votingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
 
     /* double check voting data
     console.log("BEFORE REVERSAL");
@@ -419,6 +437,7 @@ Clarinet.test({
     */
 
     const votingBlockReversed = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user3, true)]);
+    votingBlockReversed.receipts[0].result.expectOk().expectBool(true);
 
     /* double check voting data
     console.log("AFTER REVERSAL");
