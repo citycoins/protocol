@@ -18,7 +18,7 @@
 (define-constant CCIP_020 {
   name: "Graceful Protocol Shutdown",
   link: "https://github.com/citycoins/governance/blob/feat/add-ccip-020/ccips/ccip-020/ccip-020-graceful-protocol-shutdown.md",
-  hash: "TBD",
+  hash: "f97f90b74d2e75b2481bbb5f768bc238ded68be0",
 })
 
 (define-constant MIA_ID u1) ;; (contract-call? .ccd004-city-registry get-city-id "mia")
