@@ -906,19 +906,23 @@ Clarinet.test({
     }
 
     // check stacking claim works for future cycles
-    const claimStackingRewardAfter = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, mia.cityName, 10), ccd007CityStacking.claimStackingReward(user1, nyc.cityName, 10), ccd007CityStacking.claimStackingReward(user2, mia.cityName, 10), ccd007CityStacking.claimStackingReward(user2, nyc.cityName, 10), ccd007CityStacking.claimStackingReward(user3, mia.cityName, 10), ccd007CityStacking.claimStackingReward(user3, nyc.cityName, 10)]);
-    for (let i = 0; i < claimStackingRewardAfter.receipts.length; i++) {
-      claimStackingRewardAfter.receipts[i].result.expectOk().expectBool(true);
+    const claimStackingRewardFuture = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, mia.cityName, 10), ccd007CityStacking.claimStackingReward(user1, nyc.cityName, 10), ccd007CityStacking.claimStackingReward(user2, mia.cityName, 10), ccd007CityStacking.claimStackingReward(user2, nyc.cityName, 10), ccd007CityStacking.claimStackingReward(user3, mia.cityName, 10), ccd007CityStacking.claimStackingReward(user3, nyc.cityName, 10)]);
+    for (let i = 0; i < claimStackingRewardFuture.receipts.length; i++) {
+      claimStackingRewardFuture.receipts[i].result.expectOk().expectBool(true);
     }
 
     // check that cycle 5 is not paid
     ccd007CityStacking.isCyclePaid(mia.cityId, 5).result.expectBool(false);
     ccd007CityStacking.isCyclePaid(nyc.cityId, 5).result.expectBool(false);
 
-    // TODO: check that stacking payout works for cycle 5
-    // use a test proposal contract to assign / pay out
+    // check that stacking payout works for cycle 5
+    passProposal(chain, accounts, PROPOSALS.TEST_CCIP020_GRACEFUL_PROTOCOL_SHUTDOWN_001);
 
-    // TODO: check that stacking claim works for cycle 5
+    // check that stacking claim works for cycle 5
+    const claimStackingRewardAfter = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, mia.cityName, 5), ccd007CityStacking.claimStackingReward(user1, nyc.cityName, 5), ccd007CityStacking.claimStackingReward(user2, mia.cityName, 5), ccd007CityStacking.claimStackingReward(user2, nyc.cityName, 5), ccd007CityStacking.claimStackingReward(user3, mia.cityName, 5), ccd007CityStacking.claimStackingReward(user3, nyc.cityName, 5)]);
+    for (let i = 0; i < claimStackingRewardAfter.receipts.length; i++) {
+      claimStackingRewardAfter.receipts[i].result.expectOk().expectBool(true);
+    }
   },
 });
 

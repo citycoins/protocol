@@ -118,6 +118,7 @@ export const PROPOSALS = {
   TEST_CCD011_STACKING_PAYOUTS_001: ADDRESS.concat(".test-ccd011-stacking-payouts-001"),
   TEST_CCIP014_POX3_001: ADDRESS.concat(".test-ccip014-pox-3-001"),
   TEST_CCIP014_POX3_002: ADDRESS.concat(".test-ccip014-pox-3-002"),
+  TEST_CCIP020_GRACEFUL_PROTOCOL_SHUTDOWN_001: ADDRESS.concat(".test-ccip020-shutdown-001"),
 };
 
 export const EXTERNAL = {

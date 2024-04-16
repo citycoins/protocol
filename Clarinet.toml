@@ -517,6 +517,11 @@ path = "tests/contracts/proposals/test-ccip014-pox-3-001.clar"
 [contracts.test-ccip014-pox-3-002]
 path = "tests/contracts/proposals/test-ccip014-pox-3-002.clar"
 
+[contracts.test-ccip020-shutdown-001]
+path = "tests/contracts/proposals/test-ccip020-shutdown-001.clar"
+clarity_version = 2
+epoch = 2.4
+
 [repl]
 costs_version = 2
 parser_version = 2
