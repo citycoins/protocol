@@ -263,8 +263,9 @@ Clarinet.test({
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
     const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
     // balance is 99999999999992 after ccip-014 deployment
-    const expectedBalance = 99999999999992;
-    const entries = [49999999999996, 49999999999996];
+    // new balance is 99997999999992 after ccip-020 test deployment
+    const expectedBalance = 99997999999992;
+    const entries = [49998999999996, 49998999999996];
 
     // act
 
