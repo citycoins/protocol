@@ -1,4 +1,4 @@
-import { Account, Clarinet, Chain } from "../../utils/deps.ts";
+import { Account, Clarinet, Chain, types } from "../../utils/deps.ts";
 import { constructAndPassProposal, passProposal, PROPOSALS, mia, nyc } from "../../utils/common.ts";
 import { CCD006CityMining } from "../../models/extensions/ccd006-citycoin-mining.model.ts";
 import { CCD007CityStacking } from "../../models/extensions/ccd007-citycoin-stacking.model.ts";
@@ -620,6 +620,170 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "ccip-020: read-only functions return expected values before/after reversal",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
+    const user2 = accounts.get("wallet_2")!;
+    const user3 = accounts.get("wallet_3")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    const ccip020GracefulProtocolShutdown = new CCIP020GracefulProtocolShutdown(chain, sender);
+
+    const amountStacked = 500;
+    const lockPeriod = 10;
+
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+    // register MIA and NYC
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCD004_CITY_REGISTRY_001);
+    // set activation details for MIA and NYC
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
+    // set activation status for MIA and NYC
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
+    // add stacking treasury in city data
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_008);
+    // mints mia and nyc to user1 and user2
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_009);
+    // adds the token contracts to the treasury allow lists
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_010);
+
+    // stack first cycle u1, last cycle u10
+    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, nyc.cityName, amountStacked, lockPeriod)]);
+    for (let i = 0; i < stackingBlock.receipts.length; i++) {
+      stackingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // progress the chain to cycle 5
+    // votes are counted in cycles 2-3
+    // past payouts tested for cycles 1-4
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
+
+    // act
+
+    // execute two yes votes, one no vote
+    const votingBlock = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user1, true), ccip020GracefulProtocolShutdown.voteOnProposal(user2, true), ccip020GracefulProtocolShutdown.voteOnProposal(user3, false)]);
+    for (let i = 0; i < votingBlock.receipts.length; i++) {
+      votingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // double check voting data
+    // console.log("AFTER REVERSAL");
+    // console.log(`voting block reversed:\n${JSON.stringify(votingBlock, null, 2)}`);
+    // printVotingData(ccd007CityStacking, ccip020GracefulProtocolShutdown);
+
+    // vote totals MIA
+    ccip020GracefulProtocolShutdown
+      .getVoteTotalMia()
+      .result.expectSome()
+      .expectTuple({ totalAmountNo: types.uint(0), totalAmountYes: types.uint(1335), totalVotesNo: types.uint(0), totalVotesYes: types.uint(3) });
+    // vote totals NYC
+    ccip020GracefulProtocolShutdown
+      .getVoteTotalNyc()
+      .result.expectSome()
+      .expectTuple({ totalAmountNo: types.uint(0), totalAmountYes: types.uint(1500), totalVotesNo: types.uint(0), totalVotesYes: types.uint(3) });
+    // vote totals in contract (MIA+NYC+Totals)
+    ccip020GracefulProtocolShutdown
+      .getVoteTotals()
+      .result.expectSome()
+      .expectTuple({ mia: { totalAmountNo: types.uint(0), totalAmountYes: types.uint(1335), totalVotesNo: types.uint(0), totalVotesYes: types.uint(3) }, nyc: { totalAmountNo: types.uint(0), totalAmountYes: types.uint(1500), totalVotesNo: types.uint(0), totalVotesYes: types.uint(3) }, totals: { totalAmountNo: types.uint(0), totalAmountYes: types.uint(2835), totalVotesNo: types.uint(0), totalVotesYes: types.uint(6) } });
+
+    // user 1 stats
+    ccip020GracefulProtocolShutdown
+      .getVoterInfo(1)
+      .result.expectSome()
+      .expectTuple({ mia: types.uint(445), nyc: types.uint(500), vote: types.bool(true) });
+    ccd007CityStacking.getStacker(mia.cityId, 2, 1).result.expectTuple({ claimable: types.uint(0), stacked: types.uint(500) });
+    ccip020GracefulProtocolShutdown.getMiaVote(1, false).result.expectSome().expectUint(445);
+    ccd007CityStacking.getStacker(nyc.cityId, 2, 1).result.expectTuple({ claimable: types.uint(0), stacked: types.uint(500) });
+    ccip020GracefulProtocolShutdown.getNycVote(1, false).result.expectSome().expectUint(500);
+
+    // user 2 stats
+    ccip020GracefulProtocolShutdown
+      .getVoterInfo(2)
+      .result.expectSome()
+      .expectTuple({ mia: types.uint(445), nyc: types.uint(500), vote: types.bool(true) });
+    ccd007CityStacking.getStacker(mia.cityId, 2, 2).result.expectTuple({ claimable: types.uint(0), stacked: types.uint(500) });
+    ccip020GracefulProtocolShutdown.getMiaVote(2, false).result.expectSome().expectUint(445);
+    ccd007CityStacking.getStacker(nyc.cityId, 2, 2).result.expectTuple({ claimable: types.uint(0), stacked: types.uint(500) });
+    ccip020GracefulProtocolShutdown.getNycVote(2, false).result.expectSome().expectUint(500);
+
+    // user 3 stats
+    ccip020GracefulProtocolShutdown
+      .getVoterInfo(3)
+      .result.expectSome()
+      .expectTuple({ mia: types.uint(445), nyc: types.uint(500), vote: types.bool(false) });
+    ccd007CityStacking.getStacker(mia.cityId, 2, 3).result.expectTuple({ claimable: types.uint(0), stacked: types.uint(500) });
+    ccip020GracefulProtocolShutdown.getMiaVote(3, false).result.expectSome().expectUint(445);
+    ccd007CityStacking.getStacker(nyc.cityId, 2, 3).result.expectTuple({ claimable: types.uint(0), stacked: types.uint(500) });
+    ccip020GracefulProtocolShutdown.getNycVote(3, false).result.expectSome().expectUint(500);
+
+    const votingBlockReversed = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user3, true)]);
+    votingBlockReversed.receipts[0].result.expectOk().expectBool(true);
+
+    // vote totals MIA
+    ccip020GracefulProtocolShutdown
+      .getVoteTotalMia()
+      .result.expectSome()
+      .expectTuple({ totalAmountNo: types.uint(0), totalAmountYes: types.uint(1335), totalVotesNo: types.uint(0), totalVotesYes: types.uint(3) });
+    // vote totals NYC
+    ccip020GracefulProtocolShutdown
+      .getVoteTotalNyc()
+      .result.expectSome()
+      .expectTuple({ totalAmountNo: types.uint(0), totalAmountYes: types.uint(1500), totalVotesNo: types.uint(0), totalVotesYes: types.uint(3) });
+    // vote totals in contract (MIA+NYC+Totals)
+    ccip020GracefulProtocolShutdown
+      .getVoteTotals()
+      .result.expectSome()
+      .expectTuple({ mia: { totalAmountNo: types.uint(0), totalAmountYes: types.uint(1335), totalVotesNo: types.uint(0), totalVotesYes: types.uint(3) }, nyc: { totalAmountNo: types.uint(0), totalAmountYes: types.uint(1500), totalVotesNo: types.uint(0), totalVotesYes: types.uint(3) }, totals: { totalAmountNo: types.uint(0), totalAmountYes: types.uint(2835), totalVotesNo: types.uint(0), totalVotesYes: types.uint(6) } });
+
+    // user 1 stats
+    ccip020GracefulProtocolShutdown
+      .getVoterInfo(1)
+      .result.expectSome()
+      .expectTuple({ mia: types.uint(445), nyc: types.uint(500), vote: types.bool(true) });
+    ccd007CityStacking.getStacker(mia.cityId, 2, 1).result.expectTuple({ claimable: types.uint(0), stacked: types.uint(500) });
+    ccip020GracefulProtocolShutdown.getMiaVote(1, false).result.expectSome().expectUint(445);
+    ccd007CityStacking.getStacker(nyc.cityId, 2, 1).result.expectTuple({ claimable: types.uint(0), stacked: types.uint(500) });
+    ccip020GracefulProtocolShutdown.getNycVote(1, false).result.expectSome().expectUint(500);
+
+    // user 2 stats
+    ccip020GracefulProtocolShutdown
+      .getVoterInfo(2)
+      .result.expectSome()
+      .expectTuple({ mia: types.uint(445), nyc: types.uint(500), vote: types.bool(true) });
+    ccd007CityStacking.getStacker(mia.cityId, 2, 2).result.expectTuple({ claimable: types.uint(0), stacked: types.uint(500) });
+    ccip020GracefulProtocolShutdown.getMiaVote(2, false).result.expectSome().expectUint(445);
+    ccd007CityStacking.getStacker(nyc.cityId, 2, 2).result.expectTuple({ claimable: types.uint(0), stacked: types.uint(500) });
+    ccip020GracefulProtocolShutdown.getNycVote(2, false).result.expectSome().expectUint(500);
+
+    // user 3 stats
+    ccip020GracefulProtocolShutdown
+      .getVoterInfo(3)
+      .result.expectSome()
+      .expectTuple({ mia: types.uint(445), nyc: types.uint(500), vote: types.bool(true) });
+    ccd007CityStacking.getStacker(mia.cityId, 2, 3).result.expectTuple({ claimable: types.uint(0), stacked: types.uint(500) });
+    ccip020GracefulProtocolShutdown.getMiaVote(3, false).result.expectSome().expectUint(445);
+    ccd007CityStacking.getStacker(nyc.cityId, 2, 3).result.expectTuple({ claimable: types.uint(0), stacked: types.uint(500) });
+    ccip020GracefulProtocolShutdown.getNycVote(3, false).result.expectSome().expectUint(500);
+
+    // double check voting data
+    //console.log("AFTER REVERSAL");
+    //console.log(`voting block reversed:\n${JSON.stringify(votingBlockReversed, null, 2)}`);
+    //printVotingData(ccd007CityStacking, ccip020GracefulProtocolShutdown);
+
+    // execute ccip-020
+    const block = passProposal(chain, accounts, PROPOSALS.CCIP_020);
+
+    // assert
+    block.receipts[2].result.expectOk().expectUint(3);
+  },
+});
+
 /*
 Clarinet.test({
   name: "",
@@ -634,4 +798,4 @@ Clarinet.test({
 */
 
 // ccip-020: read-only functions return expected values before/after reversal
-// ccip-020: after upgrade mining disabled, stacking disabled, mining and stacking claims work as expected
+// ccip-020: after upgrade mining disabled, stacking disabled, mining and stacking claims work as expected, cycle payout works as expected
