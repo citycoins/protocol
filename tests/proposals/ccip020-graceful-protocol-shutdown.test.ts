@@ -1,8 +1,9 @@
 import { Account, Clarinet, Chain, types } from "../../utils/deps.ts";
-import { constructAndPassProposal, passProposal, PROPOSALS, mia, nyc } from "../../utils/common.ts";
+import { constructAndPassProposal, passProposal, PROPOSALS, mia, nyc, CCD006_REWARD_DELAY } from "../../utils/common.ts";
 import { CCD006CityMining } from "../../models/extensions/ccd006-citycoin-mining.model.ts";
 import { CCD007CityStacking } from "../../models/extensions/ccd007-citycoin-stacking.model.ts";
 import { CCIP020GracefulProtocolShutdown } from "../../models/proposals/ccip020-graceful-protocol-shutdown.model.ts";
+import { CCIP014Pox3 } from "../../models/proposals/ccip014-pox-3.model.ts";
 
 // helper function to print voting data for users 1, 2, and 3
 function printVotingData(ccd007: CCD007CityStacking, ccip020: CCIP020GracefulProtocolShutdown) {
@@ -784,6 +785,143 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "ccip-020: after upgrade mining/stacking disabled, mining and stacking claims work, cycle payout works as expected",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
+    const user2 = accounts.get("wallet_2")!;
+    const user3 = accounts.get("wallet_3")!;
+    const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
+    const ccd006CityMiningV2 = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining-v2");
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    const ccip014pox3 = new CCIP014Pox3(chain, sender);
+    const ccip020GracefulProtocolShutdown = new CCIP020GracefulProtocolShutdown(chain, sender);
+
+    const miningEntries = [25000000, 25000000];
+    const amountStacked = 500;
+    const lockPeriod = 10;
+
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+
+    // prepare for CCIP (sets up cities, tokens, and data)
+    const constructBlock = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP014_POX3_001);
+    constructBlock.receipts[0].result.expectOk().expectBool(true);
+
+    // prepare for the CCIP (sets up coinbase amounts, thresholds, details)
+    const constructBlock2 = passProposal(chain, accounts, PROPOSALS.TEST_CCIP014_POX3_002);
+    constructBlock2.receipts[2].result.expectOk().expectUint(3);
+
+    // mine to put funds in the mining treasury
+    const miningBlockBefore = chain.mineBlock([ccd006CityMining.mine(sender, mia.cityName, miningEntries), ccd006CityMining.mine(sender, nyc.cityName, miningEntries)]);
+    for (let i = 0; i < miningBlockBefore.receipts.length; i++) {
+      miningBlockBefore.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // stack first cycle u1, last cycle u10
+    // 3 users for MIA/NYC
+    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, mia.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, nyc.cityName, amountStacked, lockPeriod)]);
+    for (let i = 0; i < stackingBlock.receipts.length; i++) {
+      stackingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // progress the chain to cycle 5
+    // votes are counted in cycles 2-3
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
+
+    // execute single yes vote on ccip-014
+    const votingBlock014 = chain.mineBlock([ccip014pox3.voteOnProposal(user1, true)]);
+    votingBlock014.receipts[0].result.expectOk().expectBool(true);
+
+    // execute ccip-014
+    const executeBlock = passProposal(chain, accounts, PROPOSALS.CCIP_014);
+    executeBlock.receipts[2].result.expectOk().expectUint(3);
+
+    const miningBlockV1 = chain.mineBlock([ccd006CityMining.mine(sender, mia.cityName, miningEntries), ccd006CityMining.mine(sender, nyc.cityName, miningEntries)]);
+    for (let i = 0; i < miningBlockV1.receipts.length; i++) {
+      miningBlockV1.receipts[i].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINING_DISABLED);
+    }
+
+    const miningBlockV2 = chain.mineBlock([ccd006CityMiningV2.mine(sender, mia.cityName, miningEntries), ccd006CityMiningV2.mine(sender, nyc.cityName, miningEntries)]);
+    for (let i = 0; i < miningBlockV2.receipts.length; i++) {
+      miningBlockV2.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // execute two yes votes, one no vote
+    const votingBlock = chain.mineBlock([ccip020GracefulProtocolShutdown.voteOnProposal(user1, true), ccip020GracefulProtocolShutdown.voteOnProposal(user2, true), ccip020GracefulProtocolShutdown.voteOnProposal(user3, false)]);
+    for (let i = 0; i < votingBlock.receipts.length; i++) {
+      votingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    /* double check voting data
+    console.log(`voting block:\n${JSON.stringify(votingBlock, null, 2)}`);
+    printVotingData(ccd007CityStacking, ccip020GracefulProtocolShutdown);
+    */
+
+    // act
+
+    // execute ccip-020
+    const block = passProposal(chain, accounts, PROPOSALS.CCIP_020);
+    block.receipts[2].result.expectOk().expectUint(3);
+
+    // assert
+
+    // check that mining is disabled in V1
+    const miningBlockDisabled = chain.mineBlock([ccd006CityMining.mine(sender, mia.cityName, miningEntries), ccd006CityMining.mine(sender, nyc.cityName, miningEntries)]);
+    for (let i = 0; i < miningBlockDisabled.receipts.length; i++) {
+      miningBlockDisabled.receipts[i].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINING_DISABLED);
+    }
+
+    // check that mining is disabled in V2
+    const miningBlockDisabledV2 = chain.mineBlock([ccd006CityMiningV2.mine(sender, mia.cityName, miningEntries), ccd006CityMiningV2.mine(sender, nyc.cityName, miningEntries)]);
+    for (let i = 0; i < miningBlockDisabledV2.receipts.length; i++) {
+      miningBlockDisabledV2.receipts[i].result.expectErr().expectUint(CCD006CityMining.ErrCode.ERR_MINING_DISABLED);
+    }
+
+    // fast forward so claims are valid
+    chain.mineEmptyBlock(CCD006_REWARD_DELAY + 1);
+
+    // check that mining claim still works in v1
+    const miningClaimV1Height = miningBlockBefore.height - 1;
+    const miningClaimV1 = chain.mineBlock([ccd006CityMining.claimMiningReward(sender, mia.cityName, miningClaimV1Height), ccd006CityMining.claimMiningReward(sender, nyc.cityName, miningClaimV1Height)]);
+    for (let i = 0; i < miningClaimV1.receipts.length; i++) {
+      miningClaimV1.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // check that mining claim still works in v2
+    const miningClaimV2Height = miningBlockV2.height - 1;
+    const miningClaimV2 = chain.mineBlock([ccd006CityMiningV2.claimMiningReward(sender, mia.cityName, miningClaimV2Height), ccd006CityMiningV2.claimMiningReward(sender, nyc.cityName, miningClaimV2Height)]);
+    for (let i = 0; i < miningClaimV2.receipts.length; i++) {
+      miningClaimV2.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // is-cycle-paid returns true for cycles 1-4 for MIA/NYC
+    for (let i = 1; i <= 4; i++) {
+      ccd007CityStacking.isCyclePaid(mia.cityId, i).result.expectBool(true);
+      ccd007CityStacking.isCyclePaid(nyc.cityId, i).result.expectBool(true);
+    }
+
+    // check stacking claim works for future cycles
+    const claimStackingRewardAfter = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, mia.cityName, 10), ccd007CityStacking.claimStackingReward(user1, nyc.cityName, 10), ccd007CityStacking.claimStackingReward(user2, mia.cityName, 10), ccd007CityStacking.claimStackingReward(user2, nyc.cityName, 10), ccd007CityStacking.claimStackingReward(user3, mia.cityName, 10), ccd007CityStacking.claimStackingReward(user3, nyc.cityName, 10)]);
+    for (let i = 0; i < claimStackingRewardAfter.receipts.length; i++) {
+      claimStackingRewardAfter.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // check that cycle 5 is not paid
+    ccd007CityStacking.isCyclePaid(mia.cityId, 5).result.expectBool(false);
+    ccd007CityStacking.isCyclePaid(nyc.cityId, 5).result.expectBool(false);
+
+    // TODO: check that stacking payout works for cycle 5
+    // use a test proposal contract to assign / pay out
+
+    // TODO: check that stacking claim works for cycle 5
+  },
+});
+
 /*
 Clarinet.test({
   name: "",
@@ -796,6 +934,3 @@ Clarinet.test({
   }
 })
 */
-
-// ccip-020: read-only functions return expected values before/after reversal
-// ccip-020: after upgrade mining disabled, stacking disabled, mining and stacking claims work as expected, cycle payout works as expected
