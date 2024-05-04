@@ -5,30 +5,30 @@
 
 ;; ERRORS
 
-(define-constant ERR_PANIC (err u1400))
-(define-constant ERR_VOTED_ALREADY (err u1401))
-(define-constant ERR_NOTHING_STACKED (err u1402))
-(define-constant ERR_USER_NOT_FOUND (err u1403))
-(define-constant ERR_PROPOSAL_NOT_ACTIVE (err u1404))
-(define-constant ERR_PROPOSAL_STILL_ACTIVE (err u1405))
-(define-constant ERR_NO_CITY_ID (err u1406))
-(define-constant ERR_VOTE_FAILED (err u1407))
+(define-constant ERR_PANIC (err u2100))
+(define-constant ERR_VOTED_ALREADY (err u2101))
+(define-constant ERR_NOTHING_STACKED (err u2102))
+(define-constant ERR_USER_NOT_FOUND (err u2103))
+(define-constant ERR_PROPOSAL_NOT_ACTIVE (err u2104))
+(define-constant ERR_PROPOSAL_STILL_ACTIVE (err u2105))
+(define-constant ERR_NO_CITY_ID (err u2106))
+(define-constant ERR_VOTE_FAILED (err u2107))
 
 ;; CONSTANTS
 
 (define-constant SELF (as-contract tx-sender))
-(define-constant MISSED_PAYOUT u1)
-(define-constant CCIP_019 {
-  name: "Upgrade for Nakamoto",
-  link: "",
-  hash: "",
+(define-constant CCIP_021 {
+  name: "Extend Direct Execute Sunset Period 2",
+  link: "https://github.com/citycoins/governance/blob/feat/ccip-21/ccips/ccip-021/ccip-021-extend-direct-execute-sunset-period-2.md",
+  hash: "3af7199173df90463a0ba65541b53fa74e0914db",
 })
+(define-constant SUNSET_BLOCK u173748)
 
 (define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
 (define-constant MIA_SCALE_BASE (pow u10 u4)) ;; 4 decimal places
-(define-constant MIA_SCALE_FACTOR u8760) ;; 0.8760 or 87.60%
+(define-constant MIA_SCALE_FACTOR u8916) ;; 0.8916 or 89.16%
 ;; MIA votes scaled to make 1 MIA = 1 NYC
-;; full calculation available in CCIP-014
+;; full calculation available in CCIP-021
 
 ;; DATA VARS
 
@@ -60,49 +60,14 @@
 ;; PUBLIC FUNCTIONS
 
 (define-public (execute (sender principal))
-  (let
-    (
-      (miaId (unwrap! (contract-call? .ccd004-city-registry get-city-id "mia") ERR_PANIC))
-      (nycId (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_PANIC))
-      (miaBalance (contract-call? .ccd002-treasury-mia-mining-v2 get-balance-stx))
-      (nycBalance (contract-call? .ccd002-treasury-nyc-mining-v2 get-balance-stx))
-    )
-
+  (begin
     ;; check vote complete/passed
     (try! (is-executable))
-
     ;; update vote variables
     (var-set voteEnd block-height)
     (var-set voteActive false)
-
-    ;; enable new treasuries in the DAO
-    (try! (contract-call? .base-dao set-extensions
-      (list
-        {extension: .ccd002-treasury-mia-mining-v3, enabled: true}
-        {extension: .ccd002-treasury-nyc-mining-v3, enabled: true}
-      )
-    ))
-
-    ;; allow MIA/NYC in respective treasuries
-    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
-    ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-    (try! (contract-call? .ccd002-treasury-mia-mining-v3 set-allowed 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2 true))
-    (try! (contract-call? .ccd002-treasury-nyc-mining-v3 set-allowed 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2 true))
-
-    ;; transfer funds to new treasury extensions
-    (try! (contract-call? .ccd002-treasury-mia-mining-v2 withdraw-stx miaBalance .ccd002-treasury-mia-mining-v3))
-    (try! (contract-call? .ccd002-treasury-nyc-mining-v2 withdraw-stx nycBalance .ccd002-treasury-nyc-mining-v3))
-
-    ;; delegate stack the STX in the mining treasuries (up to 50M STX each)
-    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox-fast-pool-v2
-    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox-fast-pool-v2
-    (try! (contract-call? .ccd002-treasury-mia-mining-v3 delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
-    (try! (contract-call? .ccd002-treasury-nyc-mining-v3 delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
-
-    ;; add treasuries to ccd005-city-data
-    (try! (contract-call? .ccd005-city-data add-treasury miaId .ccd002-treasury-mia-mining-v3 "mining-v2"))
-    (try! (contract-call? .ccd005-city-data add-treasury nycId .ccd002-treasury-nyc-mining-v3 "mining-v2"))
-
+    ;; extend sunset height in ccd001-direct-execute
+    (try! (contract-call? .ccd001-direct-execute set-sunset-block SUNSET_BLOCK))
     (ok true)
   )
 )
@@ -116,10 +81,6 @@
       (voterRecord (map-get? UserVotes voterId))
     )
     ;; check that proposal is active
-    ;;(asserts! (and
-    ;;  (>= block-height (var-get voteStart))
-    ;;  (<= block-height (var-get voteEnd)))
-    ;;  ERR_PROPOSAL_NOT_ACTIVE)
     (asserts! (var-get voteActive) ERR_PROPOSAL_NOT_ACTIVE)
     ;; check if vote record exists
     (match voterRecord record
@@ -188,11 +149,6 @@
 
 (define-read-only (is-executable)
   (begin
-    ;; additional checks could be added here in future proposals
-    ;; line below revised since vote will start at deployed height
-    ;; (asserts! (>= block-height (var-get voteStart)) ERR_PROPOSAL_NOT_ACTIVE)
-    ;; line below revised since vote will end when proposal executes
-    ;; (asserts! (>= block-height (var-get voteEnd)) ERR_PROPOSAL_STILL_ACTIVE)
     ;; check that there is at least one vote
     (asserts! (or (> (var-get yesVotes) u0) (> (var-get noVotes) u0)) ERR_VOTE_FAILED)
     ;; check that yes total is more than no total
@@ -206,7 +162,7 @@
 )
 
 (define-read-only (get-proposal-info)
-  (some CCIP_019)
+  (some CCIP_021)
 )
 
 (define-read-only (get-vote-period)
@@ -243,22 +199,22 @@
 (define-read-only (get-mia-vote (cityId uint) (userId uint) (scaled bool))
   (let
     (
-      ;; MAINNET: MIA cycle 54 / first block BTC 779,450 STX 97,453
+      ;; MAINNET: MIA cycle 80 / first block BTC 834,050 STX 142,301
       ;; cycle 2 / u4500 used in tests
-      (cycle54Hash (unwrap! (get-block-hash u4500) none))
-      (cycle54Data (at-block cycle54Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
-      (cycle54Amount (get stacked cycle54Data))
-      ;; MAINNET: MIA cycle 55 / first block BTC 781,550 STX 99,112
+      (cycle80Hash (unwrap! (get-block-hash u4500) none))
+      (cycle80Data (at-block cycle80Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
+      (cycle80Amount (get stacked cycle80Data))
+      ;; MAINNET: MIA cycle 81 / first block BTC 836,150 STX 143,989
       ;; cycle 3 / u6600 used in tests
-      (cycle55Hash (unwrap! (get-block-hash u6600) none))
-      (cycle55Data (at-block cycle55Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
-      (cycle55Amount (get stacked cycle55Data))
+      (cycle81Hash (unwrap! (get-block-hash u6600) none))
+      (cycle81Data (at-block cycle81Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
+      (cycle81Amount (get stacked cycle81Data))
       ;; MIA vote calculation
-      (avgStacked (/ (+ (scale-up cycle54Amount) (scale-up cycle55Amount)) u2))
+      (avgStacked (/ (+ (scale-up cycle80Amount) (scale-up cycle81Amount)) u2))
       (scaledVote (/ (* avgStacked MIA_SCALE_FACTOR) MIA_SCALE_BASE))
     )
     ;; check that at least one value is positive
-    (asserts! (or (> cycle54Amount u0) (> cycle55Amount u0)) none)
+    (asserts! (or (> cycle80Amount u0) (> cycle81Amount u0)) none)
     ;; return scaled or unscaled value
     (if scaled (some scaledVote) (some (/ scaledVote VOTE_SCALE_FACTOR)))
   )
@@ -270,21 +226,21 @@
 (define-read-only (get-nyc-vote (cityId uint) (userId uint) (scaled bool))
   (let
     (
-      ;; NYC cycle 54 / first block BTC 779,450 STX 97,453
+      ;; NYC cycle 80 / first block BTC 834,050 STX 142,301
       ;; cycle 2 / u4500 used in tests
-      (cycle54Hash (unwrap! (get-block-hash u4500) none))
-      (cycle54Data (at-block cycle54Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
-      (cycle54Amount (get stacked cycle54Data))
-      ;; NYC cycle 55 / first block BTC 781,550 STX 99,112
+      (cycle80Hash (unwrap! (get-block-hash u4500) none))
+      (cycle80Data (at-block cycle80Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)))
+      (cycle80Amount (get stacked cycle80Data))
+      ;; NYC cycle 81 / first block BTC 836,150 STX 143,989
       ;; cycle 3 / u6600 used in tests
-      (cycle55Hash (unwrap! (get-block-hash u6600) none))
-      (cycle55Data (at-block cycle55Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
-      (cycle55Amount (get stacked cycle55Data))
+      (cycle81Hash (unwrap! (get-block-hash u6600) none))
+      (cycle81Data (at-block cycle81Hash (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)))
+      (cycle81Amount (get stacked cycle81Data))
       ;; NYC vote calculation
-      (scaledVote (/ (+ (scale-up cycle54Amount) (scale-up cycle55Amount)) u2))
+      (scaledVote (/ (+ (scale-up cycle80Amount) (scale-up cycle81Amount)) u2))
     )
     ;; check that at least one value is positive
-    (asserts! (or (> cycle54Amount u0) (> cycle55Amount u0)) none)
+    (asserts! (or (> cycle80Amount u0) (> cycle81Amount u0)) none)
     ;; return scaled or unscaled value
     (if scaled (some scaledVote) (some (/ scaledVote VOTE_SCALE_FACTOR)))
   )
@@ -307,7 +263,3 @@
   (/ a VOTE_SCALE_FACTOR)
 )
 
-;; INITIALIZATION
-
-;; fund proposal with 8 uSTX for payouts from deployer
-(stx-transfer? (* MISSED_PAYOUT u8) tx-sender (as-contract tx-sender))
