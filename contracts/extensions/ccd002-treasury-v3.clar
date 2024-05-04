@@ -177,7 +177,7 @@
     ;; MAINNET: 'SP000000000000000000002Q6VF78.pox-4
     ;; TESTNET: 'ST000000000000000000002AMW42H.pox-4
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-4 revoke-delegate-stx))
-      success (ok success)
+      success (begin (print success) (ok true))
       err (err (to-uint err))
     )
   )
