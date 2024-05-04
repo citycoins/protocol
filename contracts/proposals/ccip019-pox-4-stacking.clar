@@ -32,6 +32,7 @@
       (list
         {extension: .ccd002-treasury-mia-mining-v3, enabled: true}
         {extension: .ccd002-treasury-nyc-mining-v3, enabled: true}
+        {extension: .ccd012-rewards-treasury, enabled: true}
       )
     ))
 

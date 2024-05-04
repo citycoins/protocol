@@ -94,6 +94,8 @@ path = "contracts/extensions/ccd002-treasury-v2.clar"
 
 [contracts.ccd002-treasury-mia-mining-v3]
 path = "contracts/extensions/ccd002-treasury-v3.clar"
+clarity_version = 2
+epoch = 2.5
 
 [contracts.ccd002-treasury-mia-stacking]
 path = "contracts/extensions/ccd002-treasury.clar"
@@ -106,6 +108,8 @@ path = "contracts/extensions/ccd002-treasury-v2.clar"
 
 [contracts.ccd002-treasury-nyc-mining-v3]
 path = "contracts/extensions/ccd002-treasury-v3.clar"
+clarity_version = 2
+epoch = 2.5
 
 [contracts.ccd002-treasury-nyc-stacking]
 path = "contracts/extensions/ccd002-treasury.clar"
@@ -139,6 +143,11 @@ path = "contracts/extensions/ccd010-core-v2-adapter.clar"
 
 [contracts.ccd011-stacking-payouts]
 path = "contracts/extensions/ccd011-stacking-payouts.clar"
+
+[contracts.ccip019-rewards-treasury]
+path = "contracts/extensions/ccip019-rewards-treasury.clar"
+clarity_version = 2
+epoch = 2.5
 
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
@@ -201,6 +210,12 @@ path = "contracts/traits/ccd007-trait.clar"
 
 [contracts.ccip015-trait]
 path = "contracts/traits/ccip015-trait.clar"
+
+[contracts.ccip019-proxy-trait]
+path = "contracts/traits/ccip019-proxy-trait.clar"
+clarity_version = 2
+epoch = 2.5
+
 
 # CITYCOINS EXTERNAL CONTRACTS
 
