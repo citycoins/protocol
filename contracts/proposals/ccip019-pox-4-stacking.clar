@@ -5,13 +5,6 @@
 ;; ERRORS
 
 (define-constant ERR_PANIC (err u1400))
-(define-constant ERR_VOTED_ALREADY (err u1401))
-(define-constant ERR_NOTHING_STACKED (err u1402))
-(define-constant ERR_USER_NOT_FOUND (err u1403))
-(define-constant ERR_PROPOSAL_NOT_ACTIVE (err u1404))
-(define-constant ERR_PROPOSAL_STILL_ACTIVE (err u1405))
-(define-constant ERR_NO_CITY_ID (err u1406))
-(define-constant ERR_VOTE_FAILED (err u1407))
 
 ;; CONSTANTS
 
@@ -34,9 +27,6 @@
       (nycBalance (contract-call? .ccd002-treasury-nyc-mining-v2 get-balance-stx))
     )
 
-    ;; check vote complete/passed
-    (try! (is-executable))
-
     ;; enable new treasuries in the DAO
     (try! (contract-call? .base-dao set-extensions
       (list
@@ -56,8 +46,8 @@
     (try! (contract-call? .ccd002-treasury-nyc-mining-v2 withdraw-stx nycBalance .ccd002-treasury-nyc-mining-v3))
 
     ;; delegate stack the STX in the mining treasuries (up to 50M STX each)
-    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox-fast-pool-v2
-    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox-fast-pool-v2
+    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3
+    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3
     (try! (contract-call? .ccd002-treasury-mia-mining-v3 delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
     (try! (contract-call? .ccd002-treasury-nyc-mining-v3 delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
 
@@ -70,12 +60,6 @@
 )
 
 ;; READ ONLY FUNCTIONS
-
-(define-read-only (is-executable)
-  (begin
-    (ok true)
-  )
-)
 
 (define-read-only (get-proposal-info)
   (some CCIP_019)
