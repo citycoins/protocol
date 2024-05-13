@@ -1,4 +1,4 @@
-;; Title: CCD012 - CityCoin Redemption (MIA)
+;; Title: CCD012 - CityCoin Redemption (NYC)
 ;; Version: 1.0.0
 ;; Summary: A redemption extension that allows users to redeem CityCoins for a portion of the city treasury.
 ;; Description: An extension that provides the ability to claim a portion of the city treasury in exchange for CityCoins.
@@ -55,38 +55,38 @@
   (let
     (
       ;; MAINNET: TODO
-      (miaTotalSupplyV1 (unwrap! (contract-call? .miamicoin-token get-total-supply) ERR_PANIC))
-      (miaTotalSupplyV2 (unwrap! (contract-call? .miamicoin-token-v2 get-total-supply) ERR_PANIC))
-      (miaTotalSupply (+ (* miaTotalSupplyV1 MICRO_CITYCOINS) miaTotalSupplyV2))
-      (miaRedemptionBalance (as-contract (stx-get-balance tx-sender)))
+      (nycTotalSupplyV1 (unwrap! (contract-call? .newyorkcitycoin-token get-total-supply) ERR_PANIC))
+      (nycTotalSupplyV2 (unwrap! (contract-call? .newyorkcitycoin-token-v2 get-total-supply) ERR_PANIC))
+      (nycTotalSupply (+ (* nycTotalSupplyV1 MICRO_CITYCOINS) nycTotalSupplyV2))
+      (nycRedemptionBalance (as-contract (stx-get-balance tx-sender)))
     )
     ;; check if sender is DAO or extension
     (try! (is-dao-or-extension))
     ;; check that total supply is greater than 0
-    (asserts! (and (> miaTotalSupplyV1 u0) (> miaTotalSupplyV2 u0)) ERR_GETTING_TOTAL_SUPPLY)
+    (asserts! (and (> nycTotalSupplyV1 u0) (> nycTotalSupplyV2 u0)) ERR_GETTING_TOTAL_SUPPLY)
     ;; check that redemption balance is greater than 0
-    (asserts! (> miaRedemptionBalance u0) ERR_GETTING_REDEMPTION_BALANCE)
+    (asserts! (> nycRedemptionBalance u0) ERR_GETTING_REDEMPTION_BALANCE)
     ;; check if redemptions are already enabled
     (asserts! (not (var-get redemptionsEnabled)) ERR_ALREADY_ENABLED)
     ;; record current block height
     (var-set blockHeight block-height)
     ;; record total supply at block height
-    (var-set totalSupply miaTotalSupply)
+    (var-set totalSupply nycTotalSupply)
     ;; record contract balance at block height
-    (var-set contractBalance miaRedemptionBalance)
+    (var-set contractBalance nycRedemptionBalance)
     ;; calculate redemption ratio
-    (var-set redemptionRatio (/ miaRedemptionBalance miaTotalSupply))
+    (var-set redemptionRatio (/ nycRedemptionBalance nycTotalSupply))
     ;; set redemptionsEnabled to true, can only run once
     (ok (var-set redemptionsEnabled true))
   )
 )
 
-(define-public (redeem-mia)
+(define-public (redeem-nyc)
   (let
     (
       (userAddress tx-sender)
-      (balanceV1 (unwrap! (contract-call? .miamicoin-token get-balance userAddress) ERR_BALANCE_NOT_FOUND))
-      (balanceV2 (unwrap! (contract-call? .miamicoin-token-v2 get-balance userAddress) ERR_BALANCE_NOT_FOUND))
+      (balanceV1 (unwrap! (contract-call? .newyorkcitycoin-token get-balance userAddress) ERR_BALANCE_NOT_FOUND))
+      (balanceV2 (unwrap! (contract-call? .newyorkcitycoin-token-v2 get-balance userAddress) ERR_BALANCE_NOT_FOUND))
       (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
       (redemptionAmount (unwrap! (get-redemption-for-balance totalBalance) ERR_NOTHING_TO_REDEEM))
       (redemptionClaims (default-to u0 (get-redemption-amount-claimed userAddress)))
@@ -95,9 +95,9 @@
     (asserts! (var-get redemptionsEnabled) ERR_NOT_ENABLED)
     ;; check that redemption amount is > 0
     (asserts! (> redemptionAmount u0) ERR_NOTHING_TO_REDEEM)
-    ;; burn MIA
-    (and (> u0 balanceV1) (try! (contract-call? .miamicoin-core-v1-patch burn-mia-v1 balanceV1 userAddress)))
-    (and (> u0 balanceV2) (try! (contract-call? .miamicoin-token-v2 burn balanceV2 userAddress)))
+    ;; burn NYC
+    (and (> u0 balanceV1) (try! (contract-call? .newyorkcitycoin-token burn balanceV1 userAddress)))
+    (and (> u0 balanceV2) (try! (contract-call? .newyorkcitycoin-token-v2 burn balanceV2 userAddress)))
     ;; transfer STX
     (try! (as-contract (stx-transfer? redemptionAmount tx-sender userAddress)))
     ;; update redemption claims
@@ -140,11 +140,11 @@
   }
 )
 
-(define-read-only (get-mia-balances)
+(define-read-only (get-nyc-balances)
   (let
     (
-      (balanceV1 (unwrap! (contract-call? .miamicoin-token get-balance tx-sender) ERR_BALANCE_NOT_FOUND))
-      (balanceV2 (unwrap! (contract-call? .miamicoin-token-v2 get-balance tx-sender) ERR_BALANCE_NOT_FOUND))
+      (balanceV1 (unwrap! (contract-call? .newyorkcitycoin-token get-balance tx-sender) ERR_BALANCE_NOT_FOUND))
+      (balanceV2 (unwrap! (contract-call? .newyorkcitycoin-token-v2 get-balance tx-sender) ERR_BALANCE_NOT_FOUND))
       (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
     )
     (ok {
@@ -170,13 +170,13 @@
 (define-read-only (get-user-redemption-info)
   (let
     (
-      (miaBalances (try! (get-mia-balances)))
-      (redemptionAmount (default-to u0 (get-redemption-for-balance (get totalBalance miaBalances))))
+      (nycBalances (try! (get-nyc-balances)))
+      (redemptionAmount (default-to u0 (get-redemption-for-balance (get totalBalance nycBalances))))
       (redemptionClaims (default-to u0 (get-redemption-amount-claimed tx-sender)))
     )
     (ok {
       address: tx-sender,
-      miaBalances: miaBalances,
+      nycBalances: nycBalances,
       redemptionAmount: redemptionAmount,
       redemptionClaims: redemptionClaims
     })
