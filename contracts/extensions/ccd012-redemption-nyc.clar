@@ -71,7 +71,7 @@
     ;; check if redemptions are already enabled
     (asserts! (not (var-get redemptionsEnabled)) ERR_ALREADY_ENABLED)
     ;; record current block height
-    (var-set blockHeight block-height)
+    (var-set blockHeight block-height) ;; TODO: stacks-block-height
     ;; record total supply at block height
     (var-set totalSupply nycTotalSupply)
     ;; record contract balance at block height
@@ -97,6 +97,10 @@
     )
     ;; check if redemptions are enabled
     (asserts! (var-get redemptionsEnabled) ERR_NOT_ENABLED)
+    ;; check that user has not already claimed
+    (asserts! (is-eq redemptionClaims u0) ERR_ALREADY_CLAIMED)
+    ;; check that user has at least one positive balance
+    (asserts! (or (> balanceV1 u0) (> balanceV2 u0)) ERR_BALANCE_NOT_FOUND)
     ;; check that redemption amount is > 0
     (asserts! (> redemptionAmount u0) ERR_NOTHING_TO_REDEEM)
     ;; burn NYC
@@ -108,6 +112,10 @@
     (try! (as-contract (stx-transfer? redemptionAmount tx-sender userAddress)))
     ;; update redemption claims
     (map-set RedemptionClaims userAddress (+ redemptionClaims redemptionAmount))
+    ;; print redemption info
+    (print (get-redemption-info))
+    ;; print user redemption info
+    (print (try! (get-user-redemption-info)))
     ;; return redemption amount
     (ok redemptionAmount)
   )
