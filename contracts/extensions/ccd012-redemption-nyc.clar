@@ -18,6 +18,7 @@
 (define-constant ERR_NOT_ENABLED (err u12005))
 (define-constant ERR_BALANCE_NOT_FOUND (err u12006))
 (define-constant ERR_NOTHING_TO_REDEEM (err u12007))
+(define-constant ERR_ALREADY_CLAIMED (err u12008))
 
 ;; helpers
 (define-constant MICRO_CITYCOINS (pow u10 u6)) ;; 6 decimal places
@@ -54,7 +55,8 @@
 (define-public (initialize-redemptions)
   (let
     (
-      ;; MAINNET: TODO
+      ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
+      ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
       (nycTotalSupplyV1 (unwrap! (contract-call? .newyorkcitycoin-token get-total-supply) ERR_PANIC))
       (nycTotalSupplyV2 (unwrap! (contract-call? .newyorkcitycoin-token-v2 get-total-supply) ERR_PANIC))
       (nycTotalSupply (+ (* nycTotalSupplyV1 MICRO_CITYCOINS) nycTotalSupplyV2))
@@ -85,6 +87,8 @@
   (let
     (
       (userAddress tx-sender)
+      ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
+      ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
       (balanceV1 (unwrap! (contract-call? .newyorkcitycoin-token get-balance userAddress) ERR_BALANCE_NOT_FOUND))
       (balanceV2 (unwrap! (contract-call? .newyorkcitycoin-token-v2 get-balance userAddress) ERR_BALANCE_NOT_FOUND))
       (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
@@ -96,6 +100,8 @@
     ;; check that redemption amount is > 0
     (asserts! (> redemptionAmount u0) ERR_NOTHING_TO_REDEEM)
     ;; burn NYC
+    ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
+    ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
     (and (> u0 balanceV1) (try! (contract-call? .newyorkcitycoin-token burn balanceV1 userAddress)))
     (and (> u0 balanceV2) (try! (contract-call? .newyorkcitycoin-token-v2 burn balanceV2 userAddress)))
     ;; transfer STX
@@ -143,6 +149,8 @@
 (define-read-only (get-nyc-balances)
   (let
     (
+      ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
+      ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
       (balanceV1 (unwrap! (contract-call? .newyorkcitycoin-token get-balance tx-sender) ERR_BALANCE_NOT_FOUND))
       (balanceV2 (unwrap! (contract-call? .newyorkcitycoin-token-v2 get-balance tx-sender) ERR_BALANCE_NOT_FOUND))
       (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
