@@ -6,12 +6,13 @@
 ;; ERRORS
 
 (define-constant ERR_PANIC (err u2200))
-(define-constant ERR_VOTED_ALREADY (err u2201))
-(define-constant ERR_NOTHING_STACKED (err u2202))
-(define-constant ERR_USER_NOT_FOUND (err u2203))
-(define-constant ERR_PROPOSAL_NOT_ACTIVE (err u2204))
-(define-constant ERR_PROPOSAL_STILL_ACTIVE (err u2205))
-(define-constant ERR_VOTE_FAILED (err u2206))
+(define-constant ERR_SAVING_VOTE (err u2201))
+(define-constant ERR_VOTED_ALREADY (err u2202))
+(define-constant ERR_NOTHING_STACKED (err u2203))
+(define-constant ERR_USER_NOT_FOUND (err u2204))
+(define-constant ERR_PROPOSAL_NOT_ACTIVE (err u2205))
+(define-constant ERR_PROPOSAL_STILL_ACTIVE (err u2206))
+(define-constant ERR_VOTE_FAILED (err u2207))
 
 ;; CONSTANTS
 
@@ -24,10 +25,10 @@
 
 (define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
 
-;; DATA VARS
+;; set city ID
+(define-constant NYC_ID u2) ;; (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_PANIC)
 
-;; set city ID, fail if not found
-(define-constant nycId (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_PANIC))
+;; DATA VARS
 
 ;; vote block heights
 (define-data-var voteActive bool true)
@@ -35,6 +36,7 @@
 (define-data-var voteEnd uint u0)
 
 ;; start the vote when deployed
+;; TODO: stacks-block-height
 (var-set voteStart block-height)
 
 ;; DATA MAPS
@@ -63,12 +65,13 @@
     ;; check vote is complete/passed
     (try! (is-executable))
     ;; update vote variables
+    ;; TODO: stacks-block-height
     (var-set voteEnd block-height)
     (var-set voteActive false)
-    ;; transfer funds to new redemption extensions
+    ;; transfer funds to new redemption extension
     (try! (contract-call? .ccd002-treasury-nyc-mining-v2 withdraw-stx nycRedemptionBalance .ccd012-redemption-nyc))
     ;; initialize redemption extension
-    (try! (contract-call? .ccd012-redemption-nyc initialize-redemptions))
+    (try! (contract-call? .ccd012-redemption-nyc initialize-redemption))
     (ok true))
 )
 
@@ -95,7 +98,7 @@
           (merge record { vote: vote })
         )
         ;; update vote stats for each city
-        (update-city-votes nycId nycVoteAmount vote true)
+        (update-city-votes NYC_ID nycVoteAmount vote true)
         (ok true)
       )
       ;; if the voterRecord does not exist
@@ -106,12 +109,12 @@
         ;; check that the user has a positive vote
         (asserts! (or (> nycVoteAmount u0)) ERR_NOTHING_STACKED)
         ;; insert new user vote record
-        (map-insert UserVotes voterId {
+        (asserts! (map-insert UserVotes voterId {
           vote: vote,
           nyc: nycVoteAmount
-        })
+        }) ERR_SAVING_VOTE)
         ;; update vote stats for each city
-        (update-city-votes nycId nycVoteAmount vote false)
+        (update-city-votes NYC_ID nycVoteAmount vote false)
         (ok true)
       )
     )
@@ -131,7 +134,7 @@
     (asserts! (or (> (get totalVotesYes voteTotals) u0) (> (get totalVotesNo voteTotals) u0)) ERR_VOTE_FAILED)
     ;; check that the yes total is more than no total
     (asserts! (> (get totalVotesYes voteTotals) (get totalVotesNo voteTotals)) ERR_VOTE_FAILED)
-    ;; check that each city has at least 25% of the total "yes" votes
+    ;; check the "yes" votes are at least 25% of the total
     (asserts! (>= (get totalAmountYes nycRecord) (/ (get totalAmountYes voteTotals) u4)) ERR_VOTE_FAILED)
     ;; allow execution
     (ok true)
@@ -162,7 +165,7 @@
 )
 
 (define-read-only (get-vote-total-nyc)
-  (map-get? CityVotes nycId)
+  (map-get? CityVotes NYC_ID)
 )
 
 (define-read-only (get-vote-total-nyc-or-default)
@@ -196,15 +199,15 @@
 (define-read-only (get-nyc-vote (userId uint) (scaled bool))
   (let
     (
-      ;; NYC cycle 82 / first block BTC 838,250 STX 145,643
+      ;; MAINNET: NYC cycle 82 / first block BTC 838,250 STX 145,643
       ;; cycle 2 / u4500 used in tests
       (cycle82Hash (unwrap! (get-block-hash u4500) none))
-      (cycle82Data (at-block cycle82Hash (contract-call? .ccd007-citycoin-stacking get-stacker nycId u2 userId)))
+      (cycle82Data (at-block cycle82Hash (contract-call? .ccd007-citycoin-stacking get-stacker NYC_ID u2 userId)))
       (cycle82Amount (get stacked cycle82Data))
-      ;; NYC cycle 83 / first block BTC 840,350 STX 147,282
+      ;; MAINNET: NYC cycle 83 / first block BTC 840,350 STX 147,282
       ;; cycle 3 / u6600 used in tests
       (cycle83Hash (unwrap! (get-block-hash u6600) none))
-      (cycle83Data (at-block cycle83Hash (contract-call? .ccd007-citycoin-stacking get-stacker nycId u3 userId)))
+      (cycle83Data (at-block cycle83Hash (contract-call? .ccd007-citycoin-stacking get-stacker NYC_ID u3 userId)))
       (cycle83Amount (get stacked cycle83Data))
       ;; NYC vote calculation
       (scaledVote (/ (+ (scale-up cycle83Amount) (scale-up cycle83Amount)) u2))

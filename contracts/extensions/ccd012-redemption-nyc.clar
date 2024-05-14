@@ -52,7 +52,7 @@
 )
 
 ;; initialize contract after deployment to start redemptions
-(define-public (initialize-redemptions)
+(define-public (initialize-redemption)
   (let
     (
       ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
@@ -179,7 +179,7 @@
 )
 
 (define-read-only (get-redemption-amount-claimed (address principal))
-    (map-get? RedemptionClaims tx-sender)
+    (map-get? RedemptionClaims address)
 )
 
 ;; aggregate all exposed vars above
