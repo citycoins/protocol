@@ -210,7 +210,7 @@
       (cycle83Data (at-block cycle83Hash (contract-call? .ccd007-citycoin-stacking get-stacker NYC_ID u3 userId)))
       (cycle83Amount (get stacked cycle83Data))
       ;; NYC vote calculation
-      (scaledVote (/ (+ (scale-up cycle83Amount) (scale-up cycle83Amount)) u2))
+      (scaledVote (/ (+ (scale-up cycle82Amount) (scale-up cycle83Amount)) u2))
     )
     ;; check that at least one value is positive
     (asserts! (or (> cycle82Amount u0) (> cycle83Amount u0)) none)
