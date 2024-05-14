@@ -27,8 +27,7 @@
 ;; DATA VARS
 
 ;; set city ID, fail if not found
-(define-data-var nycId uint u0)
-(var-set nycId (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_PANIC))
+(define-constant nycId (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_PANIC))
 
 ;; vote block heights
 (define-data-var voteActive bool true)
@@ -54,26 +53,23 @@
   uint ;; user ID
   { ;; vote
     vote: bool,
-    mia: uint,
     nyc: uint,
   }
 )
 ;; PUBLIC FUNCTIONS
 
 (define-public (execute (sender principal))
-  (begin
+  (let ((nycRedemptionBalance (stx-get-balance .ccd002-treasury-nyc-mining)))
     ;; check vote is complete/passed
     (try! (is-executable))
     ;; update vote variables
     (var-set voteEnd block-height)
     (var-set voteActive false)
     ;; transfer funds to new redemption extensions
-    (try! (contract-call? .ccd002-treasury-mia-mining-v2 withdraw-stx miaRedemptionBalance .ccd012-redemption-mia))
     (try! (contract-call? .ccd002-treasury-nyc-mining-v2 withdraw-stx nycRedemptionBalance .ccd012-redemption-nyc))
     ;; initialize redemption extension
-    (try! (contract-call? .ccd012-redemption-mia initialize-redemptions))
-    (ok true)
-  )
+    (try! (contract-call? .ccd012-redemption-nyc initialize-redemptions))
+    (ok true))
 )
 
 (define-public (vote-on-proposal (vote bool))
@@ -99,7 +95,7 @@
           (merge record { vote: vote })
         )
         ;; update vote stats for each city
-        (update-city-votes (var-get nycId) nycVoteAmount vote true)
+        (update-city-votes nycId nycVoteAmount vote true)
         (ok true)
       )
       ;; if the voterRecord does not exist
@@ -109,13 +105,13 @@
         )
         ;; check that the user has a positive vote
         (asserts! (or (> nycVoteAmount u0)) ERR_NOTHING_STACKED)
-        ;; insert new user vote record  
+        ;; insert new user vote record
         (map-insert UserVotes voterId {
-          vote: vote, 
+          vote: vote,
           nyc: nycVoteAmount
         })
         ;; update vote stats for each city
-        (update-city-votes (var-get nycId) nycVoteAmount vote false)
+        (update-city-votes nycId nycVoteAmount vote false)
         (ok true)
       )
     )
@@ -136,7 +132,7 @@
     ;; check that the yes total is more than no total
     (asserts! (> (get totalVotesYes voteTotals) (get totalVotesNo voteTotals)) ERR_VOTE_FAILED)
     ;; check that each city has at least 25% of the total "yes" votes
-    (asserts! (>= (and (get totalAmountYes nycRecord) (/ (get totalAmountYes voteTotals) u4))) ERR_VOTE_FAILED)
+    (asserts! (>= (get totalAmountYes nycRecord) (/ (get totalAmountYes voteTotals) u4)) ERR_VOTE_FAILED)
     ;; allow execution
     (ok true)
   )
@@ -147,7 +143,7 @@
 )
 
 (define-read-only (get-proposal-info)
-  (some CCIP_020)
+  (some CCIP_022)
 )
 
 (define-read-only (get-vote-period)
@@ -166,7 +162,7 @@
 )
 
 (define-read-only (get-vote-total-nyc)
-  (map-get? CityVotes (var-get nycId))
+  (map-get? CityVotes nycId)
 )
 
 (define-read-only (get-vote-total-nyc-or-default)
@@ -203,18 +199,18 @@
       ;; NYC cycle 82 / first block BTC 838,250 STX 145,643
       ;; cycle 2 / u4500 used in tests
       (cycle82Hash (unwrap! (get-block-hash u4500) none))
-      (cycle82Data (at-block cycle80Hash (contract-call? .ccd007-citycoin-stacking get-stacker nycId u2 userId)))
-      (cycle82Amount (get stacked cycle80Data))
+      (cycle82Data (at-block cycle82Hash (contract-call? .ccd007-citycoin-stacking get-stacker nycId u2 userId)))
+      (cycle82Amount (get stacked cycle82Data))
       ;; NYC cycle 83 / first block BTC 840,350 STX 147,282
       ;; cycle 3 / u6600 used in tests
       (cycle83Hash (unwrap! (get-block-hash u6600) none))
-      (cycle83Data (at-block cycle81Hash (contract-call? .ccd007-citycoin-stacking get-stacker nycId u3 userId)))
-      (cycle83Amount (get stacked cycle81Data))
+      (cycle83Data (at-block cycle83Hash (contract-call? .ccd007-citycoin-stacking get-stacker nycId u3 userId)))
+      (cycle83Amount (get stacked cycle83Data))
       ;; NYC vote calculation
-      (scaledVote (/ (+ (scale-up cycle80Amount) (scale-up cycle81Amount)) u2))
+      (scaledVote (/ (+ (scale-up cycle83Amount) (scale-up cycle83Amount)) u2))
     )
     ;; check that at least one value is positive
-    (asserts! (or (> cycle80Amount u0) (> cycle81Amount u0)) none)
+    (asserts! (or (> cycle82Amount u0) (> cycle83Amount u0)) none)
     ;; return scaled or unscaled value
     (if scaled (some scaledVote) (some (/ scaledVote VOTE_SCALE_FACTOR)))
   )
@@ -226,29 +222,31 @@
 (define-private (update-city-votes (cityId uint) (voteAmount uint) (vote bool) (changedVote bool))
   (let
     (
-      (cityRecord (default-to 
+      (cityRecord (default-to
         { totalAmountYes: u0, totalAmountNo: u0, totalVotesYes: u0, totalVotesNo: u0 }
         (map-get? CityVotes cityId)))
     )
     ;; do not record if amount is 0
-    (asserts! (> voteAmount u0) false)
-    ;; handle vote
-    (if vote
-      ;; handle yes vote
-      (map-set CityVotes cityId {
-        totalAmountYes: (+ voteAmount (get totalAmountYes cityRecord)),
-        totalVotesYes: (+ u1 (get totalVotesYes cityRecord)),
-        totalAmountNo: (if changedVote (- (get totalAmountNo cityRecord) voteAmount) (get totalAmountNo cityRecord)),
-        totalVotesNo: (if changedVote (- (get totalVotesNo cityRecord) u1) (get totalVotesNo cityRecord)) 
-      })
-      ;; handle no vote
-      (map-set CityVotes cityId {
-        totalAmountYes: (if changedVote (- (get totalAmountYes cityRecord) voteAmount) (get totalAmountYes cityRecord)),
-        totalVotesYes: (if changedVote (- (get totalVotesYes cityRecord) u1) (get totalVotesYes cityRecord)),
-        totalAmountNo: (+ voteAmount (get totalAmountNo cityRecord)),
-        totalVotesNo: (+ u1 (get totalVotesNo cityRecord)), 
-      })
-    )
+    (if (> voteAmount u0)
+      ;; handle vote
+      (if vote
+        ;; handle yes vote
+        (map-set CityVotes cityId {
+          totalAmountYes: (+ voteAmount (get totalAmountYes cityRecord)),
+          totalVotesYes: (+ u1 (get totalVotesYes cityRecord)),
+          totalAmountNo: (if changedVote (- (get totalAmountNo cityRecord) voteAmount) (get totalAmountNo cityRecord)),
+          totalVotesNo: (if changedVote (- (get totalVotesNo cityRecord) u1) (get totalVotesNo cityRecord))
+        })
+        ;; handle no vote
+        (map-set CityVotes cityId {
+          totalAmountYes: (if changedVote (- (get totalAmountYes cityRecord) voteAmount) (get totalAmountYes cityRecord)),
+          totalVotesYes: (if changedVote (- (get totalVotesYes cityRecord) u1) (get totalVotesYes cityRecord)),
+          totalAmountNo: (+ voteAmount (get totalAmountNo cityRecord)),
+          totalVotesNo: (+ u1 (get totalVotesNo cityRecord)),
+        })
+      )
+      ;; ignore calls with vote amount equal to 0
+      false)
   )
 )
 
