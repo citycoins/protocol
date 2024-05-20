@@ -143,7 +143,7 @@ path = "contracts/extensions/ccd011-stacking-payouts.clar"
 [contracts.ccd012-redemption-nyc]
 path = "contracts/extensions/ccd012-redemption-nyc.clar"
 clarity_version = 2
-epoch = 2.5
+epoch = 2.4
 
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
@@ -182,7 +182,7 @@ epoch = 2.4
 [contracts.ccip022-citycoins-treasury-redemption-nyc]
 path = "contracts/proposals/ccip022-citycoins-treasury-redemption-nyc.clar"
 clarity_version = 2
-epoch = 2.5
+epoch = 2.4
 
 # CITYCOINS PROTOCOL TRAITS
 

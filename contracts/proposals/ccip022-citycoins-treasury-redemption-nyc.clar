@@ -26,7 +26,7 @@
 (define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
 
 ;; set city ID
-(define-constant NYC_ID u2) ;; (unwrap! (contract-call? .ccd004-city-registry get-city-id "nyc") ERR_PANIC)
+(define-constant NYC_ID (default-to u2 (contract-call? .ccd004-city-registry get-city-id "nyc")))
 
 ;; DATA VARS
 
