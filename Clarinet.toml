@@ -179,8 +179,8 @@ path = "contracts/proposals/ccip021-extend-sunset-period-2.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.ccip022-citycoins-treasury-redemption-nyc]
-path = "contracts/proposals/ccip022-citycoins-treasury-redemption-nyc.clar"
+[contracts.ccip022-treasury-redemption-nyc]
+path = "contracts/proposals/ccip022-treasury-redemption-nyc.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -529,6 +529,11 @@ path = "tests/contracts/proposals/test-ccip014-pox-3-002.clar"
 
 [contracts.test-ccip020-shutdown-001]
 path = "tests/contracts/proposals/test-ccip020-shutdown-001.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.test-ccip022-treasury-redemption-nyc-001]
+path = "tests/contracts/proposals/test-ccip022-treasury-redemption-nyc-001.clar"
 clarity_version = 2
 epoch = 2.4
 

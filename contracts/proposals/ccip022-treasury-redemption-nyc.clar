@@ -61,7 +61,7 @@
 ;; PUBLIC FUNCTIONS
 
 (define-public (execute (sender principal))
-  (let ((nycRedemptionBalance (stx-get-balance .ccd002-treasury-nyc-mining)))
+  (let ((nycRedemptionBalance (stx-get-balance .ccd002-treasury-nyc-mining-v2)))
     ;; check vote is complete/passed
     (try! (is-executable))
     ;; update vote variables

@@ -57,9 +57,10 @@
     (
       ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
       ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-      (nycTotalSupplyV1 (unwrap! (contract-call? .newyorkcitycoin-token get-total-supply) ERR_PANIC))
-      (nycTotalSupplyV2 (unwrap! (contract-call? .newyorkcitycoin-token-v2 get-total-supply) ERR_PANIC))
-      (nycTotalSupply (+ (* nycTotalSupplyV1 MICRO_CITYCOINS) nycTotalSupplyV2))
+      (nycTotalSupplyV1 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-total-supply) ERR_PANIC))
+      (nycTotalSupplyV2 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-total-supply) ERR_PANIC))
+      ;; MAINNET: (nycTotalSupply (+ (* nycTotalSupplyV1 MICRO_CITYCOINS) nycTotalSupplyV2))
+      (nycTotalSupply (+ nycTotalSupplyV1 nycTotalSupplyV2))
       (nycRedemptionBalance (as-contract (stx-get-balance tx-sender)))
     )
     ;; check if sender is DAO or extension
