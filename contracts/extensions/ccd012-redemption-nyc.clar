@@ -192,7 +192,7 @@
     (
       (nycBalances (try! (get-nyc-balances address)))
       (redemptionAmount (default-to u0 (get-redemption-for-balance (get totalBalance nycBalances))))
-      (redemptionClaims (default-to u0 (get-redemption-amount-claimed tx-sender)))
+      (redemptionClaims (default-to u0 (get-redemption-amount-claimed address)))
     )
     (ok {
       address: address,
