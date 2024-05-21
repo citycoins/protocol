@@ -72,7 +72,7 @@
     ;; check if redemptions are already enabled
     (asserts! (not (var-get redemptionsEnabled)) ERR_ALREADY_ENABLED)
     ;; record current block height
-    (var-set blockHeight block-height) ;; TODO: stacks-block-height
+    (var-set blockHeight block-height)
     ;; record total supply at block height
     (var-set totalSupply nycTotalSupply)
     ;; record contract balance at block height
@@ -92,8 +92,8 @@
       (userAddress tx-sender)
       ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
       ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-      (balanceV1 (unwrap! (contract-call? .newyorkcitycoin-token get-balance userAddress) ERR_BALANCE_NOT_FOUND))
-      (balanceV2 (unwrap! (contract-call? .newyorkcitycoin-token-v2 get-balance userAddress) ERR_BALANCE_NOT_FOUND))
+      (balanceV1 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-balance userAddress) ERR_BALANCE_NOT_FOUND))
+      (balanceV2 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-balance userAddress) ERR_BALANCE_NOT_FOUND))
       (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
       (redemptionAmount (unwrap! (get-redemption-for-balance totalBalance) ERR_NOTHING_TO_REDEEM))
       (redemptionClaims (default-to u0 (get-redemption-amount-claimed userAddress)))
@@ -109,8 +109,8 @@
     ;; burn NYC
     ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
     ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-    (and (> u0 balanceV1) (try! (contract-call? .newyorkcitycoin-token burn balanceV1 userAddress)))
-    (and (> u0 balanceV2) (try! (contract-call? .newyorkcitycoin-token-v2 burn balanceV2 userAddress)))
+    (and (> u0 balanceV1) (try! (contract-call? .test-ccext-governance-token-nyc burn balanceV1 userAddress)))
+    (and (> u0 balanceV2) (try! (contract-call? .test-ccext-governance-token-nyc burn balanceV2 userAddress)))
     ;; transfer STX
     (try! (as-contract (stx-transfer? redemptionAmount tx-sender userAddress)))
     ;; update redemption claims
@@ -118,7 +118,7 @@
     ;; print redemption info
     (print (get-redemption-info))
     ;; print user redemption info
-    (print (try! (get-user-redemption-info)))
+    (print (try! (get-user-redemption-info userAddress)))
     ;; return redemption amount
     (ok redemptionAmount)
   )
@@ -149,25 +149,25 @@
 ;; aggregate all exposed vars above
 (define-read-only (get-redemption-info)
   {
-    redemptionsEnabled: (var-get redemptionsEnabled),
-    blockHeight: (var-get blockHeight),
-    totalSupply: (var-get totalSupply),
-    contractBalance: (var-get contractBalance),
-    redemptionRatio: (var-get redemptionRatio)
+    redemptionsEnabled: (is-redemption-enabled),
+    blockHeight: (get-redemption-block-height),
+    totalSupply: (get-redemption-total-supply),
+    contractBalance: (get-redemption-contract-balance),
+    redemptionRatio: (get-redemption-ratio)
   }
 )
 
-;; TODO: use provided address?
-(define-read-only (get-nyc-balances)
+(define-read-only (get-nyc-balances (address principal))
   (let
     (
       ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
       ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-      (balanceV1 (unwrap! (contract-call? .newyorkcitycoin-token get-balance tx-sender) ERR_BALANCE_NOT_FOUND))
-      (balanceV2 (unwrap! (contract-call? .newyorkcitycoin-token-v2 get-balance tx-sender) ERR_BALANCE_NOT_FOUND))
+      (balanceV1 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-balance address) ERR_BALANCE_NOT_FOUND))
+      (balanceV2 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-balance address) ERR_BALANCE_NOT_FOUND))
       (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
     )
     (ok {
+      address: address,
       balanceV1: balanceV1,
       balanceV2: balanceV2,
       totalBalance: totalBalance
@@ -187,16 +187,15 @@
 )
 
 ;; aggregate all exposed vars above
-;; TODO: use provided address?
-(define-read-only (get-user-redemption-info)
+(define-read-only (get-user-redemption-info (address principal))
   (let
     (
-      (nycBalances (try! (get-nyc-balances)))
+      (nycBalances (try! (get-nyc-balances address)))
       (redemptionAmount (default-to u0 (get-redemption-for-balance (get totalBalance nycBalances))))
       (redemptionClaims (default-to u0 (get-redemption-amount-claimed tx-sender)))
     )
     (ok {
-      address: tx-sender,
+      address: address,
       nycBalances: nycBalances,
       redemptionAmount: redemptionAmount,
       redemptionClaims: redemptionClaims
