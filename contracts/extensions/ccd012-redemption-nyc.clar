@@ -80,7 +80,9 @@
     ;; calculate redemption ratio
     (var-set redemptionRatio (/ nycRedemptionBalance nycTotalSupply))
     ;; set redemptionsEnabled to true, can only run once
-    (ok (var-set redemptionsEnabled true))
+    (var-set redemptionsEnabled true)
+    ;; print redemption info
+    (ok (print (get-redemption-info)))
   )
 )
 
