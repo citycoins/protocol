@@ -157,6 +157,7 @@
   }
 )
 
+;; TODO: use provided address?
 (define-read-only (get-nyc-balances)
   (let
     (
@@ -186,6 +187,7 @@
 )
 
 ;; aggregate all exposed vars above
+;; TODO: use provided address?
 (define-read-only (get-user-redemption-info)
   (let
     (
