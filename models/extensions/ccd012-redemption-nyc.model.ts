@@ -18,8 +18,8 @@ export class CCD012RedemptionNyc {
   chain: Chain;
   deployer: Account;
 
-  constructor(chain: Chain, deployer: Account, name: string) {
-    this.name = name;
+  constructor(chain: Chain, deployer: Account) {
+    this.name = "ccd012-redemption-nyc";
     this.chain = chain;
     this.deployer = deployer;
   }

@@ -1,3 +1,4 @@
+import { CCD012RedemptionNyc } from "../../models/extensions/ccd012-redemption-nyc.model.ts";
 import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
 
 // =============================
@@ -18,3 +19,37 @@ import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
 // redeem-nyc() succeeds with just v1 tokens
 // redeem-nyc() succeeds with just v2 tokens
 // redeem-nyc() succeeds with both v1 and v2 tokens
+
+// =============================
+// 0. AUTHORIZATION CHECKS
+// =============================
+
+Clarinet.test({
+  name: "ccd012-redemption-nyc: is-dao-or-extension() fails when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd012RedemptionNyc = new CCD012RedemptionNyc(chain, sender);
+
+    // act
+
+    // assert
+    ccd012RedemptionNyc.isDaoOrExtension().result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_UNAUTHORIZED);
+  },
+});
+
+Clarinet.test({
+  name: "ccd012-redemption-nyc: callback() succeeds when called directly",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccd012RedemptionNyc = new CCD012RedemptionNyc(chain, sender);
+
+    // act
+    const { receipts } = chain.mineBlock([ccd012RedemptionNyc.callback(sender, "test")]);
+
+    // assert
+    assertEquals(receipts.length, 1);
+    receipts[0].result.expectOk().expectBool(true);
+  },
+});
