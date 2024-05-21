@@ -1,7 +1,7 @@
 import { Chain, Account, Tx, types, ReadOnlyFn } from "../../utils/deps.ts";
 
 enum ErrCode {
-  ERR_PANIC = 2200,
+  ERR_PANIC = 22000,
   ERR_SAVING_VOTE,
   ERR_VOTED_ALREADY,
   ERR_NOTHING_STACKED,

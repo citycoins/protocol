@@ -5,14 +5,14 @@
 
 ;; ERRORS
 
-(define-constant ERR_PANIC (err u2200))
-(define-constant ERR_SAVING_VOTE (err u2201))
-(define-constant ERR_VOTED_ALREADY (err u2202))
-(define-constant ERR_NOTHING_STACKED (err u2203))
-(define-constant ERR_USER_NOT_FOUND (err u2204))
-(define-constant ERR_PROPOSAL_NOT_ACTIVE (err u2205))
-(define-constant ERR_PROPOSAL_STILL_ACTIVE (err u2206))
-(define-constant ERR_VOTE_FAILED (err u2207))
+(define-constant ERR_PANIC (err u22000))
+(define-constant ERR_SAVING_VOTE (err u22001))
+(define-constant ERR_VOTED_ALREADY (err u22002))
+(define-constant ERR_NOTHING_STACKED (err u22003))
+(define-constant ERR_USER_NOT_FOUND (err u22004))
+(define-constant ERR_PROPOSAL_NOT_ACTIVE (err u22005))
+(define-constant ERR_PROPOSAL_STILL_ACTIVE (err u22006))
+(define-constant ERR_VOTE_FAILED (err u22007))
 
 ;; CONSTANTS
 
