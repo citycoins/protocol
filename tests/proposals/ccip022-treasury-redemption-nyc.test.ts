@@ -1,9 +1,8 @@
 import { Account, Clarinet, Chain, types } from "../../utils/deps.ts";
-import { constructAndPassProposal, passProposal, PROPOSALS, mia, nyc, CCD006_REWARD_DELAY } from "../../utils/common.ts";
+import { constructAndPassProposal, passProposal, PROPOSALS, nyc } from "../../utils/common.ts";
 import { CCD006CityMining } from "../../models/extensions/ccd006-citycoin-mining.model.ts";
 import { CCD007CityStacking } from "../../models/extensions/ccd007-citycoin-stacking.model.ts";
 import { CCIP022TreasuryRedemptionNYC } from "../../models/proposals/ccip022-treasury-redemption-nyc.model.ts";
-import { CCIP014Pox3 } from "../../models/proposals/ccip014-pox-3.model.ts";
 
 // helper function to print voting data for users 1, 2, and 3
 function printVotingData(ccd007: CCD007CityStacking, ccip022: CCIP022TreasuryRedemptionNYC) {
