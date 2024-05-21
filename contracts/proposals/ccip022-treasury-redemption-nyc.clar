@@ -36,7 +36,6 @@
 (define-data-var voteEnd uint u0)
 
 ;; start the vote when deployed
-;; TODO: stacks-block-height
 (var-set voteStart block-height)
 
 ;; DATA MAPS
@@ -65,7 +64,6 @@
     ;; check vote is complete/passed
     (try! (is-executable))
     ;; update vote variables
-    ;; TODO: stacks-block-height
     (var-set voteEnd block-height)
     (var-set voteActive false)
     ;; transfer funds to new redemption extension
