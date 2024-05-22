@@ -199,6 +199,7 @@ Clarinet.test({
     const user1 = accounts.get("wallet_1")!;
     const user2 = accounts.get("wallet_2")!;
     const user3 = accounts.get("wallet_3")!;
+    const user4 = accounts.get("wallet_4")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     const ccd012RedemptionNyc = new CCD012RedemptionNyc(chain, sender);
     const ccip022TreasuryRedemptionNyc = new CCIP022TreasuryRedemptionNYC(chain, sender);
@@ -276,13 +277,17 @@ Clarinet.test({
     console.log("user3Info", user3Info);
 
     // act
-    const redeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3)]);
+    const redeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
     console.log("redeem block", redeemBlock);
 
     // assert
-    assertEquals(redeemBlock.receipts.length, 4);
+    assertEquals(redeemBlock.receipts.length, 5);
     for (let i = 0; i < redeemBlock.receipts.length; i++) {
-      redeemBlock.receipts[i].result.expectOk().expectBool(true);
+      if (i === 0) {
+        redeemBlock.receipts[i].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_BALANCE_NOT_FOUND);
+      } else {
+        redeemBlock.receipts[i].result.expectOk().expectBool(true);
+      }
     }
   },
 });
