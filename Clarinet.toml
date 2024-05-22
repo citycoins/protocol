@@ -537,6 +537,21 @@ path = "tests/contracts/proposals/test-ccip022-treasury-redemption-nyc-001.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.test-ccip022-treasury-redemption-nyc-002]
+path = "tests/contracts/proposals/test-ccip022-treasury-redemption-nyc-002.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.test-ccip022-treasury-redemption-nyc-003]
+path = "tests/contracts/proposals/test-ccip022-treasury-redemption-nyc-003.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.test-ccip022-treasury-redemption-nyc-004]
+path = "tests/contracts/proposals/test-ccip022-treasury-redemption-nyc-004.clar"
+clarity_version = 2
+epoch = 2.4
+
 [repl]
 costs_version = 2
 parser_version = 2

@@ -70,6 +70,7 @@ Clarinet.test({
 
     // initialize contracts
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_003);
 
     // stack first cycle u1, last cycle u10
     const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked, lockPeriod)]);
@@ -126,6 +127,7 @@ Clarinet.test({
 
     // initialize contracts
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_003);
 
     // mine to put some funds in the treasury
     const miningEntries = Array.from({ length: blocksMined }, () => amountPerBlock);
@@ -194,6 +196,7 @@ Clarinet.test({
 
     // initialize contracts
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_003);
 
     // mine to put some funds in the treasury
     const miningEntries = Array.from({ length: blocksMined }, () => amountPerBlock);
@@ -266,6 +269,7 @@ Clarinet.test({
 
     // initialize contracts
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_003);
 
     // mine to put some funds in the treasury
     const miningEntries = Array.from({ length: blocksMined }, () => amountPerBlock);
@@ -348,6 +352,7 @@ Clarinet.test({
     // prepare for CCIP (sets up cities, tokens, and data)
     const constructBlock = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_001);
     constructBlock.receipts[0].result.expectOk().expectBool(true);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_003);
 
     // mine to put funds in the mining treasury
     const miningBlock = chain.mineBlock([ccd006CityMiningV2.mine(user1, nyc.cityName, miningEntries), ccd006CityMiningV2.mine(user2, nyc.cityName, miningEntries)]);
@@ -400,6 +405,7 @@ Clarinet.test({
     // prepare for CCIP (sets up cities, tokens, and data)
     const constructBlock = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_001);
     constructBlock.receipts[0].result.expectOk().expectBool(true);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_003);
 
     // mine to put funds in the mining treasury
     const miningBlock = chain.mineBlock([ccd006CityMiningV2.mine(user1, nyc.cityName, miningEntries), ccd006CityMiningV2.mine(user2, nyc.cityName, miningEntries)]);
@@ -461,6 +467,7 @@ Clarinet.test({
     // prepare for CCIP (sets up cities, tokens, and data)
     const constructBlock = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_001);
     constructBlock.receipts[0].result.expectOk().expectBool(true);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_003);
 
     // mine to put funds in the mining treasury
     const miningBlock = chain.mineBlock([ccd006CityMiningV2.mine(user1, nyc.cityName, miningEntries), ccd006CityMiningV2.mine(user2, nyc.cityName, miningEntries)]);
@@ -515,6 +522,7 @@ Clarinet.test({
 
     // prepare for CCIP (sets up cities, tokens, and data)
     const constructBlock = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_001);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_003);
     constructBlock.receipts[0].result.expectOk().expectBool(true);
 
     // mine to put some funds in the treasury

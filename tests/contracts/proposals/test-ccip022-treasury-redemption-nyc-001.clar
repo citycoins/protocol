@@ -36,15 +36,6 @@
     ;; test-ccd007-city-stacking-007 + nyc
     (try! (contract-call? .ccd005-city-data add-treasury u1 .ccd002-treasury-mia-stacking "stacking"))
     (try! (contract-call? .ccd005-city-data add-treasury u2 .ccd002-treasury-nyc-stacking "stacking"))
-    ;; test-ccd007-city-stacking-009 + nyc
-    (try! (contract-call? .test-ccext-governance-token-mia mint u1000 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5))
-		(try! (contract-call? .test-ccext-governance-token-mia mint u1000 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG))
-    (try! (contract-call? .test-ccext-governance-token-mia mint u1000 'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC))
-    (try! (contract-call? .test-ccext-governance-token-mia mint u1000 'ST2NEB84ASENDXKYGJPQW86YXQCEFEX2ZQPG87ND))
-    (try! (contract-call? .test-ccext-governance-token-nyc mint u1000 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5))
-		(try! (contract-call? .test-ccext-governance-token-nyc mint u1000 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG))
-    (try! (contract-call? .test-ccext-governance-token-nyc mint u1000 'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC))
-    (try! (contract-call? .test-ccext-governance-token-nyc mint u1000 'ST2NEB84ASENDXKYGJPQW86YXQCEFEX2ZQPG87ND))
     ;; test-ccd007-city-stacking-010 + nyc
     (try! (contract-call? .ccd002-treasury-mia-stacking set-allowed .test-ccext-governance-token-mia true))
     (try! (contract-call? .ccd002-treasury-nyc-stacking set-allowed .test-ccext-governance-token-nyc true))
@@ -61,3 +52,6 @@
 		(ok true)
 	)
 )
+
+;; transfer 1M STX to mining treasury contract from deployer
+(stx-transfer? u1000000000000 tx-sender .ccd002-treasury-nyc-mining-v2)
