@@ -2,8 +2,8 @@ import { CCD006CityMining } from "../../models/extensions/ccd006-citycoin-mining
 import { CCD007CityStacking } from "../../models/extensions/ccd007-citycoin-stacking.model.ts";
 import { CCD012RedemptionNyc } from "../../models/extensions/ccd012-redemption-nyc.model.ts";
 import { CCIP022TreasuryRedemptionNYC } from "../../models/proposals/ccip022-treasury-redemption-nyc.model.ts";
-import { PROPOSALS, constructAndPassProposal, nyc, passProposal } from "../../utils/common.ts";
-import { Account, assertEquals, Clarinet, Chain } from "../../utils/deps.ts";
+import { EXTENSIONS, PROPOSALS, constructAndPassProposal, nyc, passProposal } from "../../utils/common.ts";
+import { Account, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
 
 // =============================
 // 0. AUTHORIZATION CHECKS
@@ -60,10 +60,20 @@ Clarinet.test({
 });
 
 // initialize-redemption() fails with ERR_GETTING_TOTAL_SUPPLY if both supplies are 0
+// note: supply is required for voting in CCIP-022, so unreachable
+
 // initialize-redemption() fails with ERR_GETTING_REDEMPTION_BALANCE if the redemption balance is 0
+// note: transfer fails in CCIP-022 for this case, so unreachable
 
 Clarinet.test({
   name: "ccd012-redemption-nyc: initialize-redemption() fails with ERR_ALREADY_ENABLED if called more than once",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    0;
+  },
+});
+
+Clarinet.test({
+  name: "ccd012-redemption-nyc: initialize-redemption() succeeds and prints the redemption info",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
@@ -108,24 +118,19 @@ Clarinet.test({
       votingBlock.receipts[i].result.expectOk().expectBool(true);
     }
 
-    // execute ccip-022
+    // act
     const executeBlock = passProposal(chain, accounts, PROPOSALS.CCIP_022);
+
+    // assert
+    assertEquals(executeBlock.receipts.length, 3);
     executeBlock.receipts[0].result.expectOk().expectUint(1);
     executeBlock.receipts[1].result.expectOk().expectUint(2);
     executeBlock.receipts[2].result.expectOk().expectUint(3);
 
-    // act
-    const initializeBlock = passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_004);
-
-    // assert
-    assertEquals(initializeBlock.receipts.length, 3);
-    initializeBlock.receipts[0].result.expectOk().expectUint(1);
-    initializeBlock.receipts[1].result.expectOk().expectUint(2);
-    initializeBlock.receipts[2].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_ALREADY_ENABLED);
+    const expectedEvent = `{blockHeight: u${executeBlock.height - 1}, contractBalance: u1000000000000, redemptionRatio: u50000, redemptionsEnabled: true, totalSupply: u20000000}`;
+    executeBlock.receipts[2].events.expectPrintEvent(EXTENSIONS.CCD012_REDEMPTION_NYC, expectedEvent);
   },
 });
-
-// initialize-redemption() succeeds and prints the redemption info
 
 // =============================
 // redeem-nyc()

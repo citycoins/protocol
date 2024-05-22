@@ -32,6 +32,7 @@ export const EXTENSIONS = {
   CCD008_CITY_ACTIVATION: ADDRESS.concat(".ccd008-city-activation"),
   CCD009_AUTH_V2_ADAPTER: ADDRESS.concat(".ccd009-auth-v2-adapter"),
   CCD010_CORE_V2_ADAPTER: ADDRESS.concat(".ccd010-core-v2-adapter"),
+  CCD012_REDEMPTION_NYC: ADDRESS.concat(".ccd012-redemption-nyc"),
 };
 
 export const PROPOSALS = {
