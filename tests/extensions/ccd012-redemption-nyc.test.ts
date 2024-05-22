@@ -191,6 +191,29 @@ Clarinet.test({
 // redeem-nyc() succeeds with just v2 tokens
 // redeem-nyc() succeeds with both v1 and v2 tokens
 
+function parseClarityTuple(clarityString) {
+  // Step 1: Remove the outer (ok ) and the closing parenthesis
+  let jsonString = clarityString.replace("(ok ", "").replace(")", "");
+
+  // Step 2: Add quotes around keys
+  jsonString = jsonString.replace(/([a-zA-Z0-9_]+):/g, '"$1":');
+
+  // Step 3: Add quotes around string values (addresses)
+  jsonString = jsonString.replace(/: ([a-zA-Z0-9_]+)/g, ': "$1"');
+
+  // Step 4: Remove 'u' prefix from integers
+  jsonString = jsonString.replace(/u([0-9]+)/g, "$1");
+
+  // Parse the JSON string to object
+  return JSON.parse(jsonString);
+}
+
+// Example usage
+const clarityString = "(ok {address: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5, nycBalances: {address: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5, balanceV1: u1000000, balanceV2: u999500, totalBalance: u1999500}, redemptionAmount: u99975000000, redemptionClaims: u0})";
+const userInfoObject = parseClarityTuple(clarityString);
+
+console.log(userInfoObject);
+
 Clarinet.test({
   name: "ccd012-redemption-nyc: redeem-nyc() succeeds with both v1 and v2 tokens",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -256,25 +279,20 @@ Clarinet.test({
     // get contract redemption info
 
     const redemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
-
     console.log("redemptionInfo", redemptionInfo);
-
-    const redemptionBalanceSmall = ccd012RedemptionNyc.getRedemptionForBalance(1000).result;
-    const redemptionBalanceMedium = ccd012RedemptionNyc.getRedemptionForBalance(1000000).result;
-    const redemptionBalanceLarge = ccd012RedemptionNyc.getRedemptionForBalance(1000000000).result;
-
-    console.log("redemptionBalanceSmall", redemptionBalanceSmall);
-    console.log("redemptionBalanceMedium", redemptionBalanceMedium);
-    console.log("redemptionBalanceLarge", redemptionBalanceLarge);
 
     // get user balances
     const user1Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
     const user2Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user2.address).result;
     const user3Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user3.address).result;
+    const user4Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user4.address).result;
 
-    console.log("user1Info", user1Info);
-    console.log("user2Info", user2Info);
-    console.log("user3Info", user3Info);
+    const user1InfoObject = parseClarityTuple(user1Info);
+    const user2InfoObject = parseClarityTuple(user2Info);
+    const user3InfoObject = parseClarityTuple(user3Info);
+    const user4InfoObject = parseClarityTuple(user4Info);
+
+    const userInfoObjects = [user1InfoObject, user2InfoObject, user3InfoObject, user4InfoObject];
 
     // act
     const redeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
@@ -286,7 +304,7 @@ Clarinet.test({
       if (i === 0) {
         redeemBlock.receipts[i].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_BALANCE_NOT_FOUND);
       } else {
-        redeemBlock.receipts[i].result.expectOk().expectBool(true);
+        redeemBlock.receipts[i].result.expectOk().expectUint(userInfoObjects[i - 1].redemptionAmount);
       }
     }
   },
