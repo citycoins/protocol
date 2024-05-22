@@ -66,8 +66,8 @@ export class CCD012RedemptionNyc {
     return this.callReadOnlyFn("get-redemption-info", []);
   }
 
-  getNycBalances(): ReadOnlyFn {
-    return this.callReadOnlyFn("get-nyc-balances", []);
+  getNycBalances(address: string): ReadOnlyFn {
+    return this.callReadOnlyFn("get-nyc-balances", [types.principal(address)]);
   }
 
   getRedemptionForBalance(balance: number): ReadOnlyFn {
@@ -78,8 +78,8 @@ export class CCD012RedemptionNyc {
     return this.callReadOnlyFn("get-redemption-amount-claimed", [types.principal(address)]);
   }
 
-  getUserRedemptionInfo(): ReadOnlyFn {
-    return this.callReadOnlyFn("get-user-redemption-info", []);
+  getUserRedemptionInfo(address: string): ReadOnlyFn {
+    return this.callReadOnlyFn("get-user-redemption-info", [types.principal(address)]);
   }
 
   // Extension callback

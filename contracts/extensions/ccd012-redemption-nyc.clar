@@ -57,7 +57,7 @@
     (
       ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
       ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-      (nycTotalSupplyV1 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-total-supply) ERR_PANIC))
+      (nycTotalSupplyV1 (unwrap! (contract-call? .test-ccext-governance-token-mia get-total-supply) ERR_PANIC))
       (nycTotalSupplyV2 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-total-supply) ERR_PANIC))
       ;; MAINNET: (nycTotalSupply (+ (* nycTotalSupplyV1 MICRO_CITYCOINS) nycTotalSupplyV2))
       (nycTotalSupply (+ nycTotalSupplyV1 nycTotalSupplyV2))
@@ -92,9 +92,10 @@
       (userAddress tx-sender)
       ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
       ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-      (balanceV1 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-balance userAddress) ERR_BALANCE_NOT_FOUND))
+      (balanceV1 (unwrap! (contract-call? .test-ccext-governance-token-mia get-balance userAddress) ERR_BALANCE_NOT_FOUND))
       (balanceV2 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-balance userAddress) ERR_BALANCE_NOT_FOUND))
-      (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
+      ;; MAINNET: (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
+      (totalBalance (+ balanceV1 balanceV2))
       (redemptionAmount (unwrap! (get-redemption-for-balance totalBalance) ERR_NOTHING_TO_REDEEM))
       (redemptionClaims (default-to u0 (get-redemption-amount-claimed userAddress)))
     )
@@ -109,7 +110,7 @@
     ;; burn NYC
     ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
     ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-    (and (> u0 balanceV1) (try! (contract-call? .test-ccext-governance-token-nyc burn balanceV1 userAddress)))
+    (and (> u0 balanceV1) (try! (contract-call? .test-ccext-governance-token-mia burn balanceV1 userAddress)))
     (and (> u0 balanceV2) (try! (contract-call? .test-ccext-governance-token-nyc burn balanceV2 userAddress)))
     ;; transfer STX
     (try! (as-contract (stx-transfer? redemptionAmount tx-sender userAddress)))
@@ -162,9 +163,10 @@
     (
       ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
       ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-      (balanceV1 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-balance address) ERR_BALANCE_NOT_FOUND))
+      (balanceV1 (unwrap! (contract-call? .test-ccext-governance-token-mia get-balance address) ERR_BALANCE_NOT_FOUND))
       (balanceV2 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-balance address) ERR_BALANCE_NOT_FOUND))
-      (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
+      ;; MAINNET (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
+      (totalBalance (+ balanceV1 balanceV2))
     )
     (ok {
       address: address,

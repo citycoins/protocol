@@ -38,8 +38,17 @@
   ))
 )
 
+;; unguarded: simple mint function
 (define-public (mint (amount uint) (recipient principal))
     (ft-mint? miamicoin amount recipient)
+)
+
+;; guarded: burn function (by user only)
+(define-public (burn (amount uint) (owner principal))
+	(begin
+		(asserts! (or (is-eq tx-sender owner) (is-eq contract-caller owner)) ERR_NOT_TOKEN_OWNER)
+		(ft-burn? miamicoin amount owner)
+	)
 )
 
 ;; guarded: mint governance token
