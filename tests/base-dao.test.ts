@@ -206,6 +206,7 @@ Clarinet.test({
       if (ext === EXTENSIONS.CCD006_CITYCOIN_MINING_V2) continue; // skip, not enabled until CCIP-014
       if (ext === EXTENSIONS.CCD002_TREASURY_MIA_MINING_V2) continue; // skip, not enabled until CCIP-014
       if (ext === EXTENSIONS.CCD002_TREASURY_NYC_MINING_V2) continue; // skip, not enabled until CCIP-014
+      if (ext === EXTENSIONS.CCD012_REDEMPTION_NYC) continue; // skip, not enabled until CCIP-022
       //console.log("ext:", ext);
       //console.log("enabled:", baseDao.isExtension(ext).result);
       baseDao.isExtension(ext).result.expectBool(true);
