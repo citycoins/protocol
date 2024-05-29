@@ -78,7 +78,7 @@
     ;; record contract balance at block height
     (var-set contractBalance nycRedemptionBalance)
     ;; calculate redemption ratio
-    (var-set redemptionRatio (/ nycRedemptionBalance nycTotalSupply))
+    (var-set redemptionRatio (calculate-redemption-ratio nycRedemptionBalance nycTotalSupply))
     ;; set redemptionsEnabled to true, can only run once
     (var-set redemptionsEnabled true)
     ;; print redemption info
@@ -211,4 +211,8 @@
 
 (define-private (scale-down (a uint))
   (/ a REDEMPTION_SCALE_FACTOR)
+)
+
+(define-private (calculate-redemption-ratio (balance uint) (supply uint))
+  u0
 )
