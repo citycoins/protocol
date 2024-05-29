@@ -212,7 +212,7 @@ function parseClarityTuple(clarityString) {
 const clarityString = "(ok {address: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5, nycBalances: {address: ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5, balanceV1: u1000000, balanceV2: u999500, totalBalance: u1999500}, redemptionAmount: u99975000000, redemptionClaims: u0})";
 const userInfoObject = parseClarityTuple(clarityString);
 
-console.log(userInfoObject);
+// console.log(userInfoObject);
 
 Clarinet.test({
   name: "ccd012-redemption-nyc: redeem-nyc() succeeds with both v1 and v2 tokens",
@@ -279,7 +279,7 @@ Clarinet.test({
     // get contract redemption info
 
     const redemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
-    console.log("redemptionInfo", redemptionInfo);
+    // console.log("redemptionInfo", redemptionInfo);
 
     // get user balances
     const user1Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
@@ -296,7 +296,7 @@ Clarinet.test({
 
     // act
     const redeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
-    console.log("redeem block", redeemBlock);
+    // console.log("redeem block", redeemBlock);
 
     // assert
     assertEquals(redeemBlock.receipts.length, 5);
