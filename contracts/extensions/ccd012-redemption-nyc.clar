@@ -66,7 +66,7 @@
     ;; check if sender is DAO or extension
     (try! (is-dao-or-extension))
     ;; check that total supply is greater than 0
-    (asserts! (or (> nycTotalSupplyV1 u0) (> nycTotalSupplyV2 u0)) ERR_GETTING_TOTAL_SUPPLY)
+    (asserts! (and (> nycTotalSupplyV1 u0) (> nycTotalSupplyV2 u0)) ERR_GETTING_TOTAL_SUPPLY)
     ;; check that redemption balance is greater than 0
     (asserts! (> nycRedemptionBalance u0) ERR_GETTING_REDEMPTION_BALANCE)
     ;; check if redemptions are already enabled
