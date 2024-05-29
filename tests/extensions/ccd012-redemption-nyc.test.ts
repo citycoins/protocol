@@ -1,7 +1,7 @@
 import { CCD007CityStacking } from "../../models/extensions/ccd007-citycoin-stacking.model.ts";
 import { CCD012RedemptionNyc } from "../../models/extensions/ccd012-redemption-nyc.model.ts";
 import { CCIP022TreasuryRedemptionNYC } from "../../models/proposals/ccip022-treasury-redemption-nyc.model.ts";
-import { EXTENSIONS, PROPOSALS, constructAndPassProposal, nyc, passProposal } from "../../utils/common.ts";
+import { EXTENSIONS, PROPOSALS, constructAndPassProposal, nyc, parseClarityTuple, passProposal } from "../../utils/common.ts";
 import { Account, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
 
 // =============================
@@ -187,23 +187,6 @@ Clarinet.test({
 // redeem-nyc() fails with ERR_ALREADY_CLAIMED if the redemption is already claimed
 // redeem-nyc() fails with ERR_BALANCE_NOT_FOUND if v1 or v2 tokens are not found
 // redeem-nyc() fails with ERR_NOTHING_TO_REDEEM if the redemption amount is 0
-
-function parseClarityTuple(clarityString) {
-  // Step 1: Remove the outer (ok ) and the closing parenthesis
-  let jsonString = clarityString.replace("(ok ", "").replace(")", "");
-
-  // Step 2: Add quotes around keys
-  jsonString = jsonString.replace(/([a-zA-Z0-9_]+):/g, '"$1":');
-
-  // Step 3: Add quotes around string values (addresses)
-  jsonString = jsonString.replace(/: ([a-zA-Z0-9_]+)/g, ': "$1"');
-
-  // Step 4: Remove 'u' prefix from integers
-  jsonString = jsonString.replace(/u([0-9]+)/g, "$1");
-
-  // Parse the JSON string to object
-  return JSON.parse(jsonString);
-}
 
 Clarinet.test({
   name: "ccd012-redemption-nyc: redeem-nyc() succeeds with only v1 tokens",

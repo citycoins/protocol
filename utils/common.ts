@@ -243,3 +243,21 @@ export const nyc: CityData = {
   treasuryV2Id: 2,
   treasuryV2Name: "mining-v2",
 };
+
+// parses an (ok ...) response into a JS object
+export function parseClarityTuple(clarityString) {
+  // Step 1: Remove the outer (ok ) and the closing parenthesis
+  let jsonString = clarityString.replace("(ok ", "").replace(")", "");
+
+  // Step 2: Add quotes around keys
+  jsonString = jsonString.replace(/([a-zA-Z0-9_]+):/g, '"$1":');
+
+  // Step 3: Add quotes around string values (addresses)
+  jsonString = jsonString.replace(/: ([a-zA-Z0-9_]+)/g, ': "$1"');
+
+  // Step 4: Remove 'u' prefix from integers
+  jsonString = jsonString.replace(/u([0-9]+)/g, "$1");
+
+  // Parse the JSON string to object
+  return JSON.parse(jsonString);
+}
