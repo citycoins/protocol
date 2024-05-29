@@ -218,6 +218,9 @@ path = "tests/contracts/external/test-ccext-governance-token-mia.clar"
 [contracts.test-ccext-governance-token-nyc]
 path = "tests/contracts/external/test-ccext-governance-token-nyc.clar"
 
+[contracts.test-ccext-governance-token-nyc-v1]
+path = "tests/contracts/external/test-ccext-governance-token-nyc-v1.clar"
+
 [contracts.test-ccext-nft-mia]
 path = "tests/contracts/external/test-ccext-nft-mia.clar"
 
