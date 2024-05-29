@@ -477,3 +477,130 @@ Clarinet.test({
     }
   },
 });
+
+Clarinet.test({
+  name: "ccd012-redemption-nyc: redeem-nyc() succeeds with additional claims after unstacking tokens",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
+    const user2 = accounts.get("wallet_2")!;
+    const user3 = accounts.get("wallet_3")!;
+    const user4 = accounts.get("wallet_4")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    const ccd012RedemptionNyc = new CCD012RedemptionNyc(chain, sender);
+    const ccip022TreasuryRedemptionNyc = new CCIP022TreasuryRedemptionNYC(chain, sender);
+
+    const amountStacked = 10000;
+    const lockPeriod = 10;
+
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+
+    // initialize contracts
+    const constructBlock = constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_001);
+    for (let i = 0; i < constructBlock.receipts.length; i++) {
+      if (i === 0) {
+        constructBlock.receipts[i].result.expectOk().expectBool(true);
+      } else {
+        constructBlock.receipts[i].result.expectOk().expectUint(i);
+      }
+    }
+
+    const fundV1Block = passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_002);
+    const fundV2Block = passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_003);
+    for (let i = 0; i < fundV1Block.receipts.length; i++) {
+      fundV1Block.receipts[i].result.expectOk().expectUint(i + 1);
+      fundV2Block.receipts[i].result.expectOk().expectUint(i + 1);
+    }
+
+    // stack first cycle u1, last cycle u10
+    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, nyc.cityName, amountStacked, lockPeriod)]);
+    for (let i = 0; i < stackingBlock.receipts.length; i++) {
+      stackingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // progress the chain to cycle 5
+    // votes are counted in cycles 2-3
+    // past payouts tested for cycles 1-4
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
+
+    // execute two yes votes, one no vote
+    const votingBlock = chain.mineBlock([ccip022TreasuryRedemptionNyc.voteOnProposal(user1, true), ccip022TreasuryRedemptionNyc.voteOnProposal(user2, true), ccip022TreasuryRedemptionNyc.voteOnProposal(user3, false)]);
+    for (let i = 0; i < votingBlock.receipts.length; i++) {
+      votingBlock.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // execute ccip-022
+    const executeBlock = passProposal(chain, accounts, PROPOSALS.CCIP_022);
+    assertEquals(executeBlock.receipts.length, 3);
+    for (let i = 0; i < executeBlock.receipts.length; i++) {
+      executeBlock.receipts[i].result.expectOk().expectUint(i + 1);
+    }
+
+    // get contract redemption info
+    const redemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
+    console.log("multi redemptionInfo", redemptionInfo);
+
+    // get user balances
+    const user1Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
+    const user2Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user2.address).result;
+    const user3Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user3.address).result;
+    const user4Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user4.address).result;
+
+    const user1InfoObject = parseClarityTuple(user1Info);
+    const user2InfoObject = parseClarityTuple(user2Info);
+    const user3InfoObject = parseClarityTuple(user3Info);
+    const user4InfoObject = parseClarityTuple(user4Info);
+
+    const userInfoObjects = [user1InfoObject, user2InfoObject, user3InfoObject, user4InfoObject];
+
+    // redeem token balances once for each user
+    const firstRedeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
+    console.log("firstRedeemBlock", firstRedeemBlock);
+    assertEquals(firstRedeemBlock.receipts.length, 5);
+    for (let i = 0; i < firstRedeemBlock.receipts.length; i++) {
+      if (i === 0) {
+        firstRedeemBlock.receipts[i].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_BALANCE_NOT_FOUND);
+      } else {
+        firstRedeemBlock.receipts[i].result.expectOk().expectUint(userInfoObjects[i - 1].redemptionAmount);
+      }
+    }
+
+    // claim stacking rewards from cycle u10
+    const stackingClaimBlock = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, nyc.cityName, 10), ccd007CityStacking.claimStackingReward(user2, nyc.cityName, 10), ccd007CityStacking.claimStackingReward(user3, nyc.cityName, 10)]);
+    for (let i = 0; i < stackingClaimBlock.receipts.length; i++) {
+      stackingClaimBlock.receipts[i].result.expectOk().expectBool(true);
+    }
+
+    // act
+    // redeem token balances once for each user
+    const secondRedeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
+    console.log("secondRedeemBlock", secondRedeemBlock);
+
+    // get user balances
+    const user1Info2 = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
+    const user2Info2 = await ccd012RedemptionNyc.getUserRedemptionInfo(user2.address).result;
+    const user3Info2 = await ccd012RedemptionNyc.getUserRedemptionInfo(user3.address).result;
+    const user4Info2 = await ccd012RedemptionNyc.getUserRedemptionInfo(user4.address).result;
+
+    const user1InfoObject2 = parseClarityTuple(user1Info);
+    const user2InfoObject2 = parseClarityTuple(user2Info);
+    const user3InfoObject2 = parseClarityTuple(user3Info);
+    const user4InfoObject2 = parseClarityTuple(user4Info);
+
+    const userInfoObjects2 = [user1InfoObject2, user2InfoObject2, user3InfoObject2, user4InfoObject2];
+
+    // assert
+    assertEquals(secondRedeemBlock.receipts.length, 5);
+    for (let i = 0; i < secondRedeemBlock.receipts.length; i++) {
+      if (i === 0) {
+        secondRedeemBlock.receipts[i].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_BALANCE_NOT_FOUND);
+      } else {
+        secondRedeemBlock.receipts[i].result.expectOk().expectUint(userInfoObjects2[i - 1].redemptionAmount);
+      }
+    }
+  },
+});
