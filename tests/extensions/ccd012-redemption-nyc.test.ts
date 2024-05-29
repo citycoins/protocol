@@ -586,10 +586,10 @@ Clarinet.test({
     const user3Info2 = await ccd012RedemptionNyc.getUserRedemptionInfo(user3.address).result;
     const user4Info2 = await ccd012RedemptionNyc.getUserRedemptionInfo(user4.address).result;
 
-    const user1InfoObject2 = parseClarityTuple(user1Info);
-    const user2InfoObject2 = parseClarityTuple(user2Info);
-    const user3InfoObject2 = parseClarityTuple(user3Info);
-    const user4InfoObject2 = parseClarityTuple(user4Info);
+    const user1InfoObject2 = parseClarityTuple(user1Info2);
+    const user2InfoObject2 = parseClarityTuple(user2Info2);
+    const user3InfoObject2 = parseClarityTuple(user3Info2);
+    const user4InfoObject2 = parseClarityTuple(user4Info2);
 
     const userInfoObjects2 = [user1InfoObject2, user2InfoObject2, user3InfoObject2, user4InfoObject2];
 
