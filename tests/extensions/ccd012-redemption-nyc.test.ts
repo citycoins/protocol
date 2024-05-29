@@ -283,6 +283,7 @@ Clarinet.test({
         redeemBlock.receipts[i].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_BALANCE_NOT_FOUND);
       } else {
         redeemBlock.receipts[i].result.expectOk().expectUint(userInfoObjects[i - 1].redemptionAmount);
+        redeemBlock.events.expectFungibleTokenBurnEvent(0, user1.address, "newyorkcitycoin");
       }
     }
   },
