@@ -22,6 +22,7 @@
 
 ;; helpers
 (define-constant MICRO_CITYCOINS (pow u10 u6)) ;; 6 decimal places
+(define-constant REDEMPTION_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
 
 ;; DATA VARS
 
@@ -201,3 +202,13 @@
 )
 
 ;; PRIVATE FUNCTIONS
+
+;; CREDIT: ALEX math-fixed-point-16.clar
+
+(define-private (scale-up (a uint))
+  (* a REDEMPTION_SCALE_FACTOR)
+)
+
+(define-private (scale-down (a uint))
+  (/ a REDEMPTION_SCALE_FACTOR)
+)
