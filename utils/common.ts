@@ -125,6 +125,7 @@ export const PROPOSALS = {
   TEST_CCIP022_TREASURY_REDEMPTION_NYC_002: ADDRESS.concat(".test-ccip022-treasury-redemption-nyc-002"),
   TEST_CCIP022_TREASURY_REDEMPTION_NYC_003: ADDRESS.concat(".test-ccip022-treasury-redemption-nyc-003"),
   TEST_CCIP022_TREASURY_REDEMPTION_NYC_004: ADDRESS.concat(".test-ccip022-treasury-redemption-nyc-004"),
+  TEST_CCIP022_TREASURY_REDEMPTION_NYC_005: ADDRESS.concat(".test-ccip022-treasury-redemption-nyc-005"),
 };
 
 export const EXTERNAL = {

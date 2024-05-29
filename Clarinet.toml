@@ -555,6 +555,11 @@ path = "tests/contracts/proposals/test-ccip022-treasury-redemption-nyc-004.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.test-ccip022-treasury-redemption-nyc-005]
+path = "tests/contracts/proposals/test-ccip022-treasury-redemption-nyc-005.clar"
+clarity_version = 2
+epoch = 2.4
+
 [repl]
 costs_version = 2
 parser_version = 2

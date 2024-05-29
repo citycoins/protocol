@@ -219,12 +219,15 @@ Clarinet.test({
     }
 
     const fundV1Block = passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_002);
+    const fundV2SenderBlock = passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_005);
     for (let i = 0; i < fundV1Block.receipts.length; i++) {
       fundV1Block.receipts[i].result.expectOk().expectUint(i + 1);
+      fundV2SenderBlock.receipts[i].result.expectOk().expectUint(i + 1);
     }
 
     // stack first cycle u1, last cycle u10
-    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, nyc.cityName, amountStacked, lockPeriod)]);
+    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(sender, nyc.cityName, amountStacked, lockPeriod)]);
+    // console.log("stackingBlock", stackingBlock);
     for (let i = 0; i < stackingBlock.receipts.length; i++) {
       stackingBlock.receipts[i].result.expectOk().expectBool(true);
     }
@@ -235,14 +238,16 @@ Clarinet.test({
     chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
     ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
 
-    // execute two yes votes, one no vote
-    const votingBlock = chain.mineBlock([ccip022TreasuryRedemptionNyc.voteOnProposal(user1, true), ccip022TreasuryRedemptionNyc.voteOnProposal(user2, true), ccip022TreasuryRedemptionNyc.voteOnProposal(user3, false)]);
+    // execute one yes vote
+    const votingBlock = chain.mineBlock([ccip022TreasuryRedemptionNyc.voteOnProposal(sender, true)]);
+    // console.log("votingBlock", votingBlock);
     for (let i = 0; i < votingBlock.receipts.length; i++) {
       votingBlock.receipts[i].result.expectOk().expectBool(true);
     }
 
     // execute ccip-022
     const executeBlock = passProposal(chain, accounts, PROPOSALS.CCIP_022);
+    // console.log("executeBlock", executeBlock);
     assertEquals(executeBlock.receipts.length, 3);
     for (let i = 0; i < executeBlock.receipts.length; i++) {
       executeBlock.receipts[i].result.expectOk().expectUint(i + 1);
