@@ -99,8 +99,6 @@
     )
     ;; check if redemptions are enabled
     (asserts! (var-get redemptionsEnabled) ERR_NOT_ENABLED)
-    ;; check that user has not already claimed
-    (asserts! (is-eq redemptionClaims u0) ERR_ALREADY_CLAIMED)
     ;; check that user has at least one positive balance
     (asserts! (or (> balanceV1 u0) (> balanceV2 u0)) ERR_BALANCE_NOT_FOUND)
     ;; check that redemption amount is > 0

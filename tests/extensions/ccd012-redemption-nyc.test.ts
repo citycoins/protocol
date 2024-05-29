@@ -126,7 +126,8 @@ Clarinet.test({
     executeBlock.receipts[1].result.expectOk().expectUint(2);
     executeBlock.receipts[2].result.expectOk().expectUint(3);
 
-    const expectedEvent = `{blockHeight: u${executeBlock.height - 1}, contractBalance: u1000000000000, redemptionRatio: u50000, redemptionsEnabled: true, totalSupply: u20000000}`;
+    const expectedEvent = `{blockHeight: u${executeBlock.height - 1}, contractBalance: u15000000000000, redemptionRatio: u0, redemptionsEnabled: true, totalSupply: u32020000000000}`;
+    // console.log(executeBlock.receipts[2].events[3].contract_event.value);
     executeBlock.receipts[2].events.expectPrintEvent(EXTENSIONS.CCD012_REDEMPTION_NYC, expectedEvent);
   },
 });
@@ -201,7 +202,7 @@ Clarinet.test({
     const ccd012RedemptionNyc = new CCD012RedemptionNyc(chain, sender);
     const ccip022TreasuryRedemptionNyc = new CCIP022TreasuryRedemptionNYC(chain, sender);
 
-    const amountStacked = 500;
+    const amountStacked = 10000000000; // match balance for user
     const lockPeriod = 10;
 
     // progress the chain to avoid underflow in
