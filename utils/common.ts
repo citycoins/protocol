@@ -130,6 +130,7 @@ export const PROPOSALS = {
 export const EXTERNAL = {
   FT_MIA: ADDRESS.concat(".test-ccext-governance-token-mia"),
   FT_NYC: ADDRESS.concat(".test-ccext-governance-token-nyc"),
+  FT_NYC_V1: ADDRESS.concat(".test-ccext-governance-token-nyc-v1"),
   NFT_MIA: ADDRESS.concat(".test-ccext-nft-mia"),
   NFT_NYC: ADDRESS.concat(".test-ccext-nft-nyc"),
 };

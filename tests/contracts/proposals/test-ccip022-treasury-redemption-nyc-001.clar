@@ -37,7 +37,7 @@
     (try! (contract-call? .ccd005-city-data add-treasury u1 .ccd002-treasury-mia-stacking "stacking"))
     (try! (contract-call? .ccd005-city-data add-treasury u2 .ccd002-treasury-nyc-stacking "stacking"))
     ;; test-ccd007-city-stacking-010 + nyc
-    (try! (contract-call? .ccd002-treasury-mia-stacking set-allowed .test-ccext-governance-token-mia true))
+    (try! (contract-call? .ccd002-treasury-nyc-stacking set-allowed .test-ccext-governance-token-nyc-v1 true))
     (try! (contract-call? .ccd002-treasury-nyc-stacking set-allowed .test-ccext-governance-token-nyc true))
     ;; test-ccd005-city-data-009
     (try! (contract-call? .ccd005-city-data set-coinbase-amounts u1 u10 u100 u1000 u10000 u100000 u1000000 u10000000))
@@ -53,5 +53,5 @@
 	)
 )
 
-;; transfer 1M STX to mining treasury contract from deployer
-(stx-transfer? u1000000000000 tx-sender .ccd002-treasury-nyc-mining-v2)
+;; transfer 15M STX to mining treasury contract from deployer
+(stx-transfer? u15000000000000 tx-sender .ccd002-treasury-nyc-mining-v2)
