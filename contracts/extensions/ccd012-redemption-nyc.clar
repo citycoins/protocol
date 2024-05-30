@@ -174,9 +174,15 @@
 )
 
 (define-read-only (get-redemption-for-balance (balance uint))
-  (begin
-    (asserts! (var-get redemptionsEnabled) none)
-    (some (* balance (var-get redemptionRatio)))
+  (let
+    (
+      (balanceScaled (scale-up balance))
+      (redemptionAmountScaled (* (var-get redemptionRatio) balanceScaled))
+    )
+    (if (> redemptionAmountScaled u0)
+      (some (scale-down redemptionAmountScaled))
+      none
+    )
   )
 )
 
@@ -214,5 +220,11 @@
 )
 
 (define-private (calculate-redemption-ratio (balance uint) (supply uint))
-  u0
+  (let
+    (
+      (balanceScaled (scale-up balance))
+      (supplyScaled (scale-up supply))
+    )
+    (scale-down (/ balanceScaled supplyScaled))
+  )
 )
