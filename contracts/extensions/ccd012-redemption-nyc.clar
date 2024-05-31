@@ -19,6 +19,7 @@
 (define-constant ERR_BALANCE_NOT_FOUND (err u12006))
 (define-constant ERR_NOTHING_TO_REDEEM (err u12007))
 (define-constant ERR_ALREADY_CLAIMED (err u12008))
+(define-constant ERR_SUPPLY_CALCULATION (err u12009))
 
 ;; helpers
 (define-constant MICRO_CITYCOINS (pow u10 u6)) ;; 6 decimal places
@@ -62,7 +63,7 @@
       (nycTotalSupplyV2 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-total-supply) ERR_PANIC))
       (nycTotalSupply (+ (* nycTotalSupplyV1 MICRO_CITYCOINS) nycTotalSupplyV2))
       (nycRedemptionBalance (as-contract (stx-get-balance tx-sender)))
-      (nycRedemptionRatio (unwrap! (calculate-redemption-ratio nycRedemptionBalance nycTotalSupply) ERR_PANIC)) ;; TODO: better error if we keep it
+      (nycRedemptionRatio (calculate-redemption-ratio nycRedemptionBalance nycTotalSupply))
     )
     ;; check if sender is DAO or extension
     (try! (is-dao-or-extension))
@@ -70,6 +71,8 @@
     (asserts! (and (> nycTotalSupplyV1 u0) (> nycTotalSupplyV2 u0)) ERR_GETTING_TOTAL_SUPPLY)
     ;; check that redemption balance is greater than 0
     (asserts! (> nycRedemptionBalance u0) ERR_GETTING_REDEMPTION_BALANCE)
+    ;; check that redemption ratio has a value
+    (asserts! (is-some nycRedemptionRatio) ERR_SUPPLY_CALCULATION)
     ;; check if redemptions are already enabled
     (asserts! (not (var-get redemptionsEnabled)) ERR_ALREADY_ENABLED)
     ;; record current block height
@@ -79,7 +82,7 @@
     ;; record contract balance at block height
     (var-set contractBalance nycRedemptionBalance)
     ;; calculate redemption ratio
-    (var-set redemptionRatio nycRedemptionRatio)
+    (var-set redemptionRatio (unwrap-panic nycRedemptionRatio))
     ;; set redemptionsEnabled to true, can only run once
     (var-set redemptionsEnabled true)
     ;; print redemption info
@@ -96,7 +99,7 @@
       (balanceV1 (unwrap! (contract-call? .test-ccext-governance-token-nyc-v1 get-balance userAddress) ERR_BALANCE_NOT_FOUND))
       (balanceV2 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-balance userAddress) ERR_BALANCE_NOT_FOUND))
       (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
-      (redemptionAmount (unwrap! (get-redemption-for-balance totalBalance) ERR_NOTHING_TO_REDEEM))
+      (redemptionAmount (get-redemption-for-balance totalBalance))
       (redemptionClaims (default-to u0 (get-redemption-amount-claimed userAddress)))
     )
     ;; check if redemptions are enabled
@@ -104,16 +107,16 @@
     ;; check that user has at least one positive balance
     (asserts! (or (> balanceV1 u0) (> balanceV2 u0)) ERR_BALANCE_NOT_FOUND)
     ;; check that redemption amount is > 0
-    (asserts! (> redemptionAmount u0) ERR_NOTHING_TO_REDEEM)
+    (asserts! (and (is-some redemptionAmount) (> (unwrap-panic redemptionAmount) u0)) ERR_NOTHING_TO_REDEEM)
     ;; burn NYC
     ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
     ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
     (and (> u0 balanceV1) (try! (contract-call? .test-ccext-governance-token-nyc-v1 burn balanceV1 userAddress)))
     (and (> u0 balanceV2) (try! (contract-call? .test-ccext-governance-token-nyc burn balanceV2 userAddress)))
     ;; transfer STX
-    (try! (as-contract (stx-transfer? redemptionAmount tx-sender userAddress)))
+    (try! (as-contract (stx-transfer? (unwrap-panic redemptionAmount) tx-sender userAddress)))
     ;; update redemption claims
-    (map-set RedemptionClaims userAddress (+ redemptionClaims redemptionAmount))
+    (map-set RedemptionClaims userAddress (+ redemptionClaims (unwrap-panic redemptionAmount)))
     ;; print redemption info
     (print (get-redemption-info))
     ;; print user redemption info
@@ -230,30 +233,15 @@
   )
 )
 
-;; (define-private (calculate-redemption-ratio (balance uint) (supply uint))
-;;   (let
-;;     (
-;;       (balanceScaled (scale-up balance)) ;; u150000000000000000000000000000,
-;;       (supplyScaled (scale-up supply)) ;; u160200000000000000000000000000,
-;;       (quotient (if (> balanceScaled supplyScaled) (/ balanceScaled supplyScaled) u0)) ;; u0, because decimals are truncated
-;;       (remainder (mod balanceScaled supplyScaled)) ;; u150000000000000000000000000000,
-;;     )
-;;     (if (and (> balanceScaled u0) (> supplyScaled u0))
-;;       (some remainder)
-;;       none
-;;     )    
-;;   )
-;;)
 
 (define-private (calculate-redemption-ratio (balance uint) (supply uint))
   (if (or (is-eq supply u0) (is-eq balance u0))
-    none ;; If either supply or balance is zero, return 0
+    none
     (let
       (
         (scaledBalance (* balance REDEMPTION_SCALE_FACTOR))
-        (scaledSupply supply)
       )
-      (some (/ scaledBalance scaledSupply)) ;; Calculate the ratio
+      (some (/ scaledBalance supply))
     )
   )
 )

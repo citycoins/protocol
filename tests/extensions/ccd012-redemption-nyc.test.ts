@@ -80,7 +80,6 @@ Clarinet.test({
     const user2 = accounts.get("wallet_2")!;
     const user3 = accounts.get("wallet_3")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
-    const ccd012RedemptionNyc = new CCD012RedemptionNyc(chain, sender);
     const ccip022TreasuryRedemptionNyc = new CCIP022TreasuryRedemptionNYC(chain, sender);
 
     // set stacking parameters
@@ -122,11 +121,13 @@ Clarinet.test({
 
     // assert
     assertEquals(executeBlock.receipts.length, 3);
-    executeBlock.receipts[0].result.expectOk().expectUint(1);
-    executeBlock.receipts[1].result.expectOk().expectUint(2);
-    executeBlock.receipts[2].result.expectOk().expectUint(3);
+    for (let i = 0; i < executeBlock.receipts.length; i++) {
+      executeBlock.receipts[i].result.expectOk().expectUint(i + 1);
+    }
 
-    const expectedEvent = `{blockHeight: u${executeBlock.height - 1}, contractBalance: u15000000000000, redemptionRatio: u0, redemptionsEnabled: true, totalSupply: u32020000000000}`;
+    const expectedEvent = `{blockHeight: u${executeBlock.height - 1}, contractBalance: u15000000000000, redemptionRatio: u46845721, redemptionsEnabled: true, totalSupply: u32020000000000}`;
+    // redemption ratio obtained through console logging below
+    // verified by the values: 15000000000000 / 32020000000000 = 0.46845721
     // console.log(executeBlock.receipts[2].events[3].contract_event.value);
     executeBlock.receipts[2].events.expectPrintEvent(EXTENSIONS.CCD012_REDEMPTION_NYC, expectedEvent);
   },
@@ -257,7 +258,7 @@ Clarinet.test({
     // get contract redemption info
 
     const redemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
-    console.log("v1 only redemptionInfo", redemptionInfo);
+    console.log("v1 only redemptionInfo", parseClarityTuple(redemptionInfo));
 
     // get user balances
     const user1Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
@@ -352,7 +353,7 @@ Clarinet.test({
     // get contract redemption info
 
     const redemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
-    console.log("v2 only redemptionInfo", redemptionInfo);
+    console.log("v2 only redemptionInfo", parseClarityTuple(redemptionInfo));
 
     // get user balances
     const user1Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
@@ -369,7 +370,7 @@ Clarinet.test({
 
     // act
     const redeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
-    console.log("v2 only redeem block", redeemBlock);
+    console.log("v2 only redeem block", parseClarityTuple(redeemBlock));
 
     // assert
     assertEquals(redeemBlock.receipts.length, 5);
@@ -448,7 +449,7 @@ Clarinet.test({
     // get contract redemption info
 
     const redemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
-    console.log("redemptionInfo", redemptionInfo);
+    console.log("v2 only redemptionInfo", parseClarityTuple(redemptionInfo));
 
     // get user balances
     const user1Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
@@ -465,7 +466,7 @@ Clarinet.test({
 
     // act
     const redeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
-    console.log("redeem block", redeemBlock);
+    console.log("v2 only redeem block", redeemBlock);
 
     // assert
     assertEquals(redeemBlock.receipts.length, 5);
@@ -543,7 +544,7 @@ Clarinet.test({
 
     // get contract redemption info
     const redemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
-    console.log("multi redemptionInfo", redemptionInfo);
+    console.log("multi redemptionInfo", parseClarityTuple(redemptionInfo));
 
     // get user balances
     const user1Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
