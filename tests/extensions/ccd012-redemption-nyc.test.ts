@@ -4,6 +4,10 @@ import { CCIP022TreasuryRedemptionNYC } from "../../models/proposals/ccip022-tre
 import { EXTENSIONS, PROPOSALS, constructAndPassProposal, nyc, parseClarityTuple, passProposal } from "../../utils/common.ts";
 import { Account, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
 
+// used for asset identifier in detecting burn events
+const NYC_V1_TOKEN = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.test-ccext-governance-token-nyc-v1::newyorkcitycoin";
+const NYC_V2_TOKEN = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.test-ccext-governance-token-nyc::newyorkcitycoin";
+
 // =============================
 // 0. AUTHORIZATION CHECKS
 // =============================
@@ -98,7 +102,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_003);
 
     // stack first cycle u1, last cycle u10
-    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, nyc.cityName, amountStacked, lockPeriod)]);
+    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, nyc.cityName, amountStacked, lockPeriod)]);
     // for length of mineBlock array, expectOk and expectBool(true)
     for (let i = 0; i < stackingBlock.receipts.length; i++) {
       stackingBlock.receipts[i].result.expectOk().expectBool(true);
@@ -156,7 +160,10 @@ Clarinet.test({
 
     // assert
     assertEquals(redeemBlock.receipts.length, 1);
-    redeemBlock.receipts[0].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_NOTHING_TO_REDEEM);
+    // note: actually fails with ERR_NOTHING_TO_REDEEM, but did not want to remove test case / extra code to be safe
+    // check was moved from let statement into function body with assert
+    // before being initialized the redemption amount always returns none, so short-circuits early before error
+    redeemBlock.receipts[0].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_NOT_ENABLED);
   },
 });
 
@@ -180,9 +187,7 @@ Clarinet.test({
 
     // assert
     assertEquals(redeemBlock.receipts.length, 1);
-    // note: actually fails with ERR_NOTHING_TO_REDEEM, but did not want to remove test case / extra code to be safe
-    // when disabled the redemption amount always returns none, so short-circuits early before error
-    redeemBlock.receipts[0].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_NOTHING_TO_REDEEM);
+    redeemBlock.receipts[0].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_NOT_ENABLED);
   },
 });
 
@@ -283,10 +288,24 @@ Clarinet.test({
       if (i === 0) {
         redeemBlock.receipts[i].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_BALANCE_NOT_FOUND);
       } else {
-        redeemBlock.receipts[i].result.expectOk().expectUint(userInfoObjects[i - 1].redemptionAmount);
-        redeemBlock.events.expectFungibleTokenBurnEvent(0, user1.address, "newyorkcitycoin");
+        redeemBlock.receipts[i].result
+          .expectOk()
+          .expectSome()
+          .expectUint(userInfoObjects[i - 1].redemptionAmount);
+        const expectedBurnEvent = {
+          asset_identifier: NYC_V1_TOKEN,
+          sender: userInfoObjects[i - 1].address,
+          amount: userInfoObjects[i - 1].nycBalances.balanceV1,
+        };
+        redeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEvent.amount, expectedBurnEvent.sender, expectedBurnEvent.asset_identifier);
       }
     }
+    console.log("----------");
+    console.log("user1Info", user1InfoObject);
+    console.log("user2Info", user2InfoObject);
+    console.log("user3Info", user3InfoObject);
+    console.log("user4Info", user4InfoObject);
+    console.log("----------");
   },
 });
 
@@ -370,7 +389,7 @@ Clarinet.test({
 
     // act
     const redeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
-    console.log("v2 only redeem block", parseClarityTuple(redeemBlock));
+    console.log("v2 only redeem block", redeemBlock);
 
     // assert
     assertEquals(redeemBlock.receipts.length, 5);
@@ -378,9 +397,24 @@ Clarinet.test({
       if (i === 0) {
         redeemBlock.receipts[i].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_BALANCE_NOT_FOUND);
       } else {
-        redeemBlock.receipts[i].result.expectOk().expectUint(userInfoObjects[i - 1].redemptionAmount);
+        redeemBlock.receipts[i].result
+          .expectOk()
+          .expectSome()
+          .expectUint(userInfoObjects[i - 1].redemptionAmount);
+        const expectedBurnEvent = {
+          asset_identifier: NYC_V2_TOKEN,
+          sender: userInfoObjects[i - 1].address,
+          amount: userInfoObjects[i - 1].nycBalances.balanceV2,
+        };
+        redeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEvent.amount, expectedBurnEvent.sender, expectedBurnEvent.asset_identifier);
       }
     }
+    console.log("----------");
+    console.log("user1Info", user1InfoObject);
+    console.log("user2Info", user2InfoObject);
+    console.log("user3Info", user3InfoObject);
+    console.log("user4Info", user4InfoObject);
+    console.log("----------");
   },
 });
 
@@ -449,7 +483,7 @@ Clarinet.test({
     // get contract redemption info
 
     const redemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
-    console.log("v2 only redemptionInfo", parseClarityTuple(redemptionInfo));
+    console.log("v1 + v2 redemptionInfo", parseClarityTuple(redemptionInfo));
 
     // get user balances
     const user1Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
@@ -466,7 +500,7 @@ Clarinet.test({
 
     // act
     const redeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
-    console.log("v2 only redeem block", redeemBlock);
+    console.log("v1 + v2 redeem block", redeemBlock);
 
     // assert
     assertEquals(redeemBlock.receipts.length, 5);
@@ -474,9 +508,30 @@ Clarinet.test({
       if (i === 0) {
         redeemBlock.receipts[i].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_BALANCE_NOT_FOUND);
       } else {
-        redeemBlock.receipts[i].result.expectOk().expectUint(userInfoObjects[i - 1].redemptionAmount);
+        redeemBlock.receipts[i].result
+          .expectOk()
+          .expectSome()
+          .expectUint(userInfoObjects[i - 1].redemptionAmount);
+        const expectedBurnEventV1 = {
+          asset_identifier: NYC_V1_TOKEN,
+          sender: userInfoObjects[i - 1].address,
+          amount: userInfoObjects[i - 1].nycBalances.balanceV1,
+        };
+        const expectedBurnEventV2 = {
+          asset_identifier: NYC_V2_TOKEN,
+          sender: userInfoObjects[i - 1].address,
+          amount: userInfoObjects[i - 1].nycBalances.balanceV2,
+        };
+        redeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV1.amount, expectedBurnEventV1.sender, expectedBurnEventV1.asset_identifier);
+        redeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV2.amount, expectedBurnEventV2.sender, expectedBurnEventV2.asset_identifier);
       }
     }
+    console.log("----------");
+    console.log("user1Info", user1InfoObject);
+    console.log("user2Info", user2InfoObject);
+    console.log("user3Info", user3InfoObject);
+    console.log("user4Info", user4InfoObject);
+    console.log("----------");
   },
 });
 
@@ -518,7 +573,7 @@ Clarinet.test({
     }
 
     // stack first cycle u1, last cycle u10
-    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user3, nyc.cityName, amountStacked, lockPeriod)]);
+    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, nyc.cityName, amountStacked, lockPeriod), ccd007CityStacking.stack(user2, nyc.cityName, amountStacked * 2, lockPeriod), ccd007CityStacking.stack(user3, nyc.cityName, amountStacked * 3, lockPeriod), ccd007CityStacking.stack(user4, nyc.cityName, amountStacked * 4, lockPeriod)]);
     for (let i = 0; i < stackingBlock.receipts.length; i++) {
       stackingBlock.receipts[i].result.expectOk().expectBool(true);
     }
@@ -567,20 +622,33 @@ Clarinet.test({
       if (i === 0) {
         firstRedeemBlock.receipts[i].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_BALANCE_NOT_FOUND);
       } else {
-        firstRedeemBlock.receipts[i].result.expectOk().expectUint(userInfoObjects[i - 1].redemptionAmount);
+        firstRedeemBlock.receipts[i].result
+          .expectOk()
+          .expectSome()
+          .expectUint(userInfoObjects[i - 1].redemptionAmount);
+        const expectedBurnEventV1 = {
+          asset_identifier: NYC_V1_TOKEN,
+          sender: userInfoObjects[i - 1].address,
+          amount: userInfoObjects[i - 1].nycBalances.balanceV1,
+        };
+        const expectedBurnEventV2 = {
+          asset_identifier: NYC_V2_TOKEN,
+          sender: userInfoObjects[i - 1].address,
+          amount: userInfoObjects[i - 1].nycBalances.balanceV2,
+        };
+        firstRedeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV1.amount, expectedBurnEventV1.sender, expectedBurnEventV1.asset_identifier);
+        firstRedeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV2.amount, expectedBurnEventV2.sender, expectedBurnEventV2.asset_identifier);
       }
     }
 
     // claim stacking rewards from cycle u10
-    const stackingClaimBlock = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, nyc.cityName, 10), ccd007CityStacking.claimStackingReward(user2, nyc.cityName, 10), ccd007CityStacking.claimStackingReward(user3, nyc.cityName, 10)]);
+    // progress the chain to cycle 15
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 16 + 10);
+    const stackingClaimBlock = chain.mineBlock([ccd007CityStacking.claimStackingReward(user1, nyc.cityName, 10), ccd007CityStacking.claimStackingReward(user2, nyc.cityName, 10), ccd007CityStacking.claimStackingReward(user3, nyc.cityName, 10), ccd007CityStacking.claimStackingReward(user4, nyc.cityName, 10)]);
+    // console.log("stackingClaimBlock", stackingClaimBlock);
     for (let i = 0; i < stackingClaimBlock.receipts.length; i++) {
       stackingClaimBlock.receipts[i].result.expectOk().expectBool(true);
     }
-
-    // act
-    // redeem token balances once for each user
-    const secondRedeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
-    console.log("secondRedeemBlock", secondRedeemBlock);
 
     // get user balances
     const user1Info2 = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
@@ -595,14 +663,41 @@ Clarinet.test({
 
     const userInfoObjects2 = [user1InfoObject2, user2InfoObject2, user3InfoObject2, user4InfoObject2];
 
+    // act
+    // redeem token balances once for each user
+    const secondRedeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
+    console.log("secondRedeemBlock", secondRedeemBlock);
+
     // assert
     assertEquals(secondRedeemBlock.receipts.length, 5);
     for (let i = 0; i < secondRedeemBlock.receipts.length; i++) {
       if (i === 0) {
         secondRedeemBlock.receipts[i].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_BALANCE_NOT_FOUND);
       } else {
-        secondRedeemBlock.receipts[i].result.expectOk().expectUint(userInfoObjects2[i - 1].redemptionAmount);
+        secondRedeemBlock.receipts[i].result
+          .expectOk()
+          .expectSome()
+          .expectUint(userInfoObjects2[i - 1].redemptionAmount);
+        const expectedBurnEventV1 = {
+          asset_identifier: NYC_V1_TOKEN,
+          sender: userInfoObjects[i - 1].address,
+          amount: userInfoObjects[i - 1].nycBalances.balanceV1,
+        };
+        const expectedBurnEventV2 = {
+          asset_identifier: NYC_V2_TOKEN,
+          sender: userInfoObjects[i - 1].address,
+          amount: userInfoObjects[i - 1].nycBalances.balanceV2,
+        };
+        firstRedeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV1.amount, expectedBurnEventV1.sender, expectedBurnEventV1.asset_identifier);
+        firstRedeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV2.amount, expectedBurnEventV2.sender, expectedBurnEventV2.asset_identifier);
       }
     }
+
+    console.log("----------");
+    console.log("user1Info", user1InfoObject2);
+    console.log("user2Info", user2InfoObject2);
+    console.log("user3Info", user3InfoObject2);
+    console.log("user4Info", user4InfoObject2);
+    console.log("----------");
   },
 });

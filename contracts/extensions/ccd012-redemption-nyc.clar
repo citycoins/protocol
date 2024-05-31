@@ -68,7 +68,7 @@
     ;; check if sender is DAO or extension
     (try! (is-dao-or-extension))
     ;; check that total supply is greater than 0
-    (asserts! (and (> nycTotalSupplyV1 u0) (> nycTotalSupplyV2 u0)) ERR_GETTING_TOTAL_SUPPLY)
+    (asserts! (> nycTotalSupply u0) ERR_GETTING_TOTAL_SUPPLY)
     ;; check that redemption balance is greater than 0
     (asserts! (> nycRedemptionBalance u0) ERR_GETTING_REDEMPTION_BALANCE)
     ;; check that redemption ratio has a value
@@ -105,14 +105,14 @@
     ;; check if redemptions are enabled
     (asserts! (var-get redemptionsEnabled) ERR_NOT_ENABLED)
     ;; check that user has at least one positive balance
-    (asserts! (or (> balanceV1 u0) (> balanceV2 u0)) ERR_BALANCE_NOT_FOUND)
+    (asserts! (> (+ balanceV1 balanceV2) u0) ERR_BALANCE_NOT_FOUND) ;; cheaper, credit: LNow
     ;; check that redemption amount is > 0
     (asserts! (and (is-some redemptionAmount) (> (unwrap-panic redemptionAmount) u0)) ERR_NOTHING_TO_REDEEM)
     ;; burn NYC
     ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
     ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-    (and (> u0 balanceV1) (try! (contract-call? .test-ccext-governance-token-nyc-v1 burn balanceV1 userAddress)))
-    (and (> u0 balanceV2) (try! (contract-call? .test-ccext-governance-token-nyc burn balanceV2 userAddress)))
+    (and (> balanceV1 u0) (try! (contract-call? .test-ccext-governance-token-nyc-v1 burn balanceV1 userAddress)))
+    (and (> balanceV2 u0) (try! (contract-call? .test-ccext-governance-token-nyc burn balanceV2 userAddress)))
     ;; transfer STX
     (try! (as-contract (stx-transfer? (unwrap-panic redemptionAmount) tx-sender userAddress)))
     ;; update redemption claims
