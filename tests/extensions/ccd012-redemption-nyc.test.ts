@@ -263,7 +263,7 @@ Clarinet.test({
     // get contract redemption info
 
     const redemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
-    console.log("v1 only redemptionInfo", parseClarityTuple(redemptionInfo));
+    // console.log("v1 only redemptionInfo", parseClarityTuple(redemptionInfo));
 
     // get user balances
     const user1Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
@@ -280,7 +280,7 @@ Clarinet.test({
 
     // act
     const redeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
-    console.log("v1 only redeem block", redeemBlock);
+    // console.log("v1 only redeem block", redeemBlock);
 
     // assert
     assertEquals(redeemBlock.receipts.length, 5);
@@ -300,12 +300,12 @@ Clarinet.test({
         redeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEvent.amount, expectedBurnEvent.sender, expectedBurnEvent.asset_identifier);
       }
     }
-    console.log("----------");
-    console.log("user1Info", user1InfoObject);
-    console.log("user2Info", user2InfoObject);
-    console.log("user3Info", user3InfoObject);
-    console.log("user4Info", user4InfoObject);
-    console.log("----------");
+    // console.log("----------");
+    // console.log("user1Info", user1InfoObject);
+    // console.log("user2Info", user2InfoObject);
+    // console.log("user3Info", user3InfoObject);
+    // console.log("user4Info", user4InfoObject);
+    // console.log("----------");
   },
 });
 
@@ -372,7 +372,7 @@ Clarinet.test({
     // get contract redemption info
 
     const redemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
-    console.log("v2 only redemptionInfo", parseClarityTuple(redemptionInfo));
+    // console.log("v2 only redemptionInfo", parseClarityTuple(redemptionInfo));
 
     // get user balances
     const user1Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
@@ -389,7 +389,7 @@ Clarinet.test({
 
     // act
     const redeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
-    console.log("v2 only redeem block", redeemBlock);
+    // console.log("v2 only redeem block", redeemBlock);
 
     // assert
     assertEquals(redeemBlock.receipts.length, 5);
@@ -409,12 +409,12 @@ Clarinet.test({
         redeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEvent.amount, expectedBurnEvent.sender, expectedBurnEvent.asset_identifier);
       }
     }
-    console.log("----------");
-    console.log("user1Info", user1InfoObject);
-    console.log("user2Info", user2InfoObject);
-    console.log("user3Info", user3InfoObject);
-    console.log("user4Info", user4InfoObject);
-    console.log("----------");
+    // console.log("----------");
+    // console.log("user1Info", user1InfoObject);
+    // console.log("user2Info", user2InfoObject);
+    // console.log("user3Info", user3InfoObject);
+    // console.log("user4Info", user4InfoObject);
+    // console.log("----------");
   },
 });
 
@@ -483,7 +483,7 @@ Clarinet.test({
     // get contract redemption info
 
     const redemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
-    console.log("v1 + v2 redemptionInfo", parseClarityTuple(redemptionInfo));
+    // console.log("v1 + v2 redemptionInfo", parseClarityTuple(redemptionInfo));
 
     // get user balances
     const user1Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
@@ -500,7 +500,7 @@ Clarinet.test({
 
     // act
     const redeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
-    console.log("v1 + v2 redeem block", redeemBlock);
+    // console.log("v1 + v2 redeem block", redeemBlock);
 
     // assert
     assertEquals(redeemBlock.receipts.length, 5);
@@ -526,12 +526,12 @@ Clarinet.test({
         redeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV2.amount, expectedBurnEventV2.sender, expectedBurnEventV2.asset_identifier);
       }
     }
-    console.log("----------");
-    console.log("user1Info", user1InfoObject);
-    console.log("user2Info", user2InfoObject);
-    console.log("user3Info", user3InfoObject);
-    console.log("user4Info", user4InfoObject);
-    console.log("----------");
+    // console.log("----------");
+    // console.log("user1Info", user1InfoObject);
+    // console.log("user2Info", user2InfoObject);
+    // console.log("user3Info", user3InfoObject);
+    // console.log("user4Info", user4InfoObject);
+    // console.log("----------");
   },
 });
 
@@ -599,7 +599,7 @@ Clarinet.test({
 
     // get contract redemption info
     const redemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
-    console.log("multi redemptionInfo", parseClarityTuple(redemptionInfo));
+    // console.log("multi redemptionInfo", parseClarityTuple(redemptionInfo));
 
     // get user balances
     const user1Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
@@ -616,7 +616,7 @@ Clarinet.test({
 
     // redeem token balances once for each user
     const firstRedeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
-    console.log("firstRedeemBlock", firstRedeemBlock);
+    // console.log("firstRedeemBlock", firstRedeemBlock);
     assertEquals(firstRedeemBlock.receipts.length, 5);
     for (let i = 0; i < firstRedeemBlock.receipts.length; i++) {
       if (i === 0) {
@@ -666,7 +666,7 @@ Clarinet.test({
     // act
     // redeem token balances once for each user
     const secondRedeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
-    console.log("secondRedeemBlock", secondRedeemBlock);
+    // console.log("secondRedeemBlock", secondRedeemBlock);
 
     // assert
     assertEquals(secondRedeemBlock.receipts.length, 5);
@@ -693,11 +693,11 @@ Clarinet.test({
       }
     }
 
-    console.log("----------");
-    console.log("user1Info", user1InfoObject2);
-    console.log("user2Info", user2InfoObject2);
-    console.log("user3Info", user3InfoObject2);
-    console.log("user4Info", user4InfoObject2);
-    console.log("----------");
+    // console.log("----------");
+    // console.log("user1Info", user1InfoObject2);
+    // console.log("user2Info", user2InfoObject2);
+    // console.log("user3Info", user3InfoObject2);
+    // console.log("user4Info", user4InfoObject2);
+    // console.log("----------");
   },
 });
