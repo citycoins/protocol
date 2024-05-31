@@ -22,7 +22,7 @@
 
 ;; helpers
 (define-constant MICRO_CITYCOINS (pow u10 u6)) ;; 6 decimal places
-(define-constant REDEMPTION_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
+(define-constant REDEMPTION_SCALE_FACTOR (pow u10 u8)) ;; 8 decimal places
 
 ;; DATA VARS
 
@@ -62,6 +62,7 @@
       (nycTotalSupplyV2 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-total-supply) ERR_PANIC))
       (nycTotalSupply (+ (* nycTotalSupplyV1 MICRO_CITYCOINS) nycTotalSupplyV2))
       (nycRedemptionBalance (as-contract (stx-get-balance tx-sender)))
+      (nycRedemptionRatio (unwrap! (calculate-redemption-ratio nycRedemptionBalance nycTotalSupply) ERR_PANIC)) ;; TODO: better error if we keep it
     )
     ;; check if sender is DAO or extension
     (try! (is-dao-or-extension))
@@ -78,7 +79,7 @@
     ;; record contract balance at block height
     (var-set contractBalance nycRedemptionBalance)
     ;; calculate redemption ratio
-    (var-set redemptionRatio (calculate-redemption-ratio nycRedemptionBalance nycTotalSupply))
+    (var-set redemptionRatio nycRedemptionRatio)
     ;; set redemptionsEnabled to true, can only run once
     (var-set redemptionsEnabled true)
     ;; print redemption info
@@ -176,11 +177,11 @@
 (define-read-only (get-redemption-for-balance (balance uint))
   (let
     (
-      (balanceScaled (scale-up balance))
-      (redemptionAmountScaled (* (var-get redemptionRatio) balanceScaled))
+      (redemptionAmountScaled (* (var-get redemptionRatio) balance))
+      (redemptionAmount (/ redemptionAmountScaled REDEMPTION_SCALE_FACTOR))
     )
-    (if (> redemptionAmountScaled u0)
-      (some (scale-down redemptionAmountScaled))
+    (if (> redemptionAmount u0)
+      (some redemptionAmount)
       none
     )
   )
@@ -215,16 +216,44 @@
   (* a REDEMPTION_SCALE_FACTOR)
 )
 
+;; modified to favor the user when scaling down
 (define-private (scale-down (a uint))
-  (/ a REDEMPTION_SCALE_FACTOR)
-)
-
-(define-private (calculate-redemption-ratio (balance uint) (supply uint))
   (let
     (
-      (balanceScaled (scale-up balance))
-      (supplyScaled (scale-up supply))
+      (quotient (/ a REDEMPTION_SCALE_FACTOR))
+      (remainder (mod a REDEMPTION_SCALE_FACTOR))
     )
-    (scale-down (/ balanceScaled supplyScaled))
+    (if (> remainder u0)
+      (+ quotient u1)
+      quotient
+    )
+  )
+)
+
+;; (define-private (calculate-redemption-ratio (balance uint) (supply uint))
+;;   (let
+;;     (
+;;       (balanceScaled (scale-up balance)) ;; u150000000000000000000000000000,
+;;       (supplyScaled (scale-up supply)) ;; u160200000000000000000000000000,
+;;       (quotient (if (> balanceScaled supplyScaled) (/ balanceScaled supplyScaled) u0)) ;; u0, because decimals are truncated
+;;       (remainder (mod balanceScaled supplyScaled)) ;; u150000000000000000000000000000,
+;;     )
+;;     (if (and (> balanceScaled u0) (> supplyScaled u0))
+;;       (some remainder)
+;;       none
+;;     )    
+;;   )
+;;)
+
+(define-private (calculate-redemption-ratio (balance uint) (supply uint))
+  (if (or (is-eq supply u0) (is-eq balance u0))
+    none ;; If either supply or balance is zero, return 0
+    (let
+      (
+        (scaledBalance (* balance REDEMPTION_SCALE_FACTOR))
+        (scaledSupply supply)
+      )
+      (some (/ scaledBalance scaledSupply)) ;; Calculate the ratio
+    )
   )
 )
