@@ -32,6 +32,7 @@
 (define-data-var totalSupply uint u0)
 (define-data-var contractBalance uint u0)
 (define-data-var redemptionRatio uint u0)
+(define-data-var totalRedeemed uint u0)
 
 ;; DATA MAPS
 
@@ -116,6 +117,7 @@
     ;; transfer STX
     (try! (as-contract (stx-transfer? (unwrap-panic redemptionAmount) tx-sender userAddress)))
     ;; update redemption claims
+    (var-set totalRedeemed (+ (var-get totalRedeemed) (unwrap-panic redemptionAmount)))
     (map-set RedemptionClaims userAddress (+ redemptionClaims (unwrap-panic redemptionAmount)))
     ;; print redemption info
     (print (get-redemption-info))
@@ -148,6 +150,10 @@
   (var-get redemptionRatio)
 )
 
+(define-read-only (get-total-redeemed)
+  (var-get totalRedeemed)
+)
+
 ;; aggregate all exposed vars above
 (define-read-only (get-redemption-info)
   {
@@ -155,7 +161,8 @@
     blockHeight: (get-redemption-block-height),
     totalSupply: (get-redemption-total-supply),
     contractBalance: (get-redemption-contract-balance),
-    redemptionRatio: (get-redemption-ratio)
+    redemptionRatio: (get-redemption-ratio),
+    totalRedeemed: (get-total-redeemed)
   }
 )
 
