@@ -1,0 +1,28 @@
+name: Test contracts with clarinet
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  # allow running manually
+  workflow_dispatch:
+
+jobs:
+  test-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v4
+      - name: "Configure clarinet"
+        run: |
+          mkdir -p ~/.clarinet
+          echo "enable_hints = false" >> ~/.clarinet/clarinetrc.toml
+      - name: "Check contract syntax"
+        uses: docker://hirosystems/clarinet:2.6.0
+        with:
+          args: check
