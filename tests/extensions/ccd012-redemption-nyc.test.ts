@@ -129,7 +129,7 @@ Clarinet.test({
       executeBlock.receipts[i].result.expectOk().expectUint(i + 1);
     }
 
-    const expectedEvent = `{blockHeight: u${executeBlock.height - 1}, contractBalance: u15000000000000, redemptionRatio: u46845721, redemptionsEnabled: true, totalRedeemed: u0, totalSupply: u32020000000000}`;
+    const expectedEvent = `{notification: "intialize-contract", payload: {blockHeight: u12611, contractBalance: u15000000000000, redemptionRatio: u46845721, redemptionsEnabled: true, totalRedeemed: u0, totalSupply: u32020000000000}}`;
     // redemption ratio obtained through console logging below
     // verified by the values: 15000000000000 / 32020000000000 = 0.46845721
     // console.log(executeBlock.receipts[2].events[3].contract_event.value);

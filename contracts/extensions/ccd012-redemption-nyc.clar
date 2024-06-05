@@ -87,7 +87,10 @@
     ;; set redemptionsEnabled to true, can only run once
     (var-set redemptionsEnabled true)
     ;; print redemption info
-    (ok (print (get-redemption-info)))
+    (ok (print {
+      notification: "intialize-contract",
+      payload: (get-redemption-info)
+      }))
   )
 )
 
@@ -120,9 +123,15 @@
     (var-set totalRedeemed (+ (var-get totalRedeemed) (unwrap-panic redemptionAmount)))
     (map-set RedemptionClaims userAddress (+ redemptionClaims (unwrap-panic redemptionAmount)))
     ;; print redemption info
-    (print (get-redemption-info))
+    (print {
+      notification: "contract-redemption",
+      payload: (get-redemption-info)
+    })
     ;; print user redemption info
-    (print (try! (get-user-redemption-info userAddress)))
+    (print {
+      notification: "user-redemption",
+      payload: (try! (get-user-redemption-info userAddress))
+    })
     ;; return redemption amount
     (ok redemptionAmount)
   )
