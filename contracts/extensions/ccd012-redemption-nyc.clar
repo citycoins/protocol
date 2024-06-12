@@ -22,6 +22,7 @@
 (define-constant ERR_SUPPLY_CALCULATION (err u12009))
 
 ;; helpers
+(define-constant SELF (as-contract tx-sender))
 (define-constant MICRO_CITYCOINS (pow u10 u6)) ;; 6 decimal places
 (define-constant REDEMPTION_SCALE_FACTOR (pow u10 u8)) ;; 8 decimal places
 
@@ -63,7 +64,7 @@
       (nycTotalSupplyV1 (unwrap! (contract-call? .test-ccext-governance-token-nyc-v1 get-total-supply) ERR_PANIC))
       (nycTotalSupplyV2 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-total-supply) ERR_PANIC))
       (nycTotalSupply (+ (* nycTotalSupplyV1 MICRO_CITYCOINS) nycTotalSupplyV2))
-      (nycRedemptionBalance (as-contract (stx-get-balance tx-sender)))
+      (nycRedemptionBalance (get-redemption-contract-current-balance))
       (nycRedemptionRatio (calculate-redemption-ratio nycRedemptionBalance nycTotalSupply))
     )
     ;; check if sender is DAO or extension
@@ -155,6 +156,10 @@
   (var-get contractBalance)
 )
 
+(define-read-only (get-redemption-contract-current-balance)
+  (stx-get-balance SELF)
+)
+
 (define-read-only (get-redemption-ratio)
   (var-get redemptionRatio)
 )
@@ -170,6 +175,7 @@
     blockHeight: (get-redemption-block-height),
     totalSupply: (get-redemption-total-supply),
     contractBalance: (get-redemption-contract-balance),
+    currentContractBalance: (get-redemption-contract-current-balance),
     redemptionRatio: (get-redemption-ratio),
     totalRedeemed: (get-total-redeemed)
   }
