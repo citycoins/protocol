@@ -16,7 +16,7 @@ env:
   CLARINET_DISABLE_HINTS: 1
 
 jobs:
-  test-contracts:
+  test-contracts-legacy:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
