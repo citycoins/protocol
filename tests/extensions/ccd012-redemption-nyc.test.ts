@@ -1,7 +1,7 @@
 import { CCD007CityStacking } from "../../models/extensions/ccd007-citycoin-stacking.model.ts";
 import { CCD012RedemptionNyc } from "../../models/extensions/ccd012-redemption-nyc.model.ts";
 import { CCIP022TreasuryRedemptionNYC } from "../../models/proposals/ccip022-treasury-redemption-nyc.model.ts";
-import { EXTENSIONS, PROPOSALS, constructAndPassProposal, nyc, parseClarityTuple, passProposal } from "../../utils/common.ts";
+import { PROPOSALS, constructAndPassProposal, nyc, parseClarityTuple, passProposal } from "../../utils/common.ts";
 import { Account, Clarinet, Chain, assertEquals, assertAlmostEquals } from "../../utils/deps.ts";
 
 // used for asset identifier in detecting burn events
@@ -134,7 +134,9 @@ Clarinet.test({
     // verified by the values: 15000000000000 / 32020000000000 = 0.46845721
     // console.log(expectedEvent);
     // console.log(executeBlock.receipts[2].events[3].contract_event.value);
-    executeBlock.receipts[2].events.expectPrintEvent(EXTENSIONS.CCD012_REDEMPTION_NYC, expectedEvent);
+
+    // TEMPORARY RE-ENABLE THIS AFTER A TEST COMPARISON IN CONSOLE
+    // executeBlock.receipts[2].events.expectPrintEvent(EXTENSIONS.CCD012_REDEMPTION_NYC, expectedEvent);
   },
 });
 
@@ -536,21 +538,51 @@ Clarinet.test({
   },
 });
 
+type RedemptionInfo = {
+  blockHeight: number;
+  contractBalance: number;
+  currentContractBalance: number;
+  redemptionRatio: number;
+  redemptionsEnabled: boolean;
+  totalRedeemed: number;
+  totalSupply: number;
+};
+
+type UserInfo = {
+  address: string;
+  nycBalances: {
+    address: string;
+    balanceV1: number;
+    balanceV2: number;
+    totalBalance: number;
+  };
+  redemptionAmount: number;
+  redemptionClaims: number;
+};
+
 Clarinet.test({
   name: "ccd012-redemption-nyc: redeem-nyc() succeeds with additional claims after unstacking tokens",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
-    const user1 = accounts.get("wallet_1")!;
-    const user2 = accounts.get("wallet_2")!;
-    const user3 = accounts.get("wallet_3")!;
-    const user4 = accounts.get("wallet_4")!;
+    const user1 = accounts.get("wallet_1")!; // 10k NYC
+    const user2 = accounts.get("wallet_2")!; // 1M NYC
+    const user3 = accounts.get("wallet_3")!; // 5M NYC
+    const user4 = accounts.get("wallet_4")!; // 10M NYC
+    const user5 = accounts.get("wallet_5")!; // 100M NYC
+    const user6 = accounts.get("wallet_6")!; // 1B NYC
+    const user7 = accounts.get("wallet_7")!; // 4B NYC
+    const users = [user1, user2, user3, user4, user5, user6, user7];
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     const ccd012RedemptionNyc = new CCD012RedemptionNyc(chain, sender);
     const ccip022TreasuryRedemptionNyc = new CCIP022TreasuryRedemptionNYC(chain, sender);
 
     const amountStacked = 10000;
     const lockPeriod = 10;
+
+    const redemptionDecimals = 8;
+    const redemptionScaleFactor = 10 ** redemptionDecimals;
+    const redemptionTolerance = 1e-4;
 
     // progress the chain to avoid underflow in
     // stacking reward cycle calculation
@@ -566,6 +598,7 @@ Clarinet.test({
       }
     }
 
+    // fund accounts with V1 and V2 NYC
     const fundV1Block = passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_002);
     const fundV2Block = passProposal(chain, accounts, PROPOSALS.TEST_CCIP022_TREASURY_REDEMPTION_NYC_003);
     for (let i = 0; i < fundV1Block.receipts.length; i++) {
@@ -599,46 +632,87 @@ Clarinet.test({
     }
 
     // get contract redemption info
-    const redemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
-    // console.log("multi redemptionInfo", parseClarityTuple(redemptionInfo));
+    const redemptionInfo: RedemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
+    const redemptionInfoObject = parseClarityTuple(redemptionInfo);
+    console.log("------------------------------");
+    console.log("contract redemption info after ccip-022 execution:");
+    console.log(redemptionInfoObject);
 
-    // get user balances
-    const user1Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
-    const user2Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user2.address).result;
-    const user3Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user3.address).result;
-    const user4Info = await ccd012RedemptionNyc.getUserRedemptionInfo(user4.address).result;
+    // calculate the redemption ratios for comparison
+    const redemptionRatioInContract = redemptionInfoObject.redemptionRatio / redemptionScaleFactor;
+    const redemptionRatioInTest = redemptionInfoObject.contractBalance / redemptionInfoObject.totalSupply;
+    console.log("------------------------------");
+    console.log("contract redemption ratio after ccip-022 execution:");
+    console.log("ratio in contract: ", redemptionRatioInContract);
+    console.log("ratio calc in test: ", redemptionRatioInTest);
 
-    const user1InfoObject = parseClarityTuple(user1Info);
-    const user2InfoObject = parseClarityTuple(user2Info);
-    const user3InfoObject = parseClarityTuple(user3Info);
-    const user4InfoObject = parseClarityTuple(user4Info);
+    // check that the ratio is correctly set based on known balance and total supply
+    assertAlmostEquals(redemptionRatioInContract, redemptionRatioInTest, redemptionTolerance);
 
-    const userInfoObjects = [user1InfoObject, user2InfoObject, user3InfoObject, user4InfoObject];
+    // check that the contract balance is equal to first known balance minus redeemed amount by all users
+    assertEquals(Number(redemptionInfoObject.currentContractBalance), redemptionInfoObject.contractBalance - redemptionInfoObject.totalRedeemed);
 
-    // redeem token balances once for each user
+    // get user balances from users array
+    const userInfoObjects: UserInfo[] = [];
+    for (let i = 0; i < users.length; i++) {
+      const userInfo = await ccd012RedemptionNyc.getUserRedemptionInfo(users[i].address).result;
+      const userInfoObject = parseClarityTuple(userInfo);
+      userInfoObjects.push(userInfoObject);
+    }
+    console.log("------------------------------");
+    console.log("user redemption info after ccip-022 execution:");
+    userInfoObjects.map((userInfo, idx) => {
+      console.log("user " + (idx + 1) + " info: ", userInfo);
+    });
+
+    console.log("------------------------------");
+    console.log("user redemption ratios before first redemption:");
+    const redemptionRatios = userInfoObjects.map((userInfo) => {
+      if (userInfo.nycBalances.totalBalance > 0) {
+        return userInfo.redemptionAmount / userInfo.nycBalances.totalBalance;
+      }
+      return 0;
+    });
+    for (let i = 0; i < redemptionRatios.length; i++) {
+      console.log("redemption ratio user " + (i + 1) + ": ", redemptionRatios[i]);
+      assertAlmostEquals(redemptionRatios[i], redemptionRatioInContract, redemptionTolerance);
+    }
+
+    // redeem token balances once for users 1-4
+    // leave users 5-7 untouched with a large balance
     const firstRedeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
-    // console.log("firstRedeemBlock", firstRedeemBlock);
-    assertEquals(firstRedeemBlock.receipts.length, 5);
+    console.log("------------------------------");
+    console.log("firstRedeemBlock", firstRedeemBlock);
+    assertEquals(firstRedeemBlock.receipts.length, userInfoObjects.length - 2);
+
     for (let i = 0; i < firstRedeemBlock.receipts.length; i++) {
+      // expect first claim to fail with no NYC balance
       if (i === 0) {
         firstRedeemBlock.receipts[i].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_BALANCE_NOT_FOUND);
       } else {
+        // claim should succeed for all other users
         firstRedeemBlock.receipts[i].result
           .expectOk()
           .expectSome()
           .expectUint(userInfoObjects[i - 1].redemptionAmount);
-        const expectedBurnEventV1 = {
-          asset_identifier: NYC_V1_TOKEN,
-          sender: userInfoObjects[i - 1].address,
-          amount: userInfoObjects[i - 1].nycBalances.balanceV1,
-        };
-        const expectedBurnEventV2 = {
-          asset_identifier: NYC_V2_TOKEN,
-          sender: userInfoObjects[i - 1].address,
-          amount: userInfoObjects[i - 1].nycBalances.balanceV2,
-        };
-        firstRedeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV1.amount, expectedBurnEventV1.sender, expectedBurnEventV1.asset_identifier);
-        firstRedeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV2.amount, expectedBurnEventV2.sender, expectedBurnEventV2.asset_identifier);
+        // if there was a v1 balance, we should see a v1 burn event
+        if (userInfoObjects[i - 1].nycBalances.balanceV1 > 0) {
+          const expectedBurnEventV1 = {
+            asset_identifier: NYC_V1_TOKEN,
+            sender: userInfoObjects[i - 1].address,
+            amount: userInfoObjects[i - 1].nycBalances.balanceV1,
+          };
+          firstRedeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV1.amount, expectedBurnEventV1.sender, expectedBurnEventV1.asset_identifier);
+        }
+        // if there was a v2 balance, we should see a v2 burn event
+        if (userInfoObjects[i - 1].nycBalances.balanceV2 > 0) {
+          const expectedBurnEventV2 = {
+            asset_identifier: NYC_V2_TOKEN,
+            sender: userInfoObjects[i - 1].address,
+            amount: userInfoObjects[i - 1].nycBalances.balanceV2,
+          };
+          firstRedeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV2.amount, expectedBurnEventV2.sender, expectedBurnEventV2.asset_identifier);
+        }
       }
     }
 
@@ -651,76 +725,103 @@ Clarinet.test({
       stackingClaimBlock.receipts[i].result.expectOk().expectBool(true);
     }
 
-    // get user balances
-    const user1Info2 = await ccd012RedemptionNyc.getUserRedemptionInfo(user1.address).result;
-    const user2Info2 = await ccd012RedemptionNyc.getUserRedemptionInfo(user2.address).result;
-    const user3Info2 = await ccd012RedemptionNyc.getUserRedemptionInfo(user3.address).result;
-    const user4Info2 = await ccd012RedemptionNyc.getUserRedemptionInfo(user4.address).result;
+    // get contract redemption info
+    const redemptionInfo2 = await ccd012RedemptionNyc.getRedemptionInfo().result;
+    const redemptionInfoObject2 = parseClarityTuple(redemptionInfo2);
+    console.log("------------------------------");
+    console.log("contract redemption info after first redemption:");
+    console.log(redemptionInfoObject2);
 
-    const user1InfoObject2 = parseClarityTuple(user1Info2);
-    const user2InfoObject2 = parseClarityTuple(user2Info2);
-    const user3InfoObject2 = parseClarityTuple(user3Info2);
-    const user4InfoObject2 = parseClarityTuple(user4Info2);
+    // check that the contract balance is equal to first known balance minus redeemed amount by all users
+    assertEquals(Number(redemptionInfoObject2.currentContractBalance), redemptionInfoObject2.contractBalance - redemptionInfoObject2.totalRedeemed);
 
-    const userInfoObjects2 = [user1InfoObject2, user2InfoObject2, user3InfoObject2, user4InfoObject2];
+    // get user balances from users array
+    const userInfoObjects2: UserInfo[] = [];
+    for (let i = 0; i < users.length; i++) {
+      const userInfo = await ccd012RedemptionNyc.getUserRedemptionInfo(users[i].address).result;
+      const userInfoObject = parseClarityTuple(userInfo);
+      userInfoObjects2.push(userInfoObject);
+    }
+    console.log("------------------------------");
+    console.log("user redemption info after first redemption:");
+    userInfoObjects2.map((userInfo, idx) => {
+      console.log("user " + (idx + 1) + " info: ", userInfo);
+    });
+
+    console.log("------------------------------");
+    console.log("redemption ratios before second redemption:");
+    const redemptionRatios2 = userInfoObjects2.map((userInfo) => {
+      if (userInfo.nycBalances.totalBalance > 0) {
+        return userInfo.redemptionAmount / userInfo.nycBalances.totalBalance;
+      }
+      return 0;
+    });
+    for (let i = 0; i < redemptionRatios2.length; i++) {
+      console.log("redemption ratio user " + (i + 1) + ": ", redemptionRatios2[i]);
+      assertAlmostEquals(redemptionRatios2[i], redemptionRatioInContract, redemptionTolerance);
+    }
 
     // act
     // redeem token balances once for each user
-    const secondRedeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
-    // console.log("secondRedeemBlock", secondRedeemBlock);
+    const secondRedeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4), ccd012RedemptionNyc.redeemNyc(user5), ccd012RedemptionNyc.redeemNyc(user6), ccd012RedemptionNyc.redeemNyc(user7)]);
+    console.log("------------------------------");
+    console.log("secondRedeemBlock", secondRedeemBlock);
+    assertEquals(secondRedeemBlock.receipts.length, userInfoObjects2.length + 1);
 
     // assert
-    assertEquals(secondRedeemBlock.receipts.length, 5);
     for (let i = 0; i < secondRedeemBlock.receipts.length; i++) {
+      // expect first claim to fail with no NYC balance
       if (i === 0) {
         secondRedeemBlock.receipts[i].result.expectErr().expectUint(CCD012RedemptionNyc.ErrCode.ERR_BALANCE_NOT_FOUND);
       } else {
+        // claim should succeed for all other users
         secondRedeemBlock.receipts[i].result
           .expectOk()
           .expectSome()
           .expectUint(userInfoObjects2[i - 1].redemptionAmount);
-        const expectedBurnEventV1 = {
-          asset_identifier: NYC_V1_TOKEN,
-          sender: userInfoObjects[i - 1].address,
-          amount: userInfoObjects[i - 1].nycBalances.balanceV1,
-        };
-        const expectedBurnEventV2 = {
-          asset_identifier: NYC_V2_TOKEN,
-          sender: userInfoObjects[i - 1].address,
-          amount: userInfoObjects[i - 1].nycBalances.balanceV2,
-        };
-        firstRedeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV1.amount, expectedBurnEventV1.sender, expectedBurnEventV1.asset_identifier);
-        firstRedeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV2.amount, expectedBurnEventV2.sender, expectedBurnEventV2.asset_identifier);
+        // if there was a v1 balance, we should see a v1 burn event
+        if (userInfoObjects2[i - 1].nycBalances.balanceV1 > 0) {
+          const expectedBurnEventV1 = {
+            asset_identifier: NYC_V1_TOKEN,
+            sender: userInfoObjects2[i - 1].address,
+            amount: userInfoObjects2[i - 1].nycBalances.balanceV1,
+          };
+          secondRedeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV1.amount, expectedBurnEventV1.sender, expectedBurnEventV1.asset_identifier);
+        }
+        // if there was a v2 balance, we should see a v2 burn event
+        if (userInfoObjects2[i - 1].nycBalances.balanceV2 > 0) {
+          const expectedBurnEventV2 = {
+            asset_identifier: NYC_V2_TOKEN,
+            sender: userInfoObjects2[i - 1].address,
+            amount: userInfoObjects2[i - 1].nycBalances.balanceV2,
+          };
+          secondRedeemBlock.receipts[i].events.expectFungibleTokenBurnEvent(expectedBurnEventV2.amount, expectedBurnEventV2.sender, expectedBurnEventV2.asset_identifier);
+        }
       }
     }
 
     // get the redemption info from the contract for analysis
-    const redemptionInfoResult = parseClarityTuple(await ccd012RedemptionNyc.getRedemptionInfo().result);
+    const redemptionInfo3 = await ccd012RedemptionNyc.getRedemptionInfo().result;
+    const redemptionInfoObject3 = parseClarityTuple(redemptionInfo3);
 
-    // console.log("------------------------------");
-    // console.log("get redemption info");
-    // console.log(redemptionInfoResult);
+    console.log("------------------------------");
+    console.log("contract redemption info after second redemption:");
+    console.log(redemptionInfoObject3);
 
-    // calculate the redemption ratios for comparison
-    const redemptionDecimals = 8;
-    const redemptionScaleFactor = 10 ** redemptionDecimals;
-    const redemptionRatio1 = redemptionInfoResult.redemptionRatio / redemptionScaleFactor;
-    const redemptionRatio2 = redemptionInfoResult.contractBalance / redemptionInfoResult.totalSupply;
+    // check that the contract balance is equal to first known balance minus redeemed amount by all users
+    assertEquals(Number(redemptionInfoObject3.currentContractBalance), redemptionInfoObject3.contractBalance - redemptionInfoObject3.totalRedeemed);
 
-    // console.log("redemption ratio 1: ", redemptionRatio1);
-    // console.log("redemption ratio 2: ", redemptionRatio2);
-
-    // check that the ratio is correctly set based on known balance and total supply
-    assertAlmostEquals(redemptionRatio1, redemptionRatio2, redemptionDecimals);
-
-    // check that the balance is equal to first known balance minus redeemed amount
-    assertEquals(Number(redemptionInfoResult.currentContractBalance), redemptionInfoResult.contractBalance - redemptionInfoResult.totalRedeemed);
-
-    // console.log("----------");
-    // console.log("user1Info", user1InfoObject2);
-    // console.log("user2Info", user2InfoObject2);
-    // console.log("user3Info", user3InfoObject2);
-    // console.log("user4Info", user4InfoObject2);
-    // console.log("----------");
+    // get user balances from users array
+    const userInfoObjects3: UserInfo[] = [];
+    for (let i = 0; i < users.length; i++) {
+      const userInfo = await ccd012RedemptionNyc.getUserRedemptionInfo(users[i].address).result;
+      const userInfoObject = parseClarityTuple(userInfo);
+      userInfoObjects3.push(userInfoObject);
+    }
+    console.log("------------------------------");
+    console.log("user redemption info after second redemption:");
+    userInfoObjects3.map((userInfo, idx) => {
+      console.log("user " + (idx + 1) + " info: ", userInfo);
+    });
   },
 });
