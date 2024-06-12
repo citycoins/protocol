@@ -2,7 +2,7 @@ import { CCD007CityStacking } from "../../models/extensions/ccd007-citycoin-stac
 import { CCD012RedemptionNyc } from "../../models/extensions/ccd012-redemption-nyc.model.ts";
 import { CCIP022TreasuryRedemptionNYC } from "../../models/proposals/ccip022-treasury-redemption-nyc.model.ts";
 import { EXTENSIONS, PROPOSALS, constructAndPassProposal, nyc, parseClarityTuple, passProposal } from "../../utils/common.ts";
-import { Account, assertEquals, Clarinet, Chain, types } from "../../utils/deps.ts";
+import { Account, Clarinet, Chain, assertEquals, assertAlmostEquals } from "../../utils/deps.ts";
 
 // used for asset identifier in detecting burn events
 const NYC_V1_TOKEN = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.test-ccext-governance-token-nyc-v1::newyorkcitycoin";
@@ -129,9 +129,10 @@ Clarinet.test({
       executeBlock.receipts[i].result.expectOk().expectUint(i + 1);
     }
 
-    const expectedEvent = `{notification: "intialize-contract", payload: {blockHeight: u12611, contractBalance: u15000000000000, redemptionRatio: u46845721, redemptionsEnabled: true, totalRedeemed: u0, totalSupply: u32020000000000}}`;
+    const expectedEvent = `{notification: "intialize-contract", payload: {blockHeight: u12611, contractBalance: u15000000000000, currentContractBalance: u15000000000000, redemptionRatio: u46845721, redemptionsEnabled: true, totalRedeemed: u0, totalSupply: u32020000000000}}`;
     // redemption ratio obtained through console logging below
     // verified by the values: 15000000000000 / 32020000000000 = 0.46845721
+    // console.log(expectedEvent);
     // console.log(executeBlock.receipts[2].events[3].contract_event.value);
     executeBlock.receipts[2].events.expectPrintEvent(EXTENSIONS.CCD012_REDEMPTION_NYC, expectedEvent);
   },
@@ -693,8 +694,27 @@ Clarinet.test({
       }
     }
 
-    // console.log("----------");
-    // console.log(await ccd012RedemptionNyc.getRedemptionInfo().result);
+    // get the redemption info from the contract for analysis
+    const redemptionInfoResult = parseClarityTuple(await ccd012RedemptionNyc.getRedemptionInfo().result);
+
+    // console.log("------------------------------");
+    // console.log("get redemption info");
+    // console.log(redemptionInfoResult);
+
+    // calculate the redemption ratios for comparison
+    const redemptionDecimals = 8;
+    const redemptionScaleFactor = 10 ** redemptionDecimals;
+    const redemptionRatio1 = redemptionInfoResult.redemptionRatio / redemptionScaleFactor;
+    const redemptionRatio2 = redemptionInfoResult.contractBalance / redemptionInfoResult.totalSupply;
+
+    // console.log("redemption ratio 1: ", redemptionRatio1);
+    // console.log("redemption ratio 2: ", redemptionRatio2);
+
+    // check that the ratio is correctly set based on known balance and total supply
+    assertAlmostEquals(redemptionRatio1, redemptionRatio2, redemptionDecimals);
+
+    // check that the balance is equal to first known balance minus redeemed amount
+    assertEquals(Number(redemptionInfoResult.currentContractBalance), redemptionInfoResult.contractBalance - redemptionInfoResult.totalRedeemed);
 
     // console.log("----------");
     // console.log("user1Info", user1InfoObject2);
