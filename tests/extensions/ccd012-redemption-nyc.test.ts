@@ -1,7 +1,7 @@
 import { CCD007CityStacking } from "../../models/extensions/ccd007-citycoin-stacking.model.ts";
 import { CCD012RedemptionNyc } from "../../models/extensions/ccd012-redemption-nyc.model.ts";
 import { CCIP022TreasuryRedemptionNYC } from "../../models/proposals/ccip022-treasury-redemption-nyc.model.ts";
-import { PROPOSALS, constructAndPassProposal, nyc, parseClarityTuple, passProposal } from "../../utils/common.ts";
+import { EXTENSIONS, PROPOSALS, constructAndPassProposal, nyc, parseClarityTuple, passProposal } from "../../utils/common.ts";
 import { Account, Clarinet, Chain, assertEquals, assertAlmostEquals } from "../../utils/deps.ts";
 
 // used for asset identifier in detecting burn events
@@ -129,14 +129,13 @@ Clarinet.test({
       executeBlock.receipts[i].result.expectOk().expectUint(i + 1);
     }
 
-    const expectedEvent = `{notification: "intialize-contract", payload: {blockHeight: u12611, contractBalance: u15000000000000, currentContractBalance: u15000000000000, redemptionRatio: u46845721, redemptionsEnabled: true, totalRedeemed: u0, totalSupply: u32020000000000}}`;
+    const expectedEvent = `{notification: "intialize-contract", payload: {blockHeight: u12611, contractBalance: u15000000000000, currentContractBalance: u15000000000000, redemptionRatio: u292282, redemptionsEnabled: true, totalRedeemed: u0, totalSupply: u5132020000000000}}`;
     // redemption ratio obtained through console logging below
     // verified by the values: 15000000000000 / 32020000000000 = 0.46845721
     // console.log(expectedEvent);
     // console.log(executeBlock.receipts[2].events[3].contract_event.value);
 
-    // TEMPORARY RE-ENABLE THIS AFTER A TEST COMPARISON IN CONSOLE
-    // executeBlock.receipts[2].events.expectPrintEvent(EXTENSIONS.CCD012_REDEMPTION_NYC, expectedEvent);
+    executeBlock.receipts[2].events.expectPrintEvent(EXTENSIONS.CCD012_REDEMPTION_NYC, expectedEvent);
   },
 });
 
