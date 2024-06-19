@@ -104,6 +104,7 @@
       (balanceV1 (unwrap! (contract-call? .test-ccext-governance-token-nyc-v1 get-balance userAddress) ERR_BALANCE_NOT_FOUND))
       (balanceV2 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-balance userAddress) ERR_BALANCE_NOT_FOUND))
       (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
+      (contractCurrentBalance (get-redemption-contract-current-balance))
       (redemptionAmount (get-redemption-for-balance totalBalance))
       (redemptionClaims (default-to u0 (get-redemption-amount-claimed userAddress)))
     )
@@ -111,6 +112,8 @@
     (asserts! (var-get redemptionsEnabled) ERR_NOT_ENABLED)
     ;; check that user has at least one positive balance
     (asserts! (> (+ balanceV1 balanceV2) u0) ERR_BALANCE_NOT_FOUND) ;; cheaper, credit: LNow
+    ;; check that contract has a positive balance
+    (asserts! (> contractCurrentBalance u0) ERR_NOTHING_TO_REDEEM)
     ;; check that redemption amount is > 0
     (asserts! (and (is-some redemptionAmount) (> (unwrap-panic redemptionAmount) u0)) ERR_NOTHING_TO_REDEEM)
     ;; burn NYC
@@ -118,11 +121,21 @@
     ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
     (and (> balanceV1 u0) (try! (contract-call? .test-ccext-governance-token-nyc-v1 burn balanceV1 userAddress)))
     (and (> balanceV2 u0) (try! (contract-call? .test-ccext-governance-token-nyc burn balanceV2 userAddress)))
-    ;; transfer STX
-    (try! (as-contract (stx-transfer? (unwrap-panic redemptionAmount) tx-sender userAddress)))
-    ;; update redemption claims
-    (var-set totalRedeemed (+ (var-get totalRedeemed) (unwrap-panic redemptionAmount)))
-    (map-set RedemptionClaims userAddress (+ redemptionClaims (unwrap-panic redemptionAmount)))
+    ;; handle redemption transfer
+    (if (< (unwrap-panic redemptionAmount) contractCurrentBalance)
+      ;; if the redemption amount is less than the contract balance, redeem the amount
+      (begin
+        (try! (as-contract (stx-transfer? (unwrap-panic redemptionAmount) SELF userAddress)))
+        (var-set totalRedeemed (+ (var-get totalRedeemed) (unwrap-panic redemptionAmount)))
+        (map-set RedemptionClaims userAddress (+ redemptionClaims (unwrap-panic redemptionAmount)))
+      )
+      ;; else if redemption amount is greater than contract balance, redeem the remaining balance
+      (begin
+        (try! (as-contract (stx-transfer? contractCurrentBalance SELF userAddress)))
+        (var-set totalRedeemed (+ (var-get totalRedeemed) contractCurrentBalance))
+        (map-set RedemptionClaims userAddress (+ redemptionClaims contractCurrentBalance))
+      )
+    )
     ;; print redemption info
     (print {
       notification: "contract-redemption",
