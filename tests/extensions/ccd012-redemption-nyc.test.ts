@@ -695,17 +695,17 @@ Clarinet.test({
     // get contract redemption info
     const redemptionInfo: RedemptionInfo = await ccd012RedemptionNyc.getRedemptionInfo().result;
     const redemptionInfoObject = parseClarityTuple(redemptionInfo);
-    console.log("------------------------------");
-    console.log("contract redemption info after ccip-022 execution:");
-    console.log(redemptionInfoObject);
+    // console.log("------------------------------");
+    // console.log("contract redemption info after ccip-022 execution:");
+    // console.log(redemptionInfoObject);
 
     // calculate the redemption ratios for comparison
     const redemptionRatioInContract = redemptionInfoObject.redemptionRatio / redemptionScaleFactor;
     const redemptionRatioInTest = redemptionInfoObject.contractBalance / redemptionInfoObject.totalSupply;
-    console.log("------------------------------");
-    console.log("contract redemption ratio after ccip-022 execution:");
-    console.log("ratio in contract: ", redemptionRatioInContract);
-    console.log("ratio calc in test: ", redemptionRatioInTest);
+    // console.log("------------------------------");
+    // console.log("contract redemption ratio after ccip-022 execution:");
+    // console.log("ratio in contract: ", redemptionRatioInContract);
+    // console.log("ratio calc in test: ", redemptionRatioInTest);
 
     // check that the ratio is correctly set based on known balance and total supply
     assertAlmostEquals(redemptionRatioInContract, redemptionRatioInTest, redemptionTolerance);
@@ -720,14 +720,14 @@ Clarinet.test({
       const userInfoObject = parseClarityTuple(userInfo);
       userInfoObjects.push(userInfoObject);
     }
-    console.log("------------------------------");
-    console.log("user redemption info after ccip-022 execution:");
-    userInfoObjects.map((userInfo, idx) => {
-      console.log("user " + (idx + 1) + " info: ", userInfo);
-    });
+    // console.log("------------------------------");
+    // console.log("user redemption info after ccip-022 execution:");
+    // userInfoObjects.map((userInfo, idx) => {
+    //   console.log("user " + (idx + 1) + " info: ", userInfo);
+    // });
 
-    console.log("------------------------------");
-    console.log("user redemption ratios before first redemption:");
+    // console.log("------------------------------");
+    // console.log("user redemption ratios before first redemption:");
     const redemptionRatios = userInfoObjects.map((userInfo) => {
       if (userInfo.nycBalances.totalBalance > 0) {
         return userInfo.redemptionAmount / userInfo.nycBalances.totalBalance;
@@ -735,15 +735,15 @@ Clarinet.test({
       return 0;
     });
     for (let i = 0; i < redemptionRatios.length; i++) {
-      console.log("redemption ratio user " + (i + 1) + ": ", redemptionRatios[i]);
+      // console.log("redemption ratio user " + (i + 1) + ": ", redemptionRatios[i]);
       assertAlmostEquals(redemptionRatios[i], redemptionRatioInContract, redemptionTolerance);
     }
 
     // redeem token balances once for users 1-4
     // leave users 5-7 untouched with a large balance
     const firstRedeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4)]);
-    console.log("------------------------------");
-    console.log("firstRedeemBlock", firstRedeemBlock);
+    // console.log("------------------------------");
+    // console.log("firstRedeemBlock", firstRedeemBlock);
     assertEquals(firstRedeemBlock.receipts.length, userInfoObjects.length - 2);
 
     for (let i = 0; i < firstRedeemBlock.receipts.length; i++) {
@@ -789,9 +789,9 @@ Clarinet.test({
     // get contract redemption info
     const redemptionInfo2 = await ccd012RedemptionNyc.getRedemptionInfo().result;
     const redemptionInfoObject2 = parseClarityTuple(redemptionInfo2);
-    console.log("------------------------------");
-    console.log("contract redemption info after first redemption:");
-    console.log(redemptionInfoObject2);
+    // console.log("------------------------------");
+    // console.log("contract redemption info after first redemption:");
+    // console.log(redemptionInfoObject2);
 
     // check that the contract balance is equal to first known balance minus redeemed amount by all users
     assertEquals(Number(redemptionInfoObject2.currentContractBalance), redemptionInfoObject2.contractBalance - redemptionInfoObject2.totalRedeemed);
@@ -803,14 +803,14 @@ Clarinet.test({
       const userInfoObject = parseClarityTuple(userInfo);
       userInfoObjects2.push(userInfoObject);
     }
-    console.log("------------------------------");
-    console.log("user redemption info after first redemption:");
-    userInfoObjects2.map((userInfo, idx) => {
-      console.log("user " + (idx + 1) + " info: ", userInfo);
-    });
+    // console.log("------------------------------");
+    // console.log("user redemption info after first redemption:");
+    // userInfoObjects2.map((userInfo, idx) => {
+    //   console.log("user " + (idx + 1) + " info: ", userInfo);
+    // });
 
-    console.log("------------------------------");
-    console.log("redemption ratios before second redemption:");
+    // console.log("------------------------------");
+    // console.log("redemption ratios before second redemption:");
     const redemptionRatios2 = userInfoObjects2.map((userInfo) => {
       if (userInfo.nycBalances.totalBalance > 0) {
         return userInfo.redemptionAmount / userInfo.nycBalances.totalBalance;
@@ -818,15 +818,15 @@ Clarinet.test({
       return 0;
     });
     for (let i = 0; i < redemptionRatios2.length; i++) {
-      console.log("redemption ratio user " + (i + 1) + ": ", redemptionRatios2[i]);
+      // console.log("redemption ratio user " + (i + 1) + ": ", redemptionRatios2[i]);
       assertAlmostEquals(redemptionRatios2[i], redemptionRatioInContract, redemptionTolerance);
     }
 
     // act
     // redeem token balances once for each user
     const secondRedeemBlock = chain.mineBlock([ccd012RedemptionNyc.redeemNyc(sender), ccd012RedemptionNyc.redeemNyc(user1), ccd012RedemptionNyc.redeemNyc(user2), ccd012RedemptionNyc.redeemNyc(user3), ccd012RedemptionNyc.redeemNyc(user4), ccd012RedemptionNyc.redeemNyc(user5), ccd012RedemptionNyc.redeemNyc(user6), ccd012RedemptionNyc.redeemNyc(user7)]);
-    console.log("------------------------------");
-    console.log("secondRedeemBlock", secondRedeemBlock);
+    // console.log("------------------------------");
+    // console.log("secondRedeemBlock", secondRedeemBlock);
     assertEquals(secondRedeemBlock.receipts.length, userInfoObjects2.length + 1);
 
     // assert
@@ -865,9 +865,9 @@ Clarinet.test({
     const redemptionInfo3 = await ccd012RedemptionNyc.getRedemptionInfo().result;
     const redemptionInfoObject3 = parseClarityTuple(redemptionInfo3);
 
-    console.log("------------------------------");
-    console.log("contract redemption info after second redemption:");
-    console.log(redemptionInfoObject3);
+    // console.log("------------------------------");
+    // console.log("contract redemption info after second redemption:");
+    // console.log(redemptionInfoObject3);
 
     // check that the contract balance is equal to first known balance minus redeemed amount by all users
     assertEquals(Number(redemptionInfoObject3.currentContractBalance), redemptionInfoObject3.contractBalance - redemptionInfoObject3.totalRedeemed);
@@ -879,10 +879,10 @@ Clarinet.test({
       const userInfoObject = parseClarityTuple(userInfo);
       userInfoObjects3.push(userInfoObject);
     }
-    console.log("------------------------------");
-    console.log("user redemption info after second redemption:");
-    userInfoObjects3.map((userInfo, idx) => {
-      console.log("user " + (idx + 1) + " info: ", userInfo);
-    });
+    // console.log("------------------------------");
+    // console.log("user redemption info after second redemption:");
+    // userInfoObjects3.map((userInfo, idx) => {
+    //   console.log("user " + (idx + 1) + " info: ", userInfo);
+    // });
   },
 });
