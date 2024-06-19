@@ -210,9 +210,12 @@
     )
     (if (> redemptionAmount u0)
       (if (< redemptionAmount contractCurrentBalance)
+        ;; if redemption amount is less than contract balance, return redemption amount
         (some redemptionAmount)
+        ;; if redemption amount is greater than contract balance, return contract balance
         (some contractCurrentBalance)
       )
+      ;; if redemption amount is 0, return none
       none
     )
   )
