@@ -20,7 +20,7 @@
 (define-constant CCIP_022 {
   name: "CityCoins Treasury Redemption (NYC)",
   link: "https://github.com/citycoins/governance/blob/feat/add-ccip-022/ccips/ccip-022/ccip-022-citycoins-treasury-redemption-nyc.md",
-  hash: "TBD",
+  hash: "2a22deaae6e7c12bb7726c3061a0f20515644ca9",
 })
 
 (define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
