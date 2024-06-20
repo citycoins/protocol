@@ -1,7 +1,15 @@
 
 **/settings/Mainnet.toml
 **/settings/Testnet.toml
-.cache/
+
+# removing to resolve issue with testnet reset
+# will use files obtained locally beforehand
+# .cache/
+# still want to ignore these two
+.cache/deps
+.cache/gen
+# .cache/requirements will upload contracts
+
 .requirements/
 /coverage_report
 history.txt

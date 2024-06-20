@@ -21,10 +21,10 @@
 
 ;; DATA VARS
 
-(define-data-var token-name (string-ascii 32) "CityCoins Governance Token")
+(define-data-var token-name (string-ascii 32) "CityCoins Governance Token V1")
 (define-data-var token-symbol (string-ascii 10) "NYC")
 (define-data-var token-uri (optional (string-utf8 256)) none)
-(define-data-var token-decimals uint u6)
+(define-data-var token-decimals uint u0)
 
 ;; PUBLIC FUNCTIONS
 

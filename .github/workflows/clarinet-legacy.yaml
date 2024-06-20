@@ -1,7 +1,4 @@
-# GitHub action to run Clarinet tests against the contracts
-# and fail if code is invalid or a test fails.
-
-name: Test Contracts
+name: Test contracts with clarinet (legacy)
 
 on:
   push:
@@ -19,16 +16,16 @@ env:
   CLARINET_DISABLE_HINTS: 1
 
 jobs:
-  test-contracts:
+  test-contracts-legacy:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v4
-      - name: "Check contract syntax"
+      - name: "Check contract syntax (legacy)"
         uses: docker://hirosystems/clarinet:1.8.0
         with:
           args: check
-      - name: "Run all contract tests"
+      - name: "Run all contract tests (legacy)"
         uses: docker://hirosystems/clarinet:1.8.0
         with:
           args: test --coverage

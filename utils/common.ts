@@ -32,6 +32,7 @@ export const EXTENSIONS = {
   CCD008_CITY_ACTIVATION: ADDRESS.concat(".ccd008-city-activation"),
   CCD009_AUTH_V2_ADAPTER: ADDRESS.concat(".ccd009-auth-v2-adapter"),
   CCD010_CORE_V2_ADAPTER: ADDRESS.concat(".ccd010-core-v2-adapter"),
+  CCD012_REDEMPTION_NYC: ADDRESS.concat(".ccd012-redemption-nyc"),
 };
 
 export const PROPOSALS = {
@@ -42,6 +43,7 @@ export const PROPOSALS = {
   CCIP_017: ADDRESS.concat(".ccip017-extend-sunset-period"),
   CCIP_020: ADDRESS.concat(".ccip020-graceful-protocol-shutdown"),
   CCIP_021: ADDRESS.concat(".ccip021-extend-sunset-period-2"),
+  CCIP_022: ADDRESS.concat(".ccip022-treasury-redemption-nyc"),
   TEST_CCD001_DIRECT_EXECUTE_001: ADDRESS.concat(".test-ccd001-direct-execute-001"),
   TEST_CCD001_DIRECT_EXECUTE_002: ADDRESS.concat(".test-ccd001-direct-execute-002"),
   TEST_CCD001_DIRECT_EXECUTE_003: ADDRESS.concat(".test-ccd001-direct-execute-003"),
@@ -119,11 +121,17 @@ export const PROPOSALS = {
   TEST_CCIP014_POX3_001: ADDRESS.concat(".test-ccip014-pox-3-001"),
   TEST_CCIP014_POX3_002: ADDRESS.concat(".test-ccip014-pox-3-002"),
   TEST_CCIP020_GRACEFUL_PROTOCOL_SHUTDOWN_001: ADDRESS.concat(".test-ccip020-shutdown-001"),
+  TEST_CCIP022_TREASURY_REDEMPTION_NYC_001: ADDRESS.concat(".test-ccip022-treasury-redemption-nyc-001"),
+  TEST_CCIP022_TREASURY_REDEMPTION_NYC_002: ADDRESS.concat(".test-ccip022-treasury-redemption-nyc-002"),
+  TEST_CCIP022_TREASURY_REDEMPTION_NYC_003: ADDRESS.concat(".test-ccip022-treasury-redemption-nyc-003"),
+  TEST_CCIP022_TREASURY_REDEMPTION_NYC_004: ADDRESS.concat(".test-ccip022-treasury-redemption-nyc-004"),
+  TEST_CCIP022_TREASURY_REDEMPTION_NYC_005: ADDRESS.concat(".test-ccip022-treasury-redemption-nyc-005"),
 };
 
 export const EXTERNAL = {
   FT_MIA: ADDRESS.concat(".test-ccext-governance-token-mia"),
   FT_NYC: ADDRESS.concat(".test-ccext-governance-token-nyc"),
+  FT_NYC_V1: ADDRESS.concat(".test-ccext-governance-token-nyc-v1"),
   NFT_MIA: ADDRESS.concat(".test-ccext-nft-mia"),
   NFT_NYC: ADDRESS.concat(".test-ccext-nft-nyc"),
 };
@@ -236,3 +244,21 @@ export const nyc: CityData = {
   treasuryV2Id: 2,
   treasuryV2Name: "mining-v2",
 };
+
+// parses an (ok ...) response into a JS object
+export function parseClarityTuple(clarityString) {
+  // Step 1: Remove the outer (ok ) and the closing parenthesis
+  let jsonString = clarityString.replace("(ok ", "").replace(")", "");
+
+  // Step 2: Add quotes around keys
+  jsonString = jsonString.replace(/([a-zA-Z0-9_]+):/g, '"$1":');
+
+  // Step 3: Add quotes around string values (addresses)
+  jsonString = jsonString.replace(/: ([a-zA-Z0-9_]+)/g, ': "$1"');
+
+  // Step 4: Remove 'u' prefix from integers
+  jsonString = jsonString.replace(/u([0-9]+)/g, "$1");
+
+  // Parse the JSON string to object
+  return JSON.parse(jsonString);
+}
