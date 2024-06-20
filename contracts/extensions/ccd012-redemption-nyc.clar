@@ -59,10 +59,8 @@
 (define-public (initialize-redemption)
   (let
     (
-      ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
-      ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-      (nycTotalSupplyV1 (unwrap! (contract-call? .test-ccext-governance-token-nyc-v1 get-total-supply) ERR_PANIC))
-      (nycTotalSupplyV2 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-total-supply) ERR_PANIC))
+      (nycTotalSupplyV1 (unwrap! (contract-call? 'SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token get-total-supply) ERR_PANIC))
+      (nycTotalSupplyV2 (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 get-total-supply) ERR_PANIC))
       (nycTotalSupply (+ (* nycTotalSupplyV1 MICRO_CITYCOINS) nycTotalSupplyV2))
       (nycRedemptionBalance (get-redemption-contract-current-balance))
       (nycRedemptionRatio (calculate-redemption-ratio nycRedemptionBalance nycTotalSupply))
@@ -99,10 +97,8 @@
   (let
     (
       (userAddress tx-sender)
-      ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
-      ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-      (balanceV1 (unwrap! (contract-call? .test-ccext-governance-token-nyc-v1 get-balance userAddress) ERR_BALANCE_NOT_FOUND))
-      (balanceV2 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-balance userAddress) ERR_BALANCE_NOT_FOUND))
+      (balanceV1 (unwrap! (contract-call? 'SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token get-balance userAddress) ERR_BALANCE_NOT_FOUND))
+      (balanceV2 (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 get-balance userAddress) ERR_BALANCE_NOT_FOUND))
       (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
       (redemptionAmount (get-redemption-for-balance totalBalance))
       (redemptionClaimed (default-to u0 (get-redemption-amount-claimed userAddress)))
@@ -116,10 +112,8 @@
     ;; check that redemption amount is > 0
     (asserts! (and (is-some redemptionAmount) (> (unwrap-panic redemptionAmount) u0)) ERR_NOTHING_TO_REDEEM)
     ;; burn NYC
-    ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
-    ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-    (and (> balanceV1 u0) (try! (contract-call? .test-ccext-governance-token-nyc-v1 burn balanceV1 userAddress)))
-    (and (> balanceV2 u0) (try! (contract-call? .test-ccext-governance-token-nyc burn balanceV2 userAddress)))
+    (and (> balanceV1 u0) (try! (contract-call? 'SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token burn balanceV1 userAddress)))
+    (and (> balanceV2 u0) (try! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 burn balanceV2 userAddress)))
     ;; transfer STX
     (try! (as-contract (stx-transfer? (unwrap-panic redemptionAmount) SELF userAddress)))
     ;; update redemption claims
@@ -186,10 +180,8 @@
 (define-read-only (get-nyc-balances (address principal))
   (let
     (
-      ;; MAINNET: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
-      ;; MAINNET: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
-      (balanceV1 (unwrap! (contract-call? .test-ccext-governance-token-nyc-v1 get-balance address) ERR_BALANCE_NOT_FOUND))
-      (balanceV2 (unwrap! (contract-call? .test-ccext-governance-token-nyc get-balance address) ERR_BALANCE_NOT_FOUND))
+      (balanceV1 (unwrap! (contract-call? 'SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token get-balance address) ERR_BALANCE_NOT_FOUND))
+      (balanceV2 (unwrap! (contract-call? 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2 get-balance address) ERR_BALANCE_NOT_FOUND))
       (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
     )
     (ok {

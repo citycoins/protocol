@@ -198,14 +198,12 @@
   (let
     (
       ;; MAINNET: NYC cycle 82 / first block BTC 838,250 STX 145,643
-      ;; cycle 2 / u4500 used in tests
-      (cycle82Hash (unwrap! (get-block-hash u4500) none))
-      (cycle82Data (at-block cycle82Hash (contract-call? .ccd007-citycoin-stacking get-stacker NYC_ID u2 userId)))
+      (cycle82Hash (unwrap! (get-block-hash u145643) none))
+      (cycle82Data (at-block cycle82Hash (contract-call? .ccd007-citycoin-stacking get-stacker NYC_ID u82 userId)))
       (cycle82Amount (get stacked cycle82Data))
       ;; MAINNET: NYC cycle 83 / first block BTC 840,350 STX 147,282
-      ;; cycle 3 / u6600 used in tests
-      (cycle83Hash (unwrap! (get-block-hash u6600) none))
-      (cycle83Data (at-block cycle83Hash (contract-call? .ccd007-citycoin-stacking get-stacker NYC_ID u3 userId)))
+      (cycle83Hash (unwrap! (get-block-hash u147282) none))
+      (cycle83Data (at-block cycle83Hash (contract-call? .ccd007-citycoin-stacking get-stacker NYC_ID u83 userId)))
       (cycle83Amount (get stacked cycle83Data))
       ;; NYC vote calculation
       (scaledVote (/ (+ (scale-up cycle82Amount) (scale-up cycle83Amount)) u2))
