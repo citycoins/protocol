@@ -260,12 +260,14 @@ Clarinet.test({
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
     const sender = accounts.get("deployer")!;
+    const wallet_2 = accounts.get("wallet_2")!;
     const ccd002Treasury = new CCD002Treasury(chain, sender, "ccd002-treasury-mia-mining");
     const ccd006CityMining = new CCD006CityMining(chain, sender, "ccd006-citycoin-mining");
     // balance is 99999999999992 after ccip-014 deployment
     // new balance is 99997999999992 after ccip-020 test deployment
-    const expectedBalance = 99997999999992;
-    const entries = [49998999999996, 49998999999996];
+    // switched to another default account not deployer, normal balance
+    const expectedBalance = 100000000000000;
+    const entries = Array.from({ length: 2 }, () => expectedBalance / 2);
 
     // act
 
@@ -273,7 +275,7 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_001);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD006_CITY_MINING_002);
-    const block = chain.mineBlock([ccd006CityMining.mine(sender, miaCityName, entries)]);
+    const block = chain.mineBlock([ccd006CityMining.mine(wallet_2, miaCityName, entries)]);
 
     // assert
     ccd002Treasury.getBalanceStx().result.expectUint(expectedBalance);

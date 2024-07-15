@@ -97,6 +97,11 @@ path = "contracts/extensions/ccd002-treasury-v3.clar"
 clarity_version = 2
 epoch = 2.5
 
+[contracts.ccd002-treasury-mia-stx-rewards-v3]
+path = "contracts/extensions/ccd002-treasury-v3.clar"
+clarity_version = 2
+epoch = 2.5
+
 [contracts.ccd002-treasury-mia-stacking]
 path = "contracts/extensions/ccd002-treasury.clar"
 
@@ -105,11 +110,6 @@ path = "contracts/extensions/ccd002-treasury.clar"
 
 [contracts.ccd002-treasury-nyc-mining-v2]
 path = "contracts/extensions/ccd002-treasury-v2.clar"
-
-[contracts.ccd002-treasury-nyc-mining-v3]
-path = "contracts/extensions/ccd002-treasury-v3.clar"
-clarity_version = 2
-epoch = 2.5
 
 [contracts.ccd002-treasury-nyc-stacking]
 path = "contracts/extensions/ccd002-treasury.clar"
@@ -144,10 +144,10 @@ path = "contracts/extensions/ccd010-core-v2-adapter.clar"
 [contracts.ccd011-stacking-payouts]
 path = "contracts/extensions/ccd011-stacking-payouts.clar"
 
-[contracts.ccip019-rewards-treasury]
-path = "contracts/extensions/ccip019-rewards-treasury.clar"
+[contracts.ccd012-redemption-nyc]
+path = "contracts/extensions/ccd012-redemption-nyc.clar"
 clarity_version = 2
-epoch = 2.5
+epoch = 2.4
 
 [contracts.ccip012-bootstrap]
 path = "contracts/proposals/ccip012-bootstrap.clar"
@@ -183,11 +183,15 @@ path = "contracts/proposals/ccip021-extend-sunset-period-2.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.ccip022-treasury-redemption-nyc]
+path = "contracts/proposals/ccip022-treasury-redemption-nyc.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.ccip019-pox-4-stacking]
 path = "contracts/proposals/ccip019-pox-4-stacking.clar"
 clarity_version = 2
 epoch = 2.5
-
 # CITYCOINS PROTOCOL TRAITS
 
 [contracts.extension-trait]
@@ -211,12 +215,6 @@ path = "contracts/traits/ccd007-trait.clar"
 [contracts.ccip015-trait]
 path = "contracts/traits/ccip015-trait.clar"
 
-[contracts.ccip019-proxy-trait]
-path = "contracts/traits/ccip019-proxy-trait.clar"
-clarity_version = 2
-epoch = 2.5
-
-
 # CITYCOINS EXTERNAL CONTRACTS
 
 [contracts.citycoin-vrf-v2]
@@ -227,6 +225,9 @@ path = "tests/contracts/external/test-ccext-governance-token-mia.clar"
 
 [contracts.test-ccext-governance-token-nyc]
 path = "tests/contracts/external/test-ccext-governance-token-nyc.clar"
+
+[contracts.test-ccext-governance-token-nyc-v1]
+path = "tests/contracts/external/test-ccext-governance-token-nyc-v1.clar"
 
 [contracts.test-ccext-nft-mia]
 path = "tests/contracts/external/test-ccext-nft-mia.clar"
@@ -536,6 +537,36 @@ path = "tests/contracts/proposals/test-ccip014-pox-3-001.clar"
 
 [contracts.test-ccip014-pox-3-002]
 path = "tests/contracts/proposals/test-ccip014-pox-3-002.clar"
+
+[contracts.test-ccip020-shutdown-001]
+path = "tests/contracts/proposals/test-ccip020-shutdown-001.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.test-ccip022-treasury-redemption-nyc-001]
+path = "tests/contracts/proposals/test-ccip022-treasury-redemption-nyc-001.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.test-ccip022-treasury-redemption-nyc-002]
+path = "tests/contracts/proposals/test-ccip022-treasury-redemption-nyc-002.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.test-ccip022-treasury-redemption-nyc-003]
+path = "tests/contracts/proposals/test-ccip022-treasury-redemption-nyc-003.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.test-ccip022-treasury-redemption-nyc-004]
+path = "tests/contracts/proposals/test-ccip022-treasury-redemption-nyc-004.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.test-ccip022-treasury-redemption-nyc-005]
+path = "tests/contracts/proposals/test-ccip022-treasury-redemption-nyc-005.clar"
+clarity_version = 2
+epoch = 2.4
 
 [repl]
 costs_version = 2

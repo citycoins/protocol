@@ -1,7 +1,4 @@
-# GitHub action to run Clarinet tests against the contracts
-# and fail if code is invalid or a test fails.
-
-name: Test Contracts
+name: Test contracts with clarinet
 
 on:
   push:
@@ -15,15 +12,16 @@ on:
   # allow running manually
   workflow_dispatch:
 
-env:
-  CLARINET_DISABLE_HINTS: 1
-
 jobs:
   test-contracts:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v4
+      - name: "Configure clarinet"
+        run: |
+          mkdir -p ~/.clarinet
+          echo "enable_hints = false" >> ~/.clarinet/clarinetrc.toml
       - name: "Check contract syntax"
         uses: docker://hirosystems/clarinet:2.6.0
         with:

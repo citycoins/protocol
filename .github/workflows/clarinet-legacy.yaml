@@ -1,0 +1,36 @@
+name: Test contracts with clarinet (legacy)
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  # allow running manually
+  workflow_dispatch:
+
+env:
+  CLARINET_DISABLE_HINTS: 1
+
+jobs:
+  test-contracts-legacy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v4
+      - name: "Check contract syntax (legacy)"
+        uses: docker://hirosystems/clarinet:1.8.0
+        with:
+          args: check
+      - name: "Run all contract tests (legacy)"
+        uses: docker://hirosystems/clarinet:1.8.0
+        with:
+          args: test --coverage
+      - name: "Upload code coverage"
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.lcov
+          token: ${{ secrets.CODECOV_TOKEN }}
