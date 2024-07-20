@@ -79,14 +79,14 @@
 
     ;; allow MIA in treasuries
     ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
-    (try! (contract-call? .ccd002-treasury-mia-mining-v3 set-allowed 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2 true))
+    (try! (contract-call? .ccd002-treasury-mia-mining-v3 set-allowed 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 true))
 
     ;; transfer funds to new treasury extensions
     (try! (contract-call? .ccd002-treasury-mia-mining-v2 withdraw-stx miaBalance .ccd002-treasury-mia-mining-v3))
 
     ;; delegate stack the STX in the mining treasuries (up to 50M STX each)
     ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3
-    (try! (contract-call? .ccd002-treasury-mia-mining-v3 delegate-stx u50000000000000 'ST1XQXW9JNQ1W4A7PYTN3HCHPEY7SHM6KPA085ES6))
+    (try! (contract-call? .ccd002-treasury-mia-mining-v3 delegate-stx u50000000000000 'SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3))
 
     ;; add treasuries to ccd005-city-data
     (try! (contract-call? .ccd005-city-data add-treasury miaId .ccd002-treasury-mia-mining-v3 "mining-v3"))
@@ -224,12 +224,12 @@
     (
       ;; MAINNET: mia cycle 82 / first block BTC 838,250 STX 145,643
       ;; cycle 2 / u4500 used in tests
-      (cycle82Hash (unwrap! (get-block-hash u4500) none))
+      (cycle82Hash (unwrap! (get-block-hash u145643) none))
       (cycle82Data (at-block cycle82Hash (contract-call? .ccd007-citycoin-stacking get-stacker MIA_ID u2 userId)))
       (cycle82Amount (get stacked cycle82Data))
       ;; MAINNET: mia cycle 83 / first block BTC 840,350 STX 147,282
       ;; cycle 3 / u6600 used in tests
-      (cycle83Hash (unwrap! (get-block-hash u6600) none))
+      (cycle83Hash (unwrap! (get-block-hash u147282) none))
       (cycle83Data (at-block cycle83Hash (contract-call? .ccd007-citycoin-stacking get-stacker MIA_ID u3 userId)))
       (cycle83Amount (get stacked cycle83Data))
       ;; mia vote calculation

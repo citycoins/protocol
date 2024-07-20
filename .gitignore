@@ -14,3 +14,4 @@
 /coverage_report
 history.txt
 coverage.lcov
+node_modules
