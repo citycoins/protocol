@@ -84,15 +84,9 @@ async function main() {
 
   const voteTxs: StacksTransaction[] = [];
 
-  voteTxs.push(await vote("SP3TF26QFS3YMYHC9N3ZZTZQKCM4AFYMVW1WMFRTT", 932));
-  voteTxs.push(await vote("SP3W06MK1XP52KTHJB96D04JSBW2NQCA42FFMQZXZ", 565));
-  voteTxs.push(await vote("SP2S7Y7BMX7Y73FHV3SV9W1EE63EQ98BE95PZ4C4E", 2486));
-  voteTxs.push(await vote("SP1KVKBYWMCK7WSDYS0DDF8R3XT5RD5QKBPQK3SBB", 567));
-  voteTxs.push(await vote("SP39XMB07QV4KN4PB6X3KHNQKWARB0F9AXY6K41E0", 626));
-  voteTxs.push(await vote("SP1V4BWKPD559WP67GWCV8VR0VRKJ7ESS8WHKYEJP", 905));
-  voteTxs.push(await vote("SP3W8BCK1KKJB8H34QA2RWV2Z35E7RNPKEXJSFAF0", 3872));
-  voteTxs.push(await vote("SPM3GE47QTMMVBT6DH0XFBXYS1AJHSSAQMYSB4J8", 7706));
-  voteTxs.push(await vote("SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X", 802));
+  voteTxs.push(await vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", 524));
+  voteTxs.push(await vote("SP34N5WWPHWTVJVYPE368HYDEXMZWKPVF639B3P5T", 978));
+  voteTxs.push(await vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", 243));
 
   address = "SP7DGES13508FHRWS1FB0J3SZA326FP6QRMB6JDE";
   [, addressHash] = c32addressDecode(address);
@@ -122,7 +116,7 @@ async function main() {
 
   address = "SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X";
   [, addressHash] = c32addressDecode(address);
-  nonce = 803;
+  nonce = 802;
   const tx3 = await makeUnsignedContractCall({
     contractAddress: "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH",
     contractName: "ccd001-direct-execute",
