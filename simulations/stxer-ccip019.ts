@@ -1,5 +1,5 @@
 import { StacksMainnet } from "@stacks/network";
-import { AnchorMode, PostConditionMode, StacksTransaction, boolCV, bufferCV, contractPrincipalCV, listCV, makeUnsignedContractCall, makeUnsignedContractDeploy, principalCV, serializeCV, stringAsciiCV, tupleCV, uintCV } from "@stacks/transactions";
+import { AnchorMode, PostConditionMode, SignedTokenTransferOptions, StacksTransaction, boolCV, bufferCV, contractPrincipalCV, listCV, makeSTXTokenTransfer, makeUnsignedContractCall, makeUnsignedContractDeploy, makeUnsignedSTXTokenTransfer, principalCV, serializeCV, stringAsciiCV, tupleCV, uintCV } from "@stacks/transactions";
 import { c32addressDecode } from "c32check";
 import fs from "fs";
 
@@ -48,9 +48,23 @@ async function vote(address: string, nonce: number) {
   return voteTx1;
 }
 
+async function directExecute(address: string, nonce: number) {
+  const [, addressHash] = c32addressDecode(address);
+  const voteTx1 = await makeUnsignedContractCall({
+    contractAddress: "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH",
+    contractName: "ccd001-direct-execute",
+    functionName: "direct-execute",
+    functionArgs: [principalCV("SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccip019-pox-4-stacking")],
+    nonce: nonce++,
+    ...common_params,
+  });
+  voteTx1.auth.spendingCondition.signer = addressHash;
+  return voteTx1;
+}
+
 async function main() {
-  const block_height = 156894;
-  const block_hash = "390579d10ed73f98ef829e0068d014d32a6a128e3ba0b80c42321010c61fff1a";
+  const block_height = 157894;
+  const block_hash = "5e584e604a8caffc476be973562f4ad05231cecb70f3ede3af110986dffee4cf";
 
   // DO NOT sign any transactions you're about to send, this is not required for simulation
   let address = "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH";
@@ -84,53 +98,43 @@ async function main() {
 
   const voteTxs: StacksTransaction[] = [];
 
-  voteTxs.push(await vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", 524));
-  voteTxs.push(await vote("SP34N5WWPHWTVJVYPE368HYDEXMZWKPVF639B3P5T", 978));
-  voteTxs.push(await vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", 243));
+  voteTxs.push(await vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", 529));
+  voteTxs.push(await vote("SP34N5WWPHWTVJVYPE368HYDEXMZWKPVF639B3P5T", 982));
+  voteTxs.push(await vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", 245));
 
-  address = "SP7DGES13508FHRWS1FB0J3SZA326FP6QRMB6JDE";
-  [, addressHash] = c32addressDecode(address);
-  nonce = 120;
-  const tx1 = await makeUnsignedContractCall({
-    contractAddress: "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH",
-    contractName: "ccd001-direct-execute",
-    functionName: "direct-execute",
-    functionArgs: [principalCV("SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccip019-pox-4-stacking")],
-    nonce: nonce++,
-    ...common_params,
-  });
-  tx1.auth.spendingCondition.signer = addressHash;
-
-  address = "SP3YYGCGX1B62CYAH4QX7PQE63YXG7RDTXD8BQHJQ";
-  [, addressHash] = c32addressDecode(address);
-  nonce = 17;
-  const tx2 = await makeUnsignedContractCall({
-    contractAddress: "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH",
-    contractName: "ccd001-direct-execute",
-    functionName: "direct-execute",
-    functionArgs: [principalCV("SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccip019-pox-4-stacking")],
-    nonce: nonce++,
-    ...common_params,
-  });
-  tx2.auth.spendingCondition.signer = addressHash;
+  const executeTxs: StacksTransaction[] = [];
+  executeTxs.push(await directExecute("SP7DGES13508FHRWS1FB0J3SZA326FP6QRMB6JDE", 122));
+  executeTxs.push(await directExecute("SP3YYGCGX1B62CYAH4QX7PQE63YXG7RDTXD8BQHJQ", 17));
+  executeTxs.push(await directExecute("SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X", 803));
 
   address = "SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X";
-  [, addressHash] = c32addressDecode(address);
-  nonce = 802;
-  const tx3 = await makeUnsignedContractCall({
-    contractAddress: "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH",
-    contractName: "ccd001-direct-execute",
-    functionName: "direct-execute",
-    functionArgs: [principalCV("SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccip019-pox-4-stacking")],
+  nonce = 804;
+  const transferStxTx = await makeUnsignedSTXTokenTransfer({
+    amount: 10000000,
+    recipient: "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-stx-stacking-v3",
     nonce: nonce++,
     ...common_params,
   });
-  tx3.auth.spendingCondition.signer = addressHash;
+  [, addressHash] = c32addressDecode(address);
+  transferStxTx.auth.spendingCondition.signer = addressHash;
+
+  address = "SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X";
+  nonce = 805;
+  const lockStxTx = await makeUnsignedContractCall({
+    contractAddress: "SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP",
+    contractName: "pox4-fast-pool-v3",
+    functionName: "delegate-stack-stx-many",
+    functionArgs: [listCV([principalCV("SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-mining-v3"), principalCV("SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-stx-stacking-v3")])],
+    nonce: nonce++,
+    ...common_params,
+  });
+  [, addressHash] = c32addressDecode(address);
+  lockStxTx.auth.spendingCondition.signer = addressHash;
 
   const req = tupleCV({
     block_height: uintCV(block_height),
     block_hash: bufferCV(Buffer.from(block_hash, "hex")),
-    steps: listCV([deployTx1, deployTx2, deployTx3, ...voteTxs, tx1, tx2, tx3].map((t) => runTx(t))),
+    steps: listCV([deployTx1, deployTx2, deployTx3, ...voteTxs, ...executeTxs, transferStxTx, lockStxTx].map((t) => runTx(t))),
   });
   const body = serializeCV(req);
   const rs: any = await fetch(SIMULATION_API_ENDPOINT, {

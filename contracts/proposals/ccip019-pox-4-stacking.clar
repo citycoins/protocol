@@ -84,9 +84,10 @@
     ;; transfer funds to new treasury extensions
     (try! (contract-call? .ccd002-treasury-mia-mining-v2 withdraw-stx miaBalance .ccd002-treasury-mia-mining-v3))
 
-    ;; delegate stack the STX in the mining treasuries (up to 50M STX each)
+    ;; delegate stack the STX in the mining and rewards treasuries (up to 50M STX each)
     ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3
     (try! (contract-call? .ccd002-treasury-mia-mining-v3 delegate-stx u50000000000000 'SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3))
+    (try! (contract-call? .ccd002-treasury-mia-stx-stacking-v3 delegate-stx u50000000000000 'SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3))
 
     ;; add treasuries to ccd005-city-data
     (try! (contract-call? .ccd005-city-data add-treasury miaId .ccd002-treasury-mia-mining-v3 "mining-v3"))
@@ -129,7 +130,7 @@
           (miaVoteAmount (scale-down (default-to u0 (get-mia-vote voterId true))))
         )
         ;; check that the user has a positive vote
-        (asserts! (or (> miaVoteAmount u0)) ERR_NOTHING_STACKED)
+        (asserts! (> miaVoteAmount u0) ERR_NOTHING_STACKED)
         ;; insert new user vote record
         (asserts! (map-insert UserVotes voterId {
           vote: vote,
@@ -225,12 +226,12 @@
       ;; MAINNET: mia cycle 82 / first block BTC 838,250 STX 145,643
       ;; cycle 2 / u4500 used in tests
       (cycle82Hash (unwrap! (get-block-hash u145643) none))
-      (cycle82Data (at-block cycle82Hash (contract-call? .ccd007-citycoin-stacking get-stacker MIA_ID u2 userId)))
+      (cycle82Data (at-block cycle82Hash (contract-call? .ccd007-citycoin-stacking get-stacker MIA_ID u82 userId)))
       (cycle82Amount (get stacked cycle82Data))
       ;; MAINNET: mia cycle 83 / first block BTC 840,350 STX 147,282
       ;; cycle 3 / u6600 used in tests
       (cycle83Hash (unwrap! (get-block-hash u147282) none))
-      (cycle83Data (at-block cycle83Hash (contract-call? .ccd007-citycoin-stacking get-stacker MIA_ID u3 userId)))
+      (cycle83Data (at-block cycle83Hash (contract-call? .ccd007-citycoin-stacking get-stacker MIA_ID u83 userId)))
       (cycle83Amount (get stacked cycle83Data))
       ;; mia vote calculation
       (scaledVote (/ (+ (scale-up cycle82Amount) (scale-up cycle83Amount)) u2))
