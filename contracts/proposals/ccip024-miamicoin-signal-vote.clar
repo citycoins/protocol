@@ -33,12 +33,10 @@
 
 ;; vote block heights
 (define-data-var voteActive bool true)
-(define-data-var voteStart uint u0)
-(define-data-var voteEnd uint u0)
-
 ;; start the vote when deployed
-(var-set voteStart block-height)
-(var-set voteEnd (+ block-height VOTE_LENGTH))
+(define-data-var voteStart uint block-height)
+;; end the vote after defined period
+(define-data-var voteEnd uint (+ block-height VOTE_LENGTH))
 
 ;; DATA MAPS
 
@@ -63,13 +61,8 @@
 ;; PUBLIC FUNCTIONS
 
 (define-public (execute (sender principal))
-  (begin
-    ;; check vote is complete/passed
-    (try! (is-executable))
-    ;; update vote variables
-    (var-set voteActive false)
-    ;; no action to execute, this is a signal vote
-    (ok true))
+  ;; no action to execute, this is a signal vote
+  (ok true)
 )
 
 (define-public (vote-on-proposal (vote bool))
@@ -123,23 +116,8 @@
 ;; READ ONLY FUNCTIONS
 
 (define-read-only (is-executable)
-  (let
-    (
-      (votingRecord (unwrap! (get-vote-totals) ERR_PANIC))
-      (miaRecord (get mia votingRecord))
-      (voteTotals (get totals votingRecord))
-    )
-    ;; check that there is at least one vote
-    (asserts! (or (> (get totalVotesYes voteTotals) u0) (> (get totalVotesNo voteTotals) u0)) ERR_VOTE_FAILED)
-    ;; check that the yes total is more than no total
-    (asserts! (> (get totalVotesYes voteTotals) (get totalVotesNo voteTotals)) ERR_VOTE_FAILED)
-    ;; check the "yes" votes are at least 25% of the total
-    (asserts! (>= (get totalAmountYes miaRecord) (/ (get totalAmountYes voteTotals) u4)) ERR_VOTE_FAILED)
-    ;; check that the voting period has ended
-    (asserts! (> block-height (var-get voteEnd)) ERR_PROPOSAL_STILL_ACTIVE)
-    ;; allow execution
-    (ok true)
-  )
+  ;; no action to execute, this is a signal vote
+  (ok true)
 )
 
 (define-read-only (is-vote-active)
