@@ -33,10 +33,12 @@
 
 ;; vote block heights
 (define-data-var voteActive bool true)
-;; start the vote when deployed
-(define-data-var voteStart uint block-height)
-;; end the vote after defined period
-(define-data-var voteEnd uint (+ block-height VOTE_LENGTH))
+;; MAINNET: start the vote when deployed
+;; (define-data-var voteStart uint block-height)
+(define-data-var voteStart uint (+ block-height u12600))
+;; MAINNET: end the vote after defined period
+;; (define-data-var voteEnd uint (+ block-height VOTE_LENGTH))
+(define-data-var voteEnd uint (+ block-height VOTE_LENGTH u12600))
 
 ;; DATA MAPS
 
