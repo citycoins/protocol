@@ -24,6 +24,28 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "ccip-024: vote-on-proposal() succeeds if vote is changed",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    const ccip024 = new CCIP024MiamiCoinSignalVote(chain, sender);
+
+    // Initialize contracts and stack
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP024_MIAMICOIN_SIGNAL_VOTE_001);
+    chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, 500, 10)]);
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    const receipt = chain.mineBlock([ccip024.voteOnProposal(user1, true)]).receipts[0];
+    receipt.result.expectOk().expectBool(true);
+
+    // Act & Assert
+    const receiptReverse = chain.mineBlock([ccip024.voteOnProposal(user1, false)]).receipts[0];
+    receiptReverse.result.expectOk().expectBool(true);
+  },
+});
+
+Clarinet.test({
   name: "ccip-024: vote-on-proposal() fails for ineligible voters",
   fn(chain: Chain, accounts: Map<string, Account>) {
     const sender = accounts.get("deployer")!;
@@ -74,6 +96,14 @@ Clarinet.test({
     chain.mineBlock([ccip024.voteOnProposal(user1, true), ccip024.voteOnProposal(user2, false)]);
 
     // Assert
+    ccip024
+      .getVoteTotals()
+      .result.expectSome()
+      .expectTuple({
+        totalVotesYes: types.uint(1),
+        totalVotesNo: types.uint(1),
+      });
+
     ccip024
       .getVoteTotalMia()
       .result.expectSome()
