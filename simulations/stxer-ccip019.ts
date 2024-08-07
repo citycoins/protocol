@@ -107,25 +107,26 @@ async function main() {
   executeTxs.push(await directExecute("SP3YYGCGX1B62CYAH4QX7PQE63YXG7RDTXD8BQHJQ", 17));
   executeTxs.push(await directExecute("SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X", 813));
 
+  /* commenting this out as it's a transfer from the pool operator to the treasury
+  // this is not required for the simulation to work?
   address = "SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X";
-  nonce = 813;
   const transferStxTx = await makeUnsignedSTXTokenTransfer({
     amount: 10000000,
     recipient: "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3",
-    nonce: nonce++,
+    nonce: 814,
     ...common_params,
   });
   [, addressHash] = c32addressDecode(address);
   transferStxTx.auth.spendingCondition.signer = addressHash;
+  */
 
   address = "SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X";
-  nonce = nonce++;
   const lockStxTx = await makeUnsignedContractCall({
     contractAddress: "SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP",
     contractName: "pox4-fast-pool-v3",
     functionName: "delegate-stack-stx-many",
     functionArgs: [listCV([principalCV("SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-mining-v3"), principalCV("SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3")])],
-    nonce: nonce++,
+    nonce: 814,
     ...common_params,
   });
   [, addressHash] = c32addressDecode(address);
@@ -134,7 +135,7 @@ async function main() {
   const req = tupleCV({
     block_height: uintCV(block_height),
     block_hash: bufferCV(Buffer.from(block_hash, "hex")),
-    steps: listCV([deployTx1, deployTx2, deployTx3, ...voteTxs, ...executeTxs, transferStxTx, lockStxTx].map((t) => runTx(t))),
+    steps: listCV([deployTx1, deployTx2, deployTx3, ...voteTxs, ...executeTxs, /*transferStxTx,*/ lockStxTx].map((t) => runTx(t))),
   });
   const body = serializeCV(req);
   const rs: any = await fetch(SIMULATION_API_ENDPOINT, {
