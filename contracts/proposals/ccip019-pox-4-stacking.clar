@@ -73,7 +73,7 @@
     (try! (contract-call? .base-dao set-extensions
       (list
         {extension: .ccd002-treasury-mia-mining-v3, enabled: true}
-        {extension: .ccd002-treasury-stx-rewards-v3, enabled: true}
+        {extension: .ccd002-treasury-mia-rewards-v3, enabled: true}
       )
     ))
 
@@ -87,11 +87,11 @@
     ;; delegate stack the STX in the mining and rewards treasuries (up to 50M STX each)
     ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3
     (try! (contract-call? .ccd002-treasury-mia-mining-v3 delegate-stx u50000000000000 'SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3))
-    (try! (contract-call? .ccd002-treasury-stx-rewards-v3 delegate-stx u50000000000000 'SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3))
+    (try! (contract-call? .ccd002-treasury-mia-rewards-v3 delegate-stx u50000000000000 'SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3))
 
     ;; add treasuries to ccd005-city-data
     (try! (contract-call? .ccd005-city-data add-treasury miaId .ccd002-treasury-mia-mining-v3 "mining-v3"))
-    (try! (contract-call? .ccd005-city-data add-treasury miaId .ccd002-treasury-stx-rewards-v3 "stx-v3"))
+    (try! (contract-call? .ccd005-city-data add-treasury miaId .ccd002-treasury-mia-rewards-v3 "rewards-v3"))
 
     (ok true)
   )
