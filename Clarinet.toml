@@ -11,6 +11,12 @@ path = ".requirements"
 # MAINNET REQUIREMENTS
 
 [[project.requirements]]
+contract_id = "SP000000000000000000002Q6VF78.pox-4"
+
+[[project.requirements]]
+contract_id = "SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3"
+
+[[project.requirements]]
 contract_id = "SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard"
 
 [[project.requirements]]

@@ -79,14 +79,12 @@
     ))
 
     ;; allow MIA in treasuries
-    ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
     (try! (contract-call? .ccd002-treasury-mia-mining-v3 set-allowed 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 true))
 
     ;; transfer funds to new treasury extensions
     (try! (contract-call? .ccd002-treasury-mia-mining-v2 withdraw-stx miaBalance .ccd002-treasury-mia-mining-v3))
 
     ;; delegate stack the STX in the mining and rewards treasuries (up to 50M STX each)
-    ;; MAINNET: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3
     (try! (contract-call? .ccd002-treasury-mia-mining-v3 delegate-stx u50000000000000 'SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3))
     (try! (contract-call? .ccd002-treasury-mia-rewards-v3 delegate-stx u50000000000000 'SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox4-fast-pool-v3))
 

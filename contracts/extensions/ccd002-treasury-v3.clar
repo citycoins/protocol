@@ -157,9 +157,7 @@
       delegate: to,
       sender: tx-sender
     })
-    ;; MAINNET: 'SP000000000000000000002Q6VF78.pox-4
-    ;; TESTNET: 'ST000000000000000000002AMW42H.pox-4
-    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-4 delegate-stx maxAmount to none none))
+    (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stx maxAmount to none none))
       success (ok success)
       err (err (to-uint err))
     )
@@ -174,9 +172,7 @@
       caller: contract-caller,
       sender: tx-sender
     })
-    ;; MAINNET: 'SP000000000000000000002Q6VF78.pox-4
-    ;; TESTNET: 'ST000000000000000000002AMW42H.pox-4
-    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-4 revoke-delegate-stx))
+    (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox-4 revoke-delegate-stx))
       success (begin (print success) (ok true))
       err (err (to-uint err))
     )
