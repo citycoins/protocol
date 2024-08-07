@@ -11,6 +11,9 @@ path = ".requirements"
 # MAINNET REQUIREMENTS
 
 [[project.requirements]]
+contract_id = "SP000000000000000000002Q6VF78.pox"
+
+[[project.requirements]]
 contract_id = "SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard"
 
 [[project.requirements]]
@@ -89,15 +92,6 @@ path = "contracts/extensions/ccd002-treasury.clar"
 [contracts.ccd002-treasury-mia-mining-v2]
 path = "contracts/extensions/ccd002-treasury-v2.clar"
 
-[contracts.ccd002-treasury-mia-mining-v3]
-path = "contracts/extensions/ccd002-treasury-v3.clar"
-clarity_version = 2
-epoch = 2.5
-
-[contracts.ccd002-treasury-mia-stx-rewards-v3]
-path = "contracts/extensions/ccd002-treasury-v3.clar"
-clarity_version = 2
-epoch = 2.5
 
 [contracts.ccd002-treasury-mia-stacking]
 path = "contracts/extensions/ccd002-treasury.clar"
@@ -185,10 +179,6 @@ path = "contracts/proposals/ccip022-treasury-redemption-nyc.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.ccip019-pox-4-stacking]
-path = "contracts/proposals/ccip019-pox-4-stacking.clar"
-clarity_version = 2
-epoch = 2.5
 # CITYCOINS PROTOCOL TRAITS
 
 [contracts.extension-trait]

@@ -25,4 +25,4 @@ jobs:
       - name: "Check contract syntax"
         uses: docker://hirosystems/clarinet:2.8.0
         with:
-          args: check -m Clarinet-2.5.toml
+          args: check
