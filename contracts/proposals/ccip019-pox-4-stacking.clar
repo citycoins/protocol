@@ -77,9 +77,6 @@
       )
     ))
 
-    ;; allow MIA in treasuries
-    (try! (contract-call? .ccd002-treasury-mia-mining-v3 set-allowed 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 true))
-
     ;; transfer funds to new treasury extensions
     (try! (contract-call? .ccd002-treasury-mia-mining-v2 withdraw-stx miaBalance .ccd002-treasury-mia-mining-v3))
 
