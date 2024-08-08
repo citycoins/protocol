@@ -93,6 +93,11 @@
         )
         ;; update vote stats for MIA
         (update-city-votes MIA_ID miaVoteAmount vote true)
+        ;; print voter info
+        (print {
+          notification: "vote-on-ccip-024", 
+          payload: (get-voter-info voterId)
+        })
         (ok true)
       )
       ;; if the voterRecord does not exist
@@ -109,6 +114,11 @@
         }) ERR_SAVING_VOTE)
         ;; update vote stats for MIA
         (update-city-votes MIA_ID miaVoteAmount vote false)
+        ;; print voter info
+        (print {
+          notification: "vote-on-ccip-024", 
+          payload: (get-voter-info voterId)
+        })
         (ok true)
       )
     )
