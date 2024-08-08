@@ -18,8 +18,8 @@
 (define-constant SELF (as-contract tx-sender))
 (define-constant CCIP_019 {
   name: "PoX-4 Stacking",
-  link: "https://github.com/citycoins/protocol/pull/67",
-  hash: "",
+  link: "https://github.com/citycoins/governance/blob/feat/add-ccip-019/ccips/ccip-019/ccip-019-stack-mia-mining-treasury.md",
+  hash: "214fb59a81d3d63c8e1e32100cda3bc5ca91b413",
 })
 
 (define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
