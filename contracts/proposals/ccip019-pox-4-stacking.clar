@@ -13,6 +13,7 @@
 (define-constant ERR_PROPOSAL_NOT_ACTIVE (err u19005))
 (define-constant ERR_PROPOSAL_STILL_ACTIVE (err u19006))
 (define-constant ERR_VOTE_FAILED (err u19007))
+
 ;; CONSTANTS
 
 (define-constant SELF (as-contract tx-sender))
