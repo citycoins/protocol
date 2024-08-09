@@ -179,6 +179,11 @@ path = "contracts/proposals/ccip022-treasury-redemption-nyc.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.ccip024-miamicoin-signal-vote]
+path = "contracts/proposals/ccip024-miamicoin-signal-vote.clar"
+clarity_version = 2
+epoch = 2.4
+
 # CITYCOINS PROTOCOL TRAITS
 
 [contracts.extension-trait]
@@ -552,6 +557,11 @@ epoch = 2.4
 
 [contracts.test-ccip022-treasury-redemption-nyc-005]
 path = "tests/contracts/proposals/test-ccip022-treasury-redemption-nyc-005.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.test-ccip024-miamicoin-signal-vote-001]
+path = "tests/contracts/proposals/test-ccip024-miamicoin-signal-vote-001.clar"
 clarity_version = 2
 epoch = 2.4
 
