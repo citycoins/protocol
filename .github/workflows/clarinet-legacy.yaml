@@ -24,11 +24,11 @@ jobs:
       - name: "Check contract syntax (legacy)"
         uses: docker://hirosystems/clarinet:1.8.0
         with:
-          args: check
+          args: check -m Clarinet-legacy.toml
       - name: "Run all contract tests (legacy)"
         uses: docker://hirosystems/clarinet:1.8.0
         with:
-          args: test --coverage
+          args: test --coverage -m Clarinet-legacy.toml
       - name: "Upload code coverage"
         uses: codecov/codecov-action@v4
         with:

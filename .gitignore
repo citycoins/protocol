@@ -2,6 +2,8 @@
 **/settings/Mainnet.toml
 **/settings/Testnet.toml
 
+dist
+
 # removing to resolve issue with testnet reset
 # will use files obtained locally beforehand
 # .cache/
@@ -14,3 +16,4 @@
 /coverage_report
 history.txt
 coverage.lcov
+node_modules
