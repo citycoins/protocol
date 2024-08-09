@@ -85,15 +85,17 @@ Clarinet.test({
     const user2 = accounts.get("wallet_2")!;
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     const ccip024 = new CCIP024MiamiCoinSignalVote(chain, sender);
+    const voteLength = 2016;
 
     // Setup
     chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
     constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP024_MIAMICOIN_SIGNAL_VOTE_001);
     chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, 500, 10), ccd007CityStacking.stack(user2, mia.cityName, 300, 10)]);
+    ccip024.isVoteActive().result.expectBool(false);
     chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
 
     // Vote
-    chain.mineBlock([ccip024.voteOnProposal(user1, true), ccip024.voteOnProposal(user2, false)]);
+    const voteBlock = chain.mineBlock([ccip024.voteOnProposal(user1, true), ccip024.voteOnProposal(user2, false)]);
 
     // Assert
     ccip024
@@ -122,10 +124,13 @@ Clarinet.test({
         mia: types.uint(500),
       });
 
-    ccip024.isVoteActive().result.expectSome().expectBool(true);
+    ccip024.isVoteActive().result.expectBool(true);
 
     const voteInfo = ccip024.getVotePeriod().result.expectSome().expectTuple();
-    voteInfo.length.expectUint(2016);
+    voteInfo.length.expectUint(voteLength);
+
+    chain.mineEmptyBlockUntil(voteBlock.height + voteLength);
+    ccip024.isVoteActive().result.expectBool(false);
   },
 });
 

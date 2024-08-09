@@ -32,7 +32,6 @@
 ;; DATA VARS
 
 ;; vote block heights
-(define-data-var voteActive bool true)
 ;; MAINNET: start the vote when deployed
 ;; (define-data-var voteStart uint block-height)
 (define-data-var voteStart uint (+ block-height u12600))
@@ -74,9 +73,7 @@
       (voterRecord (map-get? UserVotes voterId))
     )
     ;; check if vote is active
-    (asserts! (var-get voteActive) ERR_PROPOSAL_NOT_ACTIVE)
-    ;; check if voting period has ended
-    (asserts! (<= block-height (var-get voteEnd)) ERR_PROPOSAL_NOT_ACTIVE)
+    (asserts! (is-vote-active) ERR_PROPOSAL_NOT_ACTIVE)
     ;; check if vote record exists for user
     (match voterRecord record
       ;; if the voterRecord exists
@@ -133,8 +130,10 @@
 )
 
 (define-read-only (is-vote-active)
-  (some (var-get voteActive))
-)
+  (if (and (> block-height (var-get voteStart)) (<= block-height (var-get voteEnd)))
+    true
+    false
+))
 
 (define-read-only (get-proposal-info)
   (some CCIP_024)
