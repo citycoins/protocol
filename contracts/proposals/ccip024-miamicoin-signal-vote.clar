@@ -20,7 +20,7 @@
 (define-constant CCIP_024 {
   name: "MiamiCoin Community Signal Vote",
   link: "https://github.com/citycoins/governance/blob/feat/add-ccip-024/ccips/ccip-024/ccip-024-miamicoin-community-signal-vote.md",
-  hash: "TBD",
+  hash: "2a32c503f434a73aa4d54555fc222b53755fa665",
 })
 
 (define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
