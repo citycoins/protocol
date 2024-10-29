@@ -587,6 +587,11 @@ path = "tests/contracts/proposals/test-ccip024-miamicoin-signal-vote-001.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.test-ccip025-extend-sunset-period-3-001]
+path = "tests/contracts/proposals/test-ccip025-extend-sunset-period-3-001.clar"
+clarity_version = 2
+epoch = 2.5
+
 [repl]
 costs_version = 2
 parser_version = 2

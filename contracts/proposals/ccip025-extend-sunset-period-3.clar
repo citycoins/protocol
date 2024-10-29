@@ -39,12 +39,6 @@
 
 (var-set voteStart block-height)
 
-;; vote tracking
-(define-data-var yesVotes uint u0)
-(define-data-var yesTotal uint u0)
-(define-data-var noVotes uint u0)
-(define-data-var noTotal uint u0)
-
 ;; DATA MAPS
 
 (define-map CityVotes
@@ -139,11 +133,17 @@
 ;; READ ONLY FUNCTIONS
 
 (define-read-only (is-executable)
-  (begin
+  (let
+    (
+      (votingRecord (unwrap! (get-vote-totals) ERR_PANIC))
+      (miaRecord (get mia votingRecord))
+      (voteTotals (get totals votingRecord))
+    )
     ;; check that there is at least one vote
-    (asserts! (or (> (var-get yesVotes) u0) (> (var-get noVotes) u0)) ERR_VOTE_FAILED)
-    ;; check that yes total is more than no total
-    (asserts! (> (var-get yesTotal) (var-get noTotal)) ERR_VOTE_FAILED)
+    (asserts! (or (> (get totalVotesYes voteTotals) u0) (> (get totalVotesNo voteTotals) u0)) ERR_VOTE_FAILED)
+    ;; check that the yes total is more than no total
+    (asserts! (> (get totalVotesYes voteTotals) (get totalVotesNo voteTotals)) ERR_VOTE_FAILED)
+    ;; allow execution
     (ok true)
   )
 )
