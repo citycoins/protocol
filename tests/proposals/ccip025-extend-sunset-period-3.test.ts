@@ -323,6 +323,24 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "ccip-025: get-vote-period returns none before vote concludes",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const ccip025 = new CCIP025ExtendDirectExecuteSunsetPeriod(chain, sender);
+
+    // initialize contracts
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP025_EXTEND_SUNSET_PERIOD_3_001);
+
+    // act
+    const votePeriod = ccip025.getVotePeriod().result;
+
+    // assert
+    votePeriod.expectNone();
+  },
+});
+
+Clarinet.test({
   name: "ccip-025: read-only functions return expected values",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
