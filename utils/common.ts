@@ -45,6 +45,7 @@ export const PROPOSALS = {
   CCIP_021: ADDRESS.concat(".ccip021-extend-sunset-period-2"),
   CCIP_022: ADDRESS.concat(".ccip022-treasury-redemption-nyc"),
   CCIP_024: ADDRESS.concat(".ccip024-miamicoin-signal-vote"),
+  CCIP_025: ADDRESS.concat(".ccip025-extend-sunset-period-3"),
   TEST_CCD001_DIRECT_EXECUTE_001: ADDRESS.concat(".test-ccd001-direct-execute-001"),
   TEST_CCD001_DIRECT_EXECUTE_002: ADDRESS.concat(".test-ccd001-direct-execute-002"),
   TEST_CCD001_DIRECT_EXECUTE_003: ADDRESS.concat(".test-ccd001-direct-execute-003"),
