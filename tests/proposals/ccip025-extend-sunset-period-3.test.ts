@@ -45,6 +45,61 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "ccip-025: vote-on-proposal() succeeds when user changes their vote",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    const ccip025 = new CCIP025ExtendDirectExecuteSunsetPeriod(chain, sender);
+
+    const amountStacked = 500;
+    const lockPeriod = 10;
+
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+
+    // initialize contracts
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP025_EXTEND_SUNSET_PERIOD_3_001);
+
+    // stack first cycle u1, last cycle u10
+    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod)]);
+    stackingBlock.receipts[0].result.expectOk().expectBool(true);
+
+    // progress the chain to cycle 5
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
+
+    // first vote - yes
+    const firstVote = chain.mineBlock([ccip025.voteOnProposal(user1, true)]);
+    firstVote.receipts[0].result.expectOk().expectBool(true);
+
+    // verify initial vote totals
+    let voteTotals = ccip025.getVoteTotals().result.expectSome().expectTuple();
+    let totals = voteTotals.totals.expectTuple();
+    assertEquals(totals.totalAmountYes, types.uint(amountStacked));
+    assertEquals(totals.totalVotesYes, types.uint(1));
+    assertEquals(totals.totalAmountNo, types.uint(0));
+    assertEquals(totals.totalVotesNo, types.uint(0));
+
+    // act - change vote to no
+    const block = chain.mineBlock([ccip025.voteOnProposal(user1, false)]);
+
+    // assert
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // verify updated vote totals
+    voteTotals = ccip025.getVoteTotals().result.expectSome().expectTuple();
+    totals = voteTotals.totals.expectTuple();
+    assertEquals(totals.totalAmountYes, types.uint(0));
+    assertEquals(totals.totalVotesYes, types.uint(0));
+    assertEquals(totals.totalAmountNo, types.uint(amountStacked));
+    assertEquals(totals.totalVotesNo, types.uint(1));
+  },
+});
+
+Clarinet.test({
   name: "ccip-025: execute() fails with ERR_VOTE_FAILED if there are more no than yes votes",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
