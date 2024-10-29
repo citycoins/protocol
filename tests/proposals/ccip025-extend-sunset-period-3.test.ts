@@ -224,6 +224,50 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "ccip-025: vote-on-proposal() fails with ERR_PROPOSAL_NOT_ACTIVE after execution",
+  fn(chain: Chain, accounts: Map<string, Account>) {
+    // arrange
+    const sender = accounts.get("deployer")!;
+    const user1 = accounts.get("wallet_1")!;
+    const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
+    const ccip025 = new CCIP025ExtendDirectExecuteSunsetPeriod(chain, sender);
+
+    const amountStacked = 500;
+    const lockPeriod = 10;
+
+    // progress the chain to avoid underflow in
+    // stacking reward cycle calculation
+    chain.mineEmptyBlockUntil(CCD007CityStacking.FIRST_STACKING_BLOCK);
+
+    // initialize contracts
+    constructAndPassProposal(chain, accounts, PROPOSALS.TEST_CCIP025_EXTEND_SUNSET_PERIOD_3_001);
+
+    // stack first cycle u1
+    const stackingBlock = chain.mineBlock([ccd007CityStacking.stack(user1, mia.cityName, amountStacked, lockPeriod)]);
+    stackingBlock.receipts[0].result.expectOk().expectBool(true);
+
+    // progress the chain to cycle 5
+    chain.mineEmptyBlockUntil(CCD007CityStacking.REWARD_CYCLE_LENGTH * 6 + 10);
+    ccd007CityStacking.getCurrentRewardCycle().result.expectUint(5);
+
+    // vote and execute proposal
+    const voteBlock = chain.mineBlock([ccip025.voteOnProposal(user1, true)]);
+    voteBlock.receipts[0].result.expectOk().expectBool(true);
+
+    const executeBlock = passProposal(chain, accounts, PROPOSALS.CCIP_025);
+    executeBlock.receipts[0].result.expectOk().expectUint(1);
+    executeBlock.receipts[1].result.expectOk().expectUint(2);
+    executeBlock.receipts[2].result.expectOk().expectUint(3);
+
+    // act
+    const block = chain.mineBlock([ccip025.voteOnProposal(user1, false)]);
+
+    // assert
+    block.receipts[0].result.expectErr().expectUint(CCIP025ExtendDirectExecuteSunsetPeriod.ErrCode.ERR_PROPOSAL_NOT_ACTIVE);
+  },
+});
+
+Clarinet.test({
   name: "ccip-025: read-only functions return expected values",
   fn(chain: Chain, accounts: Map<string, Account>) {
     // arrange
