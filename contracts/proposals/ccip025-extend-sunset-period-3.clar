@@ -21,11 +21,11 @@
 (define-constant CCIP_025 {
   name: "Extend Direct Execute Sunset Period 3",
   link: "https://github.com/citycoins/governance/blob/feat/add-ccip-025/ccips/ccip-025/ccip-025-extend-direct-execute-sunset-period-3.md",
-  hash: "TBD",
+  hash: "1ec1aa1216f871b802a742532ed90d6f7843a545",
 })
 
 (define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
-(define-constant SUNSET_BLOCK u199668)
+(define-constant SUNSET_BLOCK u277428) ;; ~2 years
 
 ;; set city ID
 (define-constant MIA_ID (default-to u1 (contract-call? .ccd004-city-registry get-city-id "mia")))
