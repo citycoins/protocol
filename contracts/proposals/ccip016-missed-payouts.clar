@@ -1,0 +1,326 @@
+;; TRAITS
+
+(impl-trait .proposal-trait.proposal-trait)
+(impl-trait .ccip015-trait.ccip015-trait)
+
+;; ERRORS
+
+(define-constant ERR_PANIC (err u22000))
+(define-constant ERR_SAVING_VOTE (err u22001))
+(define-constant ERR_VOTED_ALREADY (err u22002))
+(define-constant ERR_NOTHING_STACKED (err u22003))
+(define-constant ERR_USER_NOT_FOUND (err u22004))
+(define-constant ERR_PROPOSAL_NOT_ACTIVE (err u22005))
+(define-constant ERR_PROPOSAL_STILL_ACTIVE (err u22006))
+(define-constant ERR_VOTE_FAILED (err u22007))
+
+;; CONSTANTS
+
+(define-constant SELF (as-contract tx-sender))
+(define-constant CCIP_016 {
+  name: "CityCoins Treasury Redemption (NYC)",
+  link: "https://github.com/citycoins/governance/blob/feat/add-ccip-022/ccips/ccip-022/ccip-022-citycoins-treasury-redemption-nyc.md",
+  hash: "",
+})
+
+(define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
+
+;; set city ID
+(define-constant NYC_ID (default-to u2 (contract-call? .ccd004-city-registry get-city-id "nyc")))
+
+;; DATA VARS
+
+;; vote block heights
+(define-data-var voteActive bool true)
+(define-data-var voteStart uint u0)
+(define-data-var voteEnd uint u0)
+
+;; start the vote when deployed
+(var-set voteStart block-height)
+
+;; DATA MAPS
+
+(define-map CityVotes
+  uint ;; city ID
+  { ;; vote
+    totalAmountYes: uint,
+    totalAmountNo: uint,
+    totalVotesYes: uint,
+    totalVotesNo: uint,
+  }
+)
+
+(define-map UserVotes
+  uint ;; user ID
+  { ;; vote
+    vote: bool,
+    nyc: uint,
+  }
+)
+;; PUBLIC FUNCTIONS
+
+(define-public (execute (sender principal))
+  (let ((miaMissedStxAmount (stx-get-balance .ccd002-treasury-nyc-mining-v2)))
+    ;; check vote is complete/passed
+    (try! (is-executable))
+    ;; update vote variables
+    (var-set voteEnd block-height)
+    (var-set voteActive false)
+    ;; transfer funds to this contract
+    (try! (contract-call? .ccd002-treasury-mia-mining-v2 withdraw-stx 1092453541 (as-contract tx-sender)))
+    ;; initialize redemption extension
+    (try! (contract-call? .ccd012-redemption-nyc initialize-redemption))
+    (ok true))
+)
+
+(define-public (vote-on-proposal (vote bool))
+  (let
+    (
+      (voterId (unwrap! (contract-call? .ccd003-user-registry get-user-id contract-caller) ERR_USER_NOT_FOUND))
+      (voterRecord (map-get? UserVotes voterId))
+    )
+    ;; check if vote is active
+    (asserts! (var-get voteActive) ERR_PROPOSAL_NOT_ACTIVE)
+    ;; check if vote record exists for user
+    (match voterRecord record
+      ;; if the voterRecord exists
+      (let
+        (
+          (oldVote (get vote record))
+          (nycVoteAmount (get nyc record))
+        )
+        ;; check vote is not the same as before
+        (asserts! (not (is-eq oldVote vote)) ERR_VOTED_ALREADY)
+        ;; record the new vote for the user
+        (map-set UserVotes voterId
+          (merge record { vote: vote })
+        )
+        ;; update vote stats for each city
+        (update-city-votes NYC_ID nycVoteAmount vote true)
+        (ok true)
+      )
+      ;; if the voterRecord does not exist
+      (let
+        (
+          (nycVoteAmount (scale-down (default-to u0 (get-nyc-vote voterId true))))
+        )
+        ;; check that the user has a positive vote
+        (asserts! (or (> nycVoteAmount u0)) ERR_NOTHING_STACKED)
+        ;; insert new user vote record
+        (asserts! (map-insert UserVotes voterId {
+          vote: vote,
+          nyc: nycVoteAmount
+        }) ERR_SAVING_VOTE)
+        ;; update vote stats for each city
+        (update-city-votes NYC_ID nycVoteAmount vote false)
+        (ok true)
+      )
+    )
+  )
+)
+
+;; READ ONLY FUNCTIONS
+
+(define-read-only (is-executable)
+  (let
+    (
+      (votingRecord (unwrap! (get-vote-totals) ERR_PANIC))
+      (nycRecord (get nyc votingRecord))
+      (voteTotals (get totals votingRecord))
+    )
+    ;; check that there is at least one vote
+    (asserts! (or (> (get totalVotesYes voteTotals) u0) (> (get totalVotesNo voteTotals) u0)) ERR_VOTE_FAILED)
+    ;; check that the yes total is more than no total
+    (asserts! (> (get totalVotesYes voteTotals) (get totalVotesNo voteTotals)) ERR_VOTE_FAILED)
+    ;; check the "yes" votes are at least 25% of the total
+    (asserts! (>= (get totalAmountYes nycRecord) (/ (get totalAmountYes voteTotals) u4)) ERR_VOTE_FAILED)
+    ;; allow execution
+    (ok true)
+  )
+)
+
+(define-read-only (is-vote-active)
+  (some (var-get voteActive))
+)
+
+(define-read-only (get-proposal-info)
+  (some CCIP_022)
+)
+
+(define-read-only (get-vote-period)
+  (if (and
+    (> (var-get voteStart)  u0)
+    (> (var-get voteEnd) u0))
+    ;; if both are set, return values
+    (some {
+      startBlock: (var-get voteStart),
+      endBlock: (var-get voteEnd),
+      length: (- (var-get voteEnd) (var-get voteStart))
+    })
+    ;; else return none
+    none
+  )
+)
+
+(define-read-only (get-vote-total-nyc)
+  (map-get? CityVotes NYC_ID)
+)
+
+(define-read-only (get-vote-total-nyc-or-default)
+  (default-to { totalAmountYes: u0, totalAmountNo: u0, totalVotesYes: u0, totalVotesNo: u0 } (get-vote-total-nyc))
+)
+
+(define-read-only (get-vote-totals)
+  (let
+    (
+      (nycRecord (get-vote-total-nyc-or-default))
+    )
+    (some {
+      nyc: nycRecord,
+      totals: {
+        totalAmountYes: (get totalAmountYes nycRecord),
+        totalAmountNo: (get totalAmountNo nycRecord),
+        totalVotesYes: (get totalVotesYes nycRecord),
+        totalVotesNo: (get totalVotesNo nycRecord),
+      }
+    })
+  )
+)
+
+(define-read-only (get-voter-info (id uint))
+  (map-get? UserVotes id)
+)
+
+;; NYC vote calculation
+;; returns (some uint) or (none)
+;; optionally scaled by VOTE_SCALE_FACTOR (10^6)
+(define-read-only (get-nyc-vote (userId uint) (scaled bool))
+  (let
+    (
+      ;; MAINNET: NYC cycle 82 / first block BTC 838,250 STX 145,643
+      ;; cycle 2 / u4500 used in tests
+      (cycle82Hash (unwrap! (get-block-hash u4500) none))
+      (cycle82Data (at-block cycle82Hash (contract-call? .ccd007-citycoin-stacking get-stacker NYC_ID u2 userId)))
+      (cycle82Amount (get stacked cycle82Data))
+      ;; MAINNET: NYC cycle 83 / first block BTC 840,350 STX 147,282
+      ;; cycle 3 / u6600 used in tests
+      (cycle83Hash (unwrap! (get-block-hash u6600) none))
+      (cycle83Data (at-block cycle83Hash (contract-call? .ccd007-citycoin-stacking get-stacker NYC_ID u3 userId)))
+      (cycle83Amount (get stacked cycle83Data))
+      ;; NYC vote calculation
+      (scaledVote (/ (+ (scale-up cycle82Amount) (scale-up cycle83Amount)) u2))
+    )
+    ;; check that at least one value is positive
+    (asserts! (or (> cycle82Amount u0) (> cycle83Amount u0)) none)
+    ;; return scaled or unscaled value
+    (if scaled (some scaledVote) (some (/ scaledVote VOTE_SCALE_FACTOR)))
+  )
+)
+
+;; PRIVATE FUNCTIONS
+
+;; update city vote map
+(define-private (update-city-votes (cityId uint) (voteAmount uint) (vote bool) (changedVote bool))
+  (let
+    (
+      (cityRecord (default-to
+        { totalAmountYes: u0, totalAmountNo: u0, totalVotesYes: u0, totalVotesNo: u0 }
+        (map-get? CityVotes cityId)))
+    )
+    ;; do not record if amount is 0
+    (if (> voteAmount u0)
+      ;; handle vote
+      (if vote
+        ;; handle yes vote
+        (map-set CityVotes cityId {
+          totalAmountYes: (+ voteAmount (get totalAmountYes cityRecord)),
+          totalVotesYes: (+ u1 (get totalVotesYes cityRecord)),
+          totalAmountNo: (if changedVote (- (get totalAmountNo cityRecord) voteAmount) (get totalAmountNo cityRecord)),
+          totalVotesNo: (if changedVote (- (get totalVotesNo cityRecord) u1) (get totalVotesNo cityRecord))
+        })
+        ;; handle no vote
+        (map-set CityVotes cityId {
+          totalAmountYes: (if changedVote (- (get totalAmountYes cityRecord) voteAmount) (get totalAmountYes cityRecord)),
+          totalVotesYes: (if changedVote (- (get totalVotesYes cityRecord) u1) (get totalVotesYes cityRecord)),
+          totalAmountNo: (+ voteAmount (get totalAmountNo cityRecord)),
+          totalVotesNo: (+ u1 (get totalVotesNo cityRecord)),
+        })
+      )
+      ;; ignore calls with vote amount equal to 0
+      false)
+  )
+)
+
+;; get block hash by height
+(define-private (get-block-hash (blockHeight uint))
+  (get-block-info? id-header-hash blockHeight)
+)
+
+;; CREDIT: ALEX math-fixed-point-16.clar
+
+(define-private (scale-up (a uint))
+  (* a VOTE_SCALE_FACTOR)
+)
+
+(define-private (scale-down (a uint))
+  (/ a VOTE_SCALE_FACTOR)
+)
+
+;; pay rewards with memo "missed mia rewards"
+(define-private (pay-rewards (user principal) (amount uint))
+  (try! (as-contract (stx-transfer? user amount (some 0x6d6973736564206d69612072657761726473))))
+)
+
+(define-private (pay-all-rewards)
+  (pay-rewards 'SP32VE3A2AXWPGT7HH4B76005TJZQK7CF1MM9R0MD 30487)
+  (pay-rewards 'SP1XHV60VPS13DYRN0HEYG8GYYA1S6QF90AXJ0NQR 332545167)
+  (pay-rewards 'SP30A13XJEHMK81JVEHMS0FEHFENS1W5KEEFYJDVM 66509033)
+  (pay-rewards 'SP1FV4FZ8D32S7GKYRPFWK6YHRJE5BZEYKABK72Q3 13301806)
+  (pay-rewards 'SP3B1TPV7Z1767ZQ01RW93HRYR88ZQFX9M7NNXT3V 2261)
+  (pay-rewards 'SP33HRM920VHATSFNQ455WMKW9KCT74A5GT8280TB 11971626)
+  (pay-rewards 'SPEW3AKP366Y0CY2322M6BWQY0C00JZAG59EP93C 332545)
+  (pay-rewards 'SP3EXTHZ7PHAJ8DDJB7AMVQXDZ6T68364EZ01WB20 3120065)
+  (pay-rewards 'SP28R593JKNFH8PTWNECR84A83EESKC3CC5P826R5 3827795)
+  (pay-rewards 'SP3PX186AERH9CD2A2R73KJYGX79EXHJP23RFGCZ4 14209396)
+  (pay-rewards 'SP2JDKWQ77WN7S0PRCS872HFJ21ZT78P6G1WCW2B 304010)
+  (pay-rewards 'SP16BC59Y29FYZPP7WF8QB376STCVW33W4J9BWP06 50387930)
+  (pay-rewards 'SP28R593JKNFH8PTWNECR84A83EESKC3CC5P826R5 12507392)
+  (pay-rewards 'SP2JCF3ME5QC779DQ2X1CM9S62VNJF44GC23MKQXK 100775860)
+  (pay-rewards 'SP3YJ9487PS0JDDYBBVH0RW3JPY48V0A86PQGDA6V 11464259)
+  (pay-rewards 'SP3NX54B0VA0G002FBJE44C1ZJTV7F34VTPS7NB4J 17149984)
+  (pay-rewards 'SP3EXTHZ7PHAJ8DDJB7AMVQXDZ6T68364EZ01WB20 1705078)
+  (pay-rewards 'SP19PMPW8J540BTF9S2D4J7W3RBB5CZM28P1BK573 312186)
+  (pay-rewards 'SP2Q8TC8QK1QGQEJFT24S4GBD6TQJ0HDC17RWNDQ8 71986915)
+  (pay-rewards 'SP1ADC8EX6BRGEZVGGHJR44FYVSSD9VRA2JSHZ70B 11170529)
+  (pay-rewards 'SP2DP70FRC4FFCZR5B2F6S112NK79WAFWHCWPYKQZ 13137459)
+  (pay-rewards 'SP2DP70FRC4FFCZR5B2F6S112NK79WAFWHCWPYKQZ 539736)
+  (pay-rewards 'SP3WBYAEWN0JER1VPBW8TRT1329BGP9RGC5S2519W 273278)
+  (pay-rewards 'SP3EXTHZ7PHAJ8DDJB7AMVQXDZ6T68364EZ01WB20 1470550)
+  (pay-rewards 'SP3CHC5CKZGPZ3W4Q4JASMM5ZSMD3P7TQWNSE6BQ8 1047119)
+  (pay-rewards 'SP2Q8TC8QK1QGQEJFT24S4GBD6TQJ0HDC17RWNDQ8 1961478)
+  (pay-rewards 'SP1SYW6GETS33ZDY40N502NK8014KM4BTQ4RE4FS1 2144033)
+  (pay-rewards 'SP3B1TPV7Z1767ZQ01RW93HRYR88ZQFX9M7NNXT3V 3848617)
+  (pay-rewards 'SP19PMPW8J540BTF9S2D4J7W3RBB5CZM28P1BK573 249741)
+  (pay-rewards 'SP2GGT4HSMSGS5XPEYHCAJTB7HJBPTMHJJ0MBSGHP 17617546)
+  (pay-rewards 'SP30V7ZYEGGY0WQ6EJYZ040V3VHF4234FSTHP128D 328364)
+  (pay-rewards 'SP1ADC8EX6BRGEZVGGHJR44FYVSSD9VRA2JSHZ70B 9293346)
+  (pay-rewards 'SP2W4B3KR2PYA980C4DFACT6K4MG6Z0DPT6X4CWH7 17747744)
+  (pay-rewards 'SP2DP70FRC4FFCZR5B2F6S112NK79WAFWHCWPYKQZ 9104521)
+  (pay-rewards 'SP3EXTHZ7PHAJ8DDJB7AMVQXDZ6T68364EZ01WB20 1234791)
+  (pay-rewards 'SP22YMFBE5CN1KGCHQDGZ06FF7B3HYFVN92P6Y5X9 643815)
+  (pay-rewards 'SP3F0GZC9WG53MH7SHMFVSM54XKNNHQXJ8Q301GQ7 57803059)
+  (pay-rewards 'SPR51QGAQ1QKCZ8YBJFHKVMTS6Z858BV20QY0819 15764470)
+  (pay-rewards 'SP19PMPW8J540BTF9S2D4J7W3RBB5CZM28P1BK573 240529)
+  (pay-rewards 'SP245RKH32CE9JPM26XKM4S0EVX3J17ANA595GA2Y 47293)
+  (pay-rewards 'SP32D4KF64M0FQQK267W8PA08SDXG00DNBB3WCXKT 185159124)
+  (pay-rewards 'SP3BNAH4NPD79KWTABW4GH6QMQ10V34T8MMM39ZYP 1728757)
+  (pay-rewards 'SP2YM5DT3RG8BBD10C59V3AGVTN66GKQ1A91T85Q4 14721)
+  (pay-rewards 'SP1BN2V664W50A1HAWDHT2M83M3NMN0AG3B16R2SA 2920272)
+  (pay-rewards 'SP3EXTHZ7PHAJ8DDJB7AMVQXDZ6T68364EZ01WB20 736087)
+  (pay-rewards 'SPVWPTGBEWVQ58J1RDNZQ34TMCRVF49RRFRKXC0Q 2327221)
+  (pay-rewards 'SP2VKCNC1M54EENQT3TWC4D974XRM4519YHKR24PK 133699)
+  (pay-rewards 'SP2W4B3KR2PYA980C4DFACT6K4MG6Z0DPT6X4CWH7 852515)
+  (pay-rewards 'SPR51QGAQ1QKCZ8YBJFHKVMTS6Z858BV20QY0819 15597806)
+  (pay-rewards 'SPPYQ5TW7PWMNKHVNG194MACDAEGA1759D5DC7YA 424122)
+  (pay-rewards 'SP2GGT4HSMSGS5XPEYHCAJTB7HJBPTMHJJ0MBSGHP 4447404)
+)
