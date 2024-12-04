@@ -17,3 +17,5 @@ dist
 history.txt
 coverage.lcov
 node_modules
+.aider*
+.env

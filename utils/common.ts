@@ -45,6 +45,7 @@ export const PROPOSALS = {
   CCIP_021: ADDRESS.concat(".ccip021-extend-sunset-period-2"),
   CCIP_022: ADDRESS.concat(".ccip022-treasury-redemption-nyc"),
   CCIP_024: ADDRESS.concat(".ccip024-miamicoin-signal-vote"),
+  CCIP_025: ADDRESS.concat(".ccip025-extend-sunset-period-3"),
   TEST_CCD001_DIRECT_EXECUTE_001: ADDRESS.concat(".test-ccd001-direct-execute-001"),
   TEST_CCD001_DIRECT_EXECUTE_002: ADDRESS.concat(".test-ccd001-direct-execute-002"),
   TEST_CCD001_DIRECT_EXECUTE_003: ADDRESS.concat(".test-ccd001-direct-execute-003"),
@@ -128,6 +129,7 @@ export const PROPOSALS = {
   TEST_CCIP022_TREASURY_REDEMPTION_NYC_004: ADDRESS.concat(".test-ccip022-treasury-redemption-nyc-004"),
   TEST_CCIP022_TREASURY_REDEMPTION_NYC_005: ADDRESS.concat(".test-ccip022-treasury-redemption-nyc-005"),
   TEST_CCIP024_MIAMICOIN_SIGNAL_VOTE_001: ADDRESS.concat(".test-ccip024-miamicoin-signal-vote-001"),
+  TEST_CCIP025_EXTEND_SUNSET_PERIOD_3_001: ADDRESS.concat(".test-ccip025-extend-sunset-period-3-001"),
 };
 
 export const EXTERNAL = {
@@ -248,7 +250,7 @@ export const nyc: CityData = {
 };
 
 // parses an (ok ...) response into a JS object
-export function parseClarityTuple(clarityString) {
+export function parseClarityTuple(clarityString: string) {
   // Step 1: Remove the outer (ok ) and the closing parenthesis
   let jsonString = clarityString.replace("(ok ", "").replace(")", "");
 
