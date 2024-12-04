@@ -389,7 +389,7 @@ Clarinet.test({
     const proposalInfo = {
       name: types.ascii("Extend Direct Execute Sunset Period 3"),
       link: types.ascii("https://github.com/citycoins/governance/blob/feat/add-ccip-025/ccips/ccip-025/ccip-025-extend-direct-execute-sunset-period-3.md"),
-      hash: types.ascii("TBD"),
+      hash: types.ascii("1ec1aa1216f871b802a742532ed90d6f7843a545"),
     };
     assertEquals(ccip025.getProposalInfo().result.expectSome().expectTuple(), proposalInfo);
 
