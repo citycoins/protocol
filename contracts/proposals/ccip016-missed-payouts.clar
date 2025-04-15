@@ -6,12 +6,10 @@
 ;; ERRORS
 
 (define-constant ERR_PANIC (err u16000))
-(define-constant ERR_SAVING_VOTE (err u16001))
 (define-constant ERR_VOTED_ALREADY (err u16002))
 (define-constant ERR_NOTHING_STACKED (err u16003))
 (define-constant ERR_USER_NOT_FOUND (err u16004))
 (define-constant ERR_PROPOSAL_NOT_ACTIVE (err u16005))
-(define-constant ERR_PROPOSAL_STILL_ACTIVE (err u16006))
 (define-constant ERR_VOTE_FAILED (err u16007))
 
 ;; CONSTANTS
@@ -27,8 +25,6 @@
 (define-constant NYC_ID (default-to u2 (contract-call? .ccd004-city-registry get-city-id "nyc")))
 
 (define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
-(define-constant MIA_SCALE_BASE (pow u10 u4)) ;; 4 decimal places
-(define-constant MIA_SCALE_FACTOR u8916) ;; 0.8916 or 89.16%
 
 ;; DATA VARS
 
@@ -142,11 +138,6 @@
     (asserts! (or (> (get totalVotesYes voteTotals) u0) (> (get totalVotesNo voteTotals) u0)) ERR_VOTE_FAILED)
     ;; check that the yes total is more than no total
     (asserts! (> (get totalVotesYes voteTotals) (get totalVotesNo voteTotals)) ERR_VOTE_FAILED)
-     ;; check that each city has at least 25% of the total "yes" votes
-    (asserts! (and
-      (>= (get totalAmountYes miaRecord) (/ (get totalAmountYes voteTotals) u4))
-      (>= (get totalAmountYes nycRecord) (/ (get totalAmountYes voteTotals) u4))
-    ) ERR_VOTE_FAILED)
     ;; allow execution
     (ok true)
   )
@@ -214,31 +205,6 @@
   (map-get? UserVotes id)
 )
 
-;; MIA vote calculation
-;; returns (some uint) or (none)
-;; optionally scaled by VOTE_SCALE_FACTOR (10^6)
-(define-read-only (get-mia-vote (userId uint) (scaled bool))
-  (let
-    (
-      ;; MAINNET: MIA cycle 82 / first block BTC 838,250 STX 145,643
-      ;; cycle 2 / u4500 used in tests
-      (cycle82Hash (unwrap! (get-block-hash u4500) none))
-      (cycle82Data (at-block cycle82Hash (contract-call? .ccd007-citycoin-stacking get-stacker MIA_ID u2 userId)))
-      (cycle82Amount (get stacked cycle82Data))
-      ;; MAINNET: MIA cycle 83 / first block BTC 840,350 STX 147,282
-      ;; cycle 3 / u6600 used in tests
-      (cycle83Hash (unwrap! (get-block-hash u6600) none))
-      (cycle83Data (at-block cycle83Hash (contract-call? .ccd007-citycoin-stacking get-stacker MIA_ID u3 userId)))
-      (cycle83Amount (get stacked cycle83Data))
-      ;; MIA vote calculation
-      (scaledVote (/ (+ (scale-up cycle82Amount) (scale-up cycle83Amount)) u2))
-    )
-    ;; check that at least one value is positive
-    (asserts! (or (> cycle82Amount u0) (> cycle83Amount u0)) none)
-    ;; return scaled or unscaled value
-    (if scaled (some scaledVote) (some (/ scaledVote VOTE_SCALE_FACTOR)))
-  )
-)
 
 ;; vote calculation
 ;; returns (some uint) or (none)
