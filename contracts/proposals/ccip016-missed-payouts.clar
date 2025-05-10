@@ -13,7 +13,7 @@
 (define-constant CCIP_016 {
   name: "Refund Incorrect CCD007 Payouts",
   link: "https://github.com/citycoins/governance/blob/feat/add-ccip-016/ccips/ccip-016/ccip-016-refund-incorrect-ccd007-payouts.md",
-  hash: "",
+  hash: "2706386ba4309a9dd01530ec4299a08690edf6047846b45065f2715f4292c645",
 })
 ;; set city ID
 (define-constant MIA_ID (default-to u1 (contract-call? .ccd004-city-registry get-city-id "mia")))
