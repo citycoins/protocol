@@ -12,7 +12,7 @@
 (define-constant SELF (as-contract tx-sender))
 (define-constant CCIP_016 {
   name: "Refund Incorrect CCD007 Payouts",
-  link: "https://github.com/citycoins/governance/blob/feat/add-ccip-016/ccips/ccip-016/ccip-016-refund-incorrect-ccd007-payouts.md",
+  link: "https://github.com/citycoins/governance/blob/main/ccips/ccip-016/ccip-016-refund-incorrect-ccd007-payouts.md",
   hash: "2706386ba4309a9dd01530ec4299a08690edf6047846b45065f2715f4292c645",
 })
 ;; set city ID
@@ -25,7 +25,8 @@
 (define-data-var voteStart uint u0)
 (define-data-var voteEnd uint u0)
 ;; start the vote when deployed
-(var-set voteStart block-height) ;; vote tracking
+(var-set voteStart block-height)
+;; vote tracking
 (define-data-var yesVotes uint u0)
 (define-data-var yesTotal uint u0)
 (define-data-var noVotes uint u0)
@@ -65,11 +66,11 @@
 
 (define-public (vote-on-proposal (vote bool))
   (let (
-    (voterId (unwrap! (contract-call? .ccd003-user-registry get-user-id contract-caller)
-      ERR_USER_NOT_FOUND
-    ))
-    (voterRecord (map-get? UserVotes voterId))
-  )
+      (voterId (unwrap! (contract-call? .ccd003-user-registry get-user-id contract-caller)
+        ERR_USER_NOT_FOUND
+      ))
+      (voterRecord (map-get? UserVotes voterId))
+    )
     ;; check if vote is active
     (asserts! (var-get voteActive) ERR_PROPOSAL_NOT_ACTIVE)
     ;; check if vote record exists for user
@@ -77,10 +78,10 @@
       record
       ;; if the voterRecord exists
       (let (
-        (oldVote (get vote record))
-        (miaVoteAmount (get mia record))
-        (nycVoteAmount (get nyc record))
-      )
+          (oldVote (get vote record))
+          (miaVoteAmount (get mia record))
+          (nycVoteAmount (get nyc record))
+        )
         ;; check vote is not the same as before
         (asserts! (not (is-eq oldVote vote)) ERR_VOTED_ALREADY)
         ;; record the new vote for the user
@@ -92,9 +93,9 @@
       )
       ;; if the voterRecord does not exist
       (let (
-        (miaVoteAmount (scale-down (default-to u0 (get-vote MIA_ID voterId true))))
-        (nycVoteAmount (scale-down (default-to u0 (get-vote NYC_ID voterId true))))
-      )
+          (miaVoteAmount (scale-down (default-to u0 (get-vote MIA_ID voterId true))))
+          (nycVoteAmount (scale-down (default-to u0 (get-vote NYC_ID voterId true))))
+        )
         ;; check that the user has a positive vote
         (asserts! (or (> miaVoteAmount u0) (> nycVoteAmount u0))
           ERR_NOTHING_STACKED
@@ -117,11 +118,11 @@
 ;; READ ONLY FUNCTIONS
 (define-read-only (is-executable)
   (let (
-    (votingRecord (unwrap! (get-vote-totals) ERR_PANIC))
-    (miaRecord (get mia votingRecord))
-    (nycRecord (get nyc votingRecord))
-    (voteTotals (get totals votingRecord))
-  )
+      (votingRecord (unwrap! (get-vote-totals) ERR_PANIC))
+      (miaRecord (get mia votingRecord))
+      (nycRecord (get nyc votingRecord))
+      (voteTotals (get totals votingRecord))
+    )
     ;; check that there is at least one vote
     (asserts!
       (or (> (get totalVotesYes voteTotals) u0) (> (get totalVotesNo voteTotals) u0))
@@ -192,9 +193,9 @@
 
 (define-read-only (get-vote-totals)
   (let (
-    (miaRecord (get-vote-total-mia-or-default))
-    (nycRecord (get-vote-total-nyc-or-default))
-  )
+      (miaRecord (get-vote-total-mia-or-default))
+      (nycRecord (get-vote-total-nyc-or-default))
+    )
     (some {
       mia: miaRecord,
       nyc: nycRecord,
@@ -221,23 +222,23 @@
     (scaled bool)
   )
   (let (
-    ;; MAINNET: cycle 82 / first block BTC 838,250 STX 145,643
-    ;; cycle 2 / u4500 used in tests
-    (cycle82Hash (unwrap! (get-block-hash u4500) none))
-    (cycle82Data (at-block cycle82Hash
-      (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)
-    ))
-    (cycle82Amount (get stacked cycle82Data))
-    ;; MAINNET: cycle 83 / first block BTC 840,350 STX 147,282
-    ;; cycle 3 / u6600 used in tests
-    (cycle83Hash (unwrap! (get-block-hash u6600) none))
-    (cycle83Data (at-block cycle83Hash
-      (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)
-    ))
-    (cycle83Amount (get stacked cycle83Data))
-    ;; vote calculation
-    (scaledVote (/ (+ (scale-up cycle82Amount) (scale-up cycle83Amount)) u2))
-  )
+      ;; MAINNET: cycle 82 / first block BTC 838,250 STX 145,643
+      ;; cycle 2 / u4500 used in tests
+      (cycle82Hash (unwrap! (get-block-hash u4500) none))
+      (cycle82Data (at-block cycle82Hash
+        (contract-call? .ccd007-citycoin-stacking get-stacker cityId u2 userId)
+      ))
+      (cycle82Amount (get stacked cycle82Data))
+      ;; MAINNET: cycle 83 / first block BTC 840,350 STX 147,282
+      ;; cycle 3 / u6600 used in tests
+      (cycle83Hash (unwrap! (get-block-hash u6600) none))
+      (cycle83Data (at-block cycle83Hash
+        (contract-call? .ccd007-citycoin-stacking get-stacker cityId u3 userId)
+      ))
+      (cycle83Amount (get stacked cycle83Data))
+      ;; vote calculation
+      (scaledVote (/ (+ (scale-up cycle82Amount) (scale-up cycle83Amount)) u2))
+    )
     ;; check that at least one value is positive
     (asserts! (or (> cycle82Amount u0) (> cycle83Amount u0)) none)
     ;; return scaled or unscaled value
