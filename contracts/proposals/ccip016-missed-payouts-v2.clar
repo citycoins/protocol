@@ -1,6 +1,6 @@
 ;; TRAITS
-(impl-trait .proposal-trait.proposal-trait)
-(impl-trait .ccip015-trait.ccip015-trait)
+(impl-trait 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.proposal-trait.proposal-trait)
+(impl-trait 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccip015-trait.ccip015-trait)
 ;; ERRORS
 (define-constant ERR_PANIC (err u16000))
 (define-constant ERR_VOTED_ALREADY (err u16002))
@@ -16,8 +16,8 @@
   hash: "2706386ba4309a9dd01530ec4299a08690edf6047846b45065f2715f4292c645",
 })
 ;; set city ID
-(define-constant MIA_ID (default-to u1 (contract-call? .ccd004-city-registry get-city-id "mia")))
-(define-constant NYC_ID (default-to u2 (contract-call? .ccd004-city-registry get-city-id "nyc")))
+(define-constant MIA_ID (default-to u1 (contract-call? 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd004-city-registry get-city-id "mia")))
+(define-constant NYC_ID (default-to u2 (contract-call? 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd004-city-registry get-city-id "nyc")))
 (define-constant VOTE_SCALE_FACTOR (pow u10 u16)) ;; 16 decimal places
 ;; DATA VARS
 ;; vote block heights
@@ -66,7 +66,7 @@
 
 (define-public (vote-on-proposal (vote bool))
   (let (
-      (voterId (unwrap! (contract-call? .ccd003-user-registry get-user-id contract-caller)
+      (voterId (unwrap! (contract-call? 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd003-user-registry get-user-id contract-caller)
         ERR_USER_NOT_FOUND
       ))
       (voterRecord (map-get? UserVotes voterId))
@@ -223,18 +223,16 @@
   )
   (let (
       ;; MAINNET: cycle 82 / first block BTC 838,250 STX 145,643
-      ;; cycle 2 / u4500 used in tests
-      (cycle82Hash (unwrap! (get-block-hash u4500) none))
+      (cycle82Hash (unwrap! (get-block-hash u145643) none))
       (cycle u82)
       (cycle82Data (at-block cycle82Hash
-        (contract-call? .ccd007-citycoin-stacking get-stacker cityId cycle userId)
+        (contract-call? 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd007-citycoin-stacking get-stacker cityId cycle userId)
       ))
       (cycle82Amount (get stacked cycle82Data))
       ;; MAINNET: cycle 83 / first block BTC 840,350 STX 147,282
-      ;; cycle 3 / u6600 used in tests
-      (cycle83Hash (unwrap! (get-block-hash u6600) none))
+      (cycle83Hash (unwrap! (get-block-hash u147282) none))
       (cycle83Data (at-block cycle83Hash
-        (contract-call? .ccd007-citycoin-stacking get-stacker cityId (+ cycle u1) userId)
+        (contract-call? 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd007-citycoin-stacking get-stacker cityId (+ cycle u1) userId)
       ))
       (cycle83Amount (get stacked cycle83Data))
       ;; vote calculation

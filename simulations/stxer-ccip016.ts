@@ -1,5 +1,4 @@
-import { StacksMainnet } from "@stacks/network";
-import { AnchorMode, PostConditionMode, SignedTokenTransferOptions, StacksTransaction, boolCV, bufferCV, contractPrincipalCV, listCV, makeSTXTokenTransfer, makeUnsignedContractCall, makeUnsignedContractDeploy, makeUnsignedSTXTokenTransfer, principalCV, serializeCV, stringAsciiCV, tupleCV, uintCV } from "@stacks/transactions";
+import { AnchorMode, ClarityVersion, PostConditionMode, SignedTokenTransferOptions, boolCV, bufferCV, contractPrincipalCV, listCV, makeSTXTokenTransfer, makeUnsignedContractCall, makeUnsignedContractDeploy, makeUnsignedSTXTokenTransfer, principalCV, serializeCV, stringAsciiCV, tupleCV, uintCV } from "@stacks/transactions";
 import { c32addressDecode } from "c32check";
 import fs from "fs";
 
@@ -74,8 +73,9 @@ async function main() {
 
   const deployTx3 = await makeUnsignedContractDeploy({
     contractName: "ccip016-missed-payouts",
-    codeBody: fs.readFileSync("contracts/proposals/ccip016-missed-payouts.clar").toString(),
+    codeBody: fs.readFileSync("contracts/proposals/ccip016-missed-payouts-v2.clar").toString(),
     nonce: nonce++,
+    clarityVersion: ClarityVersion.Clarity3,
     ...common_params,
   });
   deployTx3.auth.spendingCondition.signer = addressHash;
