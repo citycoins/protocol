@@ -8,8 +8,7 @@ dist
 # will use files obtained locally beforehand
 # .cache/
 # still want to ignore these two
-.cache/deps
-.cache/gen
+.cache
 # .cache/requirements will upload contracts
 
 .requirements/
