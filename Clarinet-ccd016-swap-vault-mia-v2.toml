@@ -1,0 +1,85 @@
+# RV-only manifest for fuzzing ccd016-swap-vault-mia-v2 (the keeperless
+# one-way vault) on the jing v6 fuzz stack. See tests/rv/build.sh and
+# tests/rv/README.md.
+#
+# Run:
+#   bash tests/rv/build.sh ccd016-swap-vault-mia-v2
+#   npx rv . ccd016-swap-vault-mia-v2 invariant --runs=500
+[project]
+name = "citycoins-rv-ccd016-v2"
+description = "RV-only manifest for fuzzing ccd016-swap-vault-mia-v2"
+authors = []
+telemetry = false
+cache_dir = "./.cache"
+
+[repl.analysis]
+passes = []
+check_checker = { trusted_sender = false, trusted_caller = false, callee_filter = false }
+
+# jing v6 fuzz stack (copied by build.sh from jing-contracts-v3/tests/rv)
+[contracts.sip-010-trait]
+path = "tests/rv/.build/sip-010-trait.clar"
+clarity_version = 5
+epoch = "3.4"
+
+[contracts.mock-ft]
+path = "tests/rv/.build/mock-ft.clar"
+clarity_version = 5
+epoch = "3.4"
+
+[contracts.mock-jing-core]
+path = "tests/rv/.build/mock-jing-core-v5.clar"
+clarity_version = 5
+epoch = "3.4"
+
+[contracts.mock-lazer-oracle]
+path = "tests/rv/.build/mock-lazer-oracle.clar"
+clarity_version = 5
+epoch = "3.4"
+
+[contracts.mock-jing-ladder]
+path = "tests/rv/.build/mock-jing-ladder.clar"
+clarity_version = 5
+epoch = "3.4"
+
+[contracts.v6-market]
+path = "tests/rv/.build/v6-market.clar"
+clarity_version = 5
+epoch = "3.4"
+
+# the book side
+[contracts.mock-mia]
+path = "tests/rv/mock-mia.clar"
+clarity_version = 5
+epoch = "3.4"
+
+[contracts.mock-mia-v1]
+path = "tests/rv/mock-mia-v1.clar"
+clarity_version = 5
+epoch = "3.4"
+
+[contracts.ccd015-redemption-book-mia-stx]
+path = "tests/rv/.build/ccd015-redemption-book-mia-stx.clar"
+clarity_version = 5
+epoch = "3.4"
+
+# the vault's world
+[contracts.mock-treasury]
+path = "tests/rv/mock-treasury.clar"
+clarity_version = 5
+epoch = "3.4"
+
+[contracts.mock-dia]
+path = "tests/rv/mock-dia.clar"
+clarity_version = 5
+epoch = "3.4"
+
+[contracts.mock-router]
+path = "tests/rv/mock-router.clar"
+clarity_version = 5
+epoch = "3.4"
+
+[contracts.ccd016-swap-vault-mia-v2]
+path = "tests/rv/.build/ccd016-swap-vault-mia-v2.clar"
+clarity_version = 5
+epoch = "3.4"

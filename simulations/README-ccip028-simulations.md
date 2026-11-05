@@ -28,3 +28,13 @@ Recorded against vault SHA-256 `327af8a1…`; the reviewed vault (`ac0c305f…`)
 only in comments (identical once `;;` comments are stripped). The scenario relies on a
 specific maker resting at the mid on the live book, so a rerun on today's tip can fail
 on those live-state preconditions; the saved run is the reference.
+
+## Earlier vault verification (history)
+
+`README-ccd016-v2-verification.md`, `README-v6-3-recovery.md`, `TRACE-COVERAGE-ccd016-swap-vault-mia-v2.md`
+and `results/ccd016-v2/` record the vault's earlier mainnet-fork runs (coverage, happy path, parked,
+clock, emergency DIA/native, fixes, Pyth fee) with their stxer links. Those runs used the Jing
+market/router of their day (v6 / v6-3, router v5-3) and earlier vault revisions, each pinned by
+SHA-256 in its report. They are kept as the audit trail behind the bounty verdicts in
+`contracts/extensions/README-ccd016-swap-vault-v2.md`; the two runs above are the ones against
+the current v6-4 market and the reviewed vault.
