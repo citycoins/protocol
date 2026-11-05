@@ -19,7 +19,7 @@
     "@stacks/transactions": "^7.2.0",
     "c32check": "^2.0.0",
     "chokidar-cli": "^3.0.0",
-    "stxer": "^0.4.2",
+    "stxer": "^0.8.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.4",
     "vitest": "^3.2.4",
