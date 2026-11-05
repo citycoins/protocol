@@ -1,0 +1,91 @@
+Seed 20260919; 1000 invariant checks passed; zero runtime exceptions
+EXECUTION STATISTICS
+
+│ PUBLIC FUNCTION CALLS
+│
+├─ + SUCCESSFUL
+│    ├─ callback: x213
+│    ├─ close-batch: x0
+│    ├─ dao-recall-sbtc: x19
+│    ├─ dao-reclaim: x1
+│    ├─ fuel-fair-book: x8
+│    ├─ fund-from-treasury: x115
+│    ├─ is-dao-or-extension: x20
+│    ├─ jing-place: x3
+│    ├─ jing-reclaim: x2
+│    ├─ jing-refloor: x0
+│    ├─ jing-take: x0
+│    ├─ router-swap: x10
+│    ├─ router-swap-split: x0
+│    ├─ router-swap-split-dia: x0
+│    ├─ rv-admin: x18
+│    ├─ rv-batch: x29
+│    ├─ rv-donate: x267
+│    ├─ rv-fund-router: x217
+│    ├─ rv-treasury: x234
+│    ├─ rv-world: x236
+│    ├─ set-dia-band-bps: x2
+│    ├─ set-leeway-bps: x6
+│    ├─ set-max-chunk-sats: x6
+│    ├─ set-no-pyth-slippage-bps: x5
+│    ├─ set-router-cooldown: x2
+│    ├─ set-slippage-bps: x5
+│    └─ set-window-blocks: x0
+│
+├─ - IGNORED
+│    ├─ callback: x0
+│    ├─ close-batch: x230
+│    ├─ dao-recall-sbtc: x190
+│    ├─ dao-reclaim: x250
+│    ├─ fuel-fair-book: x207
+│    ├─ fund-from-treasury: x105
+│    ├─ is-dao-or-extension: x192
+│    ├─ jing-place: x248
+│    ├─ jing-reclaim: x245
+│    ├─ jing-refloor: x233
+│    ├─ jing-take: x227
+│    ├─ router-swap: x220
+│    ├─ router-swap-split: x254
+│    ├─ router-swap-split-dia: x215
+│    ├─ rv-admin: x227
+│    ├─ rv-batch: x239
+│    ├─ rv-donate: x0
+│    ├─ rv-fund-router: x0
+│    ├─ rv-treasury: x0
+│    ├─ rv-world: x0
+│    ├─ set-dia-band-bps: x205
+│    ├─ set-leeway-bps: x216
+│    ├─ set-max-chunk-sats: x240
+│    ├─ set-no-pyth-slippage-bps: x231
+│    ├─ set-router-cooldown: x235
+│    ├─ set-slippage-bps: x207
+│    └─ set-window-blocks: x224
+│
+│ INVARIANT CHECKS
+│
+├─ + PASSED
+│    ├─ invariant-clock-not-future: x122
+│    ├─ invariant-config-bounded: x139
+│    ├─ invariant-cooldown-not-future: x123
+│    ├─ invariant-emergency-floor: x125
+│    ├─ invariant-ft-conservation: x130
+│    ├─ invariant-no-clock-no-window: x118
+│    ├─ invariant-resting-peg: x115
+│    └─ invariant-window-exclusive: x128
+│
+└─ - FAILED
+     ├─ invariant-clock-not-future: x0
+     ├─ invariant-config-bounded: x0
+     ├─ invariant-cooldown-not-future: x0
+     ├─ invariant-emergency-floor: x0
+     ├─ invariant-ft-conservation: x0
+     ├─ invariant-no-clock-no-window: x0
+     ├─ invariant-resting-peg: x0
+     └─ invariant-window-exclusive: x0
+
+LEGEND:
+
+  SUCCESSFUL calls executed and advanced the test
+  IGNORED    calls failed but did not affect the test
+  PASSED     invariants maintained system integrity
+  FAILED     invariants indicate contract vulnerabilities

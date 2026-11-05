@@ -1,0 +1,14 @@
+{
+  "sourceCommit": "a9a6bd6",
+  "sourceSha256": "b3526d4ce89e615108c1b6781bf67b6f8354e3880adb404883a30fbdd36ec65f",
+  "status": "passed",
+  "publicFunctions": 21,
+  "publicFunctionsHit": 21,
+  "lineHits": 211,
+  "lineTotal": 213,
+  "branchHits": 72,
+  "branchTotal": 72,
+  "functionHits": 29,
+  "functionTotal": 29,
+  "uncoveredBranches": []
+}
