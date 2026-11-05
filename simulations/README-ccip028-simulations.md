@@ -4,7 +4,7 @@ Both runs fork Stacks mainnet, deploy the exact repository sources and move no r
 
 | Scenario | Result | Mainnet fork | Saved report |
 | --- | --- | --- | --- |
-| CCIP-028 activation + full cycle | 47/47 | [Stxer](https://stxer.xyz/simulations/mainnet/766d5bb04f3aea192d175e0b2012e792) | [result.json](results/ccip028-activation/result.json) |
+| CCIP-028 activation + full cycle | 47/47 | [Stxer](https://stxer.xyz/simulations/mainnet/d45fb46db676464d470f9c016a7cf5d4) | [result.json](results/ccip028-activation/result.json) |
 | CCD016 maker spread on the live Jing v6-4 market | 55/55 | [Stxer](https://stxer.xyz/simulations/mainnet/423a4aef56bfe9afa6263ece17c1769e) | [maker-spread.json](results/ccd016-v2/maker-spread.json) |
 
 ## CCIP-028 activation (`stxer-ccip028-activation.mjs`)
@@ -16,7 +16,7 @@ Both runs fork Stacks mainnet, deploy the exact repository sources and move no r
   leeway 10%, Pyth fee budget 0, par 2,042.49 STX per 1M MIA, book open.
 - Full cycle: 100,000 sats reach the rewards treasury, the vault pulls and rests them on
   `markets-sbtc-stx-jing-v6-4`, 289 Bitcoin blocks pass, the vault sells through
-  `swap-router-sbtc-stx-jing-v5-5` for 223.39 STX, the book takes a 100,000 MIA offer
+  `swap-router-sbtc-stx-jing-v5-5` for 223.17 STX, the book takes a 100,000 MIA offer
   for 100 STX and burns it from the real MIA supply.
 
 Run: `npm ci && node simulations/stxer-ccip028-activation.mjs`

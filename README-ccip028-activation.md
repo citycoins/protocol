@@ -75,8 +75,9 @@ Before signaling, read `get-signals-required` and `is-approver` on
 `sunsetBlock` is still valid under that deployed contract's block-height semantics.
 Also confirm Direct Execute is enabled in `base-dao.is-extension`.
 The tests use three distinct approvers from five; the production proposal does
-not assume or change those numbers. A live mainnet preflight/fork rehearsal is
-still required before deployment/signaling; the new test results below are local simnet results.
+not assume or change those numbers. The mainnet-fork rehearsal below confirmed
+the live 3-of-5 configuration and an open sunset at its pinned block. Recheck
+these settings immediately before deployment/signaling.
 
 Each authorized approver signs this exact call using their own wallet:
 
@@ -131,6 +132,63 @@ ledgers are fixtures, with explicit minting and real transfer/burn accounting.
 The market, router, oracle and backing balances are fixtures. This suite does
 not claim to exercise live AMM liquidity, the live signers or mainnet state.
 Source hashes are emitted into `tests/activation/.build/source-hashes.json`.
+
+## Mainnet-fork activation rehearsal
+
+[stxer run: d45fb46db676464d470f9c016a7cf5d4](https://stxer.xyz/simulations/mainnet/d45fb46db676464d470f9c016a7cf5d4) — **47/47 checks passed**.
+Parent Stacks block **9421465**, hash
+`0x8fbe7956a7f2ffc3d3ee59e466c365c6a305e63667193852ea2c150bf8fd0acf`; the result artifact records the full block metadata,
+source hashes, signed Pyth updates and transaction receipts.
+Both checkouts also passed **8/8** local activation tests with 10% leeway.
+
+Book, vault and CCIP-028 were deployed from
+`SPV9K21TBFAK4KNRJXF5DFP8N7W46G4V9RCJDC22` using exact repository bytes.
+All five real approvers were recognized by the live Direct Execute contract;
+the simulated signals from `SP7DGES…`, `SP3YYGC…` and `SPN4Y5Q…` activated the
+proposal on the third signal. The vault remained disabled after the first two.
+No DAO, treasury, token, oracle, market or router code was patched, and no
+privileged state was injected through Eval. Eval steps only read state.
+
+| Assertion | Observed result |
+| --- | --- |
+| Par | **2,042.49 STX per 1,000,000 MIA** |
+| Rewards-v3 allows sBTC | Yes |
+| Vault is a DAO extension | Yes |
+| Book unpaused | Yes |
+| Leeway / Pyth fee budget | 1,000 bps / 0 micro-STX |
+| Placement and settlement | 100,000 sats rested on the live Jing market |
+| Window expiry | 289 synthetic Bitcoin blocks, with the configured 288-block window unchanged |
+| Reclaim and router swap | 100,000 sats reclaimed; 223.166660 STX received; 1 sat dust remained |
+| Book funding | All 223.166660 STX forwarded to the book |
+| Crossing and burn | Seller paid 100 STX; real MIA supply reduced by exactly 100,000 MIA |
+| Remaining balances | 123.166660 STX in the book; 1 sat and 0 STX in the vault |
+
+The rewards treasury was empty at the pinned block, so an existing sBTC holder
+transferred 100,000 sats into it **on the fork**. An existing MIA holder offered
+100,000 MIA for 100 STX. These are scenario inputs, not observed pending rewards
+or a production redemption price. Both token balances and the MIA burn use the
+real mainnet contracts. The placement required the market keeper's separate
+`settle-token-x-deposit` call before the deposit rested.
+
+The simulation uses unsigned impersonated senders; it is not evidence of actual
+approver consent and moves no mainnet assets. The 289 synthetic burn blocks use
+one-second intervals so real signed Pyth updates remain usable. This exercises
+the full block-height expiry but does not model two days of price changes or
+liquidity changes. The onchain DIA state and signed Pyth updates were used without
+an oracle override.
+
+Re-run from the repository root with Node.js and `stxer` 0.8.0 or compatible:
+
+```bash
+node simulations/stxer-ccip028-activation.mjs
+```
+
+Optional `SIM_BLOCK_HEIGHT` pins a chosen recent parent; the default is the latest
+API height minus 600 Stacks blocks. Fresh signed Pyth updates and live liquidity
+can change the amounts on a new run. `SIM_RESULTS_DIR` selects a separate output
+directory; the default artifact is
+`simulations/results/ccip028-activation/result.json`. Historical raw updates and
+receipts are retained there for inspection, not guaranteed replay at a new block.
 
 ## Upstream review
 
