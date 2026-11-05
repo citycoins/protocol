@@ -7,7 +7,8 @@
   "scripts": {
     "test": "vitest run",
     "test:report": "vitest run -- --coverage --costs",
-    "test:watch": "chokidar \"tests/**/*.ts\" \"contracts/**/*.clar\" -c \"npm run test:report\""
+    "test:watch": "chokidar \"tests/**/*.ts\" \"contracts/**/*.clar\" -c \"npm run test:report\"",
+    "test:ccip028": "python3 tests/activation/build.py && vitest run --config tests/activation/vitest.config.ts"
   },
   "author": "",
   "license": "ISC",
@@ -23,5 +24,8 @@
     "vite": "^7.1.4",
     "vitest": "^3.2.4",
     "vitest-environment-clarinet": "^2.3.0"
+  },
+  "devDependencies": {
+    "@stacks/clarinet-sdk": "3.24.1"
   }
 }
