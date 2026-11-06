@@ -1,3 +1,10 @@
+// Runs on the LIVE Jing market v6-4 + router v5-5 at their mainnet principals
+// (deployed bytes sha256-checked; nothing Jing is redeployed or aliased). The
+// fork first empties the live book with real taker swaps and owner cancels
+// (_jing-live-v6-4.mjs); the vault and book deploy from the exact repo bytes,
+// sha256 pinned. Real signed Lazer update, fetched keylessly; synthetic burn
+// blocks use one-second intervals. The vault pegs at mid + maker-spread-bps
+// (default u1).
 // stxer-ccd016-v2-fixes.js
 // SELF-VERIFYING stxer mainnet-fork harness for the ccd016-swap-vault-mia-v2
 // fixes from the v6-3 submit + settle audit bounty (jing-contracts-v3
@@ -12,13 +19,13 @@
 //   L-2 does not apply to ccd016 (no timed recovery, keeps 1008): checked.
 //
 // Same stack and DAO simulation as stxer-ccd016-v2-coverage.js: the current
-// Jing core-v6, ladder-v1, market v6-3 and router v5-3 from JING_SRC under
-// their production names, then the ccd015 book, the vault and a proxy that
+// LIVE Jing market v6-4 and router v5-5 (book cleared first), then the
+// ccd015 book, the vault and a proxy that
 // plays a passed proposal; base-dao is-extension patched for vault + proxy;
 // DIA impersonated with the Lazer prices.
 //
 // Run: PYTH_API_KEY=<key> node simulations/stxer-ccd016-v2-fixes.js
-import {freshProofAfter} from './_jing-v6-3.mjs';
+import {freshProofAfter, forkTip, liveJingSetup, liveJingHashes, exactSources, STX_HOLDER} from './_jing-live-v6-4.mjs';
 import fs from "node:fs";
 import {createHash} from "node:crypto";
 import {
@@ -28,12 +35,11 @@ import {
 import { SimulationBuilder, getSimulationResult } from "stxer";
 
 const NODE = process.env.STACKS_API_URL || "http://77.42.3.101/stacks-api";
-const JING_SRC = process.env.JING_SRC || `${process.env.HOME}/projects/jing-contracts-v3/contracts`;
 const RESULTS_DIR = process.env.SIM_RESULTS_DIR || "simulations/results/ccd016-v2";
 
 const DEPLOYER = "SPV9K21TBFAK4KNRJXF5DFP8N7W46G4V9RCJDC22";
 const SBTC_WHALE = "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2";
-const STX_WHALE = "SP9BP4PN74CNR5XT7CMAMBPA0GWC9HMB69HVVV51";
+const STX_WHALE = STX_HOLDER; // SP9BP4PN74CNR5XT7CMAMBPA0GWC9HMB69HVVV51 is empty at the tip
 const STRANGER = "SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM";
 const DIA_UPDATER = "SP1G48FZ4Y7JY8G2Z0N51QTCYGBQ6F4J43J77BQC0";
 const DAO = "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH";
@@ -43,7 +49,7 @@ const SBTC = "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token";
 const WSTX = "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.token-stx-v-1-2";
 const DIA = `${DIA_UPDATER}.dia-oracle`;
 
-const CORE = "jing-core-v6", LADDER = "jing-ladder-v1", MKT = "markets-sbtc-stx-jing-v6-3", ROUTER = "swap-router-sbtc-stx-jing-v5-3";
+const CORE = "jing-core-v6", LADDER = "jing-ladder-v1", MKT = "markets-sbtc-stx-jing-v6-4", ROUTER = "swap-router-sbtc-stx-jing-v5-5";
 const BOOK = "ccd015-redemption-book-mia-stx", VAULT = "ccd016-swap-vault-mia-v2", PROXY = "sim-dao-proxy";
 const CORE_ID = `${DEPLOYER}.${CORE}`, MKT_ID = `${DEPLOYER}.${MKT}`, ROUTER_ID = `${DEPLOYER}.${ROUTER}`, BOOK_ID = `${DEPLOYER}.${BOOK}`, VAULT_ID = `${DEPLOYER}.${VAULT}`, PROXY_ID = `${DEPLOYER}.${PROXY}`;
 const [sbtcAddr, sbtcName] = SBTC.split("."), [wstxAddr, wstxName] = WSTX.split("."), [trAddr, trName] = REWARDS_TREASURY.split(".");
@@ -55,7 +61,6 @@ const DUMP = 20_000_000n; // a whale's router sale down to mid - 0.5% before C
 const LOW_BID_STX = 10_000_000n; // a resting bid at mid - 10%: puts the vault's places into pending escrow, never fills at the mid
 const BID_STX = 300_000_000n; // the book bid that lets the next router-swap sell more
 
-const src = f => fs.readFileSync(f, "utf8").split("\n").filter(l => !/^\s*;;/.test(l)).join("\n");
 const decodeTx = (s) => { const r = s?.Result?.Transaction; if (!r) return "<no tx>"; if ("Err" in r) return `ENGINE-ERR: ${JSON.stringify(r.Err).slice(0, 200)}`; if (r.Ok?.vm_error) return `VM-ERR: ${r.Ok.vm_error}`; try { return cvToString(deserializeCV(r.Ok.result)); } catch (e) { return `decode-failed: ${e.message}`; } };
 const decodeEval = (s) => { const r = s?.Result?.Eval; if (!r) return "<no eval>"; if (!("Ok" in r)) return `ERR: ${JSON.stringify(r.Err).slice(0, 200)}`; try { return cvToString(deserializeCV(r.Ok)); } catch { return r.Ok; } };
 const num = (s, key) => BigInt((String(s).match(new RegExp(`\\(${key} u(\\d+)\\)`)) || [])[1] ?? "-1");
@@ -97,7 +102,7 @@ function check(label, actual, want) {
   console.log(`  ${ok ? "ok  " : "FAIL"} ${label}: ${String(actual).slice(0, 200)}${ok ? "" : ` (want ${typeof want === "function" ? want.toString().slice(0, 110) : want})`}`);
 }
 
-// the uSTX a Y taker must send so the vault's X ask keeps exactly `rest` sats
+// the uSTX a Y taker must send to buy exactly `target` sats from an X ask at `mid` (the ask price)
 function takeFor(mid, target) {
   const guess = (target * mid * (BPS + 20n)) / PPDF / BPS; // gross: net = floor(t * BPS / (BPS + 20)) at a fresh print
   for (let t = guess - 5000n; t < guess + 5000n; t++) {
@@ -110,27 +115,28 @@ function takeFor(mid, target) {
 async function main() {
   console.log("=== ccd016-swap-vault-mia-v2 FIXES: L-1 partial router-swap / u16047, #7 market dust, #8 allowance (mainnet fork, Lazer) ===");
   // FORK_BLOCK pins a whole rerun set to one height (default: the node tip)
-  const tip = process.env.FORK_BLOCK ? await fetchJson(`/extended/v1/block/by_height/${process.env.FORK_BLOCK}`) : (await fetchJson(`/extended/v1/block?limit=1`)).results[0];
+  const tip = await forkTip(NODE); // FORK_BLOCK pins a rerun set (default: the node tip)
   const lz = await freshProofAfter(Number(tip.block_time) + 12);
   const UPD = bufferCV(Buffer.from(lz.hex, "hex"));
   const MID = (lz.px * PP) / lz.py;
   const FRESH_MS = BigInt(tip.burn_block_time) * 1000n;
   console.log(`Lazer mid ${MID}; tip ${tip.height}`);
-
-  const coreSrc = src(`${JING_SRC}/${CORE}.clar`), ladderSrc = src(`${JING_SRC}/${LADDER}.clar`);
-  const mktSrc = src(`${JING_SRC}/${MKT}.clar`), routerSrc = src(`${JING_SRC}/${ROUTER}.clar`);
-  const bookSrc = src(`./contracts/extensions/${BOOK}.clar`), vaultSrc = src(`./contracts/extensions/${VAULT}.clar`);
+  const {vault: vaultSrc, book: bookSrc} = exactSources(); // exact repo bytes, sha256 pinned
+  const liveHashes = await liveJingHashes(NODE);
   for (const needle of ["ROUTER_SLACK_SATS u8", "JING_REBATE_DUST_SATS u51", "MAX_TAKER_REBATE_BPS u70", "(define-private (market-total)", "MAX_WINDOW_BLOCKS u1008"])
     if (!vaultSrc.includes(needle)) throw new Error(`vault source lacks ${needle}`);
-  const sourceHashes = Object.fromEntries([[CORE, `${JING_SRC}/${CORE}.clar`], [LADDER, `${JING_SRC}/${LADDER}.clar`], [MKT, `${JING_SRC}/${MKT}.clar`], [ROUTER, `${JING_SRC}/${ROUTER}.clar`], [BOOK, `contracts/extensions/${BOOK}.clar`], [VAULT, `contracts/extensions/${VAULT}.clar`]]
-    .map(([n, p]) => [n, createHash("sha256").update(fs.readFileSync(p)).digest("hex")]));
+  const sourceHashes = { ...liveHashes, [BOOK]: createHash("sha256").update(bookSrc).digest("hex"), [VAULT]: createHash("sha256").update(vaultSrc).digest("hex") }; // live Jing deployed bytes + exact repo vault/book
+  
   const baseDaoSrc = (await fetchJson(`/extended/v1/contract/${BASE_DAO}`)).source_code;
   const needle = "(default-to false (map-get? Extensions extension))";
   if (!baseDaoSrc.includes(needle)) throw new Error("base-dao is-extension body changed; update the patch");
   const baseDaoPatched = baseDaoSrc.replace(needle, `(or (default-to false (map-get? Extensions extension)) (is-eq extension '${VAULT_ID}) (is-eq extension '${PROXY_ID}))`);
 
-  const TAKE_A = takeFor(MID, FUND_A);                 // buys the whole live ask
-  const TAKE_B = takeFor(MID, FUND_B + 1n);            // batch B holds 100,001 live
+  // The vault's ask is pegged at mid + maker-spread-bps (default u1, 0462e6a):
+  // pegged-ask = mid * (BPS + 1) / BPS; the taker's walk fills it at that price.
+  const ASK = (MID * (BPS + 1n)) / BPS;
+  const TAKE_A = takeFor(ASK, FUND_A);                 // buys the whole live ask
+  const TAKE_B = takeFor(ASK, FUND_B + 1n);            // batch B holds 100,001 live
 
   const plan = [];
   let b = SimulationBuilder.new({ stacksNodeAPI: NODE }).useBlockHeight(tip.height);
@@ -151,11 +157,9 @@ async function main() {
   const taker = (label, ustx) => tx(label, STX_WHALE, MKT_ID, "swap", [uintCV(ustx), uintCV(HUGE), UPD, sbtcT, stringAsciiCV("sbtc-token"), wstxT, stringAsciiCV("wstx"), falseCV()], ok);
 
   // ---- the stack ----
-  deploy(CORE, coreSrc); deploy(LADDER, ladderSrc); deploy(MKT, mktSrc);
-  tx("core verifies the market", DEPLOYER, CORE_ID, "set-verified-contract", [contractPrincipalCV(DEPLOYER, MKT)], "(ok true)");
-  tx("market initialize", DEPLOYER, MKT_ID, "initialize", [contractPrincipalCV(DEPLOYER, MKT), sbtcT, wstxT, uintCV(1000), uintCV(1_000_000), uintCV(1), uintCV(45)], "(ok true)");
+  const liveSetup = await liveJingSetup({ node: NODE, tip, updHex: lz.hex, mid: MID, tx, ev }); // the LIVE market v6-4 + router v5-5, book cleared by real actions; nothing redeployed
   tx("sync current ladder seat reservation", DEPLOYER, MKT_ID, "sync-seat-count", [], "(ok u10)");
-  deploy(ROUTER, routerSrc); deploy(BOOK, bookSrc); deploy(VAULT, vaultSrc); deploy(PROXY, PROXY_SRC);
+  deploy(BOOK, bookSrc); deploy(VAULT, vaultSrc); deploy(PROXY, PROXY_SRC);
   patch(BASE_DAO, baseDaoPatched, "patch base-dao: is-extension true for the vault + proxy", ClarityVersion.Clarity1);
   tx("DIA: push the Lazer prices, fresh", DIA_UPDATER, DIA, "set-multiple-values", [diaPush(lz.py, lz.px, FRESH_MS)], "(ok true)");
   tx("proxy allows sBTC on the treasury", DEPLOYER, PROXY_ID, "allow-sbtc", [], ok);
@@ -182,7 +186,7 @@ async function main() {
   const aPlace = tx("#7A griefer jing-place: 1 sat, accepted as a top-up (whole position >= min), escrowed", STRANGER, VAULT_ID, "jing-place", [UPD], (v) => ok(v) && v.includes("(amount u1)"));
   market("#7A 1 sat pending next to the live ask", (v) => field(v, "live") === `u${FUND_A}` && field(v, "pending") === "u1");
   const aStx0 = stxBal("#7A vault STX before the fill", VAULT_ID);
-  const aTake = taker(`#7A taker sends ${TAKE_A} uSTX: buys exactly the ${FUND_A} live sats at the mid`, TAKE_A);
+  const aTake = taker(`#7A taker sends ${TAKE_A} uSTX: buys exactly the ${FUND_A} live sats at the vault's ask (mid + 1 bp)`, TAKE_A);
   market("#7A sold out: live 0, the 1 sat still pending on the market", (v) => field(v, "live") === "u0" && field(v, "parked") === "u0" && field(v, "pending") === "u1");
   status("#7A wallet 0, NOT empty (market dust)", (v) => field(v, "sbtc-balance") === "u0" && field(v, "jing-escrowed") === "u1" && field(v, "empty") === "false");
   clock("#7A window still open", (v) => field(v, "window-open") === "true");
@@ -329,7 +333,7 @@ async function main() {
 
   console.log(`\n${checks - failures}/${checks} checks green`);
   fs.mkdirSync(RESULTS_DIR, { recursive: true });
-  fs.writeFileSync(`${RESULTS_DIR}/fixes.json`, JSON.stringify({ simulationId: sid, url: `https://stxer.xyz/simulations/mainnet/${sid}`, checks, failures, mid: String(MID), takers: { TAKE_A: String(TAKE_A), TAKE_B: String(TAKE_B) }, sourceHashes, results, plan: plan.map(({ want, step, ...p }) => p), result: res }, null, 2) + "\n");
+  fs.writeFileSync(`${RESULTS_DIR}/fixes.json`, JSON.stringify({ simulationId: sid, url: `https://stxer.xyz/simulations/mainnet/${sid}`, checks, failures, forkBlock: tip.height, liveJing: { market: MKT_ID, router: `${DEPLOYER}.${ROUTER}`, ...liveSetup }, mid: String(MID), takers: { TAKE_A: String(TAKE_A), TAKE_B: String(TAKE_B) }, sourceHashes, results, plan: plan.map(({ want, step, ...p }) => p), result: res }, null, 2) + "\n");
   if (failures > 0) process.exit(1);
 }
 main().catch((e) => { console.error(e); process.exit(1); });

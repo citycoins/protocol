@@ -1,0 +1,2225 @@
+{
+  "name": "stx-coverage",
+  "status": "passed",
+  "phases": [
+    {
+      "phase": "phase 1: lifecycle",
+      "simulationId": "c867b81a1ce2fdd0efbb8a47fb232e74",
+      "url": "https://stxer.xyz/simulations/mainnet/c867b81a1ce2fdd0efbb8a47fb232e74",
+      "forkHeight": 9422155,
+      "forkTip": {
+        "synthetic": false,
+        "stacks_height": 9422155,
+        "burn_height": 974734,
+        "coinbase_height": 261585,
+        "block_time": 1793923383,
+        "burn_block_time": 1793923383,
+        "index_block_hash": "c6a74126df86e39c1e17936729322b92c3936a48e475ddad6dc859f678b34eea",
+        "consensus_hash": "749e0fd8ca86f5a645f5676c3a1b741040f6244d",
+        "burn_header_hash": "0000000000000000000138e1be3307475d9dd1c384d4e6f02610e55a0882778b",
+        "sortition_id": "6ed5f360e35ae0b9871648a9d00d752a4502c4c75c1e715e1f0c781f11699345",
+        "epoch": "4.0"
+      }
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "simulationId": "010ec971fcc5a1b148aba2bfbc3f9d8f",
+      "url": "https://stxer.xyz/simulations/mainnet/010ec971fcc5a1b148aba2bfbc3f9d8f",
+      "forkHeight": 9422157,
+      "forkTip": {
+        "synthetic": false,
+        "stacks_height": 9422157,
+        "burn_height": 974734,
+        "coinbase_height": 261585,
+        "block_time": 1793923383,
+        "burn_block_time": 1793923383,
+        "index_block_hash": "a8f8ba68a0a444d935b38b0ff36181457e2837da28c2cf8bfafae2e6811b8f36",
+        "consensus_hash": "749e0fd8ca86f5a645f5676c3a1b741040f6244d",
+        "burn_header_hash": "0000000000000000000138e1be3307475d9dd1c384d4e6f02610e55a0882778b",
+        "sortition_id": "6ed5f360e35ae0b9871648a9d00d752a4502c4c75c1e715e1f0c781f11699345",
+        "epoch": "4.0"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "book source unchanged (sha256 pinned)",
+      "actual": "b3526d4ce89e615108c1b6781bf67b6f8354e3880adb404883a30fbdd36ec65f",
+      "expected": "b3526d4ce89e615108c1b6781bf67b6f8354e3880adb404883a30fbdd36ec65f",
+      "pass": true
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "deploy ccd015-redemption-book-mia-stx",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "deploy sim-stx-send",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "deploy sim-p-par1",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "deploy sim-p-min-zero",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "deploy sim-p-pause",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "deploy sim-p-unpause",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "deploy sim-p-min-200k",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "deploy sim-p-min-100k",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "deploy sim-p-par2",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "deploy sim-p-withdraw-par3",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "direct-execute is an enabled extension",
+      "actual": "true",
+      "expected": "true",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "direct-execute not sunset",
+      "actual": "true",
+      "expected": "true",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "stranger update-par -> u15000",
+      "actual": "(err u15000)",
+      "expected": "(err u15000)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "stranger set-paused -> u15000",
+      "actual": "(err u15000)",
+      "expected": "(err u15000)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "stranger set-min-deposit -> u15000",
+      "actual": "(err u15000)",
+      "expected": "(err u15000)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "real approver calling set-paused directly -> u15000",
+      "actual": "(err u15000)",
+      "expected": "(err u15000)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "book deployer update-par directly -> u15000",
+      "actual": "(err u15000)",
+      "expected": "(err u15000)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "initial info: par u0, unpaused, min 100k MIA, empty",
+      "actual": "(tuple (budget-ustx u0) (calculated-par (some u204249)) (min-deposit u100000000000) (offer-count u0) (par-scaled u0) (paused false) (total-burned-mia u0) (total-spent-ustx u0))",
+      "expected": "(v) => v.includes('(par-scaled u0)') && v.includes('(paused false)') && v.includes(`(min-deposit u${M(100000)})`) && v.includes('(offer-count u0)')",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "place-offer before par -> u15011",
+      "actual": "(err u15011)",
+      "expected": "(err u15011)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "refused offer moved no MIA",
+      "actual": "1640371986453194",
+      "expected": "1640371986453194",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "cross-book with zero budget -> u15010",
+      "actual": "(err u15010)",
+      "expected": "(err u15010)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "real STX holder sends 1 STX to the book",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "cross-book funded but par unset -> u15011",
+      "actual": "(err u15011)",
+      "expected": "(err u15011)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 1 signals sim-p-min-zero",
+      "actual": "(ok u1)",
+      "expected": "(ok u1)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 2 signals sim-p-min-zero",
+      "actual": "(ok u2)",
+      "expected": "(ok u2)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 3 signals sim-p-min-zero",
+      "actual": "(err u15001)",
+      "expected": "(err u15001)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "set-min-deposit u0 refused: min unchanged",
+      "actual": "(tuple (budget-ustx u1000000) (calculated-par (some u204249)) (min-deposit u100000000000) (offer-count u0) (par-scaled u0) (paused false) (total-burned-mia u0) (total-spent-ustx u0))",
+      "expected": "(v) => v.includes(`(min-deposit u${M(100000)})`)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "reverted proposal not recorded as executed",
+      "actual": "none",
+      "expected": "none",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 1 signals sim-p-par1",
+      "actual": "(ok u1)",
+      "expected": "(ok u1)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 2 signals sim-p-par1",
+      "actual": "(ok u2)",
+      "expected": "(ok u2)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 3 signals sim-p-par1",
+      "actual": "(ok u3)",
+      "expected": "(ok u3)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "par-scaled committed = calculate-par",
+      "actual": "u204249",
+      "expected": "u204249",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "amount = min - 1 -> u15005",
+      "actual": "(err u15005)",
+      "expected": "(err u15005)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "amount = 10M MIA + 1 (per-offer cap) -> u15001",
+      "actual": "(err u15001)",
+      "expected": "(err u15001)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "zero ask -> u15001",
+      "actual": "(err u15001)",
+      "expected": "(err u15001)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "ask = MAX_ASK + 1 -> u15001",
+      "actual": "(err u15001)",
+      "expected": "(err u15001)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "5M MIA asked at par + 1 uSTX -> u15008",
+      "actual": "(err u15008)",
+      "expected": "(err u15008)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "validation failures moved no MIA",
+      "actual": "1640371986453194",
+      "expected": "1640371986453194",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "A offers 5M MIA at 60% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "C offers 1M MIA exactly at par (boundary admitted)",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "B offers 3M MIA at 80% of par (inserted between)",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "A duplicate offer -> u15004",
+      "actual": "(err u15004)",
+      "expected": "(err u15004)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "book cheapest-first: A, B, C",
+      "actual": "SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ,SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B,SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND",
+      "expected": "SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ,SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B,SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "records exact",
+      "actual": "[[\"5000000000000\",\"6127470000\"],[\"3000000000000\",\"4901976000\"],[\"1000000000000\",\"2042490000\"]]",
+      "expected": "[[\"5000000000000\",\"6127470000\"],[\"3000000000000\",\"4901976000\"],[\"1000000000000\",\"2042490000\"]]",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "MIA escrow = A + B + C",
+      "actual": "9000000000000",
+      "expected": "9000000000000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "A debited exactly 5M MIA",
+      "actual": "5000000000000",
+      "expected": "5000000000000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "B debited exactly 3M MIA",
+      "actual": "3000000000000",
+      "expected": "3000000000000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "C debited exactly 1M MIA",
+      "actual": "1000000000000",
+      "expected": "1000000000000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "get-offer B",
+      "actual": "(some (tuple (amount u3000000000000) (owner SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B) (ustx u4901976000)))",
+      "expected": "(v) => v.includes(`(amount u${amtB})`) && v.includes(`(ustx u${askB})`)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "get-book-totals",
+      "actual": "(tuple (amount u9000000000000) (ustx u13071936000))",
+      "expected": "(tuple (amount u9000000000000) (ustx u13071936000))",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "change-offer without an offer -> u15002",
+      "actual": "(err u15002)",
+      "expected": "(err u15002)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "change-offer zero ask -> u15001",
+      "actual": "(err u15001)",
+      "expected": "(err u15001)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "change-offer above par -> u15008",
+      "actual": "(err u15008)",
+      "expected": "(err u15008)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "change-offer past the 10M cap -> u15001",
+      "actual": "(err u15001)",
+      "expected": "(err u15001)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "B adds 1M MIA and reprices to 50% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "B moved to the front: B, A, C",
+      "actual": "SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B,SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ,SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND",
+      "expected": "SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B,SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ,SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "B record 4M MIA at its new ask",
+      "actual": "4000000000000/4084980000",
+      "expected": "4000000000000/4084980000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "B debited the extra 1M only",
+      "actual": "4000000000000",
+      "expected": "4000000000000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "B reprices (no add) back to 80% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "order back to A, B, C",
+      "actual": "SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ,SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B,SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND",
+      "expected": "SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ,SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B,SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "MIA escrow = A + B(4M) + C",
+      "actual": "10000000000000",
+      "expected": "10000000000000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "D offers 2M MIA at 70% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "D inserted at its price: A, D, B, C",
+      "actual": "SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ,SP3TF26QFS3YMYHC9N3ZZTZQKCM4AFYMVW1WMFRTT,SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B,SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND",
+      "expected": "SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ,SP3TF26QFS3YMYHC9N3ZZTZQKCM4AFYMVW1WMFRTT,SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B,SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "D cancels",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "D refunded exactly",
+      "actual": "100000668694432",
+      "expected": "100000668694432",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "D cancels again -> u15002",
+      "actual": "(err u15002)",
+      "expected": "(err u15002)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "book back to A, B, C",
+      "actual": "SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ,SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B,SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND",
+      "expected": "SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ,SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B,SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "D offers again before the pause",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 1 signals sim-p-pause",
+      "actual": "(ok u1)",
+      "expected": "(ok u1)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 2 signals sim-p-pause",
+      "actual": "(ok u2)",
+      "expected": "(ok u2)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 3 signals sim-p-pause",
+      "actual": "(ok u3)",
+      "expected": "(ok u3)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "paused",
+      "actual": "true",
+      "expected": "true",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "place-offer while paused -> u15007",
+      "actual": "(err u15007)",
+      "expected": "(err u15007)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "change-offer while paused -> u15007",
+      "actual": "(err u15007)",
+      "expected": "(err u15007)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "cross-book while paused -> u15007",
+      "actual": "(err u15007)",
+      "expected": "(err u15007)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "cancel-offer while paused still lets D exit",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "D refunded exactly while paused",
+      "actual": "100000668694432",
+      "expected": "100000668694432",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 1 signals sim-p-unpause",
+      "actual": "(ok u1)",
+      "expected": "(ok u1)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 2 signals sim-p-unpause",
+      "actual": "(ok u2)",
+      "expected": "(ok u2)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 3 signals sim-p-unpause",
+      "actual": "(ok u3)",
+      "expected": "(ok u3)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "unpaused",
+      "actual": "false",
+      "expected": "false",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 1 signals sim-p-min-200k",
+      "actual": "(ok u1)",
+      "expected": "(ok u1)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 2 signals sim-p-min-200k",
+      "actual": "(ok u2)",
+      "expected": "(ok u2)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 3 signals sim-p-min-200k",
+      "actual": "(ok u3)",
+      "expected": "(ok u3)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "min-deposit 200k MIA",
+      "actual": "u200000000000",
+      "expected": "u200000000000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "150k MIA under the raised min -> u15005",
+      "actual": "(err u15005)",
+      "expected": "(err u15005)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 1 signals sim-p-min-100k",
+      "actual": "(ok u1)",
+      "expected": "(ok u1)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 2 signals sim-p-min-100k",
+      "actual": "(ok u2)",
+      "expected": "(ok u2)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 3 signals sim-p-min-100k",
+      "actual": "(ok u3)",
+      "expected": "(ok u3)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "min-deposit restored to 100k MIA",
+      "actual": "u100000000000",
+      "expected": "u100000000000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "real STX holder funds the book to A + half of B",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "book budget",
+      "actual": "9395454000",
+      "expected": "9395454000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "cross-book #1 (stranger triggers)",
+      "actual": "(ok (tuple (acquired u7000000000000) (spent u9395454000)))",
+      "expected": "(ok (tuple (acquired u7000000000000) (spent u9395454000)))",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "A paid exactly its ask",
+      "actual": "6127470000",
+      "expected": "6127470000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "B paid the remaining budget (frontier partial)",
+      "actual": "3267984000",
+      "expected": "3267984000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "C paid nothing",
+      "actual": "0",
+      "expected": "0",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "book STX spent to zero",
+      "actual": "0",
+      "expected": "0",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "MIA v2 supply fell by exactly the acquired (burn)",
+      "actual": "7000000000000",
+      "expected": "7000000000000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "escrow fell by exactly the acquired",
+      "actual": "7000000000000",
+      "expected": "7000000000000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "kept: B remainder then C",
+      "actual": "SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B,SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND",
+      "expected": "SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B,SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "B remainder = (amount - taken, ask - paid)",
+      "actual": "2000000000000/3267984000",
+      "expected": "2000000000000/3267984000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "B remainder implied price <= original (sort and par preserved)",
+      "actual": "true",
+      "expected": "true",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "C untouched",
+      "actual": "1000000000000/2042490000",
+      "expected": "1000000000000/2042490000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "total-burned-mia and total-spent-ustx",
+      "actual": "(tuple (budget-ustx u0) (calculated-par (some u204535)) (min-deposit u100000000000) (offer-count u2) (par-scaled u204249) (paused false) (total-burned-mia u7000000000000) (total-spent-ustx u9395454000))",
+      "expected": "(v) => v.includes(`(total-burned-mia u${acq1})`) && v.includes(`(total-spent-ustx u${budget1})`) && v.includes('(offer-count u2)')",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "advisory par rose after the burn; committed par unchanged",
+      "actual": "(tuple (calc (some u204535)) (par u204249))",
+      "expected": "(tuple (calc (some u204535)) (par u204249))",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "burn raised the advisory par",
+      "actual": "true",
+      "expected": "true",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "cross-book with empty budget -> u15010",
+      "actual": "(err u15010)",
+      "expected": "(err u15010)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "real STX holder sends 100 STX to the book",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "cross-book #2: B remainder partial again",
+      "actual": "(ok (tuple (acquired u61199810035) (spent u100000000)))",
+      "expected": "(ok (tuple (acquired u61199810035) (spent u100000000)))",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "B paid 100 STX",
+      "actual": "100000000",
+      "expected": "100000000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "supply fell by pro-rata taken",
+      "actual": "61199810035",
+      "expected": "61199810035",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "B remainder after #2",
+      "actual": "SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B/1938800189965/3167984000",
+      "expected": "SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B/1938800189965/3167984000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "B cancels the remainder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "B refunded exactly the unfilled remainder",
+      "actual": "1938800189965",
+      "expected": "1938800189965",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "real STX holder sends 1M STX into the mining treasury",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 1 signals sim-p-par2",
+      "actual": "(ok u1)",
+      "expected": "(ok u1)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 2 signals sim-p-par2",
+      "actual": "(ok u2)",
+      "expected": "(ok u2)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 3 signals sim-p-par2",
+      "actual": "(ok u3)",
+      "expected": "(ok u3)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "par refreshed upward by governance",
+      "actual": "u224509",
+      "expected": "u224509",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "par2 > par1",
+      "actual": "true",
+      "expected": "true",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "E ask is above the old par",
+      "actual": "true",
+      "expected": "true",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "E offers 1M MIA at the raised par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 1 signals sim-p-withdraw-par3",
+      "actual": "(ok u1)",
+      "expected": "(ok u1)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 2 signals sim-p-withdraw-par3",
+      "actual": "(ok u2)",
+      "expected": "(ok u2)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "approver 3 signals sim-p-withdraw-par3",
+      "actual": "(ok u3)",
+      "expected": "(ok u3)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "ccd002 withdraw-stx returned 1M STX to the holder",
+      "actual": "1000000000000",
+      "expected": "1000000000000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "par3 = calculate-par after withdrawal",
+      "actual": "204537",
+      "expected": "204537",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "par3 < par2",
+      "actual": "true",
+      "expected": "true",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "E is now above par",
+      "actual": "false",
+      "expected": "false",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "C is still at or below par",
+      "actual": "true",
+      "expected": "true",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "E change-offer at the same ask -> u15008 (placement gate on change)",
+      "actual": "(err u15008)",
+      "expected": "(err u15008)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "book: C then E",
+      "actual": "SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND,SP1FJ0MY8M18KZF43E85WJN48SDXYS1EC4BCQW02S",
+      "expected": "SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND,SP1FJ0MY8M18KZF43E85WJN48SDXYS1EC4BCQW02S",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "fund the book with C + E asks",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "cross-book: C fills, E skipped above par",
+      "actual": "(ok (tuple (acquired u1000000000000) (spent u2042490000)))",
+      "expected": "(ok (tuple (acquired u1000000000000) (spent u2042490000)))",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "C paid its ask",
+      "actual": "2042490000",
+      "expected": "2042490000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "E paid nothing",
+      "actual": "0",
+      "expected": "0",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "unspent budget stays in the book",
+      "actual": "2245090000",
+      "expected": "2245090000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "E kept untouched",
+      "actual": "1/SP1FJ0MY8M18KZF43E85WJN48SDXYS1EC4BCQW02S/1000000000000/2245090000",
+      "expected": "1/SP1FJ0MY8M18KZF43E85WJN48SDXYS1EC4BCQW02S/1000000000000/2245090000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "cross-book with only an above-par offer -> u15006",
+      "actual": "(err u15006)",
+      "expected": "(err u15006)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "budget unchanged by the refused cross",
+      "actual": "2245090000",
+      "expected": "2245090000",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "E cancels",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "E refunded exactly",
+      "actual": "475060222452067",
+      "expected": "475060222452067",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "book empty",
+      "actual": "u0",
+      "expected": "u0",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "no MIA stranded in the book",
+      "actual": "0",
+      "expected": "0",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 1: lifecycle",
+      "label": "final accounting",
+      "actual": "(tuple (budget-ustx u2245090000) (calculated-par (some u204578)) (min-deposit u100000000000) (offer-count u0) (par-scaled u204537) (paused false) (total-burned-mia u8061199810035) (total-spent-ustx u11537944000))",
+      "expected": "(v) => v.includes(`(total-burned-mia u${burned})`) && v.includes(`(total-spent-ustx u${budget1 + fund2 + askC})`)",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "book source unchanged (sha256 pinned)",
+      "actual": "b3526d4ce89e615108c1b6781bf67b6f8354e3880adb404883a30fbdd36ec65f",
+      "expected": "b3526d4ce89e615108c1b6781bf67b6f8354e3880adb404883a30fbdd36ec65f",
+      "pass": true,
+      "sid": "c867b81a1ce2fdd0efbb8a47fb232e74"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "deploy ccd015-redemption-book-mia-stx",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "deploy sim-stx-send",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "deploy sim-p-par1",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "direct-execute is an enabled extension",
+      "actual": "true",
+      "expected": "true",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "direct-execute not sunset",
+      "actual": "true",
+      "expected": "true",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "approver 1 signals sim-p-par1",
+      "actual": "(ok u1)",
+      "expected": "(ok u1)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "approver 2 signals sim-p-par1",
+      "actual": "(ok u2)",
+      "expected": "(ok u2)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "approver 3 signals sim-p-par1",
+      "actual": "(ok u3)",
+      "expected": "(ok u3)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 1 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 2 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 3 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 4 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 5 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 6 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 7 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 8 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 9 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 10 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 11 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 12 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 13 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 14 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 15 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 16 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 17 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 18 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 19 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 20 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 21 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 22 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 23 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 24 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 25 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 26 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 27 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 28 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 29 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 30 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 31 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 32 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 33 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 34 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 35 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 36 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 37 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 38 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 39 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 40 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 41 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 42 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 43 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 44 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 45 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 46 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 47 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 48 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "fund seller 49 with 100k MIA from a real holder",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 0 offers 100k MIA at 40% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 17 offers 100k MIA at 57% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 34 offers 100k MIA at 74% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 1 offers 100k MIA at 41% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 18 offers 100k MIA at 58% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 35 offers 100k MIA at 75% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 2 offers 100k MIA at 42% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 19 offers 100k MIA at 59% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 36 offers 100k MIA at 76% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 3 offers 100k MIA at 43% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 20 offers 100k MIA at 60% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 37 offers 100k MIA at 77% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 4 offers 100k MIA at 44% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 21 offers 100k MIA at 61% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 38 offers 100k MIA at 78% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 5 offers 100k MIA at 45% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 22 offers 100k MIA at 62% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 39 offers 100k MIA at 79% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 6 offers 100k MIA at 46% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 23 offers 100k MIA at 63% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 40 offers 100k MIA at 80% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 7 offers 100k MIA at 47% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 24 offers 100k MIA at 64% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 41 offers 100k MIA at 81% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 8 offers 100k MIA at 48% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 25 offers 100k MIA at 65% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 42 offers 100k MIA at 82% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 9 offers 100k MIA at 49% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 26 offers 100k MIA at 66% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 43 offers 100k MIA at 83% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 10 offers 100k MIA at 50% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 27 offers 100k MIA at 67% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 44 offers 100k MIA at 84% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 11 offers 100k MIA at 51% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 28 offers 100k MIA at 68% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 45 offers 100k MIA at 85% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 12 offers 100k MIA at 52% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 29 offers 100k MIA at 69% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 46 offers 100k MIA at 86% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 13 offers 100k MIA at 53% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 30 offers 100k MIA at 70% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 47 offers 100k MIA at 87% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 14 offers 100k MIA at 54% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 31 offers 100k MIA at 71% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 48 offers 100k MIA at 88% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 15 offers 100k MIA at 55% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 32 offers 100k MIA at 72% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 49 offers 100k MIA at 89% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 16 offers 100k MIA at 56% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "seller 33 offers 100k MIA at 73% of par",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "50 offers, sorted ascending by price",
+      "actual": "SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ,SP1WV0048ERKB55592H81MK6J4TTRP8TSGC4JX54N,SP3NW1VGB5AWYG9VTC062A53NW8N34GD1R7QANGAJ,SP10QTJZ91MTKCCK7Q3SAZBY9AC8H3H0TWK14V0MZ,SP248VEYQK67SZ06MZ0NMZ776TP42YC8AXJWQ8A78,SP2EPJN3MMC1TRVBMT5WPTDTJY1W9B4CBTATM0PKJ,SP3ABWB2XD387WY21EEQENBKMBRVEETXJ7842MT1V,SP2HWDCFE994XKWNF7CW055T78KXTJ90P98RNPFQW,SPEFXWTQ3APNQWB1EKMX7698NMD5E5KPJFYXX3TA,SP1KGSAKSWMEQHV8CB0XRKZSSV729PWCSWWVH440W,SP7D7YSGEW0TD8WYV2P4FY70ZGC5HMCTA2S6NWPB,SP3DKY06M57S72MW3SHCM4P7C27BDWMK6JX2ER0HV,SP1QFEGZTJDPQSWMVJZS7AJRNPQBZQ7MM3YN52YDE,SP172QT4PW3T8VAKFMVVVCH3N1ZD963ZZVE65MYX9,SP27V7NR6V9SEE4P8TEFFNDX114YH5YZBDERSQRV1,SP2TBV6TM79GNZTDQ7KPK9AD3GNSAW653JMY4K8GS,SP187XDF2QV131MS7X5HJRFJYJ42JG95654GW75AM,SP3Y74M5227FDVHREWPH773F5Y1W1ED8WXY3RAVG4,SP3KKQ6K9RRT591B3YK3JYXN4W8898RFZBD6FQ7MJ,SP3RN1G9W0TGMNCSZ8VFZ0DTQS6D6DAP41WWXSC0T,SP318FD02C75NB8NHRB6YZ39XKCC3H2TE7A1FXSMQ,SP23VBN6HZCREZ304AQ3DVVK3J18V6NW2RCCM8R8Q,SP1QM67ETXQ467YW656VXBVKSYRSXZA7C5WGGCXWT,SP17Y60MSRRXA9YRVJ4JW3XTAWDMAR9HR7508SZ6R,SP19JKZNRDKQRTK4BVDS5H28HW26VS6XVH6FX8ZR4,SPX5EERG45KC6CSKK8J78SV0P52C7RQWQ6HWW7W6,SP3FS72WFN2WF6NE3WWMPY643TYF6GGM5KERSRTVY,SPX9S42Q9KRBQKGQR0AB0SZ670EBWXR1AP2MXCG6,SP23HRXRD36BFM6J0AMM1WXACD8C4MBXJVJ77ECW4,SP3RBSVXSBYA55NKP77YRSDVAWN2SCDTVF4398F3E,SP3DV53HS65H438QBBMTS3DSEWYPFBQS8NMM8FZ2F,SP3VBVY5Q2KRM577520HZF10E8C7JKGZEP0XV3F7B,SP1J0CSKBKMGZGFWCVBPAW01S2MT2HA30SW7GZY70,SP3PEHM4W1QMGS62NSD7YWBQ62BWR67C24Z8M711D,SP19H4R5A58CSW8MCADYZMGP85FN2RZ0Z9Q7AQ9Y1,SP2ZQTJQ8SWW1VHQ6ZK3SAPC6H9B1AFAKEQ0NJ91B,SPGCNMS8A93RDQZN9NV19WBMQTHS90SCEQXD7B5M,SP3Y3TBT0YS6JSDF2KX9P64KCSAEY7VZ6VBDFV59K,SP2X19JAXS26NHSMV31VZDVWCF5AP3ZP4K3FSQCGD,SP1Z2HYJC3Z7N6GK5JF8BH2GWWHFZDNH5TEQMJNF4,SP16YKHJ67DNPF561WBWAP80MMKRKBVE7N4RG0TK7,SP1CPKW0FAQMEDSJNA12SP6CM1XNM7CRA8X3VRT4R,SPF3X8M7RQN28EADN83JSA0QGP8G7JQWE7534PRC,SP3NW06HK6EEW5XC5ZC283AEZZ86G5KHT4QG3TA2A,SP31F48AF6WRWK3FSNFTJBYQ633GVE06WDXE806D6,SP3FC4X5M655R9153TRB6DNZ3YRKZR93VYG7JDKB3,SPT7KNRQ169GJ4RSEVDHVRCDDKRMGAMH6NP83Z2M,SP1C3VJBJQ3PJPBWBJ9BPPKM993PZ98JD8TZDJ8YH,SP3FG3TNCFN7KWA6F7E4JJP87CV9NB7KTD4S1E79A,SP21J0R8ZY0S24F0Z9ERZQF92J7YJPFT3V4GEGCGG",
+      "expected": "SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ,SP1WV0048ERKB55592H81MK6J4TTRP8TSGC4JX54N,SP3NW1VGB5AWYG9VTC062A53NW8N34GD1R7QANGAJ,SP10QTJZ91MTKCCK7Q3SAZBY9AC8H3H0TWK14V0MZ,SP248VEYQK67SZ06MZ0NMZ776TP42YC8AXJWQ8A78,SP2EPJN3MMC1TRVBMT5WPTDTJY1W9B4CBTATM0PKJ,SP3ABWB2XD387WY21EEQENBKMBRVEETXJ7842MT1V,SP2HWDCFE994XKWNF7CW055T78KXTJ90P98RNPFQW,SPEFXWTQ3APNQWB1EKMX7698NMD5E5KPJFYXX3TA,SP1KGSAKSWMEQHV8CB0XRKZSSV729PWCSWWVH440W,SP7D7YSGEW0TD8WYV2P4FY70ZGC5HMCTA2S6NWPB,SP3DKY06M57S72MW3SHCM4P7C27BDWMK6JX2ER0HV,SP1QFEGZTJDPQSWMVJZS7AJRNPQBZQ7MM3YN52YDE,SP172QT4PW3T8VAKFMVVVCH3N1ZD963ZZVE65MYX9,SP27V7NR6V9SEE4P8TEFFNDX114YH5YZBDERSQRV1,SP2TBV6TM79GNZTDQ7KPK9AD3GNSAW653JMY4K8GS,SP187XDF2QV131MS7X5HJRFJYJ42JG95654GW75AM,SP3Y74M5227FDVHREWPH773F5Y1W1ED8WXY3RAVG4,SP3KKQ6K9RRT591B3YK3JYXN4W8898RFZBD6FQ7MJ,SP3RN1G9W0TGMNCSZ8VFZ0DTQS6D6DAP41WWXSC0T,SP318FD02C75NB8NHRB6YZ39XKCC3H2TE7A1FXSMQ,SP23VBN6HZCREZ304AQ3DVVK3J18V6NW2RCCM8R8Q,SP1QM67ETXQ467YW656VXBVKSYRSXZA7C5WGGCXWT,SP17Y60MSRRXA9YRVJ4JW3XTAWDMAR9HR7508SZ6R,SP19JKZNRDKQRTK4BVDS5H28HW26VS6XVH6FX8ZR4,SPX5EERG45KC6CSKK8J78SV0P52C7RQWQ6HWW7W6,SP3FS72WFN2WF6NE3WWMPY643TYF6GGM5KERSRTVY,SPX9S42Q9KRBQKGQR0AB0SZ670EBWXR1AP2MXCG6,SP23HRXRD36BFM6J0AMM1WXACD8C4MBXJVJ77ECW4,SP3RBSVXSBYA55NKP77YRSDVAWN2SCDTVF4398F3E,SP3DV53HS65H438QBBMTS3DSEWYPFBQS8NMM8FZ2F,SP3VBVY5Q2KRM577520HZF10E8C7JKGZEP0XV3F7B,SP1J0CSKBKMGZGFWCVBPAW01S2MT2HA30SW7GZY70,SP3PEHM4W1QMGS62NSD7YWBQ62BWR67C24Z8M711D,SP19H4R5A58CSW8MCADYZMGP85FN2RZ0Z9Q7AQ9Y1,SP2ZQTJQ8SWW1VHQ6ZK3SAPC6H9B1AFAKEQ0NJ91B,SPGCNMS8A93RDQZN9NV19WBMQTHS90SCEQXD7B5M,SP3Y3TBT0YS6JSDF2KX9P64KCSAEY7VZ6VBDFV59K,SP2X19JAXS26NHSMV31VZDVWCF5AP3ZP4K3FSQCGD,SP1Z2HYJC3Z7N6GK5JF8BH2GWWHFZDNH5TEQMJNF4,SP16YKHJ67DNPF561WBWAP80MMKRKBVE7N4RG0TK7,SP1CPKW0FAQMEDSJNA12SP6CM1XNM7CRA8X3VRT4R,SPF3X8M7RQN28EADN83JSA0QGP8G7JQWE7534PRC,SP3NW06HK6EEW5XC5ZC283AEZZ86G5KHT4QG3TA2A,SP31F48AF6WRWK3FSNFTJBYQ633GVE06WDXE806D6,SP3FC4X5M655R9153TRB6DNZ3YRKZR93VYG7JDKB3,SPT7KNRQ169GJ4RSEVDHVRCDDKRMGAMH6NP83Z2M,SP1C3VJBJQ3PJPBWBJ9BPPKM993PZ98JD8TZDJ8YH,SP3FG3TNCFN7KWA6F7E4JJP87CV9NB7KTD4S1E79A,SP21J0R8ZY0S24F0Z9ERZQF92J7YJPFT3V4GEGCGG",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "escrow 5M MIA",
+      "actual": "5000000000000",
+      "expected": "5000000000000",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "51st offer at the worst price (not strictly better) -> u15003",
+      "actual": "(err u15003)",
+      "expected": "(err u15003)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "51st offer at a worse price -> u15003",
+      "actual": "(err u15003)",
+      "expected": "(err u15003)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "refused 51st moved no MIA",
+      "actual": "739226258000000",
+      "expected": "739226258000000",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "51st offer 1 uSTX better than the worst evicts it",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "evicted seller refunded exactly 100k MIA",
+      "actual": "100000000000",
+      "expected": "100000000000",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "still 50 offers, worst gone, newcomer last",
+      "actual": "50/false/SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B",
+      "expected": "50/false/SP22WH53NS94VR6N145ZX77BK4S0EWFBE41VW3Z6B",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "escrow still 5M MIA",
+      "actual": "5000000000000",
+      "expected": "5000000000000",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "real STX holder funds the book",
+      "actual": "(ok true)",
+      "expected": "(ok true)",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "cross-book over 50 offers",
+      "actual": "(ok (tuple (acquired u1033333333333) (spent u942949550)))",
+      "expected": "(ok (tuple (acquired u1033333333333) (spent u942949550)))",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "the 10 cheapest paid their full asks",
+      "actual": "true",
+      "expected": "true",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "11th paid the partial",
+      "actual": "34041500",
+      "expected": "34041500",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "12th paid nothing",
+      "actual": "0",
+      "expected": "0",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "supply burned = acquired",
+      "actual": "1033333333333",
+      "expected": "1033333333333",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    },
+    {
+      "phase": "phase 2: full book + eviction",
+      "label": "40 kept, frontier remainder first",
+      "actual": "40/SP7D7YSGEW0TD8WYV2P4FY70ZGC5HMCTA2S6NWPB/66666666667/68083000",
+      "expected": "40/SP7D7YSGEW0TD8WYV2P4FY70ZGC5HMCTA2S6NWPB/66666666667/68083000",
+      "pass": true,
+      "sid": "010ec971fcc5a1b148aba2bfbc3f9d8f"
+    }
+  ],
+  "dropped": [
+    "DIA stale/low/high price reverts (u14014/u14015) and get-price checks: no oracle in the STX book; uSTX asks compare directly with par.",
+    "set-band-enabled, set-coinbase-ustx and the native-price band probe phase: these setters and the miner-commit price do not exist in this book.",
+    "fund-from-treasury and the rewards-treasury sBTC allowlist: the book never touches a treasury; its budget is its own STX balance (ccd016 fuel-fair-book or any transfer).",
+    "above-par offer resting and being skipped at cross: placement now refuses above par (u15008); the cross-time skip is reached through a real par refresh instead.",
+    "base-dao SetContractCode patch + forwarding proxy: replaced by real ccd001-direct-execute signals on deployed test proposals."
+  ],
+  "fixtures": [
+    "Real MIA holders and a real STX holder move real balances on the fork.",
+    "Phase 2: 49 fresh seller addresses funded with 100,000 MIA each from a real holder.",
+    "1,000,000 STX is sent into ccd002-treasury-mia-mining-v3 to raise par, then withdrawn by a test proposal via ccd002 withdraw-stx.",
+    "STX moves through sim-stx-send, a one-line helper the holder calls: (stx-transfer? amount tx-sender to).",
+    "DAO calls: test proposals signalled by three real ccd001-direct-execute approvers, executed by base-dao."
+  ],
+  "sourceHashes": {
+    "contracts/extensions/ccd015-redemption-book-mia-stx.clar": "b3526d4ce89e615108c1b6781bf67b6f8354e3880adb404883a30fbdd36ec65f"
+  },
+  "par1": "204249",
+  "passed": 270,
+  "total": 270
+}

@@ -1,11 +1,14 @@
-// Updated for exact core-v6 / ladder-v1 / market-v6-3 / router-v5-3.
-// Real signed update, unchanged freshness; synthetic burn blocks use one-second intervals.
-import {freshProofAfter} from './_jing-v6-3.mjs';
+// Runs on the LIVE Jing market v6-4 + router v5-5 at their mainnet principals
+// (deployed bytes sha256-checked; nothing Jing is redeployed or aliased). The
+// fork first empties the live book with real taker swaps and owner cancels
+// (_jing-live-v6-4.mjs); the vault and book deploy from the exact repo bytes,
+// sha256 pinned. Real signed Lazer update, fetched keylessly; synthetic burn
+// blocks use one-second intervals. The vault pegs at mid + maker-spread-bps
+// (default u1).
+import {freshProofAfter, forkTip, liveJingSetup, liveJingHashes, exactSources, STX_HOLDER} from './_jing-live-v6-4.mjs';
 // stxer-ccd016-v2-coverage.js
 // SELF-VERIFYING stxer mainnet-fork harness for ccd016-swap-vault-mia-v2
-// Deploy the current Jing core-v6, ladder-v1, market-v6-3 and router-v5-3
-// from JING_SRC under their production names, then the ccd015 book and vault.
-// No dependency aliases or freshness patches.
+// The ccd015 book and the vault deploy on the fork next to the live Jing stack.
 //
 // The DAO gate is simulated as in stxer-ccd015-oracle-coverage.js: base-dao
 // is patched so is-extension is true for the vault (the treasury withdraw)
@@ -13,9 +16,9 @@ import {freshProofAfter} from './_jing-v6-3.mjs';
 // from its real updater key with the Lazer prices, so Pyth and DIA agree.
 //
 // Covers: fund-from-treasury opens the window; jing-place (whole balance) rests
-// a zero-spread peg (order (some u0), floor = mid - leeway, price = mid);
+// a maker-spread u1 peg (order (some u1), floor = mid - leeway, price = mid + 1 bp);
 // window gates (take / router-swap / reclaim refused, refloor DAO-only and
-// working); a taker fills the vault at the mid (exact STX received); fuel-
+// working); a taker fills the vault at mid + 1 bp (exact STX received); fuel-
 // fair-book; window elapse by proposal + block advance; reclaim by anyone;
 // router-swap by anyone at the floor (pools), then again with a bid resting
 // so the router's BOOK leg fills at the mid and the market settles; DAO-only
@@ -33,11 +36,10 @@ import {
 import { SimulationBuilder, getSimulationResult } from "stxer";
 
 const NODE = process.env.STACKS_API_URL || "http://77.42.3.101/stacks-api";
-const JING_SRC = process.env.JING_SRC || `${process.env.HOME}/projects/jing-contracts-v3/contracts`;
 
 const DEPLOYER = "SPV9K21TBFAK4KNRJXF5DFP8N7W46G4V9RCJDC22"; // chavita: the jing deployer, and the vault + book here
 const SBTC_WHALE = "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2";
-const STX_WHALE = "SP9BP4PN74CNR5XT7CMAMBPA0GWC9HMB69HVVV51";
+const STX_WHALE = STX_HOLDER; // SP9BP4PN74CNR5XT7CMAMBPA0GWC9HMB69HVVV51 is empty at the tip
 const STRANGER = "SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM";
 const DIA_UPDATER = "SP1G48FZ4Y7JY8G2Z0N51QTCYGBQ6F4J43J77BQC0";
 const DAO = "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH";
@@ -47,7 +49,7 @@ const SBTC = "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token";
 const WSTX = "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.token-stx-v-1-2";
 const DIA = `${DIA_UPDATER}.dia-oracle`;
 
-const CORE = "jing-core-v6", LADDER = "jing-ladder-v1", MKT = "markets-sbtc-stx-jing-v6-3", ROUTER = "swap-router-sbtc-stx-jing-v5-3";
+const CORE = "jing-core-v6", LADDER = "jing-ladder-v1", MKT = "markets-sbtc-stx-jing-v6-4", ROUTER = "swap-router-sbtc-stx-jing-v5-5";
 const BOOK = "ccd015-redemption-book-mia-stx", VAULT = "ccd016-swap-vault-mia-v2", PROXY = "sim-dao-proxy";
 const CORE_ID = `${DEPLOYER}.${CORE}`, MKT_ID = `${DEPLOYER}.${MKT}`, BOOK_ID = `${DEPLOYER}.${BOOK}`, VAULT_ID = `${DEPLOYER}.${VAULT}`, PROXY_ID = `${DEPLOYER}.${PROXY}`;
 const [sbtcAddr, sbtcName] = SBTC.split("."), [wstxAddr, wstxName] = WSTX.split("."), [trAddr, trName] = REWARDS_TREASURY.split(".");
@@ -55,16 +57,6 @@ const sbtcT = contractPrincipalCV(sbtcAddr, sbtcName), wstxT = contractPrincipal
 const PP = 100_000_000n, PPDF = PP * 100n, BPS = 10_000n, HUGE = 999_999_999_999_999n;
 const FUND = 1_000_000n; // sats into the treasury, then the vault
 const TAKE_STX = 100_000_000n; // the taker's gross STX
-// comment-only lines stripped: the jing v6 market is over the 100,000-byte
-// deploy limit with its comments (the deploy form is stripped too)
-// Canonical v6-3 dependency names are deployed fresh on the fork.
-const ALIASES = {}; // Exact canonical dependency names; no source rebinding.
-const src = f => {
- let original=f; for(const [a,b] of Object.entries(ALIASES)) original=original.replace(b,a);
- let text=fs.readFileSync(original,"utf8").split("\n").filter(l=>!/^\s*;;/.test(l)).join("\n");
- for(const [a,b] of Object.entries(ALIASES)) text=text.replaceAll(a,b);
- return text;
-};
 const sbtcBal = (a) => `(contract-call? '${SBTC} get-balance '${a})`;
 const decodeTx = (s) => { const r = s?.Result?.Transaction; if (!r) return "<no tx>"; if ("Err" in r) return `ENGINE-ERR: ${JSON.stringify(r.Err).slice(0, 200)}`; if (r.Ok?.vm_error) return `VM-ERR: ${r.Ok.vm_error}`; try { return cvToString(deserializeCV(r.Ok.result)); } catch (e) { return `decode-failed: ${e.message}`; } };
 const decodeEval = (s) => { const r = s?.Result?.Eval; if (!r) return "<no eval>"; if (!("Ok" in r)) return `ERR: ${JSON.stringify(r.Err).slice(0, 200)}`; try { return cvToString(deserializeCV(r.Ok)); } catch { return r.Ok; } };
@@ -106,9 +98,9 @@ function check(label, actual, want) {
 }
 
 async function main() {
-  console.log("=== ccd016-swap-vault-mia-v2 on the next Jing stack (core-v5, market v6, router v5), mainnet fork ===");
+  console.log("=== ccd016-swap-vault-mia-v2 on the LIVE Jing market v6-4 + router v5-5, mainnet fork ===");
   // FORK_BLOCK pins a whole rerun set to one height (default: the node tip)
-  const tip = process.env.FORK_BLOCK ? await fetchJson(`/extended/v1/block/by_height/${process.env.FORK_BLOCK}`) : (await fetchJson(`/extended/v1/block?limit=1`)).results[0];
+  const tip = await forkTip(NODE); // FORK_BLOCK pins a rerun set (default: the node tip)
   const lz = await freshProofAfter(Number(tip.block_time) + 12);
   const UPD = bufferCV(Buffer.from(lz.hex, "hex"));
   const MID = (lz.px * PP) / lz.py;
@@ -116,12 +108,8 @@ async function main() {
   console.log(`Lazer mid ${MID} (1 STX ~ ${(10n ** 16n) / MID} sats); DIA impersonated with the same prices; tip ${tip.height}`);
 
   // sources
-  const coreSrc = src(`${JING_SRC}/${CORE}.clar`), ladderSrc = src(`${JING_SRC}/${LADDER}.clar`);
-  let mktSrc = src(`${JING_SRC}/${MKT}.clar`);
-  const routerSrc = src(`${JING_SRC}/${ROUTER}.clar`);
-  const bookSrc = src(`./contracts/extensions/${BOOK}.clar`);
-  const vaultSrc = src(`./contracts/extensions/${VAULT}.clar`);
-  if (!vaultSrc.includes(`.${MKT})`) || !vaultSrc.includes(`.${ROUTER})`)) throw new Error("vault does not bind market v6 / router v5");
+  const {vault: vaultSrc, book: bookSrc} = exactSources(); // exact repo bytes, sha256 pinned
+  const liveHashes = await liveJingHashes(NODE);
   const baseDaoSrc = (await fetchJson(`/extended/v1/contract/${BASE_DAO}`)).source_code;
   const needle = "(default-to false (map-get? Extensions extension))";
   if (!baseDaoSrc.includes(needle)) throw new Error("base-dao is-extension body changed; update the patch");
@@ -132,8 +120,15 @@ async function main() {
   const FLOOR = (MID * (BPS - LEEWAY)) / BPS;
   // market swap: net = floor(amount * BPS / (BPS + 20)) at a fresh print, rebate = amount - net
   const NET = (TAKE_STX * BPS) / (BPS + 20n), REB = TAKE_STX - NET;
-  const XC = (NET * PPDF) / MID; // sats the taker buys at mid (y binding: the vault's 1M sats is far bigger)
-  const STX_TO_VAULT = NET - NET / 1000n + REB; // net - 10 bps fee + the whole rebate rides (single x maker)
+  // The vault pegs at mid + maker-spread-bps (default u1, 0462e6a): the market's
+  // pegged-ask = mid * (BPS + spread) / BPS. Above the mid the batch clears
+  // nothing; the taker's walk fills the vault at its ask (market execute-fill):
+  // x = net * PPDF / ask, y = x * ask / PPDF, fee = y * 10 / BPS,
+  // rebate = min(y * 20 / BPS, the taker's pending rebate).
+  const SPREAD = 1n, ASK = (MID * (BPS + SPREAD)) / BPS;
+  const XC = (NET * PPDF) / ASK; // sats the taker buys at the vault's ask (y binding: the vault's 1M sats is far bigger)
+  const YT = (XC * ASK) / PPDF, RIDE = (YT * 20n) / BPS < REB ? (YT * 20n) / BPS : REB;
+  const STX_TO_VAULT = YT - (YT * 10n) / BPS + RIDE; // traded - 10 bps fee + the rebate on what traded (single x maker)
   if (XC >= FUND) throw new Error("sizing: 100 STX must be worth under 1M sats");
 
   // ---- builder with a plan ----
@@ -147,17 +142,14 @@ async function main() {
   const ok = (v) => String(v).startsWith("(ok");
 
   // ---- S0 the stack ----
-  deploy(CORE, coreSrc); deploy(LADDER, ladderSrc); deploy(MKT, mktSrc); // v6 reads the ladder for the protected seats
-  tx("core-v5 verifies market v6", DEPLOYER, CORE_ID, "set-verified-contract", [contractPrincipalCV(DEPLOYER, MKT)], "(ok true)");
-  tx("market v6 initialize", DEPLOYER, MKT_ID, "initialize", [contractPrincipalCV(DEPLOYER, MKT), sbtcT, wstxT, uintCV(1000), uintCV(1_000_000), uintCV(1), uintCV(45)], "(ok true)");
+  const liveSetup = await liveJingSetup({ node: NODE, tip, updHex: lz.hex, mid: MID, tx, ev }); // the LIVE market v6-4 + router v5-5, book cleared by real actions; nothing redeployed
   tx("sync current ladder seat reservation", DEPLOYER, MKT_ID, "sync-seat-count", [], "(ok u10)");
-  deploy(ROUTER, routerSrc);
   deploy(BOOK, bookSrc);
   deploy(VAULT, vaultSrc);
   deploy(PROXY, PROXY_SRC);
   patch(BASE_DAO, baseDaoPatched, "patch base-dao: is-extension true for the vault + proxy", ClarityVersion.Clarity1);
   tx("DIA: push the Lazer prices, fresh", DIA_UPDATER, DIA, "set-multiple-values", [diaPush(lz.py, lz.px, FRESH_MS)], "(ok true)");
-  ev("S0 config binds market v6 + router v5", VAULT_ID, "(get-config)", (v) => v.includes(MKT_ID) && v.includes(`${DEPLOYER}.${ROUTER}`) && v.includes(BOOK_ID));
+  ev("S0 config binds live market v6-4 + router v5-5", VAULT_ID, "(get-config)", (v) => v.includes(MKT_ID) && v.includes(`${DEPLOYER}.${ROUTER}`) && v.includes(BOOK_ID));
   ev("S0 empty", VAULT_ID, "(is-empty)", "true");
   // trace coverage: a read-only called from a transaction leaves a stxer trace, an eval does not
   tx("S0 probe (traced): no clock -> batch-start none, window-ends none", DEPLOYER, PROXY_ID, "probe", [], (v) => ok(v) && v.includes("(batch-start none)") && v.includes("(window-ends none)"));
@@ -177,8 +169,8 @@ async function main() {
   // ---- S2 the community places, in chunks ----
   tx("S2 stranger jing-place: the whole 1M", STRANGER, VAULT_ID, "jing-place", [UPD], (v) => ok(v) && v.includes(`(amount u${FUND})`) && v.includes(`(floor u${FLOOR})`));
   tx("S2 jing-place again with 0 home -> u16006", STRANGER, VAULT_ID, "jing-place", [UPD], "(err u16006)");
-  ev("S2 market order: zero-spread peg, floor = mid - 5%", MKT_ID, `(get-token-x-order '${VAULT_ID})`, (v) => field(v, "spread-bps") === "(some u0)" && field(v, "limit") === `u${FLOOR}`);
-  ev("S2 the vault's price is the mid", MKT_ID, `(token-x-limit-at '${VAULT_ID} u${MID})`, `u${MID}`);
+  ev("S2 market order: peg at maker-spread u1, floor = mid - 5%", MKT_ID, `(get-token-x-order '${VAULT_ID})`, (v) => field(v, "spread-bps") === `(some u${SPREAD})` && field(v, "limit") === `u${FLOOR}`);
+  ev("S2 the vault's price is mid + 1 bp", MKT_ID, `(token-x-limit-at '${VAULT_ID} u${MID})`, `u${ASK}`);
   ev("S2 status: 1M resting, 0 home", VAULT_ID, "(get-status)", (v) => field(v, "jing-resting") === `u${FUND}` && field(v, "sbtc-balance") === "u0");
 
   // ---- S3 gates while the window is open ----
@@ -188,7 +180,7 @@ async function main() {
   tx("S3 stranger jing-reclaim while open -> u16031", STRANGER, VAULT_ID, "jing-reclaim", [], "(err u16031)");
   tx("S3 stranger jing-refloor -> u16000 (DAO only)", STRANGER, VAULT_ID, "jing-refloor", [UPD], "(err u16000)");
   tx("S3 proxy jing-refloor -> ok (floor re-read from the mid)", DEPLOYER, PROXY_ID, "refloor", [UPD], (v) => ok(v) && v.includes(`(floor u${FLOOR})`));
-  ev("S3 order still a zero-spread peg", MKT_ID, `(get-token-x-order '${VAULT_ID})`, (v) => field(v, "spread-bps") === "(some u0)");
+  ev("S3 order still the u1 peg", MKT_ID, `(get-token-x-order '${VAULT_ID})`, (v) => field(v, "spread-bps") === `(some u${SPREAD})`);
   tx("S3 stranger set-window-blocks -> u16000", STRANGER, VAULT_ID, "set-window-blocks", [uintCV(1)], "(err u16000)");
   tx("S3 proxy set-window-blocks 2000 -> u16033 (cap 1008)", DEPLOYER, PROXY_ID, "set-window", [uintCV(2000)], "(err u16033)");
   tx("S3 proxy set-leeway-bps 1001 -> u16033 (cap 1000)", DEPLOYER, PROXY_ID, "set-leeway", [uintCV(1001)], "(err u16033)");
@@ -203,10 +195,10 @@ async function main() {
   tx("S3 stranger set-leeway-bps -> u16000", STRANGER, VAULT_ID, "set-leeway-bps", [uintCV(500)], "(err u16000)");
 
   // ---- S4 a taker buys the vault's sBTC at the mid ----
-  tx(`S4 STX whale sells ${TAKE_STX / 1_000_000n} STX (taker): the vault fills at the mid`, STX_WHALE, MKT_ID, "swap", [uintCV(TAKE_STX), uintCV(HUGE), UPD, sbtcT, stringAsciiCV("sbtc-token"), wstxT, stringAsciiCV("wstx"), falseCV()], ok);
-  ev("S4 settlement at the mid", MKT_ID, "(get price (unwrap-panic (get-settlement u0)))", `u${MID}`);
+  tx(`S4 STX whale sells ${TAKE_STX / 1_000_000n} STX (taker): the vault fills at mid + 1 bp`, STX_WHALE, MKT_ID, "swap", [uintCV(TAKE_STX), uintCV(HUGE), UPD, sbtcT, stringAsciiCV("sbtc-token"), wstxT, stringAsciiCV("wstx"), falseCV()], ok);
+  ev("S4 the swap's settlement is priced at the mid", MKT_ID, "(get price (unwrap-panic (get-settlement (- (get-current-cycle) u1))))", `u${MID}`);
   ev(`S4 vault: ${FUND - XC} sats still resting, ${STX_TO_VAULT} uSTX home`, VAULT_ID, "(get-status)", (v) => field(v, "jing-resting") === `u${FUND - XC}` && field(v, "stx-balance") === `u${STX_TO_VAULT}`);
-  ev("S4 the peg rolled into cycle u1 with its rule", MKT_ID, `(get-token-x-order '${VAULT_ID})`, (v) => field(v, "spread-bps") === "(some u0)");
+  ev("S4 the peg rolled into cycle u1 with its rule", MKT_ID, `(get-token-x-order '${VAULT_ID})`, (v) => field(v, "spread-bps") === `(some u${SPREAD})`);
 
   // ---- S5 STX only ever goes to the book ----
   ev("S5 book STX before", BOOK_ID, `(stx-get-balance '${BOOK_ID})`, () => true);
@@ -328,7 +320,7 @@ async function main() {
   console.log(`\n${checks - failures}/${checks} checks green`);
   const RESULTS_DIR = process.env.SIM_RESULTS_DIR || "simulations/results/ccd016-v2";
   fs.mkdirSync(RESULTS_DIR,{recursive:true});
-  fs.writeFileSync(`${RESULTS_DIR}/coverage.json`, JSON.stringify({simulationId:sid, checks, failures, simulationRewrites:{dependencyAliases:ALIASES,commentsStripped:true,marketStalenessWidened:false}, sourceHash:createHash("sha256").update(fs.readFileSync("contracts/extensions/ccd016-swap-vault-mia-v2.clar")).digest("hex"), plan:plan.map(({want,...p})=>p), result:res},null,2)+"\n");
+  fs.writeFileSync(`${RESULTS_DIR}/coverage.json`, JSON.stringify({simulationId:sid, checks, failures, simulationRewrites:{liveJing:{market:MKT_ID,router:`${DEPLOYER}.${ROUTER}`,forkBlock:tip.height,deployedSha256:liveHashes,...liveSetup},dependencyAliases:{},commentsStripped:false,marketStalenessWidened:false}, sourceHash:createHash("sha256").update(fs.readFileSync("contracts/extensions/ccd016-swap-vault-mia-v2.clar")).digest("hex"), plan:plan.map(({want,...p})=>p), result:res},null,2)+"\n");
   if (failures > 0) process.exit(1);
 }
 main().catch((e) => { console.error(e); process.exit(1); });

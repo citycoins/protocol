@@ -9,17 +9,23 @@ const DEP='SPV9K21TBFAK4KNRJXF5DFP8N7W46G4V9RCJDC22';
 const POOL=DEP+'.sim-emergency-dao-proxy', VAULT=DEP+'.ccd016-swap-vault-mia-v2';
 const SBTC='SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token';
 const DIA='SP1G48FZ4Y7JY8G2Z0N51QTCYGBQ6F4J43J77BQC0.dia-oracle';
-const WHALE='SM2RRFN4HXTS7EYP8MHHYKSTG118S3HKGDV8AB8M1';
+const WHALE='SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2'; // real sBTC holder at the tip (SM2RRFN4HXTS7EYP8MHHYKSTG118S3HKGDV8AB8M1 no longer holds 100k sats)
 const NODE=process.env.STACKS_API_URL||'http://77.42.3.101/stacks-api',API=process.env.STXER_API_URL||'https://api.stxer.xyz';
 const nativeMode=process.argv.includes('--native');
 (async()=>{
-if(process.argv.includes('--recovery')) return (await import('./_vault-recovery-v6-3.mjs')).runRecoveryMatrix('citycoins');
+if(process.argv.includes('--recovery')) return (await import('./_vault-recovery-v6-4.mjs')).runRecoveryMatrix('citycoins');
 const tipResp=await fetch(NODE+'/extended/v1/block?limit=1',{signal:AbortSignal.timeout(20000)});
 if(!tipResp.ok)throw Error('tip '+tipResp.status);
 const tip=process.env.FORK_BLOCK?await (await fetch(NODE+'/extended/v1/block/by_height/'+process.env.FORK_BLOCK,{signal:AbortSignal.timeout(20000)})).json():(await tipResp.json()).results[0]; // FORK_BLOCK pins a rerun set to one height
 const b=SimulationBuilder.new({stacksNodeAPI:NODE,apiEndpoint:API,skipTracing:false}).useBlockHeight(tip.height).withSender(DEP);
 const plan=[],sourceHashes={};
-(await import('./_jing-v6-3.mjs')).appendJingStack(b,plan,sourceHashes);
+// The LIVE Jing market v6-4 and router v5-5 at their mainnet principals (deployed bytes
+// checked); nothing Jing is redeployed. The emergency path allocates 0 to the book.
+const live=await import('./_jing-live-v6-4.mjs');
+Object.assign(sourceHashes,await live.liveJingHashes(NODE));
+live.exactSources(); // vault + book sha256 pinned (ac0c305f / b3526d4c)
+b.addEvalCode(live.MKT_ID,'{i: (var-get initialized), p: (var-get paused)}');plan.push({label:'LIVE market v6-4 initialized, unpaused',kind:'eval'});
+b.addEvalCode(live.ROUTER_ID,'JING_MARKET');plan.push({label:'LIVE router v5-5 targets market v6-4',kind:'eval'});
 const ev=(label,id,code)=>{b.addEvalCode(id,code);plan.push({label,kind:'eval'});};
 const call=(label,id,fn,args,sender=DEP)=>{b.addContractCall({contract_id:id,function_name:fn,function_args:args,sender});plan.push({label,kind:'tx'});};
 const DAO='SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH';
@@ -103,6 +109,8 @@ else if(p.kind==='patch')value=r?.SetContractCode?.Ok!==undefined?'patch-ok':JSO
 else value=r?.Transaction?.Ok&&!r.Transaction.Ok.vm_error?cvToString(deserializeCV(r.Transaction.Ok.result)):JSON.stringify(r);
 console.log(p.label+': '+value);return {...p,value};});
 const expectedErrors={
+ 'LIVE market v6-4 initialized, unpaused':'(tuple (i true) (p false))',
+ 'LIVE router v5-5 targets market v6-4':DEP+'.markets-sbtc-stx-jing-v6-4',
  'tolerance above 50 percent rejected':'(err u16033)',
  'outsider cannot invoke emergency vault directly':'(err u16000)',
  'window above one week rejected':'(err u16033)',
@@ -127,7 +135,7 @@ for(const check of checks){
 for(let i=0;i<checks.length;i++)if(checks[i].label.startsWith('real ')&&checks[i].label.includes('swap')){
  const receipt=result.steps[i]?.Result?.Transaction?.Ok;
  const events=(receipt?.events||[]).map(e=>typeof e==='string'?JSON.parse(e):e);
- const event=events.find(e=>e.committed&&e.contract_event?.contract_identifier===DEP+'.swap-router-sbtc-stx-jing-v5-3');
+ const event=events.find(e=>e.committed&&e.contract_event?.contract_identifier===DEP+'.swap-router-sbtc-stx-jing-v5-5');
  const routing=event?deserializeCV(event.contract_event.raw_value).value:null;
  checks.push({label:'router reports Jing skipped and no unsold sats',kind:'event',value:routing?cvToString(deserializeCV(event.contract_event.raw_value)):'missing print',
  passed:routing?.['jing-ok']?.type==='false'&&routing?.['jing-in']?.value===0n&&routing?.['jing-out']?.value===0n&&routing?.unsold?.value===0n});

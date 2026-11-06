@@ -1,6 +1,11 @@
-// Updated for exact core-v6 / ladder-v1 / market-v6-3 / router-v5-3.
-// Real signed update, unchanged freshness; synthetic burn blocks use one-second intervals.
-import {freshProofAfter} from './_jing-v6-3.mjs';
+// Runs on the LIVE Jing market v6-4 + router v5-5 at their mainnet principals
+// (deployed bytes sha256-checked; nothing Jing is redeployed or aliased). The
+// fork first empties the live book with real taker swaps and owner cancels
+// (_jing-live-v6-4.mjs); the vault and book deploy from the exact repo bytes,
+// sha256 pinned. Real signed Lazer update, fetched keylessly; synthetic burn
+// blocks use one-second intervals. The vault pegs at mid + maker-spread-bps
+// (default u1).
+import {freshProofAfter, forkTip, liveJingSetup, liveJingHashes, exactSources, STX_HOLDER} from './_jing-live-v6-4.mjs';
 // stxer-ccd016-v2-clock-keyless.js
 // SELF-VERIFYING stxer mainnet-fork harness for the CLOCK of
 // ccd016-swap-vault-mia-v2 (bounty mu0oy1vzf432efb13c31, Patient Reed /
@@ -23,6 +28,7 @@ import {freshProofAfter} from './_jing-v6-3.mjs';
 //
 // Run: node simulations/stxer-ccd016-v2-clock-keyless.js
 import fs from "node:fs";
+import {execFileSync} from "node:child_process";
 import {createHash} from "node:crypto";
 import {
   ClarityVersion, uintCV, noneCV, stringAsciiCV, bufferCV, trueCV,
@@ -30,7 +36,6 @@ import {
 } from "@stacks/transactions";
 import { SimulationBuilder, getSimulationResult } from "stxer";
 const NODE = process.env.STACKS_API_URL || "http://77.42.3.101/stacks-api";
-const JING_SRC = process.env.JING_SRC || `${process.env.HOME}/projects/jing-contracts-v3/contracts`;
 const DEPLOYER = "SPV9K21TBFAK4KNRJXF5DFP8N7W46G4V9RCJDC22"; // chavita: the jing deployer, the rungs, and the vault + book here
 const SBTC_WHALE = "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2";
 const STRANGER = "SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM";
@@ -39,7 +44,7 @@ const BASE_DAO = `${DAO}.base-dao`;
 const REWARDS_TREASURY = `${DAO}.ccd002-treasury-mia-rewards-v3`;
 const SBTC = "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token";
 const WSTX = "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.token-stx-v-1-2";
-const CORE = "jing-core-v6", LADDER = "jing-ladder-v1", MKT = "markets-sbtc-stx-jing-v6-3", ROUTER = "swap-router-sbtc-stx-jing-v5-3";
+const CORE = "jing-core-v6", LADDER = "jing-ladder-v1", MKT = "markets-sbtc-stx-jing-v6-4", ROUTER = "swap-router-sbtc-stx-jing-v5-5";
 const RUNG_SRC_FILE = "jing-buy-stx-core-spread";
 const SPREADS = [0, 10, 20, 30];
 const RUNG = (bps) => `jing-buy-stx-spread-${bps}`;
@@ -52,16 +57,6 @@ const sbtcT = contractPrincipalCV(sbtcAddr, sbtcName), wstxT = contractPrincipal
 const FUND = 1_000_000n; // sats into the treasury, then the vault
 const Q = FUND / 4n;
 const NO_UPDATE = bufferCV(Buffer.from("00", "hex"));
-// comment-only lines stripped: the jing v6 market is over the 100,000-byte
-// deploy limit with its comments (the deploy form is stripped too)
-// Canonical v6-3 dependency names are deployed fresh on the fork.
-const ALIASES = {}; // Exact canonical dependency names; no source rebinding.
-const src = f => {
- let original=f; for(const [a,b] of Object.entries(ALIASES)) original=original.replace(b,a);
- let text=fs.readFileSync(original,"utf8").split("\n").filter(l=>!/^\s*;;/.test(l)).join("\n");
- for(const [a,b] of Object.entries(ALIASES)) text=text.replaceAll(a,b);
- return text;
-};
 const sbtcBal = (a) => `(contract-call? '${SBTC} get-balance '${a})`;
 const decodeTx = (s) => { const r = s?.Result?.Transaction; if (!r) return "<no tx>"; if ("Err" in r) return `ENGINE-ERR: ${JSON.stringify(r.Err).slice(0, 200)}`; if (r.Ok?.vm_error) return `VM-ERR: ${r.Ok.vm_error}`; try { return cvToString(deserializeCV(r.Ok.result)); } catch (e) { return `decode-failed: ${e.message}`; } };
 const decodeEval = (s) => { const r = s?.Result?.Eval; if (!r) return "<no eval>"; if (!("Ok" in r)) return `ERR: ${JSON.stringify(r.Err).slice(0, 200)}`; try { return cvToString(deserializeCV(r.Ok)); } catch { return r.Ok; } };
@@ -102,20 +97,23 @@ function check(label, actual, want) {
 async function main() {
   console.log("=== ccd016-swap-vault-mia-v2 CLOCK on the next Jing stack, mainnet fork, keyless ===");
   // FORK_BLOCK pins a whole rerun set to one height (default: the node tip)
-  const tip = process.env.FORK_BLOCK ? await fetchJson(`/extended/v1/block/by_height/${process.env.FORK_BLOCK}`) : (await fetchJson(`/extended/v1/block?limit=1`)).results[0];
+  const tip = await forkTip(NODE); // FORK_BLOCK pins a rerun set (default: the node tip)
   console.log(`tip ${tip.height}`);
   // S8 only: one public Lazer update (no PYTH_API_KEY) so router-swap gets past
   // current-mid and reaches the window gate
   const lz = await freshProofAfter(Number(tip.block_time) + 12);
   const UPD = bufferCV(Buffer.from(lz.hex, "hex"));
+  const MID = (lz.px * 100_000_000n) / lz.py; // sizes the live-book clear only
 
   // sources
-  const coreSrc = src(`${JING_SRC}/${CORE}.clar`), ladderSrc = src(`${JING_SRC}/${LADDER}.clar`);
-  const mktSrc = src(`${JING_SRC}/${MKT}.clar`), routerSrc = src(`${JING_SRC}/${ROUTER}.clar`);
-  const bookSrc = src(`./contracts/extensions/${BOOK}.clar`);
-  const vaultSrc = src(`./contracts/extensions/${VAULT}.clar`);
+  const {vault: vaultSrc, book: bookSrc} = exactSources(); // exact repo bytes, sha256 pinned
+  const liveHashes = await liveJingHashes(NODE);
   const PROP = "ccip027-ccd016-dia-band-off", PROP_ID = `${DEPLOYER}.${PROP}`, RESTORE = "ccip-ccd016-dia-band-restore", RESTORE_ID = `${DEPLOYER}.${RESTORE}`;
-  const propSrc = src(`./contracts/proposals/${PROP}.clar`);
+  // The DIA escape-hatch proposal is not on this branch; read it from the
+  // ccd015 branch that introduced it (628f949), exact bytes. PROP_REF overrides.
+  const PROP_REF = process.env.PROP_REF || "origin/feat/ccd015-redemption-book";
+  const propSrc = fs.existsSync(`./contracts/proposals/${PROP}.clar`) ? fs.readFileSync(`./contracts/proposals/${PROP}.clar`, "utf8")
+    : execFileSync("git", ["show", `${PROP_REF}:contracts/proposals/${PROP}.clar`], { encoding: "utf8" });
   if (!propSrc.includes(".ccd016-swap-vault-mia-v2 set-dia-band-bps u0")) throw new Error("proposal does not set the band to 0");
   const baseDaoSrc = (await fetchJson(`/extended/v1/contract/${BASE_DAO}`)).source_code;
   const needle = "(default-to false (map-get? Extensions extension))";
@@ -136,11 +134,8 @@ async function main() {
   const resting = (v) => bare(field(v, "jing-resting"));
 
   // ---- S0 the stack ----
-  deploy(CORE, coreSrc); deploy(LADDER, ladderSrc); deploy(MKT, mktSrc);
-  tx("core-v5 verifies market v6", DEPLOYER, CORE_ID, "set-verified-contract", [contractPrincipalCV(DEPLOYER, MKT)], "(ok true)");
-  tx("market v6 initialize", DEPLOYER, MKT_ID, "initialize", [contractPrincipalCV(DEPLOYER, MKT), sbtcT, wstxT, uintCV(1000), uintCV(1_000_000), uintCV(1), uintCV(45)], "(ok true)");
+  const liveSetup = await liveJingSetup({ node: NODE, tip, updHex: lz.hex, mid: MID, tx, ev }); // the LIVE market v6-4 + router v5-5, book cleared by real actions; nothing redeployed
   tx("sync current ladder seat reservation", DEPLOYER, MKT_ID, "sync-seat-count", [], "(ok u10)");
-  deploy(ROUTER, routerSrc);
   deploy(BOOK, bookSrc);
   deploy(VAULT, vaultSrc);
   deploy(PROXY, PROXY_SRC);
@@ -281,7 +276,7 @@ async function main() {
   check(`S4 the treasury received exactly ${FUND + 101n} sats`, bare(trAfter.raw) - bare(trBefore.raw), (d) => d === FUND + 101n);
   console.log(`\n${checks - failures}/${checks} checks green`);
   fs.mkdirSync("simulations/results/ccd016-v2",{recursive:true});
-  fs.writeFileSync("simulations/results/ccd016-v2/clock-keyless.json", JSON.stringify({simulationId:sid, checks, failures, simulationRewrites:{dependencyAliases:ALIASES,commentsStripped:true,marketStalenessWidened:false}, sourceHash:createHash("sha256").update(fs.readFileSync("contracts/extensions/ccd016-swap-vault-mia-v2.clar")).digest("hex"), plan:plan.map(({want,...p})=>p), result:res},null,2)+"\n");
+  fs.writeFileSync("simulations/results/ccd016-v2/clock-keyless.json", JSON.stringify({simulationId:sid, checks, failures, proposalSource:{file:PROP, ref:PROP_REF, sha256:createHash("sha256").update(propSrc).digest("hex")}, simulationRewrites:{liveJing:{market:MKT_ID,router:`${DEPLOYER}.${ROUTER}`,forkBlock:tip.height,deployedSha256:liveHashes,...liveSetup},dependencyAliases:{},commentsStripped:false,marketStalenessWidened:false}, sourceHash:createHash("sha256").update(fs.readFileSync("contracts/extensions/ccd016-swap-vault-mia-v2.clar")).digest("hex"), plan:plan.map(({want,...p})=>p), result:res},null,2)+"\n");
   if (failures > 0) process.exit(1);
 }
 main().catch((e) => { console.error(e); process.exit(1); });
