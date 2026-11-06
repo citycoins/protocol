@@ -75,3 +75,10 @@
     })
   )
 )
+
+;; Read-only decoder used by v6-4's age-aware router capacity quote.
+(define-read-only (decode-lazer-payload (payload (buff 8192)))
+ (let ((ts (* stacks-block-time u1000000)))
+  (asserts! true (err u0))
+  (ok {timestamp: ts, channel: u0, price-feeds:
+   (list (feed u1 (to-int (var-get mid)) ts) (feed u45 100000000 ts))})))

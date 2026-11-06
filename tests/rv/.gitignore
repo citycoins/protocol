@@ -1,0 +1,3 @@
+.build-book/
+__pycache__/
+results/*.log

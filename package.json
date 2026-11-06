@@ -16,7 +16,8 @@
     "rv:vault": "rv tests/vault/.build-rv ccd016-swap-vault-mia-v2 invariant --runs=1000",
     "rv:final:build": "python3 tests/rv/ccd016-final/build.py",
     "rv:final:invariant": "bash tests/rv/ccd016-final/run.sh invariant",
-    "rv:final:test": "bash tests/rv/ccd016-final/run.sh test"
+    "rv:final:test": "bash tests/rv/ccd016-final/run.sh test",
+    "rv:ccd015": "bash tests/rv/run-book.sh"
   },
   "author": "",
   "license": "ISC",

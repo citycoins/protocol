@@ -2,16 +2,15 @@
 """Compile current vault/book against self-contained test dependencies; production untouched."""
 from pathlib import Path
 import sys,shutil,json,hashlib
+from jing_sources import checked_sources, market_fixture
 here=Path(__file__).resolve().parent;root=here.parents[1];rv='--rv' in sys.argv
 out=Path(sys.argv[sys.argv.index('--output')+1]).resolve() if '--output' in sys.argv else here/('.build-rv' if rv else '.build')
 (out/'contracts').mkdir(parents=True,exist_ok=True);(out/'settings').mkdir(exist_ok=True)
 EXPECTED_BOOK_SHA256='b3526d4ce89e615108c1b6781bf67b6f8354e3880adb404883a30fbdd36ec65f'
 replacements={
-# the -v6-4 / -v5-5 ids first: the bare -v6 / -v5 prefixes below would otherwise leave a stray suffix
+# Exact final dependency IDs; no prefix aliases for obsolete Jing contracts.
 "'SPV9K21TBFAK4KNRJXF5DFP8N7W46G4V9RCJDC22.markets-sbtc-stx-jing-v6-4":'.v6-market',
 "'SPV9K21TBFAK4KNRJXF5DFP8N7W46G4V9RCJDC22.swap-router-sbtc-stx-jing-v5-5":'.mock-router',
-"'SPV9K21TBFAK4KNRJXF5DFP8N7W46G4V9RCJDC22.markets-sbtc-stx-jing-v6":'.v6-market',
-"'SPV9K21TBFAK4KNRJXF5DFP8N7W46G4V9RCJDC22.swap-router-sbtc-stx-jing-v5":'.mock-router',
 "'SPV9K21TBFAK4KNRJXF5DFP8N7W46G4V9RCJDC22.rfq-sbtc-stx-jing-v2-3":'.mock-native',
 "'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token":'.mock-ft',
 "'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.token-stx-v-1-2":'.mock-ft',
@@ -24,7 +23,7 @@ replacements={
 "'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-mining-v3":"'ST3NBRSFKX28FQ2ZJ1MAKX58HKHSDGNV5N7R21XCP",
 "'SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X.ccd014-pox5-staking-mia":"'STNHKEPYEPJ8ET55ZZ0M5A34J0R3N5FM2CMMMAZ6",
 '"sbtc-token"':'"mock-ft"'}
-files={p.stem:p.read_text() for p in (here/'fixtures').glob('*.clar')};hashes={}
+files={p.stem:p.read_text() for p in (here/'fixtures').glob('*.clar')};upstream,hashes=checked_sources()
 files['mock-book-extension']=''';; Test-only extension that forwards admin calls through contract-caller.
 (define-public (set-paused (paused bool))
   (contract-call? .ccd015-redemption-book-mia-stx set-paused paused)
@@ -48,32 +47,11 @@ for n in ['ccd016-swap-vault-mia-v2','ccd015-redemption-book-mia-stx']:
  s=(root/f'contracts/extensions/{n}.clar').read_text();hashes[n]=hashlib.sha256(s.encode()).hexdigest();files[n]=s
 if hashes['ccd015-redemption-book-mia-stx'] != EXPECTED_BOOK_SHA256:
  raise SystemExit(f"Unexpected ccd015-redemption-book-mia-stx source bytes: {hashes['ccd015-redemption-book-mia-stx']}; expected {EXPECTED_BOOK_SHA256}")
+assert hashes['ccd016-swap-vault-mia-v2'] == 'ac0c305f8bfcfd9f210fb37cba6e1f4d61a26ad40ed7ca4792beca948778502e'
 for n,s in files.items():
  for a,b in replacements.items():s=s.replace(a,b)
  if n=='v6-market':
-  # ccd016 v2 uses the v6-4 pending-escrow getter from read-only paths.
-  # Keep this local fixture compatible without changing the checked-in .clar fixture.
-  if '(define-read-only (get-token-x-pending-deposit' not in s:
-   s+='\n(define-map token-x-pending-deposits principal {amount: uint, limit: uint, spread-bps: (optional uint), submitted-at: uint})\n(define-read-only (get-token-x-pending-deposit (depositor principal)) (map-get? token-x-pending-deposits depositor))\n'
-  # The checked-in market fixture models the prior update-bearing entrypoints.
-  # ccd016 calls the deployed v6-4 signatures, which omit that update argument.
-  for fn,sig,args in [('deposit-token-x','(amount uint) (limit-price uint) (spread-bps (optional uint)) (t <ft-trait>) (asset-name (string-ascii 128))','amount limit-price spread-bps 0x t asset-name'),
-                      ('set-token-x-limit','(limit-price uint) (spread-bps (optional uint))','limit-price spread-bps 0x')]:
-   assert s.count(f'(define-public ({fn}\n')==1,fn
-   s=s.replace(f'(define-public ({fn}\n',f'(define-public ({fn}-fixture-v6\n')
-   assert s.count(f'  ({fn} ')==1,fn
-   s=s.replace(f'  ({fn} ',f'  ({fn}-fixture-v6 ')
-   s+=f'(define-public ({fn} {sig}) ({fn}-fixture-v6 {args}))\n'
-  s+='\n(define-public (test-park (who principal)) (park-token-x (var-get current-cycle) (contract-call? .mock-lazer-oracle get-mid) who (get-token-x-depositors (var-get current-cycle))))\n'
-  start=s.index('(define-public (refresh-mid');depth=0
-  for i in range(start,len(s)):
-   if s[i]=='(':depth+=1
-   elif s[i]==')':
-    depth-=1
-    if depth==0:end=i+1;break
-  original=s[start:end];first=original.index('\n')+1;body=original[first:].rsplit(')',1)[0]
-  s=s[:start]+original[:first]+' (if (var-get test-zero-mid) (ok u0) '+body+'))'+s[end:]
-  s='(define-data-var test-zero-mid bool false)\n(define-public (test-zero-price (b bool)) (ok (var-set test-zero-mid b)))\n'+s
+  s=market_fixture(s, fault_controls=True)
  if rv and n=='ccd016-swap-vault-mia-v2':
   start=s.index('(define-public (is-dao-or-extension)');depth=0
   for i in range(start,len(s)):

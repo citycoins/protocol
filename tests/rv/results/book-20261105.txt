@@ -1,0 +1,69 @@
+{
+  "status": "passed",
+  "attemptedRuns": 1000,
+  "passedChecks": 1000,
+  "discardedRuns": 0,
+  "runtimeErrors": 0,
+  "sourceHashes": {
+    "ccd015-redemption-book-mia-stx": "b3526d4ce89e615108c1b6781bf67b6f8354e3880adb404883a30fbdd36ec65f"
+  },
+  "log": "/home/raphastacks/projects/citycoins-protocol-ccip028-pr/tests/rv/results/book-20261105.log"
+}
+EXECUTION STATISTICS
+
+│ PUBLIC FUNCTION CALLS
+│
+├─ + SUCCESSFUL
+│    ├─ callback: x535
+│    ├─ cancel-offer: x60
+│    ├─ change-offer: x36
+│    ├─ cross-book: x142
+│    ├─ is-dao-or-extension: x51
+│    ├─ place-offer: x174
+│    ├─ rv-fund: x542
+│    ├─ rv-place: x175
+│    ├─ rv-reset-min: x502
+│    ├─ set-min-deposit: x66
+│    ├─ set-paused: x60
+│    └─ update-par: x67
+│
+├─ - IGNORED
+│    ├─ callback: x0
+│    ├─ cancel-offer: x479
+│    ├─ change-offer: x473
+│    ├─ cross-book: x353
+│    ├─ is-dao-or-extension: x421
+│    ├─ place-offer: x354
+│    ├─ rv-fund: x3
+│    ├─ rv-place: x344
+│    ├─ rv-reset-min: x0
+│    ├─ set-min-deposit: x468
+│    ├─ set-paused: x459
+│    └─ update-par: x423
+│
+│ INVARIANT CHECKS
+│
+├─ + PASSED
+│    ├─ invariant-book-bounded: x155
+│    ├─ invariant-book-sorted: x142
+│    ├─ invariant-burned-matches-token: x137
+│    ├─ invariant-entries-in-range: x157
+│    ├─ invariant-mia-conserved: x132
+│    ├─ invariant-one-offer-per-owner: x125
+│    └─ invariant-stx-conserved: x152
+│
+└─ - FAILED
+     ├─ invariant-book-bounded: x0
+     ├─ invariant-book-sorted: x0
+     ├─ invariant-burned-matches-token: x0
+     ├─ invariant-entries-in-range: x0
+     ├─ invariant-mia-conserved: x0
+     ├─ invariant-one-offer-per-owner: x0
+     └─ invariant-stx-conserved: x0
+
+LEGEND:
+
+  SUCCESSFUL calls executed and advanced the test
+  IGNORED    calls failed but did not affect the test
+  PASSED     invariants maintained system integrity
+  FAILED     invariants indicate contract vulnerabilities

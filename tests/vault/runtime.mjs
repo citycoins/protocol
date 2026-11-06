@@ -103,7 +103,8 @@ fund(10000);ok(vault('jing-place',[update]));ok(call('v6-market','set-min-token-
 eq(read(V,'is-empty').type,'true');ok(vault('close-batch'));drain();
 // Owner take from a resting maker bid, with zero patience.
 ok(gov('set-window-blocks',[u(0)]));fund(1000);const takeAmount=ft(p(V));
-ok(call('v6-market','deposit-token-y',[u(500000000),u(32000000000000),Cl.none(),update,cp('mock-ft'),Cl.stringAscii('mock-ft')],bob));
+ok(call('v6-market','deposit-token-y',[u(500000000),u(32000000000000),Cl.none(),cp('mock-ft'),Cl.stringAscii('mock-ft')],bob));
+if(read('v6-market','get-token-y-pending-deposit',[Cl.principal(bob)]).type==='some')ok(call('v6-market','settle-token-y-deposit',[Cl.principal(bob),update,cp('mock-ft'),Cl.stringAscii('mock-ft')],admin));
 ok(gov('jing-take',[u(takeAmount),update]));eq(ft(p(V)),0n);eq(clock()['batch-start'].type,'none');drain();
 // Funding an empty vault with a clock reopens it; exact patience boundary is inclusive.
 ok(gov('set-window-blocks',[u(2)]));fund(1000);sim.mineEmptyBurnBlocks(2);eq(clock()['window-elapsed'].type,'true');drain();
@@ -119,7 +120,8 @@ eq(clock()['batch-start'].value.value,dustBatchStart);eq(clock()['window-elapsed
 ok(gov('dao-reclaim',[Cl.none()]));ok(gov('dao-recall-sbtc'));eq(clock()['batch-start'].type,'none');
 // When the vault is above max-chunk, jing-take honors the requested slice.
 ok(gov('set-max-chunk-sats',[u(1000000)]));ok(gov('set-window-blocks',[u(0)]));flushTreasury();fund(1000001);
-ok(call('v6-market','deposit-token-y',[u(500000000),u(32000000000000),Cl.none(),update,cp('mock-ft'),Cl.stringAscii('mock-ft')],bob));
+ok(call('v6-market','deposit-token-y',[u(500000000),u(32000000000000),Cl.none(),cp('mock-ft'),Cl.stringAscii('mock-ft')],bob));
+if(read('v6-market','get-token-y-pending-deposit',[Cl.principal(bob)]).type==='some')ok(call('v6-market','settle-token-y-deposit',[Cl.principal(bob),update,cp('mock-ft'),Cl.stringAscii('mock-ft')],admin));
 ok(gov('jing-take',[u(10000),update]));eq(ft(p(V)),990001n);ok(call('v6-market','cancel-token-y-deposit',[cp('mock-ft'),Cl.stringAscii('mock-ft')],bob));ok(gov('dao-recall-sbtc'));flushTreasury();
 // Permissionless routing uses one full chunk; the fixture router deliberately has too little STX
 // to fill this 1-BTC slice, so the vault rejects the unsold result below its floor.
@@ -134,3 +136,6 @@ const sourceHashes=JSON.parse(readFileSync(dir+'.build/source-hashes.json'));
 assert.ok(lcov.match(/^BRF:(\d+)$/m)&&lcov.match(/^BRH:(\d+)$/m),'vault branch coverage counters missing');
 const summary={sourceHashes,checks,status:'passed',branchTotal:+lcov.match(/^BRF:(\d+)$/m)[1],branchHits:+lcov.match(/^BRH:(\d+)$/m)[1],uncoveredBranches:branches.filter(b=>b.hits==='-'||b.hits==='0'),lineTotal:lines.length,lineHits:lines.filter(l=>l.hits>0).length,zeroHitLines:lines.filter(l=>!l.hits).map(l=>l.line),scope:'Current full vault/book source; dependency addresses and asset names rebound to declared fixtures. DAO equality and extension gates retained.'};
 writeFileSync(output+'runtime.json',JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary,null,2));
+
+// Also require the actual deployed v5-5 router to pass; fault-double checks above remain.
+await import('./live-router.mjs');

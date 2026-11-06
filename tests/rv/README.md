@@ -1,202 +1,110 @@
-# Rendezvous property testing
+# Rendezvous verification of the final CityCoins contracts
 
-## Final vault harness: `tests/rv/ccd016-final/` (2026-10-14)
+The active harnesses target the final vault SHA-256
+`ac0c305f8bfcfd9f210fb37cba6e1f4d61a26ad40ed7ca4792beca948778502e`
+and book SHA-256
+`b3526d4ce89e615108c1b6781bf67b6f8354e3880adb404883a30fbdd36ec65f`.
+Builds reject changed production source bytes. No production contract is edited.
+All fixtures and manifests are self-contained in this checkout.
 
-Target: `contracts/extensions/ccd016-swap-vault-mia-v2.clar` as of commit
-8bfbb5f (Super Orb fix: the vault pays every Lazer verify), unchanged from
-8bfbb5f to HEAD. There is no v3 contract on this branch;
-`simulations/stxer-ccd016-v3-keyless.js` is an untracked file from another
-session. `build.py` refuses to build if the source sha256 is not
-`e3437fcf...1720` (the 8bfbb5f bytes; `--any-source` overrides).
-
-```bash
-npm run rv:final:invariant -- 20261014        # build + 1000 invariant runs, seed 20261014
-npm run rv:final:test -- 20261014             # build + 1000 property runs
-RV_NO_BUILD=1 bash tests/rv/ccd016-final/run.sh invariant <seed> [runs]   # reuse .build (parallel seeds)
-```
-
-`run.sh` writes the RV statistics block to `results/<mode>-<seed>.txt` and,
-for invariant runs, the dialer tallies (`stats-dialer.cjs`: vault print
-notifications, sales with `out > 0`, STX into the book, sBTC out of the vault)
-to `results/<mode>-<seed>.stats.json`. The full log stays in `.build/logs`
-(gitignored) or `$RV_LOG_DIR`.
-
-### What the build does (test-only, generated copies only)
-
-Production `contracts/*.clar`, `Clarinet.toml`, `deployments/` and
-`tests/vault/fixtures/` are only read. `build.py` writes
-`tests/rv/ccd016-final/.build/` (gitignored) with:
-
-- The address rewrites of `tests/vault/build.py` (Jing v6-3 market, router
-  v5-3, sBTC/wSTX, DIA, RFQ native, base-dao, treasury, MIA) and the same v6-3
-  compatibility shims on the fixture market (pending-escrow getter,
-  update-less `deposit-token-x` / `set-token-x-limit`).
-- Vault rewrite 1: `is-dao-or-extension` becomes
-  `(or (is-eq tx-sender deployer) (var-get rv-dao))`. `rv-dao` is a harness
-  flag that only the `rv-dao-*` wrappers and `test-*` functions raise and drop
-  in the same call (`invariant-dao-flag-down`). DAO authentication itself is
-  not under test here (runtime suite and forks cover it).
-- Vault rewrite 2: the `window-blocks` default 288 -> 400 burn blocks, so a
-  window survives a few RV runs (RV mines <= 100 burn blocks per run at 1000
-  runs); `rv-dao-config` moves it to 0-40 or 60-300.
-- `harness.clar` appended (ghosts, wrappers, invariants, properties).
-- Three fixtures overridden by `mocks/`:
-  - `mock-router`: ADVERSARIAL. Fills `fill-bps` of the amount at
-    `quality-bps` of the Lazer mid, ignores the limit price and per-leg mins,
-    honours only the overall `min-stx-out` (u3002). `router-swap` passes
-    min-out u0, so the vault's own post-trade check is the only floor guard on
-    that path. With an update it verifies once (the real book leg verifies in
-    the market), charging the Lazer fee to tx-sender.
-  - `mock-lazer-oracle`: the fixture feeds plus a verify fee in STX charged to
-    tx-sender for a non-empty update, with ghost totals split vault / other.
-  - `mock-ft`: strict ledger plus a ghost that classifies every transfer whose
-    sender is the vault by recipient (treasury / market / router / bad).
-
-### Invariants (16; transition checks run in the private `update-context`)
-
-RV 1.0.3 calls `update-context` after every successful public call. The
-harness compares the snapshot taken after the previous successful call with
-the state now and counts violations per category; the counters persist across
-runs, so every check covers the whole history of the sweep.
-
-| invariant | what |
-|---|---|
-| never-below-floor | router-swap: proceeds >= floor-out(sold - 8, mid*(1-slippage)); split: >= floor-out(sold, min(slippage floor, Velar 0.6% floor)); split-dia: >= floor-out(sold, DIA/native emergency limit); jing-take: >= floor of sold net of 10 bps fee + 20 bps rebate; any other sale (maker fill of the peg): >= the order's floor net of 10 bps |
-| no-sale-in-patience | no vault-initiated sale (router-swap*, jing-take) unless the window had elapsed |
-| stx-only-to-book-or-fee | no proceeds without a sale, none on a recall, the vault's STX never drops except to the book or the oracle fee |
-| only-vault-pays-fee | inside a vault entry the caller never pays the Lazer fee; the vault pays only in its own entries, at most 2 x budget per call |
-| fuel-keeps-budget | fuel-fair-book sends balance - min(balance, budget) and keeps min(balance, budget); the book receives through nothing else ("finish returns balance - min(balance, budget)") |
-| clock-transitions | the clock is set only by funding, at the current height, only from empty / no clock / elapsed-with-dust (<= 8 sats); cleared only on an empty vault by an exit or close-batch; an exit that empties the vault clears it |
-| treasury-flows | the treasury gets sBTC back only by a recall, exactly what left the vault; it loses sBTC only to funding |
-| sbtc-destinations | every sBTC transfer out of the vault goes to the treasury, the market or the router |
-| sbtc-conservation | FT supply = vault + treasury + market + router + the 10 wallets |
-| stx-conservation | STX over vault, book, oracle, router, market and the 10 wallets is constant |
-| window-exclusive, no-clock-no-window, clock-not-future, config-bounded, resting-peg, dao-flag-down | static state checks (open and elapsed never both; caps; a resting position is a zero-spread peg with a positive floor) |
-
-### Properties (10 private `test-*`)
-
-test-router-swap-floor (exact sale or a genuine sub-floor refusal),
-test-split-floor, test-split-dia-floor (emergency limit formula, no sale
-without a price), test-jing-take-floor, test-place-peg (whole balance rests,
-floor = ask-of(mid), spread 0), test-recall, test-fund-clock (opens only from
-empty / no clock / elapsed dust), test-fee-payer (caller pays nothing, vault
-pays 2 x fee, fee over budget fails and moves nothing), test-fuel-fair-book,
-test-patience-no-sale (every take / router / reclaim path is u16031 while
-open). A run is discarded in place (`(ok false)`) only when the action could
-not be exercised (nothing to sell, market refused).
-
-### Results
-
-Rendezvous 1.0.3, Clarinet SDK from this repo, 1000 runs per suite per seed,
-two seeds. **No invariant or property falsified, zero runtime errors logged,
-no counterexample.** Files: `ccd016-final/results/`.
-
-| suite | seed | result | real movement (successful calls / committed sales with out > 0) |
-|---|---|---|---|
-| invariant | 20261014 | 1000/1000 passed, 16 invariants (52-77 checks each) | sales: router-swap 19, split 19, split-dia 24, jing-take 8; maker fills (rv-cross-vault) 4; jing-place 20, jing-refloor 14, fund 130 (71 direct), fuel 92, recall 110, reclaim with refund 18; 126,169 STX to the book, 10.9e9 sats out of the vault |
-| invariant | 20261015 | 1000/1000 passed | sales: router-swap 30, split 8, split-dia 17, jing-take 8; maker fills 23 (rv-cross-vault 22, rv-settle-vault 1); jing-place 56, jing-refloor 37, fund 140, fuel 83, recall 121, reclaim with refund 49; 148,289 STX to the book |
-| property | 20261014 | 1000/1000 passed (11 discarded: jing-take had no fill) | router-swap 119, split 31, split-dia 62, jing-take 94, jing-place 105, fuel 109, recall 263, windows opened 227 |
-| property | 20261015 | 1000/1000 passed (9 discarded: same) | router-swap 119, split 37, split-dia 51, jing-take 80, jing-place 85, fuel 100, recall 257, windows opened 225 |
-
-Sensitivity check (scratch copies of the generated build, not committed):
-deleting router-swap's post-trade floor assert makes
-`invariant-never-below-floor` fail after 53 runs (seed 11); restoring the
-pre-8bfbb5f fee path (`vault-mid` calls `current-mid` outside its
-`as-contract?` scope, so the caller pays the Lazer verify) makes
-`test-fee-payer` fail (u801) and `invariant-only-vault-pays-fee` fail after
-42 runs (seed 12).
-
-Gaps: the router and the market are fixtures (the adversarial router models
-only the overall min-out guarantee; per-AMM legs and the real Jing v6-3
-market run on the stxer forks). The fixture market predates v6-3 (adapters
-as in `tests/vault/build.py`; pending escrow is never populated, so the
-settle-escrow path is not fuzzed). STX destinations are checked by
-conservation plus exact book / fee accounting: an STX outflow from the vault
-to a wallet hidden inside a sale with matching inflow would not be
-attributed. RV naturals are folded through `rv-r`, not drawn over full
-uint128. DAO authentication is stubbed (see rewrite 1).
-
-## Earlier vault verification (2026-09-18)
-
-Vault verification of 2026-09-18 uses the self-contained
-[full-source vault harness](../vault/README.md), replacing the older vault build
-below. Run `npm run rv:ccd016 -- --seed=20260918 --bail` or build with
-`npm run rv:vault:build` and run `npm run rv:vault -- --seed=20260918 --bail`.
-`rv:build` builds the old book target and the new vault target. The vault no longer
-needs a sibling Jing checkout. Rendezvous is now 1.0.3; its `update-context`
-callback is private. The old root vault-only manifest is historical.
-
-## Historical results and harness (2026-09-15)
-
-### Previous Solution 2 harness
-
-`@stacks/rendezvous@1.0.0-rc.1` harness for the STX book
-(`ccd015-redemption-book-mia-stx`) and the keeperless vault
-(`ccd016-swap-vault-mia-v2`). Same shape as jing-contracts-v3's
-`tests/rv`: production source, a few fuzz rewrites, an invariants block
-appended, one RV-only manifest per target at the repo root.
-
-## Status (2026-09-15, zero falsified invariants)
-
-| target | runs | invariants (checks) | real movement (successful calls) |
-|---|---|---|---|
-| ccd015-redemption-book-mia-stx | 500 | 7 (500) | place-offer x74 + rv-place x117, change-offer x16, cancel-offer x22, cross-book x89, update-par x29, set-min-deposit x30, set-paused x22, rv-fund x245 |
-| ccd016-swap-vault-mia-v2 | 500 | 6 (500) | fund-from-treasury x60, dao-recall-sbtc x13, fuel-fair-book x7, router-swap x8, jing-place x1, dao-reclaim x1, setters x1-6, rv-bid x87, rv-cancel-bid x39, DIA skew / stale x109 / x103. Thin on the vault's own book paths (jing-place, take, reclaim, refloor): the 20-block window elapses inside most runs (one block per call) and DIA / staleness switches persist across RV's shared simnet; the fork harnesses (`simulations/stxer-ccd016-v2-*.js`) cover those paths end to end |
-
-## Build
-
-`tests/rv/build.sh` rewrites, for both: the DAO gate (`is-dao-or-extension`)
-to the deployer account, one RV sender in ten, and drops the extension
-trait line (no requirements are fetched for these manifests).
-
-For the book: MIA v2 (transfer, burn, supply) and v1 (supply) become
-`mock-mia` (real ledger under the name `miamicoin`, auto-mint for RV's
-random sellers, burn counted) and `mock-mia-v1`; the par formula's two STX
-accounts (mining treasury, pox5 stake) become two funded simnet wallets;
-the minimum deposit is 1000 micro-MIA (100k MIA is above every natural RV
-draws). Wrappers: `rv-fund` (STX in, the vault's push, counted),
-`rv-place` (an offer sized over the minimum), `rv-reset-min` (a random
-DAO `set-min-deposit` up to 2^31 would otherwise refuse every later offer
-for the rest of the sweep).
-
-For the vault: the jing v6 fuzz stack is copied in from
-`../jing-contracts-v3/tests/rv` (set `JING_RV` otherwise): the market's
-fuzz build with settle live through the mock Lazer oracle, the mock
-ladder, the v5 mock core, one `mock-ft` for sBTC and wstx. The rewards
-treasury is `mock-treasury` (withdraw-ft, no gate), the router is
-`mock-router` (one venue that buys at the mid with the STX it holds, or
-reports everything unsold; u3002 on min-out), DIA is `mock-dia` (echoes
-the Lazer mid times a skew, staleness switchable), the STX destination is
-the book's fuzz build, the window is 20 burn blocks. Wrappers: sBTC into
-the treasury and by plain transfer, STX into the router, bids resting on
-the market and cancelling, settlements, the mid, the mid onto the vault's
-floor, DIA skew (85..115%, the band is 10%) and staleness (one call in
-eight).
-
-## Invariants
-
-Book, 7: sorted ascending by price (cross-multiplied), MIA conservation
-(book balance = sum of the amounts on the book), STX conservation (balance
-= funded minus spent), burned equals what the token burned, one offer per
-owner, bounded, every entry positive and inside the per-offer caps.
-
-Vault, 6: open and elapsed never both, no clock means neither, every dial
-inside its cap and the window never zero, the cooldown stamp never in the
-future, whatever rests on the book is a zero-spread peg with a guard, a
-clock is never in the future. The vault keeps no ledger of its own
-(balance-driven by design); the market's 25 invariants cover the funds
-while they sit on the book (fuzzed in the jing repo).
-
-## Run
+## Commands
 
 ```bash
-npm i -D @stacks/rendezvous@1.0.0-rc.1      # once
-npm run rv:build                            # both targets (needs the jing repo next door)
-npm run rv:ccd015
-npm run rv:ccd016
-npx rv . ccd015-redemption-book-mia-stx invariant --seed=<n>   # replay
+npm run rv:ccd016 -- --seed=20261105 --bail
+npm run rv:final:invariant -- 20261105 1000
+npm run rv:final:test -- 20261105 1000
+bash tests/rv/run-book.sh 20261105 1000
 ```
 
-Runtime panics only log in RV (`(runtime)` in the call log); a false
-invariant is the finding. `.build/` and `.rendezvous-regressions/` are
-gitignored.
+The checkout has no `rv:ccd015` package script. The last command is its working
+equivalent; a proposed script is `"rv:ccd015": "bash tests/rv/run-book.sh"`.
+No package change is required to run it and none was made for this refresh.
+`bash tests/rv/build.sh all` builds the book and basic vault projects without
+fetching the sibling Jing repository or using the old root manifest.
+
+For an already built final vault, `RV_NO_BUILD=1` reuses its generated project.
+Do not rebuild the same project while a sweep is running. `run.sh` retains full
+logs in `ccd016-final/.build/logs/` and writes statistics to
+`ccd016-final/results/`. `summarize.py` records source hashes and rejects logged
+runtime exceptions; RV itself can ignore those while reporting success.
+
+## Jing sources and test-only changes
+
+The market is the complete deployed **markets-sbtc-stx-jing-v6-4**, replacing the
+older adapted market. Pending deposits/limits and the final no-update deposit
+signatures now execute directly. No fake escrow map or compatibility wrappers
+remain. Deployed hashes and metadata are shared with [the vault suite](../vault/README.md).
+The mainnet sources and local Jing sources have identical executable tokens;
+exact deployed bytes are vendored so runtime testing needs no network.
+
+The normal vault command includes an additional integration suite through the
+complete deployed **swap-router-sbtc-stx-jing-v5-5**, with explicit venue splits,
+smart routing, real Jing book capacity/settlement and router balance assertions.
+The final RV suite deliberately retains an **adversarial router double** with
+the final router API: it can ignore per-leg floors and pay a sub-floor output.
+Replacing it with a healthy router would lose the tests of the vault's own
+post-trade floor guard. Its result is not claimed as fuzz coverage of router
+internals; the full source integration is reported separately.
+
+`ccd016-final/build.py` rebinds only dependencies in the market, then calls its
+real initializer with local assets and 100-unit deposit minima. It retains the
+market's production 50-slot capacity. Core logging, ladder, token ledgers and
+oracle feeds are fixtures. The final vault gets its harness appended and a
+DAO helper that accepts the deployer or a scoped harness flag. The default
+patience window is now the production **288 blocks**, with no default rewrite.
+The harness uses the real configuration setters to explore other windows.
+
+The fee oracle charges actual fixture STX and records the payer. Its new
+read-only decoder supports v6-4's age-aware capacity getter. The strict FT fixture
+records vault outflows; MIA's mock ledger has explicit burn accounting. The
+adversarial router honors aggregate min-out while varying fill and price quality.
+DAO authenticity, signed Pyth validation and real AMM liquidity are outside RV.
+
+## Invariants and properties
+
+The final harness retains **16 invariants**: output floors, no vault-initiated sale
+inside patience, allowed STX/sBTC destinations, fee payer and budget, finish
+reserve, clock transitions, treasury flows, token/STX conservation, window
+exclusivity, no-clock state, clock bounds, configuration bounds, resting peg and
+cleared DAO flag. `update-context` checks transitions after successful actions.
+
+The resting-peg model now remembers the spread selected at placement/refloor;
+it checks pending deposit/limit tuples as well as live orders. This replaces the
+obsolete expectation that every order has zero spread. The placement property
+still checks the exact configured spread, floor, zero remaining wallet sBTC and
+conservation, including when v6-4 holds the new deposit in escrow.
+
+The **10 properties** retain router/split/DIA/take floors, placement, recall,
+funding clock, fee payer, finish reserve and patience restrictions. A property
+returns `(ok false)` only when its preconditions cannot exercise the action;
+these draws are reported separately as discarded, not passing assertions.
+Random naturals are bounded by harness actions rather than covering all uint128.
+
+## Self-contained book fuzz
+
+`build-book.py` includes only the final book, MIA ledgers and required traits.
+Its generated manifest is `tests/rv/.build-book/Clarinet.toml`. The only book
+rewrites are dependency principals, the local deployer authorization gate and a
+1000-micro-MIA minimum so small fuzz values can create offers. Seven invariants
+check sorting, MIA/STX conservation, burn accounting, unique owners, capacity
+and positive bounded entries. The build does not pull or write any Jing files.
+
+## Saved results
+
+Seed **20261105**, 1,000 draws per suite:
+
+| Suite | Result | Evidence |
+| --- | --- | --- |
+| Basic vault invariants (8) | 1,000/1,000 | [vault run](../vault/results/rv-20261105.json) |
+| Final vault invariants (16) | 1,000/1,000 | [statistics](ccd016-final/results/invariant-20261105.txt) |
+| Final vault properties (10) | 986 passed, 14 discarded / 1,000 draws | [statistics](ccd016-final/results/test-20261105.txt) |
+| Final book invariants (7) | 1,000/1,000 | [book run](results/book-20261105.json) |
+
+All completed runs have zero runtime exceptions. The 14 property discards were
+`test-jing-take-floor` draws without an executable fill.
+
+RV selects one invariant per random sequence; 1,000 passing runs do not mean
+16,000 invariant evaluations. Historical files from earlier seeds remain as
+archives, with their original hashes, and are not evidence for today's sources.
+The legacy root-level vault invariant/mock files are no longer selected by
+`build.sh`; active vault commands use `tests/vault` or `ccd016-final`.

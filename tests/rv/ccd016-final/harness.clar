@@ -81,6 +81,8 @@
   { name: "", kind: u0, burn: u0 })
 
 (define-map context (string-ascii 100) { called: uint })
+(define-data-var rv-last-spread uint u1)
+
 
 ;; ---------------------------------------------------------------------------
 ;; readers
@@ -248,6 +250,8 @@
 (define-private (update-context (function-name (string-ascii 100)) (called uint))
   (begin
     (map-set context function-name { called: called })
+    (and (rv-in function-name (list "jing-place" "rv-place" "rv-open-window" "jing-refloor" "rv-dao-refloor"))
+      (var-set rv-last-spread (var-get maker-spread-bps)))
     (if (var-get rv-ready)
       (and (> called u0) (rv-check function-name (var-get rv-snap) (rv-snapshot)))
       (begin (var-set rv-stx-base (rv-stx-total)) (var-set rv-ready true)))
@@ -313,7 +317,7 @@
 (define-public (rv-bid (raw uint) (off uint))
   (let ((m (contract-call? .mock-lazer-oracle get-mid)))
     (contract-call? .v6-market deposit-token-y (+ u1000000 (rv-r raw u3000000000))
-      (/ (* m (- u9950 (rv-r off u250))) u10000) none 0x .mock-ft "mock-ft")))
+      (/ (* m (- u9950 (rv-r off u250))) u10000) none .mock-ft "mock-ft")))
 
 (define-public (rv-cancel-bid)
   (contract-call? .v6-market cancel-token-y-deposit .mock-ft "mock-ft"))
@@ -475,11 +479,15 @@
        (> (var-get max-chunk-sats) u0)
        (<= (var-get max-chunk-sats) MAX_CHUNK_SATS)
        (<= (var-get router-cooldown-blocks) MAX_COOLDOWN_BLOCKS)))
-;; whatever rests on the book is a zero-spread peg with a positive floor
+;; The order/escrow preserves the spread chosen by its most recent placement/refloor.
 (define-read-only (invariant-resting-peg)
-  (let ((o (contract-call? .v6-market get-token-x-order current-contract)))
+  (let ((live (contract-call? .v6-market get-token-x-order current-contract))
+        (pending (contract-call? .v6-market get-token-x-pending-deposit current-contract))
+        (limit-change (contract-call? .v6-market get-token-x-pending-limit current-contract)))
     (or (is-eq (rv-mkt) u0)
-        (and (> (get limit o) u0) (is-eq (get spread-bps o) (some u0))))))
+      (match limit-change p (and (> (get limit p) u0) (is-eq (get spread-bps p) (some (var-get rv-last-spread))))
+        (match pending p (and (> (get limit p) u0) (is-eq (get spread-bps p) (some (var-get rv-last-spread))))
+          (and (> (get limit live) u0) (is-eq (get spread-bps live) (some (var-get rv-last-spread)))))))))
 ;; the test-only DAO flag is never left raised
 (define-read-only (invariant-dao-flag-down) (not (var-get rv-dao)))
 
@@ -670,7 +678,7 @@
       ;; a bid sized to absorb the whole wallet balance (fill-or-kill take)
       (is-ok (contract-call? .v6-market deposit-token-y
         (+ u1000000 (/ (* (/ (* (sbtc-balance) mid) RV-SCALE) (+ u11000 (rv-r raw u5000))) u10000))
-        (/ (* mid (- u10000 (rv-r off u300))) u10000) none 0x .mock-ft "mock-ft"))
+        (/ (* mid (- u10000 (rv-r off u300))) u10000) none .mock-ft "mock-ft"))
       (let (
           (c0 (+ (sbtc-balance) (rv-mkt)))
           (s0 (stx-get-balance current-contract))
@@ -695,7 +703,7 @@
             (asserts! (is-eq got u0) (err u404))
             (ok false)))))))
 
-;; jing-place (window open): the whole wallet balance rests as a zero-spread
+;; jing-place (window open): the whole wallet balance rests or escrows as a configured-spread
 ;; peg with floor mid * (1 - leeway); nothing leaves the vault's claim
 (define-private (test-place-peg (raw uint) (lee uint))
   (begin
@@ -713,11 +721,14 @@
       )
       (if open
         (match r okv
-          (let ((o (contract-call? .v6-market get-token-x-order current-contract)))
+          (let ((live (contract-call? .v6-market get-token-x-order current-contract))
+                (pending (contract-call? .v6-market get-token-x-pending-deposit current-contract))
+                (o (match pending p {limit: (get limit p), spread-bps: (get spread-bps p)}
+                    {limit: (get limit live), spread-bps: (get spread-bps live)})))
             (asserts! (is-eq (sbtc-balance) u0) (err u501))
             (asserts! (is-eq (+ (sbtc-balance) (rv-mkt)) c0) (err u502))
             (asserts! (is-eq (get limit o) (ask-of mid)) (err u503))
-            (asserts! (is-eq (get spread-bps o) (some u0)) (err u504))
+            (asserts! (is-eq (get spread-bps o) (some (var-get maker-spread-bps))) (err u504))
             (ok true))
           e (ok false))
         (begin

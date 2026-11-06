@@ -2,9 +2,8 @@
 ;; Same feeds as the fixture (BTC/USD = mid, STX/USD = 1e8, so the market's
 ;; cross IS `mid`), plus a configurable verify fee charged in STX to
 ;; tx-sender, like the real Lazer verifier. The fee is charged only for a
-;; non-empty update: the fixture market's v6-3 adapters pass 0x where the
-;; deployed v6-3 entry points take no update (no verify). Ghost totals split
-;; who paid: the vault (inside its as-contract? scopes) or anyone else.
+;; non-empty update. The market is the deployed v6-4 source; its deposit
+;; entrypoints no longer verify. Ghost totals split vault/other fee payers.
 (define-constant RV-VAULT 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd016-swap-vault-mia-v2)
 (define-data-var mid uint u32000000000000)
 (define-data-var fee uint u0)
@@ -40,3 +39,10 @@
           (var-set fees-other (+ (var-get fees-other) f)))))
     (ok { timestamp: ts, channel: u0,
           price-feeds: (list (feed u1 (to-int (var-get mid)) ts) (feed u45 100000000 ts)) })))
+
+;; Read-only decoder used by v6-4's age-aware router capacity quote.
+(define-read-only (decode-lazer-payload (payload (buff 8192)))
+ (let ((ts (* stacks-block-time u1000000)))
+  (asserts! true (err u0))
+  (ok {timestamp: ts, channel: u0, price-feeds:
+   (list (feed u1 (to-int (var-get mid)) ts) (feed u45 100000000 ts))})))
