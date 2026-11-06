@@ -3,9 +3,9 @@
   "suites": [
     {
       "suite": "test:vault",
-      "passed": 387,
-      "total": 387,
-      "detail": "327 runtime assertions + 60 full deployed-router integration assertions"
+      "passed": 409,
+      "total": 409,
+      "detail": "349 runtime assertions + 60 full deployed-router integration assertions; 121/121 vault branches"
     },
     {
       "suite": "test:book",

@@ -24,6 +24,10 @@ replacements={
 "'SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X.ccd014-pox5-staking-mia":"'STNHKEPYEPJ8ET55ZZ0M5A34J0R3N5FM2CMMMAZ6",
 '"sbtc-token"':'"mock-ft"'}
 files={p.stem:p.read_text() for p in (here/'fixtures').glob('*.clar')};upstream,hashes=checked_sources()
+if not rv:
+ # Runtime shares the existing adversarial double. Its default knobs give a
+ # full fill at mid; the floor regression explicitly enables a sub-floor fill.
+ files['mock-router']=(here/'../rv/ccd016-final/mocks/mock-router.clar').read_text()
 files['mock-book-extension']=''';; Test-only extension that forwards admin calls through contract-caller.
 (define-public (set-paused (paused bool))
   (contract-call? .ccd015-redemption-book-mia-stx set-paused paused)

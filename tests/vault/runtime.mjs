@@ -127,6 +127,50 @@ ok(gov('jing-take',[u(10000),update]));eq(ft(p(V)),990001n);ok(call('v6-market',
 // to fill this 1-BTC slice, so the vault rejects the unsold result below its floor.
 ok(gov('set-max-chunk-sats',[u(100000000)]));fund(100000001);err(vault('router-swap',[update]),16047);
 ok(gov('dao-recall-sbtc'));ok(gov('set-max-chunk-sats',[u(1000000)]));
+
+function routerSwapRejectsOneMicroStxBelowSoldFloor() {
+ // Arrange: a 20,000-sat chunk, half sold. After the 8-sat allowance,
+ // floor-out = 9,992 * (12.5 * 99%) = 123,651 micro-STX.
+ // The existing adversarial router ignores the per-leg limit and pays
+ // 10,000 * 12.5 * 98.92% = 123,650, exactly one micro-STX too little.
+ ok(gov('set-max-chunk-sats',[u(20000)]));
+ ok(gov('set-router-cooldown',[u(1)]));
+ ok(call('mock-lazer-oracle','set-mid',[u(125000000000)]));
+ fund(20000);
+ ok(call('mock-router','set-knobs',[u(9892),u(5000)]));
+ sim.mineEmptyBurnBlock();
+ const limit=125000000000n*9900n/10000n;
+ const floorOut=(10000n-8n)*limit/10000000000n;
+ const badOut=10000n*125000000000n*9892n/(10000000000n*10000n);
+ eq(floorOut,123651n);eq(badOut,floorOut-1n);
+ const balances=structuredClone(sim.getAssetsMap());
+ const savedConfig=config(),savedClock=cvToString(read(V,'get-clock'));
+ const savedStatus=cvToString(read(V,'get-status'));
+ const vaultSats=ft(p(V)),vaultStx=stx(p(V));
+ const routerSats=ft(p('mock-router')),routerStx=stx(p('mock-router'));
+
+ // Act: both transfers happen inside the mock before the vault's guard.
+ const rejected=vault('router-swap',[update]);
+
+ // Assert: the vault rejects the reported fill, reverting all asset balances,
+ // its batch state and the cooldown stamp (not merely the router's min-out).
+ err(rejected,16047);
+ checks++;assert.deepEqual(sim.getAssetsMap(),balances);
+ eq(config(),savedConfig);eq(cvToString(read(V,'get-clock')),savedClock);
+ eq(cvToString(read(V,'get-status')),savedStatus);
+
+ // An above-floor fill in the same burn block succeeds: the rejection did
+ // not consume the cooldown, and a partial fill is priced on what sold.
+ ok(call('mock-router','set-knobs',[u(9893),u(5000)]));
+ const accepted=ok(vault('router-swap',[update])).value.payload.value;
+ const goodOut=123662n;
+ eq(accepted.out.value,goodOut);eq(accepted.unsold.value,10000n);
+ eq(ft(p(V)),vaultSats-10000n);eq(stx(p(V)),vaultStx+goodOut);
+ eq(ft(p('mock-router')),routerSats+10000n);eq(stx(p('mock-router')),routerStx-goodOut);
+ ok(call('mock-router','set-knobs',[u(10000),u(10000)]));
+}
+routerSwapRejectsOneMicroStxBelowSoldFloor();
+
 const output=dir+'results/';mkdirSync(output,{recursive:true});const report=sim.collectReport(false,'');
 const record=report.coverage.split('end_of_record').find(r=>r.includes('/'+V+'.clar'));assert.ok(record);
 const lcov=record.replace(/^SF:.*$/m,'SF:contracts/extensions/'+V+'.clar')+'end_of_record\n';writeFileSync(output+'runtime.lcov',lcov);
@@ -136,6 +180,8 @@ const sourceHashes=JSON.parse(readFileSync(dir+'.build/source-hashes.json'));
 assert.ok(lcov.match(/^BRF:(\d+)$/m)&&lcov.match(/^BRH:(\d+)$/m),'vault branch coverage counters missing');
 const summary={sourceHashes,checks,status:'passed',branchTotal:+lcov.match(/^BRF:(\d+)$/m)[1],branchHits:+lcov.match(/^BRH:(\d+)$/m)[1],uncoveredBranches:branches.filter(b=>b.hits==='-'||b.hits==='0'),lineTotal:lines.length,lineHits:lines.filter(l=>l.hits>0).length,zeroHitLines:lines.filter(l=>!l.hits).map(l=>l.line),scope:'Current full vault/book source; dependency addresses and asset names rebound to declared fixtures. DAO equality and extension gates retained.'};
 writeFileSync(output+'runtime.json',JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary,null,2));
+assert.equal(summary.branchTotal,121,'expected final-source branch count');
+assert.equal(summary.branchHits,121,'every vault branch must be covered');
 
 // Also require the actual deployed v5-5 router to pass; fault-double checks above remain.
 await import('./live-router.mjs');

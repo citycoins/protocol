@@ -57,7 +57,10 @@ Market admission, settlement, crossing, rebates and pending escrow are real
 v6-4 logic. Deposit-Y calls now use the final signature and settle pending
 orders with a separate call.
 
-The fault configuration keeps `mock-router` intentionally: it allows tests of
+The runtime fault configuration reuses the existing adversarial `mock-router`
+from `tests/rv/ccd016-final/mocks/mock-router.clar`. Its default knobs fill at
+mid; the floor regression sets a partial fill below the permitted price. The
+basic RV build retains its original healthy router double. These allow tests of
 min-out failures and rejected transfers that a healthy route would avoid. The
 market-only park/forced-zero-price controls are retained for vault recovery
 branches. These are disclosed fault injections, not evidence of live venue
@@ -82,15 +85,25 @@ update. See [the final property harness](../rv/README.md) for adversarial tests.
 
 | Suite | Result | Evidence |
 | --- | --- | --- |
-| Vault runtime | 327/327 assertions | [runtime.json](results/runtime.json) |
+| Vault runtime | 349/349 assertions | [runtime.json](results/runtime.json) |
 | Full deployed router integration | 60/60 assertions | [live-router.json](results/live-router.json) |
 | Book SDK suite | 1/1 Vitest integration test; 21/21 public/read-only functions | [ccd015-book-runtime.json](results/ccd015-book-runtime.json) |
 | Basic vault RV, seed 20261105 | 1,000/1,000; zero runtime errors | [rv-20261105.json](results/rv-20261105.json) |
 | CCIP-028 | 8/8 | [activation result](results/activation.json) |
 
-Vault runtime coverage: **120/121 branches**, **462/485 lines**. The remaining
-branch is the post-trade sub-floor outcome which the healthy router double
-rejects first; the final adversarial property harness exercises that guard.
+Vault runtime coverage: **121/121 branches**, **463/485 line counters**; see
+[runtime.lcov](results/runtime.lcov). The adversarial-router regression covers
+the second `ERR_BELOW_FLOOR` assertion in `router-swap` (line 647): of a
+20,000-sat chunk, 10,000 sats sell for 123,650 micro-STX, exactly one below the
+123,651 floor after the 8-sat allowance. The vault rejects with `err u16047`;
+all asset balances, batch state and the cooldown stamp remain unchanged.
+An above-floor partial fill succeeds in the same burn block, confirming the
+failed transaction did not consume the cooldown.
+
+The remaining 22 "uncovered" lines are continuation lines of multi-line
+expressions: payload/minimum-output tuples, literal principals and contract
+function names. The line counter does not attribute hits to these lines even
+though their containing expressions execute; they are not unexecuted code.
 Book coverage remains **72/72 branches**, **29/29 instrumented functions**,
 **211/213 line counters**. The two unhit counters are static token principal
 operands; both token supply calls execute. These coverage figures concern the
