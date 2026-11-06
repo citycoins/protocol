@@ -103,3 +103,19 @@ market/router of their day (v6 / v6-3, router v5-3) and earlier vault revisions,
 SHA-256 in its report. They are kept as the audit trail behind the bounty verdicts in
 `contracts/extensions/README-ccd016-swap-vault-v2.md`. The JSON files in `results/ccd016-v2/` now
 hold the 2026-11-05 reruns above; the v6-3 recovery matrix stays in `results/v6-3-recovery/`.
+
+## Trace coverage on the fork
+
+`trace-coverage.mjs` reads stxer's debug trace of every simulated transaction and counts which
+expressions of the exact deployed source ran (`--by-source`: only byte-identical deployments).
+Guard fail arms (`asserts!`, `try!`, `unwrap!`) count separately from pass arms.
+
+| Contract | Function-body lines run | Branch nodes full / partial / never | Report |
+| --- | --- | --- | --- |
+| ccd016 vault | 441/441 | 59 / 50 / 0 | [TRACE-COVERAGE-ccd016-swap-vault-mia-v2.md](TRACE-COVERAGE-ccd016-swap-vault-mia-v2.md) |
+| ccd015 book | 167/185 (missing = read-only reporting functions, not traced) | 29 / 20 / 1 | [TRACE-COVERAGE-ccd015-redemption-book-mia-stx.md](TRACE-COVERAGE-ccd015-redemption-book-mia-stx.md) |
+| ccip028 proposal | 23/23 | 0 / 16 / 0 (fail arms covered by `npm run test:ccip028`) | [TRACE-COVERAGE-ccip028-activate-mia-fair-redemption.md](TRACE-COVERAGE-ccip028-activate-mia-fair-redemption.md) |
+
+Partial branches are error exits not triggered on the fork. Each report lists every one with its
+reason and whether a new fork scenario could reach it, only a patched dependency could, or the
+live contracts make it unreachable.
