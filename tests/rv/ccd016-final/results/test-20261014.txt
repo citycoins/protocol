@@ -1,0 +1,44 @@
+rv test seed=20261014 runs=1000 exit=0 vault-sha256=e3437fcfe248b46e11ffee8b37e88d227211387afca099db1502c8b231133720
+runtime errors logged: 0
+OK, properties passed after 1000 runs.
+EXECUTION STATISTICS
+
+│ PROPERTY TEST CALLS
+│
+├─ + PASSED
+│    ├─ test-fee-payer: x93
+│    ├─ test-fuel-fair-book: x109
+│    ├─ test-fund-clock: x105
+│    ├─ test-jing-take-floor: x94
+│    ├─ test-patience-no-sale: x85
+│    ├─ test-place-peg: x105
+│    ├─ test-recall: x90
+│    ├─ test-router-swap-floor: x111
+│    ├─ test-split-dia-floor: x98
+│    └─ test-split-floor: x99
+│
+├─ ! DISCARDED
+│    ├─ test-fee-payer: x0
+│    ├─ test-fuel-fair-book: x0
+│    ├─ test-fund-clock: x0
+│    ├─ test-jing-take-floor: x11
+│    ├─ test-patience-no-sale: x0
+│    ├─ test-place-peg: x0
+│    ├─ test-recall: x0
+│    ├─ test-router-swap-floor: x0
+│    ├─ test-split-dia-floor: x0
+│    └─ test-split-floor: x0
+│
+└─ - FAILED
+     ├─ test-fee-payer: x0
+     ├─ test-fuel-fair-book: x0
+     ├─ test-fund-clock: x0
+     ├─ test-jing-take-floor: x0
+     ├─ test-patience-no-sale: x0
+     ├─ test-place-peg: x0
+     ├─ test-recall: x0
+     ├─ test-router-swap-floor: x0
+     ├─ test-split-dia-floor: x0
+     └─ test-split-floor: x0
+
+LEGEND:

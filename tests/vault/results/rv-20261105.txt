@@ -1,0 +1,108 @@
+{
+  "status": "passed",
+  "attemptedRuns": 1000,
+  "passedChecks": 1000,
+  "discardedRuns": 0,
+  "runtimeErrors": 0,
+  "sourceHashes": {
+    "markets-sbtc-stx-jing-v6-4": "6b3e6943806350daace1498b6b923479cf61b1f555e814f9a01d5db972f436bf",
+    "swap-router-sbtc-stx-jing-v5-5": "6b65927e564d0bc3df239c5b872b45358f4349e2ec652cf8198e36fd4f3dac7c",
+    "ccd016-swap-vault-mia-v2": "ac0c305f8bfcfd9f210fb37cba6e1f4d61a26ad40ed7ca4792beca948778502e",
+    "ccd015-redemption-book-mia-stx": "b3526d4ce89e615108c1b6781bf67b6f8354e3880adb404883a30fbdd36ec65f"
+  },
+  "log": "tests/vault/results/rv-20261105.log"
+}
+EXECUTION STATISTICS
+
+│ PUBLIC FUNCTION CALLS
+│
+├─ + SUCCESSFUL
+│    ├─ callback: x213
+│    ├─ close-batch: x0
+│    ├─ dao-recall-sbtc: x28
+│    ├─ dao-reclaim: x22
+│    ├─ fuel-fair-book: x4
+│    ├─ fund-from-treasury: x104
+│    ├─ is-dao-or-extension: x27
+│    ├─ jing-place: x0
+│    ├─ jing-reclaim: x135
+│    ├─ jing-refloor: x0
+│    ├─ jing-take: x0
+│    ├─ router-swap: x4
+│    ├─ router-swap-split: x0
+│    ├─ router-swap-split-dia: x0
+│    ├─ rv-admin: x20
+│    ├─ rv-batch: x25
+│    ├─ rv-donate: x206
+│    ├─ rv-fund-router: x213
+│    ├─ rv-treasury: x225
+│    ├─ rv-world: x216
+│    ├─ set-dia-band-bps: x4
+│    ├─ set-leeway-bps: x4
+│    ├─ set-maker-spread-bps: x3
+│    ├─ set-max-chunk-sats: x7
+│    ├─ set-no-pyth-slippage-bps: x6
+│    ├─ set-pyth-fee-budget: x1
+│    ├─ set-router-cooldown: x4
+│    ├─ set-slippage-bps: x2
+│    └─ set-window-blocks: x5
+│
+├─ - IGNORED
+│    ├─ callback: x0
+│    ├─ close-batch: x221
+│    ├─ dao-recall-sbtc: x189
+│    ├─ dao-reclaim: x171
+│    ├─ fuel-fair-book: x222
+│    ├─ fund-from-treasury: x117
+│    ├─ is-dao-or-extension: x195
+│    ├─ jing-place: x219
+│    ├─ jing-reclaim: x85
+│    ├─ jing-refloor: x212
+│    ├─ jing-take: x200
+│    ├─ router-swap: x212
+│    ├─ router-swap-split: x201
+│    ├─ router-swap-split-dia: x216
+│    ├─ rv-admin: x208
+│    ├─ rv-batch: x198
+│    ├─ rv-donate: x0
+│    ├─ rv-fund-router: x0
+│    ├─ rv-treasury: x0
+│    ├─ rv-world: x0
+│    ├─ set-dia-band-bps: x199
+│    ├─ set-leeway-bps: x223
+│    ├─ set-maker-spread-bps: x181
+│    ├─ set-max-chunk-sats: x207
+│    ├─ set-no-pyth-slippage-bps: x221
+│    ├─ set-pyth-fee-budget: x191
+│    ├─ set-router-cooldown: x224
+│    ├─ set-slippage-bps: x184
+│    └─ set-window-blocks: x213
+│
+│ INVARIANT CHECKS
+│
+├─ + PASSED
+│    ├─ invariant-clock-not-future: x116
+│    ├─ invariant-config-bounded: x138
+│    ├─ invariant-cooldown-not-future: x136
+│    ├─ invariant-emergency-floor: x135
+│    ├─ invariant-ft-conservation: x115
+│    ├─ invariant-no-clock-no-window: x119
+│    ├─ invariant-resting-peg: x129
+│    └─ invariant-window-exclusive: x112
+│
+└─ - FAILED
+     ├─ invariant-clock-not-future: x0
+     ├─ invariant-config-bounded: x0
+     ├─ invariant-cooldown-not-future: x0
+     ├─ invariant-emergency-floor: x0
+     ├─ invariant-ft-conservation: x0
+     ├─ invariant-no-clock-no-window: x0
+     ├─ invariant-resting-peg: x0
+     └─ invariant-window-exclusive: x0
+
+LEGEND:
+
+  SUCCESSFUL calls executed and advanced the test
+  IGNORED    calls failed but did not affect the test
+  PASSED     invariants maintained system integrity
+  FAILED     invariants indicate contract vulnerabilities

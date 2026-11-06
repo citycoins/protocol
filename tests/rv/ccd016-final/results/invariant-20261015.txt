@@ -1,0 +1,140 @@
+rv invariant seed=20261015 runs=1000 exit=0 vault-sha256=e3437fcfe248b46e11ffee8b37e88d227211387afca099db1502c8b231133720
+runtime errors logged: 0
+OK, invariants passed after 1000 runs.
+EXECUTION STATISTICS
+
+│ PUBLIC FUNCTION CALLS
+│
+├─ + SUCCESSFUL
+│    ├─ callback: x139
+│    ├─ close-batch: x0
+│    ├─ dao-recall-sbtc: x10
+│    ├─ dao-reclaim: x14
+│    ├─ fuel-fair-book: x83
+│    ├─ fund-from-treasury: x64
+│    ├─ is-dao-or-extension: x19
+│    ├─ jing-place: x8
+│    ├─ jing-reclaim: x49
+│    ├─ jing-refloor: x2
+│    ├─ jing-take: x0
+│    ├─ router-swap: x16
+│    ├─ router-swap-split: x0
+│    ├─ router-swap-split-dia: x0
+│    ├─ rv-bid: x128
+│    ├─ rv-cancel-bid: x38
+│    ├─ rv-cross-vault: x22
+│    ├─ rv-dao-config: x128
+│    ├─ rv-dao-recall: x43
+│    ├─ rv-dao-reclaim: x43
+│    ├─ rv-dao-refloor: x35
+│    ├─ rv-dao-split: x8
+│    ├─ rv-dao-split-dia: x17
+│    ├─ rv-dao-take: x8
+│    ├─ rv-donate: x125
+│    ├─ rv-fee: x153
+│    ├─ rv-fund-router: x122
+│    ├─ rv-fund-vault-stx: x145
+│    ├─ rv-mid: x145
+│    ├─ rv-open-window: x76
+│    ├─ rv-place: x9
+│    ├─ rv-router-knobs: x142
+│    ├─ rv-router-swap: x14
+│    ├─ rv-settle: x0
+│    ├─ rv-settle-vault: x1
+│    ├─ rv-treasury: x143
+│    ├─ rv-world: x137
+│    ├─ set-dia-band-bps: x2
+│    ├─ set-leeway-bps: x0
+│    ├─ set-max-chunk-sats: x3
+│    ├─ set-no-pyth-slippage-bps: x3
+│    ├─ set-pyth-fee-budget: x1
+│    ├─ set-router-cooldown: x2
+│    ├─ set-slippage-bps: x4
+│    └─ set-window-blocks: x1
+│
+├─ - IGNORED
+│    ├─ callback: x0
+│    ├─ close-batch: x122
+│    ├─ dao-recall-sbtc: x147
+│    ├─ dao-reclaim: x128
+│    ├─ fuel-fair-book: x50
+│    ├─ fund-from-treasury: x56
+│    ├─ is-dao-or-extension: x134
+│    ├─ jing-place: x108
+│    ├─ jing-reclaim: x73
+│    ├─ jing-refloor: x118
+│    ├─ jing-take: x137
+│    ├─ router-swap: x122
+│    ├─ router-swap-split: x138
+│    ├─ router-swap-split-dia: x142
+│    ├─ rv-bid: x12
+│    ├─ rv-cancel-bid: x92
+│    ├─ rv-cross-vault: x113
+│    ├─ rv-dao-config: x0
+│    ├─ rv-dao-recall: x83
+│    ├─ rv-dao-reclaim: x93
+│    ├─ rv-dao-refloor: x93
+│    ├─ rv-dao-split: x139
+│    ├─ rv-dao-split-dia: x120
+│    ├─ rv-dao-take: x116
+│    ├─ rv-donate: x0
+│    ├─ rv-fee: x0
+│    ├─ rv-fund-router: x0
+│    ├─ rv-fund-vault-stx: x0
+│    ├─ rv-mid: x0
+│    ├─ rv-open-window: x63
+│    ├─ rv-place: x102
+│    ├─ rv-router-knobs: x0
+│    ├─ rv-router-swap: x111
+│    ├─ rv-settle: x133
+│    ├─ rv-settle-vault: x140
+│    ├─ rv-treasury: x0
+│    ├─ rv-world: x0
+│    ├─ set-dia-band-bps: x132
+│    ├─ set-leeway-bps: x125
+│    ├─ set-max-chunk-sats: x136
+│    ├─ set-no-pyth-slippage-bps: x129
+│    ├─ set-pyth-fee-budget: x136
+│    ├─ set-router-cooldown: x135
+│    ├─ set-slippage-bps: x136
+│    └─ set-window-blocks: x145
+│
+│ INVARIANT CHECKS
+│
+├─ + PASSED
+│    ├─ invariant-clock-not-future: x63
+│    ├─ invariant-clock-transitions: x61
+│    ├─ invariant-config-bounded: x68
+│    ├─ invariant-dao-flag-down: x50
+│    ├─ invariant-fuel-keeps-budget: x59
+│    ├─ invariant-never-below-floor: x73
+│    ├─ invariant-no-clock-no-window: x71
+│    ├─ invariant-no-sale-in-patience: x57
+│    ├─ invariant-only-vault-pays-fee: x57
+│    ├─ invariant-resting-peg: x69
+│    ├─ invariant-sbtc-conservation: x52
+│    ├─ invariant-sbtc-destinations: x66
+│    ├─ invariant-stx-conservation: x56
+│    ├─ invariant-stx-only-to-book-or-fee: x59
+│    ├─ invariant-treasury-flows: x67
+│    └─ invariant-window-exclusive: x72
+│
+└─ - FAILED
+     ├─ invariant-clock-not-future: x0
+     ├─ invariant-clock-transitions: x0
+     ├─ invariant-config-bounded: x0
+     ├─ invariant-dao-flag-down: x0
+     ├─ invariant-fuel-keeps-budget: x0
+     ├─ invariant-never-below-floor: x0
+     ├─ invariant-no-clock-no-window: x0
+     ├─ invariant-no-sale-in-patience: x0
+     ├─ invariant-only-vault-pays-fee: x0
+     ├─ invariant-resting-peg: x0
+     ├─ invariant-sbtc-conservation: x0
+     ├─ invariant-sbtc-destinations: x0
+     ├─ invariant-stx-conservation: x0
+     ├─ invariant-stx-only-to-book-or-fee: x0
+     ├─ invariant-treasury-flows: x0
+     └─ invariant-window-exclusive: x0
+
+LEGEND:

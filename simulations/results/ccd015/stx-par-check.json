@@ -1,0 +1,204 @@
+{
+  "name": "stx-par-check",
+  "status": "passed",
+  "checks": [
+    {
+      "label": "book source unchanged (sha256 pinned)",
+      "actual": "b3526d4ce89e615108c1b6781bf67b6f8354e3880adb404883a30fbdd36ec65f",
+      "expected": "b3526d4ce89e615108c1b6781bf67b6f8354e3880adb404883a30fbdd36ec65f",
+      "pass": true
+    },
+    {
+      "label": "deploy book (exact repo bytes)",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true
+    },
+    {
+      "label": "deploy test proposal",
+      "actual": "(ok true)",
+      "expected": "(v) => v === 'true' || v.startsWith('(ok')",
+      "pass": true
+    },
+    {
+      "label": "treasury = mining-v3 (locked+unlocked) + pox5 staking (locked+unlocked)",
+      "actual": "10241497066794",
+      "expected": "10241497066794",
+      "pass": true
+    },
+    {
+      "label": "treasury is positive (STX stacked under PoX-5)",
+      "actual": "true",
+      "expected": "true",
+      "pass": true
+    },
+    {
+      "label": "supply = v1 * 10^6 + v2",
+      "actual": "5014205754491373",
+      "expected": "5014205754491373",
+      "pass": true
+    },
+    {
+      "label": "treasury equals node /v2/accounts reads",
+      "actual": "10241497066794",
+      "expected": "10241497066794",
+      "pass": true
+    },
+    {
+      "label": "supply equals node call-read get-total-supply (v1 * 10^6 + v2)",
+      "actual": "5014205754491373",
+      "expected": "5014205754491373",
+      "pass": true
+    },
+    {
+      "label": "calculate-par = floor(T * 1e8 / S) recomputed in JS",
+      "actual": "204249",
+      "expected": "204249",
+      "pass": true
+    },
+    {
+      "label": "advisory par near 2,042 STX per 1M MIA (within 2%)",
+      "actual": "2042.49",
+      "expected": "(v) => Math.abs(v - 2042) / 2042 < 0.02",
+      "pass": true
+    },
+    {
+      "label": "par-scaled u0 before update-par",
+      "actual": "u0",
+      "expected": "u0",
+      "pass": true
+    },
+    {
+      "label": "get-par-ustx-per-1m-mia u0 before update-par",
+      "actual": "u0",
+      "expected": "u0",
+      "pass": true
+    },
+    {
+      "label": "stranger update-par refused",
+      "actual": "(err u15000)",
+      "expected": "(err u15000)",
+      "pass": true
+    },
+    {
+      "label": "direct-execute enabled in base-dao",
+      "actual": "true",
+      "expected": "true",
+      "pass": true
+    },
+    {
+      "label": "direct-execute not sunset",
+      "actual": "true",
+      "expected": "true",
+      "pass": true
+    },
+    {
+      "label": "approver 1 signals update-par proposal",
+      "actual": "(ok u1)",
+      "expected": "(ok u1)",
+      "pass": true
+    },
+    {
+      "label": "approver 2 signals update-par proposal",
+      "actual": "(ok u2)",
+      "expected": "(ok u2)",
+      "pass": true
+    },
+    {
+      "label": "approver 3 signals update-par proposal",
+      "actual": "(ok u3)",
+      "expected": "(ok u3)",
+      "pass": true
+    },
+    {
+      "label": "proposal executed by base-dao",
+      "actual": "(some u261583)",
+      "expected": "(v) => v.startsWith('(some u')",
+      "pass": true
+    },
+    {
+      "label": "committed par-scaled = calculate-par = JS formula",
+      "actual": "204249",
+      "expected": "204249",
+      "pass": true
+    },
+    {
+      "label": "get-par-ustx-per-1m-mia = 1e12 * par / 1e8",
+      "actual": "u2042490000",
+      "expected": "u2042490000",
+      "pass": true
+    },
+    {
+      "label": "1M MIA asked at floor(par) is at-or-below par",
+      "actual": "true",
+      "expected": "true",
+      "pass": true
+    },
+    {
+      "label": "1M MIA asked at par + 1 uSTX is above par",
+      "actual": "false",
+      "expected": "false",
+      "pass": true
+    },
+    {
+      "label": "get-par-ustx(1M MIA) = floor",
+      "actual": "u2042490000",
+      "expected": "u2042490000",
+      "pass": true
+    },
+    {
+      "label": "get-info",
+      "actual": "(tuple (budget-ustx u0) (calculated-par (some u204249)) (min-deposit u100000000000) (offer-count u0) (par-scaled u204249) (paused false) (total-burned-mia u0) (total-spent-ustx u0))",
+      "expected": "(v) => v.includes(`(par-scaled u${par})`) && v.includes(`(calculated-par (some u${par}))`)",
+      "pass": true
+    }
+  ],
+  "fixtures": [],
+  "sourceHashes": {
+    "contracts/extensions/ccd015-redemption-book-mia-stx.clar": "b3526d4ce89e615108c1b6781bf67b6f8354e3880adb404883a30fbdd36ec65f"
+  },
+  "dropped": [
+    "get-native-price (miner-commit price): the STX book has no oracle; asks are uSTX and compare directly with par.",
+    "below-par? with a sats ask and a native price: replaced by at-or-below-par? (amount, uSTX ask), checked at the committed par boundary.",
+    "get-par-ustx-per-1m-mia round-trip of a hardcoded PAR_SCALED constant: par is no longer a constant; it is committed by update-par from calculate-par, checked in step 4."
+  ],
+  "forkHeight": 9422140,
+  "simulationId": "7b6d5d12d5cf2fc12bf6a14774a6266d",
+  "url": "https://stxer.xyz/simulations/mainnet/7b6d5d12d5cf2fc12bf6a14774a6266d",
+  "forkTip": {
+    "synthetic": false,
+    "stacks_height": 9422140,
+    "burn_height": 974732,
+    "coinbase_height": 261583,
+    "block_time": 1793922681,
+    "burn_block_time": 1793922681,
+    "index_block_hash": "1a8e264b3767bd663144b17e7ae1a6db6dbc309c8fee0e069f60cf07d6be9225",
+    "consensus_hash": "d31d52b88cd66966755bb79fa79fc5a17304b292",
+    "burn_header_hash": "000000000000000000014ac0b11b9b0730ae6bb928d5cae5a9c2c56532db66ac",
+    "sortition_id": "c20fdc4847f0613668bdbc5a91bf7d6c78958d022b3ebb8d8a7a6f62df5e0c5b",
+    "epoch": "4.0"
+  },
+  "nodeReads": {
+    "mining": {
+      "locked": "0",
+      "unlocked": "0"
+    },
+    "pox5": {
+      "locked": "10241497066794",
+      "unlocked": "0"
+    },
+    "supplyV1": "260130901",
+    "supplyV2": "4754074853491373"
+  },
+  "parStxPerMillionMia": 2042.49,
+  "values": {
+    "treasuryUstx": "10241497066794",
+    "supplyMicroMia": "5014205754491373",
+    "supplyV1": "260130901",
+    "supplyV2": "4754074853491373",
+    "parScaled": "204249",
+    "parUstxPer1mMia": "2042490000"
+  },
+  "passed": 25,
+  "total": 25
+}

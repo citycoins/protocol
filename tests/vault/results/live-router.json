@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "checks": 60,
+  "sourceHashes": {
+    "markets-sbtc-stx-jing-v6-4": "6b3e6943806350daace1498b6b923479cf61b1f555e814f9a01d5db972f436bf",
+    "swap-router-sbtc-stx-jing-v5-5": "6b65927e564d0bc3df239c5b872b45358f4349e2ec652cf8198e36fd4f3dac7c",
+    "ccd016-swap-vault-mia-v2": "ac0c305f8bfcfd9f210fb37cba6e1f4d61a26ad40ed7ca4792beca948778502e",
+    "ccd015-redemption-book-mia-stx": "b3526d4ce89e615108c1b6781bf67b6f8354e3880adb404883a30fbdd36ec65f"
+  },
+  "scope": "Full deployed v6-4/v5-5 code, local funded AMM/token/oracle fixtures; no router business-logic rewrites."
+}

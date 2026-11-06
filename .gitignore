@@ -18,3 +18,8 @@ coverage.lcov
 node_modules
 .aider*
 .env
+
+# Generated vault and activation fixtures
+tests/vault/.build/
+tests/vault/.build-rv/
+tests/vault/__pycache__/

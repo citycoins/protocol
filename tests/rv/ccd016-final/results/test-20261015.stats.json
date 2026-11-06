@@ -1,0 +1,23 @@
+{
+  "note": "vault print notifications committed inside passing test-* runs (successful inner calls)",
+  "notifications": {
+    "set-pyth-fee-budget": 879,
+    "fund-from-treasury": 796,
+    "router-swap": 119,
+    "jing-reclaim": 266,
+    "dao-recall-sbtc": 257,
+    "set-no-pyth-slippage-bps": 96,
+    "router-swap-split-dia": 51,
+    "fuel-fair-book": 100,
+    "jing-place": 85,
+    "jing-take": 80,
+    "router-swap-split": 37
+  },
+  "nonZeroSales": {
+    "router-swap": 119,
+    "router-swap-split-dia": 51,
+    "jing-take": 80,
+    "router-swap-split": 37
+  },
+  "windowsOpened": 225
+}

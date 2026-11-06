@@ -1,0 +1,36 @@
+# RV-only manifest for fuzzing ccd015-redemption-book-mia-stx (Solution 2's
+# STX book). See tests/rv/build.sh and tests/rv/README.md.
+#
+# Run:
+#   bash tests/rv/build.sh ccd015-redemption-book-mia-stx
+#   npx rv . ccd015-redemption-book-mia-stx invariant --runs=500
+[project]
+name = "citycoins-rv-ccd015-stx"
+description = "RV-only manifest for fuzzing ccd015-redemption-book-mia-stx"
+authors = []
+telemetry = false
+cache_dir = "./.cache"
+
+[repl.analysis]
+passes = []
+check_checker = { trusted_sender = false, trusted_caller = false, callee_filter = false }
+
+[contracts.sip-010-trait]
+path = "tests/rv/.build/sip-010-trait.clar"
+clarity_version = 5
+epoch = "3.4"
+
+[contracts.mock-mia]
+path = "tests/rv/mock-mia.clar"
+clarity_version = 5
+epoch = "3.4"
+
+[contracts.mock-mia-v1]
+path = "tests/rv/mock-mia-v1.clar"
+clarity_version = 5
+epoch = "3.4"
+
+[contracts.ccd015-redemption-book-mia-stx]
+path = "tests/rv/.build/ccd015-redemption-book-mia-stx.clar"
+clarity_version = 5
+epoch = "3.4"

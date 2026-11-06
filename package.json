@@ -7,7 +7,17 @@
   "scripts": {
     "test": "vitest run",
     "test:report": "vitest run -- --coverage --costs",
-    "test:watch": "chokidar \"tests/**/*.ts\" \"contracts/**/*.clar\" -c \"npm run test:report\""
+    "test:watch": "chokidar \"tests/**/*.ts\" \"contracts/**/*.clar\" -c \"npm run test:report\"",
+    "test:ccip028": "python3 tests/activation/build.py && vitest run --config tests/activation/vitest.config.ts",
+    "rv:ccd016": "python3 tests/vault/build.py --rv && rv tests/vault/.build-rv ccd016-swap-vault-mia-v2 invariant --runs=1000",
+    "test:vault": "python3 tests/vault/build.py && node tests/vault/runtime.mjs",
+    "test:book": "python3 tests/vault/build.py && RUN_CCD015_BOOK=1 vitest run --silent --config tests/vault/vitest.book.config.ts tests/vault/ccd015-redemption-book.test.ts",
+    "rv:vault:build": "python3 tests/vault/build.py --rv",
+    "rv:vault": "rv tests/vault/.build-rv ccd016-swap-vault-mia-v2 invariant --runs=1000",
+    "rv:final:build": "python3 tests/rv/ccd016-final/build.py",
+    "rv:final:invariant": "bash tests/rv/ccd016-final/run.sh invariant",
+    "rv:final:test": "bash tests/rv/ccd016-final/run.sh test",
+    "rv:ccd015": "bash tests/rv/run-book.sh"
   },
   "author": "",
   "license": "ISC",
@@ -18,10 +28,14 @@
     "@stacks/transactions": "^7.2.0",
     "c32check": "^2.0.0",
     "chokidar-cli": "^3.0.0",
-    "stxer": "^0.4.2",
+    "stxer": "^0.8.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.4",
     "vitest": "^3.2.4",
     "vitest-environment-clarinet": "^2.3.0"
+  },
+  "devDependencies": {
+    "@stacks/clarinet-sdk": "3.24.1",
+    "@stacks/rendezvous": "^1.0.3"
   }
 }
